@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nairobi Sweets | Power Admin + VVIP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body{min-height:100vh;color:#f8fafc;background:radial-gradient(circle at top left, rgba(255,79,183,.16), transparent 22%),radial-gradient(circle at top right, rgba(124,58,237,.16), transparent 24%),linear-gradient(180deg, #0d1327, #050816);}
+    .panel{background:rgba(11,18,37,.82);border:1px solid rgba(255,255,255,.08);backdrop-filter: blur(10px);-webkit-backdrop-filter: blur(10px);}
+    .btn{transition:all .18s ease;transform:translateY(0);}
+    .btn:hover{transform:translateY(-1px);filter:brightness(1.05);}
+  </style>
+</head>
+<body>
+  <div id="lockScreen" class="fixed inset-0 z-[9999] bg-slate-950 flex items-center justify-center">
+    <div class="panel rounded-3xl p-8 text-center max-w-md mx-4">
+      <div class="text-4xl mb-4">🔒</div>
+      <h2 class="text-2xl font-bold text-pink-300 mb-2">Secured Power Admin</h2>
+      <p id="lockMessage" class="text-slate-300">Checking access...</p>
+    </div>
+  </div>
+
+  <header class="bg-gradient-to-r from-pink-500 via-purple-700 to-indigo-600 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 class="text-3xl font-extrabold text-yellow-300">Nairobi Sweets Admin</h1>
+        <p class="text-pink-100 text-sm">VVIP crown, likes, views, online badge, crisp image engine.</p>
+      </div>
+      <div class="flex gap-3">
+        <a href="/index.html" class="btn bg-white/10 hover:bg-white/15 px-4 py-2 rounded-xl text-sm">Public Site</a>
+        <button id="signOutBtn" class="btn bg-yellow-400 hover:bg-yellow-300 text-black font-semibold px-4 py-2 rounded-xl hidden">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <section id="errorBox" class="panel rounded-3xl p-5 mb-6 hidden">
+      <h2 class="text-xl font-bold text-red-300 mb-2">Exact problem</h2>
+      <pre id="errorText" class="text-sm text-red-200 whitespace-pre-wrap"></pre>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <section class="panel rounded-3xl p-6 lg:col-span-1">
+        <h2 class="text-2xl font-bold text-pink-300 mb-4">Owner Access</h2>
+        <div id="authStatus" class="text-sm text-slate-300 mb-4">Checking session...</div>
+        <div id="loginBox" class="space-y-4">
+          <div><label class="block text-sm text-slate-300 mb-2">Email</label><input id="email" type="email" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="you@example.com"></div>
+          <div><label class="block text-sm text-slate-300 mb-2">Password</label><input id="password" type="password" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="••••••••"></div>
+          <div class="flex gap-3 flex-wrap">
+            <button id="signInBtn" class="btn bg-pink-600 hover:bg-pink-500 px-4 py-2 rounded-xl font-semibold">Sign in</button>
+            <button id="testBtn" class="btn bg-white/10 hover:bg-white/15 px-4 py-2 rounded-xl font-semibold">Test Connection</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel rounded-3xl p-6 lg:col-span-2">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-2xl font-bold text-pink-300">Profile Editor</h2>
+            <p class="text-sm text-slate-400">Upload image, create a profile, and control VVIP priority.</p>
+          </div>
+          <div id="editorStatus" class="text-sm text-slate-300">Please sign in</div>
+        </div>
+
+        <div id="editor" class="opacity-50 pointer-events-none">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div><label class="block text-sm text-slate-300 mb-2">Name</label><input id="name" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400"></div>
+            <div><label class="block text-sm text-slate-300 mb-2">Phone</label><input id="phone" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="+2547..."></div>
+            <div><label class="block text-sm text-slate-300 mb-2">WhatsApp</label><input id="whatsapp" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="2547..."></div>
+            <div><label class="block text-sm text-slate-300 mb-2">Location</label><input id="location" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="Nairobi"></div>
+            <div><label class="block text-sm text-slate-300 mb-2">Category</label><input id="category" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="VIP / Featured / Premium"></div>
+            <div><label class="block text-sm text-slate-300 mb-2">Price Range</label><input id="price_range" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="KES 5,000 - 15,000"></div>
+            <div class="md:col-span-2"><label class="block text-sm text-slate-300 mb-2">Description</label><textarea id="description" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400 min-h-[120px]"></textarea></div>
+            <div class="md:col-span-2"><label class="block text-sm text-slate-300 mb-2">Image Upload</label><input id="imageFile" type="file" accept="image/*" class="w-full p-3 bg-black/40 rounded-xl border border-white/10"><p class="text-xs text-slate-400 mt-2">Bucket must be named <strong>profile-images</strong>. Images are auto-cleaned before upload.</p></div>
+            <div class="md:col-span-2"><label class="block text-sm text-slate-300 mb-2">Preview</label><div class="rounded-2xl border border-white/10 bg-black/30 p-3"><img id="previewImage" src="https://via.placeholder.com/1200x900?text=Preview" alt="Preview" class="w-full h-72 object-cover rounded-xl"></div></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div class="rounded-2xl bg-white/5 border border-white/10 p-4"><div class="text-xs text-slate-400">Original image</div><div id="originalInfo" class="text-sm mt-2 text-slate-200">No file selected</div></div>
+            <div class="rounded-2xl bg-white/5 border border-white/10 p-4"><div class="text-xs text-slate-400">Processed image</div><div id="processedInfo" class="text-sm mt-2 text-slate-200">Waiting</div></div>
+            <div class="rounded-2xl bg-white/5 border border-white/10 p-4"><div class="text-xs text-slate-400">Quality engine</div><div class="text-sm mt-2 text-slate-200">Resize + compress + light polish</div></div>
+          </div>
+
+          <div class="flex flex-wrap gap-4 mt-4">
+            <label class="inline-flex items-center gap-2 text-amber-300"><input id="is_vvip" type="checkbox" class="accent-yellow-400"> Premium VVIP</label>
+            <label class="inline-flex items-center gap-2 text-yellow-300"><input id="is_vip" type="checkbox" class="accent-yellow-400"> VIP</label>
+            <label class="inline-flex items-center gap-2 text-pink-300"><input id="is_featured" type="checkbox" class="accent-pink-400"> Featured</label>
+            <label class="inline-flex items-center gap-2 text-green-300"><input id="is_verified" type="checkbox" class="accent-green-400"> Verified</label>
+            <label class="inline-flex items-center gap-2 text-emerald-300"><input id="is_online" type="checkbox" class="accent-emerald-400"> Online now</label>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div><label class="block text-sm text-slate-300 mb-2">Starting likes</label><input id="likes_count" type="number" min="0" value="0" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400"></div>
+            <div><label class="block text-sm text-slate-300 mb-2">Starting views</label><input id="views_count" type="number" min="0" value="0" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400"></div>
+          </div>
+
+          <div class="flex flex-wrap gap-3 mt-5">
+            <button id="saveBtn" class="btn bg-pink-600 hover:bg-pink-500 px-5 py-2.5 rounded-xl font-semibold">Save Profile</button>
+            <button id="clearBtn" class="btn bg-white/10 hover:bg-white/15 px-5 py-2.5 rounded-xl font-semibold">Clear</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+<script>
+const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+
+const STORAGE_BUCKET = 'profile-images';
+const OWNER_EMAIL = 'nairobisweets05@gmail.com';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const authStatus = document.getElementById('authStatus');
+const editor = document.getElementById('editor');
+const editorStatus = document.getElementById('editorStatus');
+const signOutBtn = document.getElementById('signOutBtn');
+const errorBox = document.getElementById('errorBox');
+const errorText = document.getElementById('errorText');
+const loginBox = document.getElementById('loginBox');
+const lockScreen = document.getElementById('lockScreen');
+const lockMessage = document.getElementById('lockMessage');
+const imageFileInput = document.getElementById('imageFile');
+const previewImage = document.getElementById('previewImage');
+const originalInfo = document.getElementById('originalInfo');
+const processedInfo = document.getElementById('processedInfo');
+let processedUploadFile = null;
+
+function showError(message){ errorBox.classList.remove('hidden'); errorText.textContent = message; }
+function hideError(){ errorBox.classList.add('hidden'); errorText.textContent = ''; }
+function setLock(message){ lockMessage.textContent = message; lockScreen.classList.remove('hidden'); }
+function unlockScreen(){ lockScreen.classList.add('hidden'); }
+function setAuthState(signedIn, email=''){
+  if(signedIn){
+    authStatus.textContent = `Signed in as ${email}`;
+    editorStatus.textContent = 'Editor unlocked';
+    editor.classList.remove('opacity-50','pointer-events-none');
+    signOutBtn.classList.remove('hidden');
+    loginBox.classList.add('hidden');
+  }else{
+    authStatus.textContent = 'Please sign in to manage profiles';
+    editorStatus.textContent = 'Please sign in';
+    editor.classList.add('opacity-50','pointer-events-none');
+    signOutBtn.classList.add('hidden');
+    loginBox.classList.remove('hidden');
+  }
+}
+function validateConfig(){
+  if(!SUPABASE_URL.startsWith('https://')) throw new Error('SUPABASE_URL must start with https://');
+  if(!SUPABASE_KEY.startsWith('sb_publishable_')) throw new Error('Wrong key. Use the full sb_publishable_ key.');
+}
+function formatBytes(bytes){
+  if(!bytes && bytes !== 0) return 'Unknown';
+  const sizes = ['B','KB','MB'];
+  if(bytes === 0) return '0 B';
+  const i = Math.floor(Math.log(bytes)/Math.log(1024));
+  return `${(bytes/Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
+}
+async function redirectHome(){ window.location.href = '/'; }
+async function testConnection(){
+  hideError();
+  try{
+    validateConfig();
+    const { error } = await supabaseClient.from('profiles').select('id').limit(1);
+    if(error) throw new Error(`Profiles read failed: ${error.message}`);
+    authStatus.textContent = 'Connection test passed';
+  }catch(err){
+    showError(err.message || String(err));
+    authStatus.textContent = 'Connection failed';
+  }
+}
+async function signIn(){
+  hideError();
+  try{
+    validateConfig();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    if(email !== OWNER_EMAIL) throw new Error('Access denied. Use the owner admin email only.');
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if(error) throw new Error(`Login failed: ${error.message}`);
+    await refreshSession();
+  }catch(err){
+    showError(err.message || String(err));
+    authStatus.textContent = 'Sign in failed';
+  }
+}
+async function signOut(){ await supabaseClient.auth.signOut(); await redirectHome(); }
+async function refreshSession(){
+  hideError();
+  setLock('Checking access...');
+  try{
+    validateConfig();
+    const { data, error } = await supabaseClient.auth.getSession();
+    if(error) throw new Error(`Session check failed: ${error.message}`);
+    const session = data.session;
+    if(!session){
+      setAuthState(false);
+      setLock('Not signed in. Redirecting...');
+      setTimeout(redirectHome, 800);
+      return;
+    }
+    if(session.user.email !== OWNER_EMAIL){
+      await supabaseClient.auth.signOut();
+      setAuthState(false);
+      showError('Access denied. This admin is only for the site owner.');
+      setLock('Access denied. Redirecting...');
+      setTimeout(redirectHome, 1200);
+      return;
+    }
+    setAuthState(true, session.user.email);
+    unlockScreen();
+  }catch(err){
+    showError(err.message || String(err));
+    setAuthState(false);
+    setLock('Access check failed. Redirecting...');
+    setTimeout(redirectHome, 1200);
+  }
+}
+function clearForm(){
+  ['name','phone','whatsapp','location','category','price_range','description'].forEach(id => document.getElementById(id).value = '');
+  ['is_vvip','is_vip','is_featured','is_verified','is_online'].forEach(id => document.getElementById(id).checked = false);
+  document.getElementById('likes_count').value = 0;
+  document.getElementById('views_count').value = 0;
+  imageFileInput.value = '';
+  processedUploadFile = null;
+  previewImage.src = 'https://via.placeholder.com/1200x900?text=Preview';
+  originalInfo.textContent = 'No file selected';
+  processedInfo.textContent = 'Waiting';
+}
+async function processImage(file){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = e => {
+      img.onload = () => {
+        const maxWidth = 1400;
+        const scale = Math.min(1, maxWidth / img.width);
+        const width = Math.round(img.width * scale);
+        const height = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if(!ctx){ reject(new Error('Canvas not supported')); return; }
+        ctx.filter = 'contrast(1.05) saturate(1.05)';
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(blob => {
+          if(!blob){ reject(new Error('Image processing failed')); return; }
+          const newName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+          const processed = new File([blob], newName, { type:'image/jpeg' });
+          resolve({ file: processed, previewUrl: canvas.toDataURL('image/jpeg', 0.88), width, height });
+        }, 'image/jpeg', 0.88);
+      };
+      img.onerror = () => reject(new Error('Could not read image'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('File reading failed'));
+    reader.readAsDataURL(file);
+  });
+}
+async function handleFilePreview(){
+  hideError();
+  processedUploadFile = null;
+  const file = imageFileInput.files[0];
+  if(!file){
+    originalInfo.textContent = 'No file selected';
+    processedInfo.textContent = 'Waiting';
+    previewImage.src = 'https://via.placeholder.com/1200x900?text=Preview';
+    return;
+  }
+  try{
+    originalInfo.textContent = `${file.name} • ${formatBytes(file.size)}`;
+    processedInfo.textContent = 'Processing...';
+    const result = await processImage(file);
+    processedUploadFile = result.file;
+    previewImage.src = result.previewUrl;
+    processedInfo.textContent = `${result.file.name} • ${result.width}×${result.height} • ${formatBytes(result.file.size)}`;
+  }catch(err){
+    showError(err.message || String(err));
+    processedInfo.textContent = 'Processing failed';
+  }
+}
+async function uploadImage(file){
+  if(!file) return '';
+  const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
+  const path = `profiles/${safeName}`;
+  const { error } = await supabaseClient.storage.from(STORAGE_BUCKET).upload(path, file, { upsert:true });
+  if(error) throw new Error(`Upload failed: ${error.message}`);
+  const { data } = supabaseClient.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+  return data.publicUrl;
+}
+async function saveProfile(){
+  hideError();
+  try{
+    validateConfig();
+    editorStatus.textContent = 'Saving profile...';
+    const image_url = await uploadImage(processedUploadFile || imageFileInput.files[0]);
+    const payload = {
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      whatsapp: document.getElementById('whatsapp').value.trim(),
+      location: document.getElementById('location').value.trim(),
+      category: document.getElementById('category').value.trim(),
+      price_range: document.getElementById('price_range').value.trim(),
+      description: document.getElementById('description').value.trim(),
+      image_url,
+      is_vvip: document.getElementById('is_vvip').checked,
+      is_vip: document.getElementById('is_vip').checked,
+      is_featured: document.getElementById('is_featured').checked,
+      is_verified: document.getElementById('is_verified').checked,
+      is_online: document.getElementById('is_online').checked,
+      likes_count: Number(document.getElementById('likes_count').value || 0),
+      views_count: Number(document.getElementById('views_count').value || 0),
+      status: 'active'
+    };
+    if(!payload.name || !payload.phone || !payload.whatsapp || !payload.description) throw new Error('Please fill name, phone, whatsapp, and description.');
+    const { error } = await supabaseClient.from('profiles').insert([payload]);
+    if(error) throw new Error(`Save failed: ${error.message}`);
+    editorStatus.textContent = 'Profile saved';
+    clearForm();
+  }catch(err){
+    showError(err.message || String(err));
+    editorStatus.textContent = 'Save failed';
+  }
+}
+document.getElementById('signInBtn').addEventListener('click', signIn);
+document.getElementById('signOutBtn').addEventListener('click', signOut);
+document.getElementById('testBtn').addEventListener('click', testConnection);
+document.getElementById('saveBtn').addEventListener('click', saveProfile);
+document.getElementById('clearBtn').addEventListener('click', clearForm);
+imageFileInput.addEventListener('change', handleFilePreview);
+refreshSession();
+supabaseClient.auth.onAuthStateChange(() => { refreshSession(); });
+</script>
+</body>
+</html>
