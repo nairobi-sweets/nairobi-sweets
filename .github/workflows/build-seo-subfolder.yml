@@ -1,0 +1,39 @@
+name: Build SEO Subfolder
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "20 6 * * *"
+
+jobs:
+  build-seo:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate seo subfolder
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: python generate_seo_from_supabase.py
+
+      - name: Commit refreshed seo pages
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add seo
+          git diff --cached --quiet || git commit -m "Refresh SEO pages"
+          git push
