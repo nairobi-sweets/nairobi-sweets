@@ -2,337 +2,1795 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nairobi Sweets | Power Admin + VVIP</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nairobi Sweets Next Level Vault</title>
   <style>
-    body{min-height:100vh;color:#f8fafc;background:radial-gradient(circle at top left, rgba(255,79,183,.16), transparent 22%),radial-gradient(circle at top right, rgba(124,58,237,.16), transparent 24%),linear-gradient(180deg, #0d1327, #050816);}
-    .panel{background:rgba(11,18,37,.82);border:1px solid rgba(255,255,255,.08);backdrop-filter: blur(10px);-webkit-backdrop-filter: blur(10px);}
-    .btn{transition:all .18s ease;transform:translateY(0);}
-    .btn:hover{transform:translateY(-1px);filter:brightness(1.05);}
+    :root {
+      --bg: #050815;
+      --bg2: #09112a;
+      --panel: rgba(14, 22, 48, 0.96);
+      --panel-2: rgba(20, 31, 66, 0.98);
+      --line: rgba(255,255,255,0.08);
+      --text: #eef3ff;
+      --muted: #9ca7cf;
+      --gold: #ffd54a;
+      --pink: #ff4db7;
+      --green: #42d67e;
+      --blue: #33b6ff;
+      --red: #ff6478;
+      --orange: #ffb648;
+      --shadow: 0 18px 45px rgba(0,0,0,0.34);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(88, 23, 136, 0.35), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(9, 128, 255, 0.18), transparent 22%),
+        linear-gradient(180deg, #050816, #040612 60%, #03040d 100%);
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    body { padding: 20px; }
+    .app { max-width: 1700px; margin: 0 auto; }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .pad { padding: 18px; }
+    .muted { color: var(--muted); }
+    .tiny { font-size: 12px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .hidden { display: none !important; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding: 16px 18px;
+      position: sticky;
+      top: 12px;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand { display: flex; flex-direction: column; gap: 4px; }
+    .brand h1 { margin: 0; font-size: 26px; }
+    .brand p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .top-actions, .row, .button-row, .chip-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .section-title h2, .section-title h3 { margin: 0; }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.035);
+      padding: 14px;
+    }
+    .stat .label { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .stat .value { font-size: 28px; font-weight: 800; }
+
+    .sidebar {
+      position: sticky;
+      top: 92px;
+      align-self: start;
+    }
+
+    .nav-btn, .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform .12s ease, filter .12s ease, opacity .12s ease;
+    }
+    .nav-btn:hover, .btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
+    .nav-btn.active { background: var(--gold); color: #1a1200; }
+    .nav-btn { width: 100%; text-align: left; background: rgba(255,255,255,0.05); color: var(--text); }
+
+    .btn-primary { background: var(--gold); color: #1a1200; }
+    .btn-secondary { background: #2a355e; color: var(--text); }
+    .btn-green { background: var(--green); color: #07160e; }
+    .btn-blue { background: var(--blue); color: #05131b; }
+    .btn-danger { background: var(--red); color: white; }
+    .btn-orange { background: var(--orange); color: #1f0f00; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #d8def7;
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(255,213,74,.85);
+      box-shadow: 0 0 0 3px rgba(255,213,74,0.12);
+    }
+
+    textarea { min-height: 84px; resize: vertical; }
+    .grid-2, .grid-3, .toolbar, .quick-grid { display: grid; gap: 12px; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .quick-grid { grid-template-columns: repeat(5, 1fr); }
+    .toolbar { grid-template-columns: 1.2fr .8fr .8fr .8fr auto auto; margin-bottom: 14px; }
+
+    .notice {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .info { background: rgba(51,182,255,0.08); color: #d5f2ff; }
+    .success { background: rgba(66,214,126,0.09); color: #dfffea; }
+    .warn { background: rgba(255,182,72,0.10); color: #ffe4bf; }
+    .error { background: rgba(255,100,120,0.10); color: #ffd9df; }
+
+    .chip {
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .c-vip { background: var(--gold); color: #1a1200; }
+    .c-featured { background: var(--pink); color: #fff; }
+    .c-verified { background: var(--green); color: #06140d; }
+    .c-online { background: var(--blue); color: #07131d; }
+    .c-active { background: #2b3255; color: #fff; }
+    .c-paid { background: rgba(66,214,126,0.15); color: #92ffba; }
+    .c-unpaid { background: rgba(255,100,120,0.14); color: #ffbcc6; }
+    .c-pending { background: rgba(255,182,72,0.15); color: #ffd08c; }
+
+    .preview-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      overflow: hidden;
+    }
+    .preview-image {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+      object-position: center 20%;
+      display: block;
+      background: #09112a;
+    }
+    .preview-meta { padding: 14px; display: grid; gap: 8px; }
+    .preview-meta strong { font-size: 19px; }
+
+    .table-wrap { overflow: auto; }
+    table { width: 100%; min-width: 1340px; border-collapse: collapse; }
+    thead th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      background: #101936;
+      z-index: 2;
+    }
+    tbody td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: top;
+      font-size: 14px;
+    }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+    .member-cell { display: flex; gap: 12px; }
+    .thumb {
+      width: 58px;
+      height: 76px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #12192f;
+      border: 1px solid rgba(255,255,255,0.08);
+      flex: 0 0 auto;
+    }
+    .member-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tab-btn {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .tab-btn.active { background: var(--gold); color: #1a1200; }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .queue-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .queue-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .auth-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 18, 0.78);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 18px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #111938, #0b1128);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+    .auth-card h2 { margin: 0 0 6px; }
+    .auth-card p { margin: 0 0 16px; color: var(--muted); }
+
+    .loader {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.28);
+      border-top-color: white;
+      animation: spin .8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1280px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .queue-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 860px) {
+      body { padding: 12px; }
+      .topbar { position: static; }
+      .grid-2, .grid-3, .toolbar, .quick-grid, .stat-grid { grid-template-columns: 1fr; }
+      .button-row, .top-actions { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <div id="lockScreen" class="fixed inset-0 z-[9999] bg-slate-950 flex items-center justify-center">
-    <div class="panel rounded-3xl p-8 text-center max-w-md mx-4">
-      <div class="text-4xl mb-4">🔒</div>
-      <h2 class="text-2xl font-bold text-pink-300 mb-2">Secured Power Admin</h2>
-      <p id="lockMessage" class="text-slate-300">Checking access...</p>
+  <div id="authModal" class="auth-modal hidden">
+    <div class="auth-card">
+      <h2>Admin login</h2>
+      <p>Use the owner/admin account allowed by your Supabase policies.</p>
+      <div class="grid-2">
+        <div style="grid-column: 1 / -1;">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" placeholder="admin@example.com" />
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" placeholder="Password" />
+        </div>
+      </div>
+      <div class="button-row" style="margin-top: 14px;">
+        <button id="loginBtn" class="btn btn-primary">Sign in</button>
+        <button id="closeLoginBtn" class="btn btn-secondary">Close</button>
+      </div>
+      <div id="loginMessage" class="notice info hidden"></div>
     </div>
   </div>
 
-  <header class="bg-gradient-to-r from-pink-500 via-purple-700 to-indigo-600 border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <div>
-        <h1 class="text-3xl font-extrabold text-yellow-300">Nairobi Sweets Admin</h1>
-        <p class="text-pink-100 text-sm">VVIP crown, likes, views, online badge, crisp image engine.</p>
+  <div class="app">
+    <div class="topbar panel">
+      <div class="brand">
+        <h1>Nairobi Sweets Next Level Vault</h1>
+        <p>Profiles, payouts, approval queue, quick activation, search, stats, and calmer save flows.</p>
       </div>
-      <div class="flex gap-3">
-        <a href="/index.html" class="btn bg-white/10 hover:bg-white/15 px-4 py-2 rounded-xl text-sm">Public Site</a>
-        <button id="signOutBtn" class="btn bg-yellow-400 hover:bg-yellow-300 text-black font-semibold px-4 py-2 rounded-xl hidden">Sign out</button>
+      <div class="top-actions">
+        <span id="sessionLabel" class="muted tiny">Checking session…</span>
+        <button id="openLoginBtn" class="btn btn-secondary">Login</button>
+        <button id="logoutBtn" class="btn btn-danger hidden">Logout</button>
       </div>
     </div>
-  </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-8">
-    <section id="errorBox" class="panel rounded-3xl p-5 mb-6 hidden">
-      <h2 class="text-xl font-bold text-red-300 mb-2">Exact problem</h2>
-      <pre id="errorText" class="text-sm text-red-200 whitespace-pre-wrap"></pre>
-    </section>
+    <div id="appMessage" class="notice info hidden"></div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <section class="panel rounded-3xl p-6 lg:col-span-1">
-        <h2 class="text-2xl font-bold text-pink-300 mb-4">Owner Access</h2>
-        <div id="authStatus" class="text-sm text-slate-300 mb-4">Checking session...</div>
-        <div id="loginBox" class="space-y-4">
-          <div><label class="block text-sm text-slate-300 mb-2">Email</label><input id="email" type="email" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="you@example.com"></div>
-          <div><label class="block text-sm text-slate-300 mb-2">Password</label><input id="password" type="password" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="••••••••"></div>
-          <div class="flex gap-3 flex-wrap">
-            <button id="signInBtn" class="btn bg-pink-600 hover:bg-pink-500 px-4 py-2 rounded-xl font-semibold">Sign in</button>
-            <button id="testBtn" class="btn bg-white/10 hover:bg-white/15 px-4 py-2 rounded-xl font-semibold">Test Connection</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel rounded-3xl p-6 lg:col-span-2">
-        <div class="flex items-center justify-between gap-3 mb-4">
-          <div>
-            <h2 class="text-2xl font-bold text-pink-300">Profile Editor</h2>
-            <p class="text-sm text-slate-400">Upload image, create a profile, and control VVIP priority.</p>
-          </div>
-          <div id="editorStatus" class="text-sm text-slate-300">Please sign in</div>
-        </div>
-
-        <div id="editor" class="opacity-50 pointer-events-none">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><label class="block text-sm text-slate-300 mb-2">Name</label><input id="name" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400"></div>
-            <div><label class="block text-sm text-slate-300 mb-2">Phone</label><input id="phone" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="+2547..."></div>
-            <div><label class="block text-sm text-slate-300 mb-2">WhatsApp</label><input id="whatsapp" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="2547..."></div>
-            <div><label class="block text-sm text-slate-300 mb-2">Location</label><input id="location" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="Nairobi"></div>
-            <div><label class="block text-sm text-slate-300 mb-2">Category</label><input id="category" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="VIP / Featured / Premium"></div>
-            <div><label class="block text-sm text-slate-300 mb-2">Price Range</label><input id="price_range" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400" placeholder="KES 5,000 - 15,000"></div>
-            <div class="md:col-span-2"><label class="block text-sm text-slate-300 mb-2">Description</label><textarea id="description" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400 min-h-[120px]"></textarea></div>
-            <div class="md:col-span-2"><label class="block text-sm text-slate-300 mb-2">Image Upload</label><input id="imageFile" type="file" accept="image/*" class="w-full p-3 bg-black/40 rounded-xl border border-white/10"><p class="text-xs text-slate-400 mt-2">Bucket must be named <strong>profile-images</strong>. Images are auto-cleaned before upload.</p></div>
-            <div class="md:col-span-2"><label class="block text-sm text-slate-300 mb-2">Preview</label><div class="rounded-2xl border border-white/10 bg-black/30 p-3"><img id="previewImage" src="https://via.placeholder.com/1200x900?text=Preview" alt="Preview" class="w-full h-72 object-cover rounded-xl"></div></div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div class="rounded-2xl bg-white/5 border border-white/10 p-4"><div class="text-xs text-slate-400">Original image</div><div id="originalInfo" class="text-sm mt-2 text-slate-200">No file selected</div></div>
-            <div class="rounded-2xl bg-white/5 border border-white/10 p-4"><div class="text-xs text-slate-400">Processed image</div><div id="processedInfo" class="text-sm mt-2 text-slate-200">Waiting</div></div>
-            <div class="rounded-2xl bg-white/5 border border-white/10 p-4"><div class="text-xs text-slate-400">Quality engine</div><div class="text-sm mt-2 text-slate-200">Resize + compress + light polish</div></div>
-          </div>
-
-          <div class="flex flex-wrap gap-4 mt-4">
-            <label class="inline-flex items-center gap-2 text-amber-300"><input id="is_vvip" type="checkbox" class="accent-yellow-400"> Premium VVIP</label>
-            <label class="inline-flex items-center gap-2 text-yellow-300"><input id="is_vip" type="checkbox" class="accent-yellow-400"> VIP</label>
-            <label class="inline-flex items-center gap-2 text-pink-300"><input id="is_featured" type="checkbox" class="accent-pink-400"> Featured</label>
-            <label class="inline-flex items-center gap-2 text-green-300"><input id="is_verified" type="checkbox" class="accent-green-400"> Verified</label>
-            <label class="inline-flex items-center gap-2 text-emerald-300"><input id="is_online" type="checkbox" class="accent-emerald-400"> Online now</label>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div><label class="block text-sm text-slate-300 mb-2">Starting likes</label><input id="likes_count" type="number" min="0" value="0" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400"></div>
-            <div><label class="block text-sm text-slate-300 mb-2">Starting views</label><input id="views_count" type="number" min="0" value="0" class="w-full p-3 bg-black/40 rounded-xl border border-white/10 outline-none focus:border-pink-400"></div>
-          </div>
-
-          <div class="flex flex-wrap gap-3 mt-5">
-            <button id="saveBtn" class="btn bg-pink-600 hover:bg-pink-500 px-5 py-2.5 rounded-xl font-semibold">Save Profile</button>
-            <button id="clearBtn" class="btn bg-white/10 hover:bg-white/15 px-5 py-2.5 rounded-xl font-semibold">Clear</button>
-          </div>
-        </div>
-      </section>
+    <div class="stat-grid">
+      <div class="stat panel"><div class="label">Total profiles</div><div class="value" id="statTotal">0</div></div>
+      <div class="stat panel"><div class="label">Active</div><div class="value" id="statActive">0</div></div>
+      <div class="stat panel"><div class="label">Pending payments</div><div class="value" id="statPending">0</div></div>
+      <div class="stat panel"><div class="label">Paid</div><div class="value" id="statPaid">0</div></div>
+      <div class="stat panel"><div class="label">Estimated weekly</div><div class="value" id="statRevenue">KES 0</div></div>
     </div>
-  </main>
 
-<script>
-const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+    <div class="shell">
+      <aside class="sidebar panel">
+        <div class="pad">
+          <div class="section-title">
+            <h3>Control deck</h3>
+            <span class="tiny muted">One-file vault</span>
+          </div>
 
-const STORAGE_BUCKET = 'profile-images';
-const OWNER_EMAIL = 'nairobisweets05@gmail.com';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+          <div class="row" style="flex-direction: column; align-items: stretch;">
+            <button class="nav-btn active" data-view="dashboardView">Dashboard</button>
+            <button class="nav-btn" data-view="editorView">Profile editor</button>
+            <button class="nav-btn" data-view="queueView">Approval queue</button>
+          </div>
 
-const authStatus = document.getElementById('authStatus');
-const editor = document.getElementById('editor');
-const editorStatus = document.getElementById('editorStatus');
-const signOutBtn = document.getElementById('signOutBtn');
-const errorBox = document.getElementById('errorBox');
-const errorText = document.getElementById('errorText');
-const loginBox = document.getElementById('loginBox');
-const lockScreen = document.getElementById('lockScreen');
-const lockMessage = document.getElementById('lockMessage');
-const imageFileInput = document.getElementById('imageFile');
-const previewImage = document.getElementById('previewImage');
-const originalInfo = document.getElementById('originalInfo');
-const processedInfo = document.getElementById('processedInfo');
-let processedUploadFile = null;
+          <div class="section-title" style="margin-top: 18px;"><h3>Quick actions</h3></div>
+          <div class="quick-grid">
+            <button id="quickNewVip" class="btn btn-primary">New VIP</button>
+            <button id="quickFeatured" class="btn btn-secondary">Featured</button>
+            <button id="quickTodayExpiry" class="btn btn-orange">Expiring</button>
+            <button id="quickRefresh" class="btn btn-green">Refresh</button>
+            <button id="quickAutofill" class="btn btn-blue">Auto Fill</button>
+          </div>
 
-function showError(message){ errorBox.classList.remove('hidden'); errorText.textContent = message; }
-function hideError(){ errorBox.classList.add('hidden'); errorText.textContent = ''; }
-function setLock(message){ lockMessage.textContent = message; lockScreen.classList.remove('hidden'); }
-function unlockScreen(){ lockScreen.classList.add('hidden'); }
-function setAuthState(signedIn, email=''){
-  if(signedIn){
-    authStatus.textContent = `Signed in as ${email}`;
-    editorStatus.textContent = 'Editor unlocked';
-    editor.classList.remove('opacity-50','pointer-events-none');
-    signOutBtn.classList.remove('hidden');
-    loginBox.classList.add('hidden');
-  }else{
-    authStatus.textContent = 'Please sign in to manage profiles';
-    editorStatus.textContent = 'Please sign in';
-    editor.classList.add('opacity-50','pointer-events-none');
-    signOutBtn.classList.add('hidden');
-    loginBox.classList.remove('hidden');
-  }
-}
-function validateConfig(){
-  if(!SUPABASE_URL.startsWith('https://')) throw new Error('SUPABASE_URL must start with https://');
-  if(!SUPABASE_KEY.startsWith('sb_publishable_')) throw new Error('Wrong key. Use the full sb_publishable_ key.');
-}
-function formatBytes(bytes){
-  if(!bytes && bytes !== 0) return 'Unknown';
-  const sizes = ['B','KB','MB'];
-  if(bytes === 0) return '0 B';
-  const i = Math.floor(Math.log(bytes)/Math.log(1024));
-  return `${(bytes/Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
-}
-async function redirectHome(){ window.location.href = '/'; }
-async function testConnection(){
-  hideError();
-  try{
-    validateConfig();
-    const { error } = await supabaseClient.from('profiles').select('id').limit(1);
-    if(error) throw new Error(`Profiles read failed: ${error.message}`);
-    authStatus.textContent = 'Connection test passed';
-  }catch(err){
-    showError(err.message || String(err));
-    authStatus.textContent = 'Connection failed';
-  }
-}
-async function signIn(){
-  hideError();
-  try{
-    validateConfig();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    if(email !== OWNER_EMAIL) throw new Error('Access denied. Use the owner admin email only.');
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if(error) throw new Error(`Login failed: ${error.message}`);
-    await refreshSession();
-  }catch(err){
-    showError(err.message || String(err));
-    authStatus.textContent = 'Sign in failed';
-  }
-}
-async function signOut(){ await supabaseClient.auth.signOut(); await redirectHome(); }
-async function refreshSession(){
-  hideError();
-  setLock('Checking access...');
-  try{
-    validateConfig();
-    const { data, error } = await supabaseClient.auth.getSession();
-    if(error) throw new Error(`Session check failed: ${error.message}`);
-    const session = data.session;
-    if(!session){
-      setAuthState(false);
-      setLock('Not signed in. Redirecting...');
-      setTimeout(redirectHome, 800);
-      return;
+          <div class="section-title" style="margin-top: 18px;"><h3>System</h3></div>
+          <div class="notice info">
+            <div><strong>Config</strong></div>
+            <div class="tiny mono" id="configStatus">Update Supabase config in script.</div>
+          </div>
+          <div class="notice warn">
+            <div><strong>Required tables</strong></div>
+            <div class="tiny">profiles and stk_push_payments</div>
+          </div>
+        </div>
+      </aside>
+
+      <main>
+        <div class="view active" id="dashboardView">
+          <div class="panel pad">
+            <div class="section-title">
+              <h2>Live profiles</h2>
+              <span id="countLabel" class="muted tiny">0 loaded</span>
+            </div>
+
+            <div class="toolbar">
+              <input id="searchInput" placeholder="Search name, slug, location, phone…" />
+              <select id="filterPlan">
+                <option value="">All plans</option>
+                <option value="featured">featured</option>
+                <option value="vip">vip</option>
+                <option value="vvip">vvip</option>
+                <option value="signature">signature</option>
+              </select>
+              <select id="filterStatus">
+                <option value="">All status</option>
+                <option value="active">active</option>
+                <option value="inactive">inactive</option>
+                <option value="draft">draft</option>
+                <option value="hidden">hidden</option>
+              </select>
+              <select id="filterPayment">
+                <option value="">All payments</option>
+                <option value="paid">paid</option>
+                <option value="pending">pending</option>
+                <option value="unpaid">unpaid</option>
+              </select>
+              <select id="sortBy">
+                <option value="updated_desc">Newest updated</option>
+                <option value="created_desc">Newest created</option>
+                <option value="name_asc">Name A-Z</option>
+              </select>
+              <button id="refreshBtn" class="btn btn-green">Refresh</button>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Location</th>
+                    <th>Plan</th>
+                    <th>Payment</th>
+                    <th>Activation</th>
+                    <th>Expiry</th>
+                    <th>Badges</th>
+                    <th>Updated</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="profilesTable"></tbody>
+              </table>
+            </div>
+            <div id="tableMessage" class="notice info hidden"></div>
+          </div>
+        </div>
+
+        <div class="view" id="editorView">
+          <div class="panel pad">
+            <div class="section-title">
+              <h2>Profile editor</h2>
+              <span id="editModeLabel" class="muted tiny">New profile</span>
+            </div>
+
+            <div class="grid-2">
+              <div>
+                <label for="name">Display name</label>
+                <input id="name" placeholder="Abigail" />
+              </div>
+              <div>
+                <label for="slug">Slug</label>
+                <input id="slug" placeholder="abigail" />
+              </div>
+            </div>
+
+            <div class="grid-3" style="margin-top: 12px;">
+              <div>
+                <label for="category">Plan</label>
+                <select id="category">
+                  <option value="featured">featured</option>
+                  <option value="vip">vip</option>
+                  <option value="vvip">vvip</option>
+                  <option value="signature">signature</option>
+                </select>
+              </div>
+              <div>
+                <label for="status">Status</label>
+                <select id="status">
+                  <option value="active">active</option>
+                  <option value="inactive">inactive</option>
+                  <option value="draft">draft</option>
+                  <option value="hidden">hidden</option>
+                </select>
+              </div>
+              <div>
+                <label for="payment_status">Payment</label>
+                <select id="payment_status">
+                  <option value="paid">paid</option>
+                  <option value="pending">pending</option>
+                  <option value="unpaid">unpaid</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-3" style="margin-top: 12px;">
+              <div>
+                <label for="phone">Phone / WhatsApp</label>
+                <input id="phone" placeholder="0794..." />
+              </div>
+              <div>
+                <label for="location">Location</label>
+                <input id="location" placeholder="Nairobi, Rongai" />
+              </div>
+              <div>
+                <label for="expires_at">Expiry</label>
+                <input id="expires_at" type="datetime-local" />
+              </div>
+            </div>
+
+            <div class="grid-3" style="margin-top: 12px;">
+              <div>
+                <label for="age">Age</label>
+                <input id="age" placeholder="23" />
+              </div>
+              <div>
+                <label for="rate_kses">Rate text</label>
+                <input id="rate_kses" placeholder="KES 1500/week" />
+              </div>
+              <div>
+                <label for="last_seen_at">Last seen</label>
+                <input id="last_seen_at" type="datetime-local" />
+              </div>
+            </div>
+
+            <div style="margin-top: 12px;">
+              <label for="bio">Bio</label>
+              <textarea id="bio" placeholder="Short profile description"></textarea>
+            </div>
+
+            <div class="grid-2" style="margin-top: 16px; align-items: start;">
+              <div>
+                <div class="preview-card">
+                  <img id="previewImage" class="preview-image" alt="Preview" />
+                  <div class="preview-meta">
+                    <strong id="previewName">Preview</strong>
+                    <span id="previewLocation" class="muted">No location yet</span>
+                    <div class="chip-row">
+                      <span class="chip c-vip">VIP</span>
+                      <span class="chip c-featured">Featured</span>
+                      <span class="chip c-verified">Verified</span>
+                      <span class="chip c-online">Online</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="panel pad" style="background: rgba(255,255,255,0.03);">
+                  <div class="section-title">
+                    <h3>Upload & crop</h3>
+                    <span class="tiny mono">Bucket: <span id="bucketLabel">profile-images</span></span>
+                  </div>
+                  <input id="imageFile" type="file" accept="image/*" />
+                  <div style="margin-top: 12px;">
+                    <label for="image_position">Crop position</label>
+                    <input id="image_position" type="range" min="0" max="100" value="20" />
+                    <div class="tiny muted">Center position: <span id="cropLabel">20%</span></div>
+                  </div>
+                  <div class="button-row" style="margin-top: 12px;">
+                    <button id="uploadBtn" class="btn btn-blue">Upload image</button>
+                    <button id="saveCropBtn" class="btn btn-secondary">Save crop only</button>
+                  </div>
+                  <div id="uploadMessage" class="notice info hidden"></div>
+                </div>
+
+                <div class="panel pad" style="margin-top: 12px; background: rgba(255,255,255,0.03);">
+                  <div class="section-title">
+                    <h3>Activation controls</h3>
+                    <span class="tiny muted">One click moves</span>
+                  </div>
+                  <div class="button-row">
+                    <button id="activateWeekBtn" class="btn btn-primary">Activate 1 week</button>
+                    <button id="markPaidBtn" class="btn btn-green">Mark paid</button>
+                    <button id="markPendingBtn" class="btn btn-orange">Mark pending</button>
+                    <button id="deactivateBtn" class="btn btn-danger">Deactivate</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="button-row" style="margin-top: 16px;">
+              <button id="saveBtn" class="btn btn-primary">Save profile</button>
+              <button id="duplicateBtn" class="btn btn-secondary">Duplicate</button>
+              <button id="clearBtn" class="btn btn-secondary">Clear</button>
+              <button id="deleteBtn" class="btn btn-danger">Delete</button>
+            </div>
+            <div id="formMessage" class="notice info hidden"></div>
+          </div>
+        </div>
+
+        <div class="view" id="queueView">
+          <div class="panel pad">
+            <div class="section-title">
+              <h2>Payment approval queue</h2>
+              <span id="queueCount" class="muted tiny">0 pending</span>
+            </div>
+            <div class="tabs">
+              <button class="tab-btn active" data-queue-filter="pending">Pending</button>
+              <button class="tab-btn" data-queue-filter="all">All</button>
+            </div>
+            <div class="queue-grid" id="queueGrid"></div>
+            <div id="queueMessage" class="notice info hidden"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+
+    const PROFILES_TABLE = 'profiles';
+    const PAYMENTS_TABLE = 'stk_push_payments';
+    const STORAGE_BUCKET = 'profile-images';
+    const ADMIN_OWNER_ID = '6d3572d0-7486-4454-8e83-84a115262a93';
+
+    const ENABLE_OWNER_CHECK = true;
+    const AUTO_SHOW_LOGIN = true;
+    const SAVE_TIMEOUT_MS = 20000;
+    const MAX_RETRIES = 2;
+
+    const state = {
+      session: null,
+      profiles: [],
+      queue: [],
+      currentId: null,
+      imageUrl: '',
+      imagePath: '',
+      queueMode: 'pending'
+    };
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
+
+    const $ = id => document.getElementById(id);
+    const appMessage = $('appMessage');
+    const formMessage = $('formMessage');
+    const uploadMessage = $('uploadMessage');
+    const tableMessage = $('tableMessage');
+    const queueMessage = $('queueMessage');
+    const loginMessage = $('loginMessage');
+
+    const fields = {
+      name: $('name'), slug: $('slug'), category: $('category'), status: $('status'), payment_status: $('payment_status'),
+      phone: $('phone'), location: $('location'), expires_at: $('expires_at'), age: $('age'), rate_kses: $('rate_kses'),
+      last_seen_at: $('last_seen_at'), bio: $('bio'), image_position: $('image_position')
+    };
+
+    function showMessage(node, type, text) {
+      node.className = `notice ${type}`;
+      node.textContent = text;
+      node.classList.remove('hidden');
     }
-    if(session.user.email !== OWNER_EMAIL){
-      await supabaseClient.auth.signOut();
-      setAuthState(false);
-      showError('Access denied. This admin is only for the site owner.');
-      setLock('Access denied. Redirecting...');
-      setTimeout(redirectHome, 1200);
-      return;
+    function hideMessage(node) {
+      node.classList.add('hidden');
+      node.textContent = '';
     }
-    setAuthState(true, session.user.email);
-    unlockScreen();
-  }catch(err){
-    showError(err.message || String(err));
-    setAuthState(false);
-    setLock('Access check failed. Redirecting...');
-    setTimeout(redirectHome, 1200);
-  }
-}
-function clearForm(){
-  ['name','phone','whatsapp','location','category','price_range','description'].forEach(id => document.getElementById(id).value = '');
-  ['is_vvip','is_vip','is_featured','is_verified','is_online'].forEach(id => document.getElementById(id).checked = false);
-  document.getElementById('likes_count').value = 0;
-  document.getElementById('views_count').value = 0;
-  imageFileInput.value = '';
-  processedUploadFile = null;
-  previewImage.src = 'https://via.placeholder.com/1200x900?text=Preview';
-  originalInfo.textContent = 'No file selected';
-  processedInfo.textContent = 'Waiting';
-}
-async function processImage(file){
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const reader = new FileReader();
-    reader.onload = e => {
-      img.onload = () => {
-        const maxWidth = 1400;
-        const scale = Math.min(1, maxWidth / img.width);
-        const width = Math.round(img.width * scale);
-        const height = Math.round(img.height * scale);
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if(!ctx){ reject(new Error('Canvas not supported')); return; }
-        ctx.filter = 'contrast(1.05) saturate(1.05)';
-        ctx.drawImage(img, 0, 0, width, height);
-        canvas.toBlob(blob => {
-          if(!blob){ reject(new Error('Image processing failed')); return; }
-          const newName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
-          const processed = new File([blob], newName, { type:'image/jpeg' });
-          resolve({ file: processed, previewUrl: canvas.toDataURL('image/jpeg', 0.88), width, height });
-        }, 'image/jpeg', 0.88);
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+    function slugify(text) {
+      return String(text || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function toLocalInputValue(value) {
+      if (!value) return '';
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return '';
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    function fromLocalInputValue(value) {
+      if (!value) return null;
+      const d = new Date(value);
+      return Number.isNaN(d.getTime()) ? null : d.toISOString();
+    }
+    function addDaysISO(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString();
+    }
+    function priceForPlan(plan) {
+      switch ((plan || '').toLowerCase()) {
+        case 'featured': return 1000;
+        case 'vip': return 1500;
+        case 'vvip':
+        case 'signature': return 3000;
+        default: return 0;
+      }
+    }
+    function priceText(plan) {
+      const amount = priceForPlan(plan);
+      return amount ? `KES ${amount}/week` : 'KES 0';
+    }
+
+    function getProfileName(profile = {}) {
+      return profile.name || profile.username || profile.display_name || profile.full_name || profile.title || profile.alias || profile.nickname || profile.slug || (profile.phone ? `Profile ${String(profile.phone).slice(-4)}` : '') || 'Profile';
+    }
+
+    function getProfilePhone(profile = {}) {
+      return profile.phone || profile.whatsapp || profile.phone_number || '';
+    }
+
+    function getProfileSlug(profile = {}) {
+      return profile.slug || slugify(getProfileName(profile)) || (profile.id ? `profile-${profile.id}` : 'profile');
+    }
+
+    function getProfileImageUrl(profile = {}) {
+      return profile.image_url || profile.avatar_url || profile.photo_url || profile.profile_image || profile.profile_picture || profile.image || profile.photo || profile.picture || profile.thumbnail_url || (profile.image_path ? `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${profile.image_path}` : '') || '';
+    }
+
+    function normalizeProfile(profile = {}) {
+      const normalized = { ...profile };
+
+      const rawCategory = String(
+        normalized.category ||
+        normalized.plan ||
+        normalized.plan_name ||
+        ''
+      ).trim().toLowerCase();
+
+      let resolvedCategory = rawCategory;
+      if (rawCategory === 'signature' || rawCategory === 'vvip') resolvedCategory = 'vvip';
+      else if (rawCategory === 'featured') resolvedCategory = 'featured';
+      else if (rawCategory === 'vip') resolvedCategory = 'vip';
+      else if (normalized.is_vvip) resolvedCategory = 'vvip';
+      else if (normalized.is_vip) resolvedCategory = 'vip';
+      else if (normalized.is_featured) resolvedCategory = 'featured';
+      else resolvedCategory = 'vip';
+
+      normalized.name = getProfileName(profile);
+      normalized.username = normalized.username || normalized.name;
+      normalized.slug = getProfileSlug(profile);
+      normalized.phone = getProfilePhone(profile);
+      normalized.whatsapp = normalized.whatsapp || normalized.phone || '';
+      normalized.image_url = getProfileImageUrl(profile);
+      normalized.avatar_url = normalized.avatar_url || normalized.image_url || null;
+
+      normalized.category = resolvedCategory;
+      normalized.plan = normalized.plan || resolvedCategory;
+
+      normalized.is_vip = Boolean(
+        normalized.is_vip ??
+        resolvedCategory === 'vip'
+      );
+
+      normalized.is_vvip = Boolean(
+        normalized.is_vvip ??
+        resolvedCategory === 'vvip'
+      );
+
+      normalized.is_featured = Boolean(
+        normalized.is_featured ??
+        resolvedCategory === 'featured'
+      );
+
+      normalized.is_verified = Boolean(
+        normalized.is_verified ??
+        normalized.verified ??
+        Boolean(normalized.image_url)
+      );
+
+      normalized.is_online = Boolean(
+        normalized.is_online ??
+        normalized.online ??
+        String(normalized.status || '').toLowerCase() === 'active'
+      );
+
+      normalized.featured = Boolean(
+        normalized.featured ??
+        normalized.is_featured
+      );
+
+      normalized.verified = Boolean(
+        normalized.verified ??
+        normalized.is_verified
+      );
+
+      normalized.online = Boolean(
+        normalized.online ??
+        normalized.is_online
+      );
+
+      normalized.rate_kses =
+        normalized.rate_kses ||
+        normalized.rate_text ||
+        priceText(resolvedCategory);
+
+      normalized.payment_status =
+        normalized.payment_status ||
+        (String(normalized.status || '').toLowerCase() === 'active' ? 'paid' : 'unpaid');
+
+      normalized.status =
+        normalized.status ||
+        (normalized.is_online ? 'active' : 'pending');
+
+      normalized.bio =
+        normalized.bio ||
+        normalized.description ||
+        '';
+
+      normalized.location =
+        normalized.location ||
+        '';
+
+      normalized.age =
+        normalized.age ?? null;
+
+      normalized.image_position = (() => {
+        const v = normalized.image_position;
+        if (typeof v === 'number' && Number.isFinite(v)) return v;
+        if (typeof v === 'string') {
+          const match = v.match(/(\d+(?:\.\d+)?)%/);
+          if (match) return Number(match[1]);
+          const asNum = Number(v);
+          if (Number.isFinite(asNum)) return asNum;
+        }
+        return 20;
+      })();
+
+      normalized.last_seen_at = normalized.last_seen_at || null;
+      normalized.expires_at = normalized.expires_at || null;
+
+      return normalized;
+    }
+
+    function buildAutoFillPatch(profile = {}) {
+      const normalized = normalizeProfile(profile);
+      return {
+        id: profile.id,
+        name: normalized.name,
+        username: normalized.username,
+        slug: normalized.slug,
+        phone: normalized.phone,
+        whatsapp: normalized.whatsapp,
+        image_url: normalized.image_url || null,
+        avatar_url: normalized.image_url || null,
+        rate_kses: normalized.rate_kses,
+        payment_status: normalized.payment_status,
+        updated_at: new Date().toISOString()
       };
-      img.onerror = () => reject(new Error('Could not read image'));
-      img.src = e.target.result;
+    }
+    function planChip(plan) {
+      return `<span class="chip c-vip">${escapeHtml(String(plan || 'vip').toUpperCase())}</span>`;
+    }
+    function paymentChip(value) {
+      const v = String(value || '').toLowerCase();
+      if (v === 'paid') return '<span class="chip c-paid">Paid</span>';
+      if (v === 'pending') return '<span class="chip c-pending">Pending</span>';
+      return '<span class="chip c-unpaid">Unpaid</span>';
+    }
+    function badgeHtml(profile) {
+      return `
+        <div class="chip-row">
+          ${planChip(profile.category || profile.plan)}
+          ${profile.featured ? '<span class="chip c-featured">Featured</span>' : ''}
+          ${profile.verified !== false ? '<span class="chip c-verified">Verified</span>' : ''}
+          ${profile.online ? '<span class="chip c-online">Online</span>' : ''}
+          <span class="chip c-active">${escapeHtml(profile.status || 'active')}</span>
+        </div>
+      `;
+    }
+    function setBusy(button, busy, busyLabel, idleLabel) {
+      if (!button) return;
+      button.disabled = busy;
+      button.innerHTML = busy ? `<span class="loader"></span>${busyLabel}` : idleLabel;
+    }
+    async function withTimeout(promise, ms, label) {
+      let timer;
+      const timeout = new Promise((_, reject) => timer = setTimeout(() => reject(new Error(label)), ms));
+      try { return await Promise.race([promise, timeout]); }
+      finally { clearTimeout(timer); }
+    }
+    async function retryOperation(fn, retries = MAX_RETRIES) {
+      let lastError;
+      for (let i = 0; i <= retries; i++) {
+        try { return await fn(i); }
+        catch (error) {
+          lastError = error;
+          console.error(`Attempt ${i+1} failed`, error);
+          if (i < retries) await new Promise(r => setTimeout(r, 700 * (i + 1)));
+        }
+      }
+      throw lastError;
+    }
+
+    function showAuthModal() { $('authModal').classList.remove('hidden'); }
+    function hideAuthModal() { $('authModal').classList.add('hidden'); }
+
+    function renderSession() {
+      $('sessionLabel').textContent = state.session?.user ? `Signed in: ${state.session.user.email || state.session.user.id}` : 'Not logged in';
+      $('logoutBtn').classList.toggle('hidden', !state.session?.user);
+    }
+
+    async function requireAdmin() {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      state.session = data?.session || null;
+      renderSession();
+      if (!state.session) throw new Error('Please log in first.');
+      if (ENABLE_OWNER_CHECK && state.session.user?.id !== ADMIN_OWNER_ID) {
+        throw new Error(`Logged in user is not the allowed owner. Logged in: ${state.session.user?.id}`);
+      }
+      return state.session;
+    }
+
+    function updatePreview() {
+      $('previewName').textContent = fields.name.value || 'Preview';
+      $('previewLocation').textContent = fields.location.value || 'No location yet';
+      $('cropLabel').textContent = `${fields.image_position.value}%`;
+      const img = $('previewImage');
+      img.style.objectPosition = `center ${fields.image_position.value}%`;
+      img.src = state.imageUrl || 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000"><rect width="100%" height="100%" fill="#0d1530"/><text x="50%" y="50%" fill="#8fa2d8" font-size="36" text-anchor="middle" font-family="Arial">No image</text></svg>`);
+    }
+
+    function collectProfile() {
+      const displayName = fields.name.value.trim();
+      const rawCategory = String(fields.category.value || 'vip').trim().toLowerCase();
+
+      let category = rawCategory;
+      if (category === 'signature') category = 'signature';
+      if (category === 'vvip') category = 'vvip';
+      if (category === 'featured') category = 'featured';
+      if (category === 'vip') category = 'vip';
+
+      const phone = String(fields.phone.value || '').replace(/\D/g, '');
+      const normalizedPhone =
+        phone.startsWith('254') ? phone :
+        phone.startsWith('0') ? `254${phone.slice(1)}` :
+        phone.startsWith('7') && phone.length === 9 ? `254${phone}` :
+        phone;
+
+      const imageUrl = state.imageUrl || null;
+
+      const isVip = category === 'vip';
+      const isVvip = category === 'vvip' || category === 'signature';
+      const isFeatured = category === 'featured';
+      const isVerified = Boolean(imageUrl);
+      const isOnline = fields.status.value === 'active';
+
+      return {
+        id: state.currentId || undefined,
+
+        name: displayName || 'Profile',
+        username: displayName || 'Profile',
+        slug: (fields.slug.value || slugify(displayName || normalizedPhone || 'profile')).trim(),
+
+        category,
+        plan: category,
+
+        status: fields.status.value || 'pending',
+        payment_status: fields.payment_status.value || 'unpaid',
+
+        phone: normalizedPhone || null,
+        whatsapp: normalizedPhone || null,
+        location: fields.location.value.trim(),
+        expires_at: fromLocalInputValue(fields.expires_at.value),
+        age: fields.age.value.trim() ? Number(fields.age.value.trim()) : null,
+        rate_kses: fields.rate_kses.value.trim() || priceText(category),
+        last_seen_at: fromLocalInputValue(fields.last_seen_at.value),
+        bio: fields.bio.value.trim(),
+
+        image_url: imageUrl,
+        avatar_url: imageUrl,
+        image_path: state.imagePath || null,
+        image_position: Number(fields.image_position.value ?? 20),
+
+        featured: isFeatured || isVip || isVvip,
+        verified: isVerified,
+        online: isOnline,
+
+        is_vip: isVip,
+        is_vvip: isVvip,
+        is_featured: isFeatured,
+        is_verified: isVerified,
+        is_online: isOnline,
+
+        updated_at: new Date().toISOString()
+      };
+    }
+
+    function validateProfile(profile) {
+      if (!profile.name) throw new Error('Display name is required.');
+      if (!profile.slug) throw new Error('Slug is required.');
+      if (!profile.location) throw new Error('Location is required.');
+      if (!profile.phone) throw new Error('Phone / WhatsApp is required.');
+      if (profile.status === 'active' && !profile.image_url) throw new Error('Active profiles must have a profile picture. Upload an image first.');
+    }
+
+    function fillForm(profile = null) {
+      profile = profile ? normalizeProfile(profile) : null;
+
+      state.currentId = profile?.id || null;
+
+      const resolvedName =
+        profile?.name ||
+        profile?.username ||
+        profile?.display_name ||
+        profile?.full_name ||
+        '';
+
+      const resolvedCategory = (() => {
+        const raw = String(profile?.category || profile?.plan || 'vip').trim().toLowerCase();
+
+        if (raw.includes('signature') || raw === 'vvip') return 'vvip';
+        if (raw === 'featured') return 'featured';
+        if (raw === 'vip') return 'vip';
+
+        if (profile?.is_vvip) return 'vvip';
+        if (profile?.is_vip) return 'vip';
+        if (profile?.is_featured) return 'featured';
+
+        return 'vip';
+      })();
+
+      const resolvedStatus =
+        profile?.status ||
+        (profile?.is_online ? 'active' : 'pending') ||
+        'active';
+
+      const resolvedPaymentStatus =
+        profile?.payment_status ||
+        (profile?.status === 'active' ? 'paid' : 'pending') ||
+        'paid';
+
+      const resolvedPhone =
+        profile?.phone ||
+        profile?.whatsapp ||
+        profile?.phone_number ||
+        '';
+
+      const resolvedLocation =
+        profile?.location ||
+        '';
+
+      const resolvedAge =
+        profile?.age ??
+        '';
+
+      const resolvedRate =
+        profile?.rate_kses ||
+        profile?.rate_text ||
+        priceText(resolvedCategory);
+
+      const resolvedBio =
+        profile?.bio ||
+        profile?.description ||
+        '';
+
+      const resolvedImagePosition = (() => {
+        const v = profile?.image_position;
+
+        if (typeof v === 'number' && Number.isFinite(v)) return v;
+
+        if (typeof v === 'string') {
+          const match = v.match(/(\d+(?:\.\d+)?)%/);
+          if (match) return Number(match[1]);
+          const asNum = Number(v);
+          if (Number.isFinite(asNum)) return asNum;
+        }
+
+        return 20;
+      })();
+
+      state.imageUrl = profile?.image_url || profile?.avatar_url || profile?.profile_image_url || '';
+      state.imagePath = profile?.image_path || '';
+
+      fields.name.value = resolvedName;
+      fields.slug.value = profile?.slug || '';
+      fields.slug.dataset.manual = fields.slug.value ? '1' : '';
+
+      fields.category.value = resolvedCategory;
+      fields.status.value = resolvedStatus;
+      fields.payment_status.value = resolvedPaymentStatus;
+
+      fields.phone.value = resolvedPhone;
+      fields.location.value = resolvedLocation;
+      fields.expires_at.value = toLocalInputValue(profile?.expires_at);
+      fields.age.value = resolvedAge;
+      fields.rate_kses.value = resolvedRate;
+      fields.last_seen_at.value = toLocalInputValue(profile?.last_seen_at);
+      fields.bio.value = resolvedBio;
+      fields.image_position.value = resolvedImagePosition;
+
+      $('editModeLabel').textContent = profile?.id
+        ? `Editing ID ${profile.id}`
+        : 'New profile';
+
+      $('imageFile').value = '';
+
+      updatePreview();
+    }
+
+    function clearForm() {
+      fillForm(null);
+      fields.category.value = 'vip';
+      fields.status.value = 'active';
+      fields.payment_status.value = 'paid';
+      fields.rate_kses.value = priceText('vip');
+      hideMessage(formMessage);
+      $('imageFile').value = '';
+    }
+
+    function renderStats() {
+      const total = state.profiles.length;
+      const active = state.profiles.filter(p => p.status === 'active').length;
+      const pending = state.profiles.filter(p => p.payment_status === 'pending').length;
+      const paid = state.profiles.filter(p => p.payment_status === 'paid').length;
+      const estimated = state.profiles
+        .filter(p => p.status === 'active' && p.payment_status === 'paid')
+        .reduce((sum, p) => sum + priceForPlan(p.category || p.plan), 0);
+      $('statTotal').textContent = total;
+      $('statActive').textContent = active;
+      $('statPending').textContent = pending;
+      $('statPaid').textContent = paid;
+      $('statRevenue').textContent = `KES ${estimated.toLocaleString()}`;
+    }
+
+    function renderProfiles() {
+      const q = $('searchInput').value.toLowerCase().trim();
+      const plan = $('filterPlan').value;
+      const status = $('filterStatus').value;
+      const payment = $('filterPayment').value;
+      const sortBy = $('sortBy').value;
+
+      let rows = [...state.profiles].filter(p => {
+        const hay = `${p.name||''} ${p.username||''} ${p.slug||''} ${p.location||''} ${p.phone||''}`.toLowerCase();
+        return (!q || hay.includes(q)) && (!plan || (p.category || p.plan) === plan) && (!status || p.status === status) && (!payment || p.payment_status === payment);
+      });
+
+      if (sortBy === 'updated_desc') rows.sort((a,b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));
+      if (sortBy === 'created_desc') rows.sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      if (sortBy === 'name_asc') rows.sort((a,b) => String(a.name||'').localeCompare(String(b.name||'')));
+
+      $('countLabel').textContent = `${rows.length} loaded`;
+      const tbody = $('profilesTable');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="9" class="muted">No profiles found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map(profile => `
+        <tr>
+          <td>
+            <div class="member-cell">
+              <img class="thumb" src="${escapeHtml(profile.image_url || 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'140\'><rect width=\'100%\' height=\'100%\' fill=\'#11182f\'/></svg>'))}" style="object-position:center ${Number(profile.image_position ?? 20)}%;" alt="thumb" />
+              <div>
+                <div class="member-name">${escapeHtml(profile.name || profile.username || 'No Name')}</div>
+                <div class="tiny muted">ID: ${escapeHtml(profile.id || '-')} • ${escapeHtml(profile.slug || '-')}</div>
+                <div class="tiny muted">${escapeHtml(profile.phone || '-')}</div>
+              </div>
+            </div>
+          </td>
+          <td>${escapeHtml(profile.location || '-')}</td>
+          <td><div>${escapeHtml(profile.category || profile.plan || '-')}</div><div class="tiny muted">${escapeHtml(profile.rate_kses || priceText(profile.category || profile.plan))}</div></td>
+          <td>${paymentChip(profile.payment_status)}</td>
+          <td>
+            <div class="chip-row">
+              <button class="btn btn-green" data-action="pay" data-id="${escapeHtml(profile.id)}" style="padding:8px 10px;">Paid</button>
+              <button class="btn btn-orange" data-action="pending" data-id="${escapeHtml(profile.id)}" style="padding:8px 10px;">Pending</button>
+              <button class="btn btn-primary" data-action="week" data-id="${escapeHtml(profile.id)}" style="padding:8px 10px;">+1 week</button>
+            </div>
+          </td>
+          <td>${profile.expires_at ? escapeHtml(new Date(profile.expires_at).toLocaleString()) : '<span class="muted">No expiry</span>'}</td>
+          <td>${badgeHtml(profile)}</td>
+          <td>${profile.updated_at ? escapeHtml(new Date(profile.updated_at).toLocaleString()) : '-'}</td>
+          <td>
+            <div class="button-row">
+              <button class="btn btn-secondary" data-action="edit" data-id="${escapeHtml(profile.id)}" style="padding:8px 10px;">Edit</button>
+              <button class="btn btn-danger" data-action="delete" data-id="${escapeHtml(profile.id)}" style="padding:8px 10px;">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderQueue() {
+      const grid = $('queueGrid');
+      const items = state.queue.filter(item => state.queueMode === 'all' ? true : String(item.status || '').toLowerCase() === 'pending');
+      $('queueCount').textContent = `${items.length} ${state.queueMode}`;
+      if (!items.length) {
+        grid.innerHTML = '<div class="queue-card muted">No queue items found.</div>';
+        return;
+      }
+      grid.innerHTML = items.map(item => `
+        <div class="queue-card">
+          <div class="section-title">
+            <h3 style="font-size:18px; margin:0;">${escapeHtml(item.customer_name || item.profile_name || item.phone || 'Payment')}</h3>
+            ${paymentChip(item.status)}
+          </div>
+          <div class="tiny muted">Phone: ${escapeHtml(item.phone || '-')}</div>
+          <div class="tiny muted">Amount: KES ${Number(item.amount || 0).toLocaleString()}</div>
+          <div class="tiny muted">Mpesa receipt: ${escapeHtml(item.mpesa_receipt_number || item.receipt || '-')}</div>
+          <div class="tiny muted">Profile ID: ${escapeHtml(item.profile_id || '-')}</div>
+          <div class="tiny muted">Created: ${item.created_at ? escapeHtml(new Date(item.created_at).toLocaleString()) : '-'}</div>
+          <div class="button-row" style="margin-top: 12px;">
+            <button class="btn btn-green" data-queue-action="approve" data-id="${escapeHtml(item.id)}" data-profile-id="${escapeHtml(item.profile_id || '')}">Approve</button>
+            <button class="btn btn-danger" data-queue-action="reject" data-id="${escapeHtml(item.id)}">Reject</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function loadProfiles() {
+      showMessage(tableMessage, 'info', 'Loading profiles…');
+      try {
+        await requireAdmin();
+        const { data, error } = await withTimeout(
+          supabase.from(PROFILES_TABLE).select('*').order('updated_at', { ascending: false }).limit(600),
+          SAVE_TIMEOUT_MS,
+          'Loading profiles timed out.'
+        );
+        if (error) throw error;
+        state.profiles = (data || []).map(normalizeProfile);
+        renderProfiles();
+        renderStats();
+        hideMessage(tableMessage);
+      } catch (error) {
+        console.error('LOAD PROFILES ERROR', error);
+        showMessage(tableMessage, 'error', error.message || 'Failed to load profiles.');
+      }
+    }
+
+    async function loadQueue() {
+      hideMessage(queueMessage);
+      try {
+        await requireAdmin();
+        const { data, error } = await withTimeout(
+          supabase.from(PAYMENTS_TABLE).select('*').order('created_at', { ascending: false }).limit(150),
+          SAVE_TIMEOUT_MS,
+          'Loading queue timed out.'
+        );
+        if (error) throw error;
+        state.queue = data || [];
+        renderQueue();
+      } catch (error) {
+        console.error('LOAD QUEUE ERROR', error);
+        showMessage(queueMessage, 'warn', `Queue unavailable: ${error.message || 'table missing or blocked'}`);
+        state.queue = [];
+        renderQueue();
+      }
+    }
+
+    async function uploadImage() {
+      const file = $('imageFile').files?.[0];
+      if (!file) {
+        showMessage(uploadMessage, 'warn', 'Choose an image first.');
+        return;
+      }
+      setBusy($('uploadBtn'), true, 'Uploading…', 'Upload image');
+      hideMessage(uploadMessage);
+      try {
+        await requireAdmin();
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const safeName = slugify(fields.slug.value || fields.name.value || 'profile');
+        const fileName = `${Date.now()}-${safeName}.${ext}`;
+        const path = `${safeName}/${fileName}`;
+        const { data, error } = await withTimeout(
+          supabase.storage.from(STORAGE_BUCKET).upload(path, file, { cacheControl: '3600', upsert: true, contentType: file.type || 'image/jpeg' }),
+          SAVE_TIMEOUT_MS,
+          'Image upload timed out.'
+        );
+        if (error) throw error;
+        const publicUrl = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(data.path)?.data?.publicUrl || '';
+        state.imagePath = data.path;
+        state.imageUrl = publicUrl;
+        updatePreview();
+        showMessage(uploadMessage, 'success', 'Image uploaded. Save profile next.');
+      } catch (error) {
+        console.error('UPLOAD ERROR', error);
+        showMessage(uploadMessage, 'error', error.message || 'Upload failed.');
+      } finally {
+        setBusy($('uploadBtn'), false, 'Uploading…', 'Upload image');
+      }
+    }
+
+    async function saveCropOnly() {
+      if (!state.currentId) {
+        showMessage(uploadMessage, 'warn', 'Save the profile first, then save crop only.');
+        return;
+      }
+      setBusy($('saveCropBtn'), true, 'Saving crop…', 'Save crop only');
+      try {
+        await requireAdmin();
+        const payload = { id: state.currentId, image_position: Number(fields.image_position.value), updated_at: new Date().toISOString() };
+        const { error } = await withTimeout(supabase.from(PROFILES_TABLE).upsert(payload), SAVE_TIMEOUT_MS, 'Crop save timed out.');
+        if (error) throw error;
+        showMessage(uploadMessage, 'success', 'Crop position saved.');
+        await loadProfiles();
+      } catch (error) {
+        console.error('SAVE CROP ERROR', error);
+        showMessage(uploadMessage, 'error', error.message || 'Crop save failed.');
+      } finally {
+        setBusy($('saveCropBtn'), false, 'Saving crop…', 'Save crop only');
+      }
+    }
+
+    async function saveProfile() {
+      setBusy($('saveBtn'), true, 'Saving…', 'Save profile');
+      hideMessage(formMessage);
+
+      try {
+        await requireAdmin();
+
+        const payload = collectProfile();
+        validateProfile(payload);
+
+        const normalizedCategory = String(payload.category || payload.plan || 'vip').toLowerCase();
+        const normalizedPlan = normalizedCategory === 'signature' ? 'vvip' : normalizedCategory;
+
+        payload.category = normalizedCategory;
+        payload.plan = normalizedPlan;
+
+        payload.is_vip = Boolean(
+          payload.is_vip ??
+          normalizedCategory === 'vip'
+        );
+
+        payload.is_vvip = Boolean(
+          payload.is_vvip ??
+          normalizedCategory === 'vvip' ||
+          normalizedCategory === 'signature'
+        );
+
+        payload.is_featured = Boolean(
+          payload.is_featured ??
+          normalizedCategory === 'featured'
+        );
+
+        payload.is_verified = Boolean(
+          payload.is_verified ??
+          payload.verified ??
+          Boolean(payload.image_url || payload.avatar_url)
+        );
+
+        payload.is_online = Boolean(
+          payload.is_online ??
+          payload.online ??
+          String(payload.status || '').toLowerCase() === 'active'
+        );
+
+        payload.featured = Boolean(
+          payload.featured ??
+          payload.is_featured
+        );
+
+        payload.verified = Boolean(
+          payload.verified ??
+          payload.is_verified
+        );
+
+        payload.online = Boolean(
+          payload.online ??
+          payload.is_online
+        );
+
+        payload.slug = String(
+          payload.slug ||
+          slugify(payload.name || payload.username || payload.phone || 'profile')
+        ).trim();
+
+        payload.updated_at = new Date().toISOString();
+
+        if (payload.id) {
+          const existing = state.profiles.find(p => String(p.id) === String(payload.id));
+          if (existing?.created_at) {
+            payload.created_at = existing.created_at;
+          }
+        }
+
+        if (!payload.id) {
+          delete payload.id;
+        }
+
+        if (!payload.created_at) {
+          payload.created_at = new Date().toISOString();
+        }
+
+        const result = await retryOperation(async attempt => {
+          if (attempt > 0) {
+            showMessage(formMessage, 'warn', `Retrying save… attempt ${attempt + 1}`);
+          }
+
+          return await withTimeout(
+            supabase
+              .from(PROFILES_TABLE)
+              .upsert(payload, { onConflict: 'id' })
+              .select()
+              .single(),
+            SAVE_TIMEOUT_MS,
+            'Save request timed out.'
+          );
+        });
+
+        if (result.error) {
+          throw result.error;
+        }
+
+        if (!result.data?.id) {
+          throw new Error('Save completed, but no profile ID was returned.');
+        }
+
+        state.currentId = result.data.id;
+
+        await Promise.all([loadProfiles(), loadQueue()]);
+
+        const latest = state.profiles.find(
+          p => String(p.id) === String(state.currentId)
+        );
+
+        if (latest) {
+          fillForm(latest);
+        }
+
+        showMessage(
+          formMessage,
+          'success',
+          `Profile saved successfully.${latest?.slug ? ` Slug: ${latest.slug}` : ''}`
+        );
+      } catch (error) {
+        console.error('SAVE PROFILE ERROR', error);
+
+        const raw = String(error?.message || 'Save failed.');
+        let friendly = raw;
+
+        if (raw.includes('duplicate key value') || raw.includes('profiles_slug_key')) {
+          friendly = 'That slug already exists. Change the slug and save again.';
+        } else if (raw.includes('is_vip')) {
+          friendly = 'Database schema still expects legacy VIP flags. Run the SQL patch, then save again.';
+        } else if (raw.includes('violates not-null constraint')) {
+          friendly = `A required database column is missing a value. Details: ${raw}`;
+        }
+
+        showMessage(formMessage, 'error', friendly);
+      } finally {
+        setBusy($('saveBtn'), false, 'Saving…', 'Save profile');
+      }
+    }
+
+    async function deleteProfile(profileId = state.currentId) {
+      if (!profileId) return showMessage(formMessage, 'warn', 'Open a profile first.');
+      if (!confirm('Delete this profile?')) return;
+      try {
+        await requireAdmin();
+        const { error } = await withTimeout(supabase.from(PROFILES_TABLE).delete().eq('id', profileId), SAVE_TIMEOUT_MS, 'Delete timed out.');
+        if (error) throw error;
+        if (String(state.currentId) === String(profileId)) clearForm();
+        showMessage(formMessage, 'success', 'Profile deleted.');
+        await loadProfiles();
+      } catch (error) {
+        console.error('DELETE PROFILE ERROR', error);
+        showMessage(formMessage, 'error', error.message || 'Delete failed.');
+      }
+    }
+
+    async function patchCurrentProfile(changes, successText = 'Profile updated.') {
+      if (!state.currentId) throw new Error('Open a profile first.');
+      await requireAdmin();
+      const payload = { id: state.currentId, updated_at: new Date().toISOString(), ...changes };
+      const { data, error } = await withTimeout(
+        supabase.from(PROFILES_TABLE).upsert(payload).select().single(),
+        SAVE_TIMEOUT_MS,
+        'Update timed out.'
+      );
+      if (error) throw error;
+      showMessage(formMessage, 'success', successText);
+      await loadProfiles();
+      const latest = state.profiles.find(p => String(p.id) === String(data.id));
+      if (latest) fillForm(latest);
+    }
+
+    async function activateWeek(profileId = state.currentId) {
+      if (!profileId) return showMessage(formMessage, 'warn', 'Open a profile first.');
+      try {
+        await requireAdmin();
+        const profile = state.profiles.find(p => String(p.id) === String(profileId));
+        const currentExpiry = profile?.expires_at ? new Date(profile.expires_at) : new Date();
+        const base = currentExpiry > new Date() ? currentExpiry : new Date();
+        base.setDate(base.getDate() + 7);
+        const payload = { id: profileId, status: 'active', online: true, payment_status: 'paid', expires_at: base.toISOString(), updated_at: new Date().toISOString() };
+        const { error } = await withTimeout(supabase.from(PROFILES_TABLE).upsert(payload), SAVE_TIMEOUT_MS, 'Activation timed out.');
+        if (error) throw error;
+        showMessage(formMessage, 'success', 'Activated for one more week.');
+        await loadProfiles();
+        const latest = state.profiles.find(p => String(p.id) === String(profileId));
+        if (latest && String(state.currentId) === String(profileId)) fillForm(latest);
+      } catch (error) {
+        console.error('ACTIVATE WEEK ERROR', error);
+        showMessage(formMessage, 'error', error.message || 'Activation failed.');
+      }
+    }
+
+    async function quickPaymentUpdate(profileId, status) {
+      try {
+        await requireAdmin();
+        const payload = { id: profileId, payment_status: status, status: status === 'paid' ? 'active' : undefined, online: status === 'paid' ? true : undefined, updated_at: new Date().toISOString() };
+        Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+        const { error } = await withTimeout(supabase.from(PROFILES_TABLE).upsert(payload), SAVE_TIMEOUT_MS, 'Payment update timed out.');
+        if (error) throw error;
+        await loadProfiles();
+        const latest = state.profiles.find(p => String(p.id) === String(profileId));
+        if (latest && String(state.currentId) === String(profileId)) fillForm(latest);
+      } catch (error) {
+        console.error('QUICK PAYMENT UPDATE ERROR', error);
+        showMessage(formMessage, 'error', error.message || 'Payment update failed.');
+      }
+    }
+
+    async function approveQueueItem(queueId, profileId) {
+      try {
+        await requireAdmin();
+        if (profileId) await activateWeek(profileId);
+        const { error } = await withTimeout(
+          supabase.from(PAYMENTS_TABLE).upsert({ id: queueId, status: 'paid', approved_at: new Date().toISOString() }),
+          SAVE_TIMEOUT_MS,
+          'Queue approval timed out.'
+        );
+        if (error) throw error;
+        showMessage(queueMessage, 'success', 'Queue item approved.');
+        await loadQueue();
+      } catch (error) {
+        console.error('APPROVE QUEUE ERROR', error);
+        showMessage(queueMessage, 'error', error.message || 'Approval failed.');
+      }
+    }
+
+    async function rejectQueueItem(queueId) {
+      try {
+        await requireAdmin();
+        const { error } = await withTimeout(
+          supabase.from(PAYMENTS_TABLE).upsert({ id: queueId, status: 'rejected', rejected_at: new Date().toISOString() }),
+          SAVE_TIMEOUT_MS,
+          'Queue rejection timed out.'
+        );
+        if (error) throw error;
+        showMessage(queueMessage, 'success', 'Queue item rejected.');
+        await loadQueue();
+      } catch (error) {
+        console.error('REJECT QUEUE ERROR', error);
+        showMessage(queueMessage, 'error', error.message || 'Reject failed.');
+      }
+    }
+
+    async function autoFillMissingData() {
+      try {
+        await requireAdmin();
+        if (!state.profiles.length) throw new Error('No profiles loaded.');
+        const ok = confirm(`Auto-fill missing data for ${state.profiles.length} profiles?`);
+        if (!ok) return;
+        showMessage(appMessage, 'info', 'Auto-filling missing profile data…');
+        const patches = state.profiles.map(buildAutoFillPatch);
+        const { error } = await withTimeout(
+          supabase.from(PROFILES_TABLE).upsert(patches, { onConflict: 'id' }),
+          SAVE_TIMEOUT_MS,
+          'Auto-fill timed out.'
+        );
+        if (error) throw error;
+        showMessage(appMessage, 'success', 'Missing profile data filled successfully.');
+        await loadProfiles();
+      } catch (error) {
+        console.error('AUTO FILL ERROR', error);
+        showMessage(appMessage, 'error', error.message || 'Auto-fill failed.');
+      }
+    }
+
+    async function login() {
+      setBusy($('loginBtn'), true, 'Signing in…', 'Sign in');
+      hideMessage(loginMessage);
+      try {
+        const email = $('loginEmail').value.trim();
+        const password = $('loginPassword').value;
+        if (!email || !password) throw new Error('Enter email and password.');
+        const { data, error } = await withTimeout(supabase.auth.signInWithPassword({ email, password }), SAVE_TIMEOUT_MS, 'Login timed out.');
+        if (error) throw error;
+        state.session = data.session;
+        renderSession();
+        hideAuthModal();
+        showMessage(appMessage, 'success', 'Logged in successfully.');
+        await Promise.all([loadProfiles(), loadQueue()]);
+      } catch (error) {
+        console.error('LOGIN ERROR', error);
+        showMessage(loginMessage, 'error', error.message || 'Login failed.');
+      } finally {
+        setBusy($('loginBtn'), false, 'Signing in…', 'Sign in');
+      }
+    }
+
+    async function logout() {
+      try { await supabase.auth.signOut(); } catch (error) { console.error(error); }
+      state.session = null;
+      state.profiles = [];
+      state.queue = [];
+      renderSession();
+      renderProfiles();
+      renderQueue();
+      renderStats();
+      showAuthModal();
+      showMessage(appMessage, 'info', 'Logged out.');
+    }
+
+    function switchView(viewId) {
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === viewId));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewId));
+    }
+
+    function attachEvents() {
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
+      ['name', 'location', 'image_position'].forEach(key => fields[key].addEventListener('input', updatePreview));
+      fields.name.addEventListener('input', () => {
+        if (!fields.slug.dataset.manual || !fields.slug.value.trim()) fields.slug.value = slugify(fields.name.value);
+      });
+      fields.slug.addEventListener('input', () => {
+        fields.slug.dataset.manual = fields.slug.value.trim() ? '1' : '';
+      });
+      fields.name.addEventListener('blur', () => { if (!fields.slug.value.trim()) fields.slug.value = slugify(fields.name.value); });
+      fields.category.addEventListener('change', () => { if (!fields.rate_kses.value.trim()) fields.rate_kses.value = priceText(fields.category.value); });
+
+      $('imageFile').addEventListener('change', () => {
+        const file = $('imageFile').files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => { state.imageUrl = reader.result; updatePreview(); };
+        reader.readAsDataURL(file);
+      });
+
+      $('searchInput').addEventListener('input', renderProfiles);
+      $('filterPlan').addEventListener('change', renderProfiles);
+      $('filterStatus').addEventListener('change', renderProfiles);
+      $('filterPayment').addEventListener('change', renderProfiles);
+      $('sortBy').addEventListener('change', renderProfiles);
+
+      $('refreshBtn').addEventListener('click', async () => { await Promise.all([loadProfiles(), loadQueue()]); });
+      $('quickRefresh').addEventListener('click', async () => { await Promise.all([loadProfiles(), loadQueue()]); });
+      $('quickAutofill').addEventListener('click', autoFillMissingData);
+      $('quickNewVip').addEventListener('click', () => { clearForm(); fields.category.value = 'vip'; fields.rate_kses.value = priceText('vip'); switchView('editorView'); });
+      $('quickFeatured').addEventListener('click', () => { $('filterPlan').value = 'featured'; renderProfiles(); switchView('dashboardView'); });
+      $('quickTodayExpiry').addEventListener('click', () => {
+        const now = new Date();
+        const soon = new Date();
+        soon.setDate(soon.getDate() + 1);
+        const rows = state.profiles.filter(p => p.expires_at && new Date(p.expires_at) <= soon && new Date(p.expires_at) >= now);
+        showMessage(appMessage, 'info', `${rows.length} profile(s) expire within 24 hours.`);
+        switchView('dashboardView');
+      });
+
+      $('uploadBtn').addEventListener('click', uploadImage);
+      $('saveCropBtn').addEventListener('click', saveCropOnly);
+      $('saveBtn').addEventListener('click', saveProfile);
+      $('duplicateBtn').addEventListener('click', () => {
+        fields.name.value = `${fields.name.value || 'Profile'} Copy`;
+        fields.slug.value = slugify(fields.name.value);
+        state.currentId = null;
+        $('editModeLabel').textContent = 'Duplicated as new profile';
+        showMessage(formMessage, 'info', 'This is now a new copy. Save to create it.');
+      });
+      $('clearBtn').addEventListener('click', clearForm);
+      $('deleteBtn').addEventListener('click', () => deleteProfile());
+      $('activateWeekBtn').addEventListener('click', () => activateWeek());
+      $('markPaidBtn').addEventListener('click', () => patchCurrentProfile({ payment_status: 'paid', status: 'active', online: true, expires_at: fields.expires_at.value ? fromLocalInputValue(fields.expires_at.value) : addDaysISO(7) }, 'Marked paid and activated.'));
+      $('markPendingBtn').addEventListener('click', () => patchCurrentProfile({ payment_status: 'pending' }, 'Marked pending.'));
+      $('deactivateBtn').addEventListener('click', () => patchCurrentProfile({ status: 'inactive', online: false }, 'Profile deactivated.'));
+
+      $('openLoginBtn').addEventListener('click', showAuthModal);
+      $('closeLoginBtn').addEventListener('click', hideAuthModal);
+      $('loginBtn').addEventListener('click', login);
+      $('logoutBtn').addEventListener('click', logout);
+
+      $('profilesTable').addEventListener('click', async event => {
+        const btn = event.target.closest('[data-action]');
+        if (!btn) return;
+        const id = btn.dataset.id;
+        const action = btn.dataset.action;
+        const profile = state.profiles.find(p => String(p.id) === String(id));
+        if (action === 'edit' && profile) {
+          fillForm(profile);
+          switchView('editorView');
+          showMessage(formMessage, 'info', `Loaded ${profile.name || 'profile'} into the editor.`);
+        }
+        if (action === 'delete') await deleteProfile(id);
+        if (action === 'pay') await quickPaymentUpdate(id, 'paid');
+        if (action === 'pending') await quickPaymentUpdate(id, 'pending');
+        if (action === 'week') await activateWeek(id);
+      });
+
+      $('queueGrid').addEventListener('click', async event => {
+        const btn = event.target.closest('[data-queue-action]');
+        if (!btn) return;
+        const queueId = btn.dataset.id;
+        const profileId = btn.dataset.profileId;
+        if (btn.dataset.queueAction === 'approve') await approveQueueItem(queueId, profileId);
+        if (btn.dataset.queueAction === 'reject') await rejectQueueItem(queueId);
+      });
+
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        state.queueMode = btn.dataset.queueFilter;
+        renderQueue();
+      }));
+
+      document.addEventListener('keydown', event => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+          event.preventDefault();
+          saveProfile();
+        }
+      });
+    }
+
+    async function boot() {
+      $('bucketLabel').textContent = STORAGE_BUCKET;
+      $('configStatus').textContent = `${SUPABASE_URL} • ${PROFILES_TABLE} • ${PAYMENTS_TABLE}`;
+      attachEvents();
+      clearForm();
+      updatePreview();
+      renderProfiles();
+      renderQueue();
+      renderStats();
+
+      if (SUPABASE_URL.includes('YOUR_PROJECT') || SUPABASE_ANON_KEY.includes('YOUR_PUBLIC')) {
+        showMessage(appMessage, 'warn', 'Update SUPABASE_URL and SUPABASE_ANON_KEY in the script first.');
+      }
+
+      const { data } = await supabase.auth.getSession();
+      state.session = data?.session || null;
+      renderSession();
+      supabase.auth.onAuthStateChange((_event, session) => {
+        state.session = session;
+        renderSession();
+      });
+
+      if (!state.session) {
+        if (AUTO_SHOW_LOGIN) showAuthModal();
+        showMessage(appMessage, 'info', 'Log in to use the vault.');
+        return;
+      }
+
+      try {
+        await requireAdmin();
+        await Promise.all([loadProfiles(), loadQueue()]);
+      } catch (error) {
+        console.error('BOOT ERROR', error);
+        showMessage(appMessage, 'error', error.message || 'Startup failed.');
+        showAuthModal();
+      }
+    }
+
+    boot();
+
+    window.vaultDebug = {
+      supabase,
+      state,
+      async testConnection() {
+        const result = await supabase.from(PROFILES_TABLE).select('*').limit(1);
+        console.log(result);
+        return result;
+      },
+      async testQueue() {
+        const result = await supabase.from(PAYMENTS_TABLE).select('*').limit(1);
+        console.log(result);
+        return result;
+      }
     };
-    reader.onerror = () => reject(new Error('File reading failed'));
-    reader.readAsDataURL(file);
-  });
-}
-async function handleFilePreview(){
-  hideError();
-  processedUploadFile = null;
-  const file = imageFileInput.files[0];
-  if(!file){
-    originalInfo.textContent = 'No file selected';
-    processedInfo.textContent = 'Waiting';
-    previewImage.src = 'https://via.placeholder.com/1200x900?text=Preview';
-    return;
-  }
-  try{
-    originalInfo.textContent = `${file.name} • ${formatBytes(file.size)}`;
-    processedInfo.textContent = 'Processing...';
-    const result = await processImage(file);
-    processedUploadFile = result.file;
-    previewImage.src = result.previewUrl;
-    processedInfo.textContent = `${result.file.name} • ${result.width}×${result.height} • ${formatBytes(result.file.size)}`;
-  }catch(err){
-    showError(err.message || String(err));
-    processedInfo.textContent = 'Processing failed';
-  }
-}
-async function uploadImage(file){
-  if(!file) return '';
-  const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
-  const path = `profiles/${safeName}`;
-  const { error } = await supabaseClient.storage.from(STORAGE_BUCKET).upload(path, file, { upsert:true });
-  if(error) throw new Error(`Upload failed: ${error.message}`);
-  const { data } = supabaseClient.storage.from(STORAGE_BUCKET).getPublicUrl(path);
-  return data.publicUrl;
-}
-async function saveProfile(){
-  hideError();
-  try{
-    validateConfig();
-    editorStatus.textContent = 'Saving profile...';
-    const image_url = await uploadImage(processedUploadFile || imageFileInput.files[0]);
-    const payload = {
-      name: document.getElementById('name').value.trim(),
-      phone: document.getElementById('phone').value.trim(),
-      whatsapp: document.getElementById('whatsapp').value.trim(),
-      location: document.getElementById('location').value.trim(),
-      category: document.getElementById('category').value.trim(),
-      price_range: document.getElementById('price_range').value.trim(),
-      description: document.getElementById('description').value.trim(),
-      image_url,
-      is_vvip: document.getElementById('is_vvip').checked,
-      is_vip: document.getElementById('is_vip').checked,
-      is_featured: document.getElementById('is_featured').checked,
-      is_verified: document.getElementById('is_verified').checked,
-      is_online: document.getElementById('is_online').checked,
-      likes_count: Number(document.getElementById('likes_count').value || 0),
-      views_count: Number(document.getElementById('views_count').value || 0),
-      status: 'active'
-    };
-    if(!payload.name || !payload.phone || !payload.whatsapp || !payload.description) throw new Error('Please fill name, phone, whatsapp, and description.');
-    const { error } = await supabaseClient.from('profiles').insert([payload]);
-    if(error) throw new Error(`Save failed: ${error.message}`);
-    editorStatus.textContent = 'Profile saved';
-    clearForm();
-  }catch(err){
-    showError(err.message || String(err));
-    editorStatus.textContent = 'Save failed';
-  }
-}
-document.getElementById('signInBtn').addEventListener('click', signIn);
-document.getElementById('signOutBtn').addEventListener('click', signOut);
-document.getElementById('testBtn').addEventListener('click', testConnection);
-document.getElementById('saveBtn').addEventListener('click', saveProfile);
-document.getElementById('clearBtn').addEventListener('click', clearForm);
-imageFileInput.addEventListener('change', handleFilePreview);
-refreshSession();
-supabaseClient.auth.onAuthStateChange(() => { refreshSession(); });
-</script>
+  </script>
 </body>
 </html>
+                                                                                                                                                                                                                                                                       
