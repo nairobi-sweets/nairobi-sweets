@@ -3,118 +3,450 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nairobi Sweets | VVIP Power Filters</title>
-  <meta name="description" content="Nairobi Sweets premium marketplace with VVIP, powerful filters, likes, views, online badges, featured profiles, and fast WhatsApp contact." />
+  <title>Nairobi Sweets | Private VIP Directory</title>
+  <meta name="description" content="Nairobi Sweets is a private VIP directory with premium profiles, featured listings, fast contact, and luxury discovery filters." />
   <link rel="canonical" href="https://nairobi-sweets.com/" />
   <meta name="robots" content="index,follow" />
+  <link rel="icon" type="image/png" href="/logo.png">
+
+  <meta property="og:title" content="Nairobi Sweets | Private VIP Directory">
+  <meta property="og:description" content="Luxury profile discovery, premium listings, featured visibility, and direct contact in one polished private directory.">
+  <meta property="og:image" content="https://nairobi-sweets.com/logo.png">
+  <meta property="og:url" content="https://nairobi-sweets.com/">
+  <meta property="og:type" content="website">
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"Nairobi Sweets",
+    "url":"https://nairobi-sweets.com",
+    "logo":"https://nairobi-sweets.com/logo.png"
+  }
+  </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    body{min-height:100vh;color:#f8fafc;background:
-      radial-gradient(circle at 15% 0%, rgba(255,79,183,.18), transparent 22%),
-      radial-gradient(circle at 90% 10%, rgba(124,58,237,.18), transparent 24%),
-      radial-gradient(circle at 50% 100%, rgba(255,213,77,.08), transparent 20%),
-      linear-gradient(180deg, #0f1733, #0a0f20);}
-    .grid-lines{background-image:linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);background-size:28px 28px;}
-    .glass{background:rgba(11,18,37,.74);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 20px 60px rgba(0,0,0,.24);}
-    .soft-glow{box-shadow:0 0 0 1px rgba(255,79,183,.12),0 0 34px rgba(255,79,183,.08)}
-    .vip-glow{box-shadow:0 0 0 1px rgba(255,213,77,.18),0 0 36px rgba(255,213,77,.12)}
-    .vvip-glow{box-shadow:0 0 0 1px rgba(255,215,0,.38),0 0 42px rgba(255,215,0,.18),0 0 70px rgba(255,215,0,.08)}
-    .hero-shell{background:linear-gradient(120deg, rgba(255,79,183,.2), rgba(124,58,237,.16)),linear-gradient(90deg, #371a4a 0%, #251b64 55%, #172453 100%);}
-    .btn{transition:transform .16s ease, filter .16s ease, background .16s ease}
-    .btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
-    .chip{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05)}
-    .text-clamp-3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-    .modal-backdrop{background:rgba(2,6,23,.76);backdrop-filter:blur(12px)}
-    .card-image{aspect-ratio:4/5;object-fit:cover;width:100%;display:block;background:#0b1120}
-    .section-title{letter-spacing:-.03em}
-    .card-hover{transition:transform .25s ease, box-shadow .25s ease}
-    .card-hover:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 25px 60px rgba(0,0,0,.35)}
-    .fade-in{animation:fadeIn .45s ease forwards}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-    .vvip-tab{writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:.04em}
-    .filter-chip {
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.08);
-      font-size: 13px;
-      cursor: pointer;
-      transition: all .18s ease;
+    :root{
+      --bg-1:#060812;
+      --bg-2:#0b1020;
+      --gold-1:#facc15;
+      --gold-2:#f59e0b;
+      --pink-1:#ec4899;
+      --pink-2:#db2777;
+      --line:rgba(255,255,255,.08);
+      --text-soft:#cbd5e1;
+      --text-faint:#94a3b8;
+      --glass:rgba(9,14,28,.74);
     }
-    .filter-chip:hover {
-      background: rgba(255,255,255,0.14);
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      min-height:100vh;
+      color:#f8fafc;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(236,72,153,.10), transparent 22%),
+        radial-gradient(circle at 90% 10%, rgba(250,204,21,.08), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(124,58,237,.06), transparent 22%),
+        linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .grid-lines{
+      background-image:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    header{
+      background: rgba(8,10,18,.82);
+      border-bottom:1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .glass{
+      background: var(--glass);
+      border:1px solid var(--line);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 22px 60px rgba(0,0,0,.30);
+    }
+
+    .hero-shell{
+      background:
+        linear-gradient(135deg, rgba(33,14,52,.94), rgba(14,20,52,.95)),
+        linear-gradient(90deg, #2a143d 0%, #1a1f4f 55%, #0f1938 100%);
+      box-shadow: 0 30px 80px rgba(0,0,0,.40);
+    }
+
+    .soft-glow{
+      box-shadow:
+        0 0 0 1px rgba(236,72,153,.08),
+        0 0 24px rgba(236,72,153,.05);
+    }
+
+    .vip-glow{
+      box-shadow:
+        0 0 0 1px rgba(250,204,21,.16),
+        0 0 30px rgba(250,204,21,.08);
+    }
+
+    .vvip-glow{
+      box-shadow:
+        0 0 0 1px rgba(255,215,0,.30),
+        0 0 35px rgba(255,215,0,.16),
+        0 0 70px rgba(255,215,0,.08);
+    }
+
+    .btn{
+      transition: transform .18s ease, filter .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .btn:hover{
       transform: translateY(-1px);
+      filter: brightness(1.05);
     }
-    .filter-chip.active {
-      background: linear-gradient(135deg, #facc15, #f472b6);
-      color: black;
-      font-weight: 700;
+
+    .btn-gold{
+      background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      color:#111827;
+      font-weight:800;
+      border-radius:18px;
     }
-    .filter-toggle.active,.quick-filter.active {
-      box-shadow: 0 0 0 1px rgba(255,255,255,.15), 0 0 18px rgba(255,255,255,.08);
-      transform: translateY(-1px);
+
+    .btn-pink{
+      background: linear-gradient(135deg, var(--pink-1), var(--pink-2));
+      color:white;
+      font-weight:700;
+      border-radius:18px;
     }
-    .active-pill {
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.08);
-      font-size: 12px;
+
+    .btn-dark{
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.07);
+      color:white;
+      border-radius:18px;
     }
+
+    .btn-dark:hover{
+      background: rgba(255,255,255,.11);
+      border-color: rgba(255,255,255,.12);
+    }
+
+    .chip{
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+    }
+
+    .text-clamp-3{
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+
+    .modal-backdrop{
+      background: rgba(2,6,23,.78);
+      backdrop-filter: blur(12px);
+    }
+
+    .card-image{
+      width:100%;
+      height:280px;
+      object-fit:cover;
+      display:block;
+      background:#0b1120;
+    }
+
+    @media (max-width: 640px){
+      .card-image{
+        height:260px;
+      }
+    }
+
+    .section-title{
+      letter-spacing:-.04em;
+    }
+
+    .card-hover{
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .card-hover:hover{
+      transform: translateY(-8px);
+      box-shadow: 0 30px 70px rgba(0,0,0,.42);
+      border-color: rgba(250,204,21,.22);
+    }
+
+    .fade-in{
+      animation: fadeIn .45s ease forwards;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(12px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    .vvip-tab{
+      writing-mode:vertical-rl;
+      text-orientation:mixed;
+      letter-spacing:.08em;
+    }
+
+    .filter-chip{
+      padding:9px 13px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      font-size:13px;
+      cursor:pointer;
+      transition:all .18s ease;
+      color:#e5e7eb;
+    }
+
+    .filter-chip:hover{
+      background:rgba(255,255,255,.12);
+      transform:translateY(-1px);
+    }
+
+    .filter-chip.active{
+      background:linear-gradient(135deg, var(--gold-1), var(--pink-1));
+      color:black;
+      font-weight:800;
+      border-color:transparent;
+    }
+
+    .filter-toggle.active,.quick-filter.active{
+      box-shadow:0 0 0 1px rgba(255,255,255,.12), 0 0 18px rgba(255,255,255,.08);
+      transform:translateY(-1px);
+    }
+
+    .active-pill{
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.08);
+      font-size:12px;
+      color:#e2e8f0;
+    }
+
+    .logo-shell{
+      width:52px;
+      height:52px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      flex-shrink:0;
+    }
+
+    .site-logo{
+      width:52px;
+      height:52px;
+      object-fit:cover;
+      border-radius:16px;
+      transition:all .35s ease;
+    }
+
+    .subtle-label{
+      color:#f9a8d4;
+      font-size:12px;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      font-weight:700;
+    }
+
+    .divider{
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+    }
+
+    .premium-panel{
+      background: linear-gradient(180deg, rgba(17,24,39,.82), rgba(10,14,25,.88));
+      border:1px solid rgba(255,255,255,.07);
+      box-shadow:0 18px 50px rgba(0,0,0,.28);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      padding:6px 12px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.04em;
+    }
+
+    .badge-gold{
+      background:linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      color:#111827;
+    }
+
+    .badge-pink{
+      background:linear-gradient(135deg, var(--pink-1), var(--pink-2));
+      color:white;
+    }
+
+    .badge-green{
+      background:linear-gradient(135deg, #22c55e, #16a34a);
+      color:white;
+    }
+
+    .badge-dark{
+      background:rgba(15,23,42,.85);
+      color:#f8fafc;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .muted{color:var(--text-soft)}
+    .faint{color:var(--text-faint)}
+
+    .status-card{
+      background:linear-gradient(180deg, rgba(4,10,30,.92), rgba(9,14,32,.90));
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 24px 55px rgba(0,0,0,.35);
+    }
+
+    .input-premium, .select-premium{
+      width:100%;
+      padding:14px 16px;
+      border-radius:18px;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.08);
+      outline:none;
+      color:white;
+    }
+
+    .input-premium:focus, .select-premium:focus{
+      border-color: rgba(236,72,153,.55);
+      box-shadow: 0 0 0 3px rgba(236,72,153,.10);
+    }
+
+    .tiny-stat{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .page-shell{max-width:1480px}
+
+    .soft-section{
+      background: linear-gradient(180deg, rgba(16,20,34,.84), rgba(10,14,24,.88));
+      border:1px solid rgba(255,255,255,.07);
+    }
+
+    .profile-name{
+      font-size:1.15rem;
+      font-weight:800;
+      line-height:1.15;
+      color:#f9a8d4;
+    }
+
+    .profile-category{
+      font-size:.68rem;
+      letter-spacing:.18em;
+      color:#94a3b8;
+      text-transform:uppercase;
+    }
+
+    .stat-chip{
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:999px;
+      padding:8px 12px;
+    }
+
+    .call-btn{
+      background: linear-gradient(135deg, #ec4899, #db2777);
+      color:white;
+      font-weight:700;
+    }
+
+    .section-hidden{display:none !important}
   </style>
 </head>
 <body class="grid-lines">
   <a href="#vvipSection" class="vvip-tab fixed right-0 top-1/2 -translate-y-1/2 z-50 bg-yellow-400 text-black font-extrabold px-3 py-4 rounded-l-2xl shadow-2xl border border-yellow-200 hover:bg-yellow-300 transition">
-    👑 PREMIUM VVIP
+    👑 SIGNATURE
   </a>
 
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-black/25 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+  <header class="sticky top-0 z-40">
+    <div class="page-shell mx-auto px-4 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       <div class="flex items-center gap-3 min-w-0">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-pink-500 via-purple-600 to-indigo-600 flex items-center justify-center text-xl shadow-lg shrink-0">🍭</div>
+        <div class="logo-shell">
+          <img src="/logo.png" alt="Nairobi Sweets Logo" class="site-logo" id="siteLogo">
+        </div>
         <div class="min-w-0">
-          <p class="text-xs md:text-sm text-pink-100 truncate">Premium Nairobi marketplace</p>
+          <p class="text-xs md:text-sm text-pink-100 truncate">Private luxury profile directory</p>
           <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-yellow-300 truncate">Nairobi Sweets</h1>
         </div>
       </div>
+
       <div class="flex flex-wrap gap-2 items-center">
-        <a href="#vvipSection" class="btn px-4 py-2 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-black text-sm font-semibold">VVIP</a>
-        <a href="#featured" class="btn px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm">Featured</a>
-        <a href="#allProfiles" class="btn px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm">Browse</a>
-        <a href="#bookingSeo" class="btn px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm">Booking</a>
-        <button id="loginOpenBtn" class="btn px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm">Login</button>
-        <button id="registerOpenBtn" class="btn px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-sm font-semibold">Register</button>
-        <a id="adminBtn" href="/vault-8472.html" class="btn hidden px-4 py-2 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-black font-semibold text-sm">Admin</a>
-        <button id="logoutBtn" class="btn hidden px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm">Logout</button>
+        <a href="#vvipSection" class="btn btn-gold px-4 py-2 text-sm">Signature</a>
+        <a href="#featured" class="btn btn-dark px-4 py-2 text-sm">Featured</a>
+        <a href="#allProfiles" class="btn btn-dark px-4 py-2 text-sm">Directory</a>
+        <a href="#bookingSeo" class="btn btn-dark px-4 py-2 text-sm">Private Booking</a>
+        <button id="loginOpenBtn" class="btn btn-dark px-4 py-2 text-sm">Login</button>
+        <button id="registerOpenBtn" class="btn btn-pink px-4 py-2 text-sm">Join VIP</button>
+        <a id="adminBtn" href="/vault-8472.html" class="btn hidden btn-gold px-4 py-2 text-sm">Admin</a>
+        <button id="logoutBtn" class="btn hidden btn-dark px-4 py-2 text-sm">Logout</button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6 md:py-10">
-    <section class="hero-shell rounded-[30px] p-[1px] mb-8 fade-in">
-      <div class="glass rounded-[29px] px-6 py-8 md:px-8 md:py-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+  <main class="page-shell mx-auto px-4 pt-8 pb-10 md:pt-10 md:pb-12">
+    <section class="hero-shell rounded-[32px] p-[1px] mb-8 fade-in">
+      <div class="glass rounded-[31px] px-6 py-8 md:px-10 md:py-12 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
         <div class="max-w-3xl">
-          <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-pink-100 mb-4">
+          <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-pink-100 mb-5">
             <span class="w-2 h-2 rounded-full bg-green-400"></span>
-            Power mode + VVIP + smart filters
+            Signature access • featured visibility • refined filters
           </div>
-          <h2 class="section-title text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-tight">VIP profiles, VVIP priority, and addictive premium filters</h2>
-          <p class="text-slate-200/90 mt-5 text-base md:text-lg max-w-2xl">Jump into VVIP, sort by heat, tap locations, show only online profiles, and browse the marketplace like a pro.</p>
-          <div class="flex flex-wrap gap-3 mt-6">
-            <a href="#vvipSection" class="btn px-5 py-3 rounded-2xl bg-yellow-400 text-black font-semibold">See VVIP</a>
-            <a href="#allProfiles" class="btn px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/15 font-semibold">Explore Profiles</a>
+          <h2 class="section-title text-4xl md:text-6xl font-extrabold leading-[1.02] tracking-tight">
+            Private VIP profiles, refined discovery, and premium visibility
+          </h2>
+          <p class="muted mt-5 text-base md:text-lg max-w-2xl">
+            Explore a refined private directory with signature listings, featured visibility, instant contact, and elegant filters designed for smooth high-end discovery.
+          </p>
+          <div class="flex flex-wrap gap-3 mt-7">
+            <a href="#vvipSection" class="btn btn-gold px-5 py-3 font-semibold">See Signature</a>
+            <a href="#allProfiles" class="btn btn-dark px-5 py-3 font-semibold">Explore Directory</a>
+          </div>
+
+          <div class="flex flex-wrap gap-3 mt-7">
+            <span class="badge badge-gold">👑 Signature</span>
+            <span class="badge badge-pink">★ Featured</span>
+            <span class="badge badge-green">✔ Verified</span>
+            <span class="badge badge-dark">⚡ Fast contact</span>
           </div>
         </div>
-        <div class="glass rounded-[28px] p-5 min-w-[280px] max-w-[340px]">
-          <div class="text-sm text-slate-300 mb-2">Marketplace Status</div>
-          <div id="status" class="text-lg font-bold text-pink-200">Checking connection...</div>
-          <div id="substatus" class="text-xs text-slate-400 mt-2">Loading active profiles and featured picks.</div>
+
+        <div class="status-card rounded-[30px] p-5 min-w-[290px] max-w-[360px]">
+          <div class="text-sm text-slate-300 mb-2">Directory Status</div>
+          <div id="status" class="text-2xl font-extrabold text-pink-200">Checking connection...</div>
+          <div id="substatus" class="text-sm text-slate-400 mt-2">Loading profiles and featured selections.</div>
           <div class="grid grid-cols-2 gap-3 mt-5">
-            <div class="rounded-2xl chip p-3"><div class="text-xs text-slate-400">Profiles</div><div id="statProfiles" class="text-2xl font-bold text-yellow-300 mt-1">0</div></div>
-            <div class="rounded-2xl chip p-3"><div class="text-xs text-slate-400">Top picks</div><div id="statFeatured" class="text-2xl font-bold text-pink-300 mt-1">0</div></div>
+            <div class="tiny-stat">
+              <div class="text-xs text-slate-400">Profiles</div>
+              <div id="statProfiles" class="text-3xl font-extrabold text-yellow-300 mt-1">0</div>
+            </div>
+            <div class="tiny-stat">
+              <div class="text-xs text-slate-400">Top picks</div>
+              <div id="statFeatured" class="text-3xl font-extrabold text-pink-300 mt-1">0</div>
+            </div>
           </div>
-          <div class="rounded-2xl chip p-3 mt-3">
+          <div class="tiny-stat mt-3">
             <div class="text-xs text-slate-400">Account</div>
             <div id="accountStatus" class="text-sm font-semibold text-slate-100 mt-1">Guest</div>
           </div>
@@ -122,17 +454,17 @@
       </div>
     </section>
 
-    <section class="glass soft-glow rounded-3xl p-4 md:p-5 mb-6 fade-in">
+    <section class="premium-panel soft-glow rounded-3xl p-4 md:p-5 mb-8 fade-in">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div class="lg:col-span-4">
           <label class="block text-sm text-slate-300 mb-2">Search</label>
-          <input id="searchInput" placeholder="Search by name, location, category..." class="w-full p-3 rounded-2xl bg-black/30 border border-white/10 outline-none focus:border-pink-400">
+          <input id="searchInput" placeholder="Search by name, location, category..." class="input-premium">
         </div>
 
         <div class="lg:col-span-2">
           <label class="block text-sm text-slate-300 mb-2">Sort</label>
-          <select id="sortFilter" class="w-full p-3 rounded-2xl bg-black/30 border border-white/10 outline-none focus:border-pink-400">
-            <option value="default">Default</option>
+          <select id="sortFilter" class="select-premium">
+            <option value="default">Auto rank</option>
             <option value="likes">Most liked</option>
             <option value="views">Most viewed</option>
             <option value="name">Name A-Z</option>
@@ -142,16 +474,18 @@
         <div class="lg:col-span-2">
           <label class="block text-sm text-slate-300 mb-2">Status</label>
           <div class="flex gap-2 flex-wrap">
-            <button id="onlineOnlyBtn" class="filter-toggle px-3 py-2 rounded-xl bg-white/10 text-sm">Online only</button>
+            <button id="onlineOnlyBtn" class="filter-toggle px-4 py-3 rounded-2xl bg-white/10 text-sm">Online only</button>
           </div>
         </div>
 
         <div class="lg:col-span-4 flex items-end justify-end">
-          <button id="clearFiltersBtn" class="btn px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/15 text-sm">Clear all</button>
+          <button id="clearFiltersBtn" class="btn btn-dark px-4 py-3 text-sm">Clear all</button>
         </div>
       </div>
 
-      <div class="mt-5">
+      <div class="divider my-5"></div>
+
+      <div class="mt-3">
         <label class="block text-sm text-slate-300 mb-2">Locations</label>
         <div id="locationChips" class="flex flex-wrap gap-2"></div>
       </div>
@@ -164,7 +498,7 @@
       <div class="mt-4">
         <label class="block text-sm text-slate-300 mb-2">Quick filters</label>
         <div class="flex flex-wrap gap-2">
-          <button class="quick-filter px-3 py-2 rounded-xl bg-yellow-400 text-black text-sm font-semibold" data-filter="vvip">👑 VVIP</button>
+          <button class="quick-filter px-3 py-2 rounded-xl bg-yellow-400 text-black text-sm font-semibold" data-filter="vvip">👑 Signature</button>
           <button class="quick-filter px-3 py-2 rounded-xl bg-yellow-300 text-black text-sm font-semibold" data-filter="vip">VIP</button>
           <button class="quick-filter px-3 py-2 rounded-xl bg-pink-500 text-white text-sm font-semibold" data-filter="featured">Featured</button>
           <button class="quick-filter px-3 py-2 rounded-xl bg-green-500 text-white text-sm font-semibold" data-filter="verified">Verified</button>
@@ -180,39 +514,48 @@
     <section id="vvipSection" class="mb-10 fade-in">
       <div class="flex items-end justify-between gap-4 mb-4">
         <div>
-          <h2 class="section-title text-3xl md:text-4xl font-bold text-yellow-300">Premium VVIP</h2>
-          <p class="text-slate-400 text-sm mt-1">Top priority premium profiles pinned above everything else.</p>
+          <p class="subtle-label">Premium tier</p>
+          <h2 class="section-title text-3xl md:text-4xl font-bold text-yellow-300">Signature Selection</h2>
+          <p class="faint text-sm mt-1">Priority listings reserved for the highest-visibility profiles.</p>
         </div>
       </div>
-      <div id="vvipFeed" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+      <div id="vvipFeed" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5"></div>
     </section>
 
     <section id="featured" class="mb-10 fade-in">
       <div class="flex items-end justify-between gap-4 mb-4">
         <div>
-          <h2 class="section-title text-3xl md:text-4xl font-bold text-yellow-300">Featured Profiles in Nairobi</h2>
-          <p class="text-slate-400 text-sm mt-1">Highlighted profiles with the loudest sparkle.</p>
+          <p class="subtle-label">Highlighted</p>
+          <h2 class="section-title text-3xl md:text-4xl font-bold text-pink-300">Featured Elite Profiles</h2>
+          <p class="faint text-sm mt-1">Curated listings with elevated visibility and stronger discovery.</p>
         </div>
       </div>
-      <div id="featuredFeed" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+      <div id="featuredFeed" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5"></div>
     </section>
 
     <section id="bookingSeo" class="mb-10 fade-in">
-      <div class="glass soft-glow rounded-3xl p-6 md:p-8">
-        <h2 class="section-title text-3xl md:text-4xl font-bold text-pink-400 mb-4">Nairobi Booking Services & Premium Connections</h2>
+      <div class="soft-section rounded-3xl p-6 md:p-8">
+        <p class="subtle-label mb-3">Private access</p>
+        <h2 class="section-title text-3xl md:text-4xl font-bold text-pink-300 mb-4">Private Booking & Premium Discovery</h2>
         <div class="grid md:grid-cols-3 gap-5">
           <div class="md:col-span-2">
-            <p class="text-slate-300 mb-3">Nairobi Sweets connects visitors with premium booking services in Nairobi through curated VIP profiles, fast WhatsApp contact, and elegant listings designed for smooth discovery.</p>
-            <p class="text-slate-300 mb-3">Browse featured profiles, explore premium services, and connect directly through quick action buttons. This public page is built to be search-friendly, mobile-ready, and easy to browse.</p>
-            <p class="text-slate-300">If you are looking for VIP profiles in Nairobi, featured listings, or premium booking options, Nairobi Sweets brings everything together in one polished marketplace.</p>
+            <p class="muted mb-3">
+              Nairobi Sweets is a premium directory for curated profile discovery, featured visibility, and fast private contact in a polished luxury-style environment.
+            </p>
+            <p class="muted mb-3">
+              Browse featured profiles, explore signature listings, and connect through clear premium actions with elegant filtering and high-visibility placement.
+            </p>
+            <p class="muted">
+              Built for fast discovery, private browsing, and a premium visual experience, Nairobi Sweets brings exclusivity and clarity into one refined destination.
+            </p>
           </div>
           <div class="rounded-3xl chip p-5">
-            <div class="text-sm text-slate-300">Power mode upgrades</div>
+            <div class="text-sm text-slate-300">Premium advantages</div>
             <ul class="mt-4 space-y-3 text-sm text-slate-200">
-              <li>• Premium VVIP crown 👑</li>
-              <li>• Smart filters with counts ⚡</li>
-              <li>• Likes counter ❤️</li>
-              <li>• Views counter 👁</li>
+              <li>• Signature crown placement 👑</li>
+              <li>• Verified & featured visibility ✔</li>
+              <li>• Likes and views signals ❤️ 👁</li>
+              <li>• Fast direct contact flow ⚡</li>
             </ul>
           </div>
         </div>
@@ -222,12 +565,13 @@
     <section id="allProfiles" class="fade-in">
       <div class="flex items-end justify-between gap-4 mb-4">
         <div>
-          <h2 class="section-title text-3xl md:text-4xl font-bold text-pink-400">All VIP and Premium Profiles in Nairobi</h2>
-          <p class="text-slate-400 text-sm mt-1">Cleaner cards, tighter spacing, stronger visual hierarchy.</p>
+          <p class="subtle-label">Directory</p>
+          <h2 class="section-title text-3xl md:text-4xl font-bold text-white">Private Member Directory</h2>
+          <p class="faint text-sm mt-1">Elegant cards, premium badges, and direct contact actions.</p>
         </div>
-        <button id="refreshBtn" class="btn px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm">Refresh</button>
+        <button id="refreshBtn" class="btn btn-dark px-4 py-2 text-sm">Refresh</button>
       </div>
-      <div id="feed" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+      <div id="feed" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5"></div>
     </section>
   </main>
 
@@ -238,9 +582,9 @@
         <button class="closeModal text-slate-400 hover:text-white text-xl">✕</button>
       </div>
       <div class="space-y-3">
-        <input id="loginEmail" type="email" placeholder="Email" class="w-full p-3 rounded-xl bg-black/30 border border-white/10 outline-none focus:border-pink-400">
-        <input id="loginPassword" type="password" placeholder="Password" class="w-full p-3 rounded-xl bg-black/30 border border-white/10 outline-none focus:border-pink-400">
-        <button id="loginBtn" class="btn w-full bg-pink-600 hover:bg-pink-500 p-3 rounded-xl font-semibold">Login</button>
+        <input id="loginEmail" type="email" placeholder="Email" class="input-premium">
+        <input id="loginPassword" type="password" placeholder="Password" class="input-premium">
+        <button id="loginBtn" class="btn btn-pink w-full p-3 font-semibold">Login</button>
         <p id="loginMsg" class="text-sm text-slate-300"></p>
       </div>
     </div>
@@ -249,372 +593,763 @@
   <div id="registerModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
     <div class="glass rounded-3xl p-6 w-full max-w-md">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-2xl font-bold text-pink-300">Create Account</h3>
+        <h3 class="text-2xl font-bold text-pink-300">Join VIP</h3>
         <button class="closeModal text-slate-400 hover:text-white text-xl">✕</button>
       </div>
       <div class="space-y-3">
-        <input id="registerEmail" type="email" placeholder="Email" class="w-full p-3 rounded-xl bg-black/30 border border-white/10 outline-none focus:border-pink-400">
-        <input id="registerPassword" type="password" placeholder="Password" class="w-full p-3 rounded-xl bg-black/30 border border-white/10 outline-none focus:border-pink-400">
-        <button id="registerBtn" class="btn w-full bg-pink-600 hover:bg-pink-500 p-3 rounded-xl font-semibold">Register</button>
+        <input id="registerEmail" type="email" placeholder="Email" class="input-premium">
+        <input id="registerPassword" type="password" placeholder="Password" class="input-premium">
+        <button id="registerBtn" class="btn btn-pink w-full p-3 font-semibold">Create account</button>
         <p id="registerMsg" class="text-sm text-slate-300"></p>
       </div>
     </div>
   </div>
 
-<script>
-const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
-const OWNER_EMAIL = 'nairobisweets05@gmail.com';
-const PLACEHOLDER = 'https://via.placeholder.com/1200x1500?text=Nairobi+Sweets';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  <div id="upgradeModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
+    <div class="glass rounded-3xl p-6 w-full max-w-md">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-2xl font-bold text-yellow-300">Upgrade Listing</h3>
+        <button id="closeUpgradeBtn" class="text-slate-400 hover:text-white text-xl">✕</button>
+      </div>
 
-let allProfiles = [];
-const viewedProfiles = new Set();
-let selectedLocation = '';
-let selectedCategory = '';
-let onlineOnly = false;
-let quickFlags = { vvip: false, vip: false, featured: false, verified: false };
+      <div class="space-y-3">
+        <input id="upgradeProfileId" type="hidden">
+        <input id="upgradePlan" type="hidden">
+        <input id="upgradeAmount" type="hidden">
 
-const feedEl = document.getElementById('feed');
-const featuredFeedEl = document.getElementById('featuredFeed');
-const vvipFeedEl = document.getElementById('vvipFeed');
-const searchInput = document.getElementById('searchInput');
-const statusEl = document.getElementById('status');
-const substatusEl = document.getElementById('substatus');
-const statProfiles = document.getElementById('statProfiles');
-const statFeatured = document.getElementById('statFeatured');
-const accountStatus = document.getElementById('accountStatus');
-const adminBtn = document.getElementById('adminBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const loginOpenBtn = document.getElementById('loginOpenBtn');
-const registerOpenBtn = document.getElementById('registerOpenBtn');
-const loginModal = document.getElementById('loginModal');
-const registerModal = document.getElementById('registerModal');
-const sortFilter = document.getElementById('sortFilter');
+        <div class="rounded-2xl chip p-4">
+          <p class="text-sm text-slate-300">Send payment via M-Pesa</p>
+          <p class="text-lg font-bold text-white mt-1">Till Number: 568912</p>
+          <p id="upgradeSummary" class="text-sm text-yellow-300 mt-2"></p>
+        </div>
 
-function esc(v){ return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
-function escJs(v){ return String(v ?? '').replaceAll("\\", "\\\\").replaceAll("'", "\\'"); }
-function setStatus(main, sub, error=false){ statusEl.textContent = main; substatusEl.textContent = sub || ''; statusEl.className = error ? 'text-lg font-bold text-red-300' : 'text-lg font-bold text-pink-200'; }
-function emptyCard(title, subtitle){ return `<div class="glass rounded-3xl p-8 text-center text-slate-300 col-span-full"><div class="text-xl font-semibold text-pink-300 mb-2">${esc(title)}</div><p class="text-slate-400">${esc(subtitle)}</p></div>`; }
-function openModal(el){ el.classList.remove('hidden'); el.classList.add('flex'); }
-function closeModal(el){ el.classList.add('hidden'); el.classList.remove('flex'); }
-function getLikedIds(){ try{return JSON.parse(localStorage.getItem('likedProfileIds') || '[]');}catch{return [];} }
-function setLikedIds(ids){ localStorage.setItem('likedProfileIds', JSON.stringify(ids)); }
-function hasLiked(id){ return getLikedIds().includes(id); }
+        <input id="payerName" type="text" placeholder="Your name" class="input-premium">
+        <input id="payerPhone" type="text" placeholder="Phone number" class="input-premium">
+        <input id="transactionCode" type="text" placeholder="M-Pesa transaction code" class="input-premium">
 
-function card(profile, featured=false){
-  const vvip = !!profile.is_vvip;
-  const vip = !!profile.is_vip;
-  const verified = !!profile.is_verified;
-  const isFeatured = !!profile.is_featured || featured;
-  const online = !!profile.is_online;
-  const liked = hasLiked(profile.id);
-  const altText = `${profile.category || 'Premium'} profile in Nairobi - ${profile.name || 'Profile'}`;
-  return `<article class="glass card-hover ${vvip ? 'vvip-glow' : ((vip || isFeatured) ? 'vip-glow' : 'soft-glow')} rounded-[28px] overflow-hidden fade-in">
-    <div class="relative">
-      <img src="${esc(profile.image_url || PLACEHOLDER)}" alt="${esc(altText)}" class="card-image" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
-      <div class="absolute top-3 left-3 flex gap-2 flex-wrap">
-        ${vvip ? '<span class="bg-yellow-300 text-black text-xs font-extrabold px-3 py-1 rounded-full">👑 VVIP</span>' : ''}
-        ${vip ? '<span class="bg-yellow-400 text-black text-xs font-extrabold px-3 py-1 rounded-full">VIP</span>' : ''}
-        ${isFeatured ? '<span class="bg-pink-500 text-white text-xs font-extrabold px-3 py-1 rounded-full">FEATURED</span>' : ''}
-        ${verified ? '<span class="bg-green-500 text-white text-xs font-extrabold px-3 py-1 rounded-full">VERIFIED</span>' : ''}
-        ${online ? '<span class="bg-green-500 text-white text-xs font-extrabold px-3 py-1 rounded-full">ONLINE</span>' : ''}
+        <button id="submitUpgradeBtn" class="btn btn-pink w-full p-3 font-semibold">Submit Payment</button>
+        <p id="upgradeMsg" class="text-sm text-slate-300"></p>
       </div>
     </div>
-    <div class="p-5">
-      <div class="min-w-0">
-        <h3 class="text-xl font-bold text-pink-300 truncate">${esc(profile.name || 'No name')}</h3>
-        <p class="text-xs text-slate-400 mt-1">${esc(profile.category || 'General')}</p>
-      </div>
-      <div class="flex flex-wrap gap-2 mt-4">
-        <button class="text-xs px-3 py-1 rounded-full chip hover:bg-white/15" onclick="toggleLocationChip('${escJs(profile.location || '')}')">${esc(profile.location || 'Not specified')}</button>
-        <button class="text-xs px-3 py-1 rounded-full chip hover:bg-white/15" onclick="toggleCategoryChip('${escJs(profile.category || '')}')">${esc(profile.price_range || 'Ask for pricing')}</button>
-      </div>
-      <p class="text-slate-300 text-sm mt-4 text-clamp-3">${esc(profile.description || 'No description available.')}</p>
-      <div class="flex flex-wrap gap-2 mt-4 text-sm text-slate-300">
-        <button onclick="likeProfile(${profile.id})" class="btn px-3 py-1.5 rounded-full ${liked ? 'bg-pink-600 text-white' : 'bg-white/10 hover:bg-white/15'}">
-          ❤️ ${profile.likes_count || 0}
-        </button>
-        <span class="px-3 py-1.5 rounded-full bg-white/10">👁 ${profile.views_count || 0}</span>
-        ${online ? '<span class="px-3 py-1.5 rounded-full bg-green-500/20 text-green-300 border border-green-400/20">🟢 Online now</span>' : ''}
-      </div>
-      <div class="grid grid-cols-2 gap-3 mt-5">
-        <a href="https://wa.me/${esc(profile.whatsapp || '')}" target="_blank" class="btn text-center px-4 py-3 rounded-2xl bg-green-500 hover:bg-green-400 text-white font-semibold">WhatsApp</a>
-        <a href="tel:${esc(profile.phone || '')}" class="btn text-center px-4 py-3 rounded-2xl bg-pink-600 hover:bg-pink-500 text-white font-semibold">Call</a>
-      </div>
-    </div>
-  </article>`;
-}
+  </div>
 
-function syncButtons() {
-  document.getElementById('onlineOnlyBtn').classList.toggle('active', onlineOnly);
-  document.querySelectorAll('.quick-filter').forEach(btn => {
-    btn.classList.toggle('active', !!quickFlags[btn.dataset.filter]);
-  });
-}
+  <script>
+    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+    const OWNER_EMAIL = 'nairobisweets05@gmail.com';
+    const PLACEHOLDER = 'https://via.placeholder.com/1200x1500/0f172a/f8fafc?text=Nairobi+Sweets';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function buildLocationChips(profiles) {
-  const wrap = document.getElementById('locationChips');
-  const counts = {};
-  profiles.forEach(p => {
-    if (!p.location) return;
-    counts[p.location] = (counts[p.location] || 0) + 1;
-  });
-  wrap.innerHTML = Object.entries(counts)
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([location, count]) => `
-      <button class="filter-chip ${selectedLocation === location ? 'active' : ''}"
-              onclick="toggleLocationChip('${escJs(location)}')">
-        ${esc(location)} (${count})
-      </button>
-    `).join('');
-}
+    let allProfiles = [];
+    const viewedProfiles = new Set();
+    let selectedLocation = '';
+    let selectedCategory = '';
+    let onlineOnly = false;
+    let quickFlags = { vvip: false, vip: false, featured: false, verified: false };
+    let profilesRealtimeChannel = null;
 
-function buildCategoryChips(profiles) {
-  const wrap = document.getElementById('categoryChips');
-  const counts = {};
-  profiles.forEach(p => {
-    if (!p.category) return;
-    counts[p.category] = (counts[p.category] || 0) + 1;
-  });
-  wrap.innerHTML = Object.entries(counts)
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([category, count]) => `
-      <button class="filter-chip ${selectedCategory === category ? 'active' : ''}"
-              onclick="toggleCategoryChip('${escJs(category)}')">
-        ${esc(category)} (${count})
-      </button>
-    `).join('');
-}
+    const feedEl = document.getElementById('feed');
+    const featuredFeedEl = document.getElementById('featuredFeed');
+    const vvipFeedEl = document.getElementById('vvipFeed');
+    const searchInput = document.getElementById('searchInput');
+    const statusEl = document.getElementById('status');
+    const substatusEl = document.getElementById('substatus');
+    const statProfiles = document.getElementById('statProfiles');
+    const statFeatured = document.getElementById('statFeatured');
+    const accountStatus = document.getElementById('accountStatus');
+    const adminBtn = document.getElementById('adminBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginOpenBtn = document.getElementById('loginOpenBtn');
+    const registerOpenBtn = document.getElementById('registerOpenBtn');
+    const loginModal = document.getElementById('loginModal');
+    const registerModal = document.getElementById('registerModal');
+    const sortFilter = document.getElementById('sortFilter');
+    const siteLogo = document.getElementById('siteLogo');
+    const upgradeModal = document.getElementById('upgradeModal');
 
-function renderActiveFilters() {
-  const wrap = document.getElementById('activeFilters');
-  const pills = [];
-  if (selectedLocation) pills.push(`<button class="active-pill" onclick="clearOneFilter('location')">📍 ${esc(selectedLocation)} ✕</button>`);
-  if (selectedCategory) pills.push(`<button class="active-pill" onclick="clearOneFilter('category')">🏷 ${esc(selectedCategory)} ✕</button>`);
-  if (onlineOnly) pills.push(`<button class="active-pill" onclick="clearOneFilter('online')">🟢 Online only ✕</button>`);
-  Object.entries(quickFlags).forEach(([key, value]) => {
-    if (value) pills.push(`<button class="active-pill" onclick="clearOneFilter('${key}')">${key.toUpperCase()} ✕</button>`);
-  });
-  wrap.innerHTML = pills.length ? pills.join('') : `<span class="text-slate-500 text-sm">No active filters</span>`;
-}
+    function esc(v){ return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
+    function escJs(v){ return String(v ?? '').replaceAll('\\', '\\\\').replaceAll("'", "\\'"); }
+    function safe(v, fallback = '') { return v === null || v === undefined || v === '' ? fallback : v; }
 
-function toggleLocationChip(location) {
-  selectedLocation = selectedLocation === location ? '' : location;
-  applyFilters();
-}
-function toggleCategoryChip(category) {
-  selectedCategory = selectedCategory === category ? '' : category;
-  applyFilters();
-}
-function clearOneFilter(type) {
-  if (type === 'location') selectedLocation = '';
-  if (type === 'category') selectedCategory = '';
-  if (type === 'online') onlineOnly = false;
-  if (quickFlags[type] !== undefined) quickFlags[type] = false;
-  syncButtons();
-  applyFilters();
-}
-window.toggleLocationChip = toggleLocationChip;
-window.toggleCategoryChip = toggleCategoryChip;
-window.clearOneFilter = clearOneFilter;
-
-async function incrementView(profileId){
-  if(viewedProfiles.has(profileId)) return;
-  viewedProfiles.add(profileId);
-  const key = `viewed_profile_${profileId}`;
-  if(localStorage.getItem(key)) return;
-  localStorage.setItem(key, '1');
-  try{
-    const profile = allProfiles.find(p => p.id === profileId);
-    if(!profile) return;
-    const newCount = (profile.views_count || 0) + 1;
-    const { error } = await supabaseClient.from('profiles').update({ views_count: newCount }).eq('id', profileId);
-    if(error) throw error;
-    profile.views_count = newCount;
-    applyFilters();
-  }catch(err){ console.error('View increment failed:', err); }
-}
-
-async function likeProfile(profileId){
-  if(hasLiked(profileId)) return;
-  try{
-    const profile = allProfiles.find(p => p.id === profileId);
-    if(!profile) return;
-    const newCount = (profile.likes_count || 0) + 1;
-    const { error } = await supabaseClient.from('profiles').update({ likes_count: newCount }).eq('id', profileId);
-    if(error) throw error;
-    profile.likes_count = newCount;
-    const likedIds = getLikedIds();
-    likedIds.push(profileId);
-    setLikedIds(likedIds);
-    applyFilters();
-  }catch(err){ console.error('Like failed:', err); }
-}
-window.likeProfile = likeProfile;
-
-function applyFilters() {
-  const q = searchInput.value.trim().toLowerCase();
-  const sortValue = sortFilter.value;
-
-  let filtered = allProfiles.filter(p => {
-    const hay = [
-      p.name,
-      p.description,
-      p.location,
-      p.category,
-      p.price_range
-    ].join(' ').toLowerCase();
-
-    if (q && !hay.includes(q)) return false;
-    if (selectedLocation && p.location !== selectedLocation) return false;
-    if (selectedCategory && p.category !== selectedCategory) return false;
-    if (onlineOnly && !p.is_online) return false;
-    if (quickFlags.vvip && !p.is_vvip) return false;
-    if (quickFlags.vip && !p.is_vip) return false;
-    if (quickFlags.featured && !p.is_featured) return false;
-    if (quickFlags.verified && !p.is_verified) return false;
-
-    return true;
-  });
-
-  if (sortValue === 'likes') {
-    filtered.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
-  } else if (sortValue === 'views') {
-    filtered.sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
-  } else if (sortValue === 'name') {
-    filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-  } else {
-    filtered.sort((a, b) => {
-      return (b.is_vvip ? 1 : 0) - (a.is_vvip ? 1 : 0)
-        || (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0)
-        || (b.is_vip ? 1 : 0) - (a.is_vip ? 1 : 0)
-        || (b.id || 0) - (a.id || 0);
-    });
-  }
-
-  const vvip = filtered.filter(p => p.is_vvip);
-  const featured = filtered.filter(p => (p.is_featured || p.is_vip) && !p.is_vvip).slice(0, 6);
-  const regular = filtered.filter(p => !p.is_vvip);
-
-  statProfiles.textContent = filtered.length;
-  statFeatured.textContent = vvip.length + featured.length;
-
-  vvipFeedEl.innerHTML = vvip.length ? vvip.map(p=>card(p, true)).join('') : emptyCard('No Premium VVIP profiles', 'Try another filter.');
-  featuredFeedEl.innerHTML = featured.length ? featured.map(p=>card(p, true)).join('') : emptyCard('No featured profiles', 'Try another filter.');
-  feedEl.innerHTML = regular.length ? regular.map(p=>card(p, false)).join('') : emptyCard('No matching profiles', 'Try another search or filter.');
-
-  buildLocationChips(allProfiles);
-  buildCategoryChips(allProfiles);
-  renderActiveFilters();
-}
-
-async function loadProfiles(){
-  try{
-    feedEl.innerHTML = emptyCard('Loading premium profiles...', 'The velvet rope is opening.');
-    featuredFeedEl.innerHTML = emptyCard('Loading featured profiles...', 'Please wait a moment.');
-    vvipFeedEl.innerHTML = emptyCard('Loading VVIP profiles...', 'The crown section is warming up.');
-    setStatus('Loading profiles...', 'Fetching active profiles from Supabase.');
-    const { data, error } = await supabaseClient.from('profiles').select('*').eq('status', 'active').order('is_vvip', { ascending: false }).order('is_featured', { ascending: false }).order('is_vip', { ascending: false }).order('sort_order', { ascending: true, nullsFirst: false }).order('id', { ascending: false });
-    if(error) throw error;
-    allProfiles = data || [];
-    applyFilters();
-    allProfiles.forEach(profile => incrementView(profile.id));
-    setStatus('Connected successfully', `Loaded ${allProfiles.length} active profile(s).`);
-  }catch(err){
-    console.error(err);
-    feedEl.innerHTML = emptyCard('Could not load profiles', err.message || 'Unknown error');
-    featuredFeedEl.innerHTML = emptyCard('Featured unavailable', 'Connection issue');
-    vvipFeedEl.innerHTML = emptyCard('VVIP unavailable', 'Connection issue');
-    setStatus('Connection error', err.message || 'Unknown error', true);
-  }
-}
-
-async function refreshUserUi(){
-  try{
-    const { data } = await supabaseClient.auth.getSession();
-    const session = data.session;
-    if(session){
-      accountStatus.textContent = session.user.email === OWNER_EMAIL ? `Owner: ${session.user.email}` : `Signed in: ${session.user.email}`;
-      logoutBtn.classList.remove('hidden');
-      loginOpenBtn.classList.add('hidden');
-      registerOpenBtn.classList.add('hidden');
-      if(session.user.email === OWNER_EMAIL) adminBtn.classList.remove('hidden');
-      else adminBtn.classList.add('hidden');
-    }else{
-      accountStatus.textContent = 'Guest';
-      logoutBtn.classList.add('hidden');
-      loginOpenBtn.classList.remove('hidden');
-      registerOpenBtn.classList.remove('hidden');
-      adminBtn.classList.add('hidden');
+    function normalizeCategoryValue(value){
+      const raw = String(value || '').trim().toLowerCase();
+      if (!raw) return 'general';
+      if (raw.includes('signature') || raw.includes('premium') || raw.includes('vvip')) return 'signature';
+      if (raw.includes('vip')) return 'vip';
+      if (raw.includes('featured') || raw.includes('sweet')) return 'featured';
+      if (raw.includes('free')) return 'free';
+      return raw;
     }
-  }catch(err){ console.error(err); }
-}
 
-async function registerUser(){
-  const email = document.getElementById('registerEmail').value.trim();
-  const password = document.getElementById('registerPassword').value.trim();
-  const msg = document.getElementById('registerMsg');
-  msg.textContent = '';
-  const { error } = await supabaseClient.auth.signUp({ email, password });
-  if(error){ msg.textContent = error.message; return; }
-  msg.textContent = 'Account created. Check your email if confirmation is enabled.';
-}
+    function normalizePublicProfile(p = {}) {
+      const category = normalizeCategoryValue(
+        p.category || p.plan || p.plan_name || p.category_name
+      );
 
-async function loginUser(){
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
-  const msg = document.getElementById('loginMsg');
-  msg.textContent = '';
-  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  if(error){ msg.textContent = error.message; return; }
-  closeModal(loginModal);
-  await refreshUserUi();
-}
+      const name = safe(
+        p.name,
+        safe(p.stage_name, safe(p.username, safe(p.full_name, 'Unnamed profile')))
+      );
 
-async function logoutUser(){ await supabaseClient.auth.signOut(); await refreshUserUi(); }
+      const description = safe(
+        p.description,
+        safe(p.bio, 'No description available.')
+      );
 
-searchInput.addEventListener('input', applyFilters);
-sortFilter.addEventListener('change', applyFilters);
+      const imageUrl = getDisplayImage(p);
+      const location = getDisplayLocation(p);
 
-document.getElementById('onlineOnlyBtn').addEventListener('click', () => {
-  onlineOnly = !onlineOnly;
-  syncButtons();
-  applyFilters();
-});
+      const isVvip = Boolean(
+        p.is_vvip ??
+        (category === 'signature')
+      );
 
-document.querySelectorAll('.quick-filter').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const key = btn.dataset.filter;
-    quickFlags[key] = !quickFlags[key];
+      const isVip = Boolean(
+        p.is_vip ??
+        (category === 'vip')
+      );
+
+      const isFeatured = Boolean(
+        p.is_featured ??
+        p.featured ??
+        (category === 'featured')
+      );
+
+      const isVerified = Boolean(
+        p.is_verified ??
+        p.verified ??
+        imageUrl
+      );
+
+      const isOnline = Boolean(
+        p.is_online ??
+        p.online ??
+        (String(p.status || '').toLowerCase() === 'active')
+      );
+
+      const paymentStatus = String(
+        p.payment_status ||
+        (String(p.status || '').toLowerCase() === 'active' ? 'paid' : 'unpaid')
+      ).toLowerCase();
+
+      const status = String(p.status || (isOnline ? 'active' : 'pending')).toLowerCase();
+
+      return {
+        ...p,
+        name,
+        stage_name: safe(p.stage_name, name),
+        description,
+        bio: safe(p.bio, description),
+        location,
+        category,
+        plan: p.plan || category,
+        price_range: getPriceRange(p),
+        image_url: imageUrl,
+        profile_image_url: imageUrl,
+        whatsapp: safe(p.whatsapp, safe(p.phone, '')),
+        phone: safe(p.phone, safe(p.whatsapp, '')),
+        is_vvip: isVvip,
+        is_vip: isVip,
+        is_featured: isFeatured,
+        is_verified: isVerified,
+        is_online: isOnline,
+        featured: Boolean(p.featured ?? isFeatured),
+        verified: Boolean(p.verified ?? isVerified),
+        online: Boolean(p.online ?? isOnline),
+        payment_status: paymentStatus,
+        status,
+        likes_count: Number(p.likes_count || 0),
+        views_count: Number(p.views_count || 0),
+        sort_order: Number(p.sort_order || 0),
+        object_fit: getDisplayFit(p),
+        image_position: getDisplayPosition(p)
+      };
+    }
+
+    function getDisplayName(profile){
+      return safe(profile.stage_name, safe(profile.name, 'Unnamed profile'));
+    }
+
+    function getDisplayDescription(profile){
+      return safe(profile.bio, safe(profile.description, 'No description available.'));
+    }
+
+    function getDisplayImage(profile){
+      return safe(profile.profile_image_url, safe(profile.image_url, PLACEHOLDER));
+    }
+
+    function getDisplayLocation(profile){
+      return safe(profile.location, 'Not specified');
+    }
+
+    function getDisplayPosition(profile){
+      const pos = safe(profile.image_position, '');
+      if (pos) return pos;
+      const x = Number.isFinite(Number(profile.image_position_x)) ? Number(profile.image_position_x) : 50;
+      const y = Number.isFinite(Number(profile.image_position_y)) ? Number(profile.image_position_y) : 50;
+      return `${x}% ${y}%`;
+    }
+
+    function getDisplayFit(profile){
+      return safe(profile.object_fit, safe(profile.image_zoom, 'cover'));
+    }
+
+    function getWhatsAppNumber(profile){
+      return safe(profile.whatsapp, safe(profile.phone, '')).replace(/[^\d]/g, '');
+    }
+
+    function getPhoneNumber(profile){
+      return safe(profile.phone, safe(profile.whatsapp, '')).replace(/[^\d+]/g, '');
+    }
+
+    function getPriceRange(profile){
+      const pricePerWeek = Number(profile.price_per_week || 0);
+      if (pricePerWeek > 0) return `KES ${pricePerWeek}/week`;
+      return safe(profile.price_range, 'Private pricing');
+    }
+
+    function getImageVersion(profile){
+      return encodeURIComponent(
+        safe(profile.updated_at, safe(profile.id, 'static'))
+      );
+    }
+
+    function setStatus(main, sub, error=false){
+      statusEl.textContent = main;
+      substatusEl.textContent = sub || '';
+      statusEl.className = error ? 'text-2xl font-extrabold text-red-300' : 'text-2xl font-extrabold text-pink-200';
+    }
+
+    function emptyCard(title, subtitle){
+      return `<div class="glass rounded-3xl p-8 text-center text-slate-300 col-span-full"><div class="text-xl font-semibold text-pink-300 mb-2">${esc(title)}</div><p class="text-slate-400">${esc(subtitle)}</p></div>`;
+    }
+
+    function openModal(el){ el.classList.remove('hidden'); el.classList.add('flex'); }
+    function closeModal(el){ el.classList.add('hidden'); el.classList.remove('flex'); }
+
+    function getLikedIds(){
+      try { return JSON.parse(localStorage.getItem('likedProfileIds') || '[]'); }
+      catch { return []; }
+    }
+
+    function setLikedIds(ids){ localStorage.setItem('likedProfileIds', JSON.stringify(ids)); }
+    function hasLiked(id){ return getLikedIds().includes(id); }
+
+    function getRankScore(p){
+      return (p.is_vvip ? 10000 : 0) +
+        (p.is_vip ? 3000 : 0) +
+        (p.is_featured ? 2000 : 0) +
+        (p.is_verified ? 1000 : 0) +
+        (p.is_online ? 500 : 0) +
+        ((p.likes_count || 0) * 20) +
+        ((p.views_count || 0) * 2) -
+        ((p.sort_order || 0) * 0.1);
+    }
+
+    function card(profile, featured=false){
+      const name = getDisplayName(profile);
+      const description = getDisplayDescription(profile);
+      const imageUrl = getDisplayImage(profile);
+      const imagePosition = getDisplayPosition(profile);
+      const imageFit = getDisplayFit(profile);
+      const location = getDisplayLocation(profile);
+      const category = normalizeCategoryValue(profile.category || profile.plan);
+      const displayCategory =
+        category === 'signature' ? 'Signature' :
+        category === 'vip' ? 'VIP' :
+        category === 'featured' ? 'Featured' :
+        category;
+      const vvip = !!profile.is_vvip || category === 'signature';
+      const vip = !!profile.is_vip || category === 'vip';
+      const verified = !!profile.is_verified || !!profile.verified;
+      const isFeatured = !!profile.is_featured || !!profile.featured || featured || category === 'featured';
+      const online = !!profile.is_online || !!profile.online;
+      const liked = hasLiked(profile.id);
+      const altText = `${displayCategory || 'Premium'} profile in Nairobi - ${name}`;
+      const rank = Math.round(getRankScore(profile));
+      const whatsappNumber = getWhatsAppNumber(profile);
+      const phoneNumber = getPhoneNumber(profile);
+      const imgSrc = `${imageUrl}${imageUrl.includes('?') ? '&' : '?'}v=${getImageVersion(profile)}`;
+
+      return `<article class="glass card-hover ${vvip ? 'vvip-glow' : ((vip || isFeatured) ? 'vip-glow' : 'soft-glow')} rounded-[24px] overflow-hidden fade-in">
+        <div class="relative">
+          <img src="${esc(imgSrc)}" alt="${esc(altText)}" class="card-image" style="object-position:${esc(imagePosition)};object-fit:${esc(imageFit)};" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
+          <div class="absolute top-3 left-3 flex gap-2 flex-wrap">
+            ${vvip ? '<span class="badge badge-gold">👑 Signature</span>' : ''}
+            ${vip ? '<span class="badge badge-gold">VIP</span>' : ''}
+            ${isFeatured ? '<span class="badge badge-pink">Featured</span>' : ''}
+            ${verified ? '<span class="badge badge-green">Verified</span>' : ''}
+            ${online ? '<span class="badge badge-dark">Online</span>' : ''}
+          </div>
+          <div class="absolute bottom-3 right-3 rounded-full bg-black/55 border border-white/10 px-3 py-1.5 text-xs font-bold text-yellow-200">
+            Rank ${rank}
+          </div>
+        </div>
+
+        <div class="p-4">
+          <div class="min-w-0">
+            <h3 class="profile-name truncate">${esc(name)}</h3>
+            <p class="profile-category mt-1">${esc(displayCategory || 'General')}</p>
+          </div>
+
+          <div class="flex flex-wrap gap-2 mt-3">
+            <button class="text-xs px-3 py-1 rounded-full chip hover:bg-white/15" onclick="toggleLocationChip('${escJs(location)}')">${esc(location)}</button>
+            <span class="text-xs px-3 py-1 rounded-full chip">${esc(getPriceRange(profile))}</span>
+          </div>
+
+          <p class="text-slate-300 text-sm mt-3 text-clamp-3">${esc(description)}</p>
+
+          <div class="flex flex-wrap gap-2 mt-3 text-sm text-slate-300">
+            <button onclick="likeProfile(${profile.id})" class="btn stat-chip ${liked ? 'bg-pink-600 text-white border-pink-500' : 'hover:bg-white/10'}">
+              ❤️ ${profile.likes_count || 0}
+            </button>
+            <span class="stat-chip">👁 ${profile.views_count || 0}</span>
+            ${online ? '<span class="stat-chip bg-green-500/20 text-green-300 border border-green-400/20">🟢 Online</span>' : ''}
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 mt-4">
+            <a href="${whatsappNumber ? `https://wa.me/${whatsappNumber}` : '#'}" target="_blank" rel="noopener noreferrer" class="btn text-center px-3 py-3 rounded-2xl bg-green-500 hover:bg-green-400 text-white font-semibold text-sm ${!whatsappNumber ? 'opacity-50 pointer-events-none' : ''}">WhatsApp</a>
+            <a href="${phoneNumber ? `tel:${phoneNumber}` : '#'}" class="btn call-btn text-center px-3 py-3 rounded-2xl text-sm ${!phoneNumber ? 'opacity-50 pointer-events-none' : ''}">Call</a>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 mt-3">
+            <button onclick="openUpgradeModal(${profile.id}, 'featured', 1000)" class="btn btn-dark text-xs px-2 py-2 rounded-xl">Featured</button>
+            <button onclick="openUpgradeModal(${profile.id}, 'vip', 1500)" class="btn btn-dark text-xs px-2 py-2 rounded-xl">VIP</button>
+            <button onclick="openUpgradeModal(${profile.id}, 'signature', 3000)" class="btn btn-gold text-xs px-2 py-2 rounded-xl">👑 Signature</button>
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function syncButtons() {
+      document.getElementById('onlineOnlyBtn').classList.toggle('active', onlineOnly);
+      document.querySelectorAll('.quick-filter').forEach(btn => {
+        btn.classList.toggle('active', !!quickFlags[btn.dataset.filter]);
+      });
+    }
+
+    function buildLocationChips(profiles) {
+      const wrap = document.getElementById('locationChips');
+      const counts = {};
+      profiles.forEach(p => {
+        const location = getDisplayLocation(p);
+        if (!location || location === 'Not specified') return;
+        counts[location] = (counts[location] || 0) + 1;
+      });
+      wrap.innerHTML = Object.entries(counts)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([location, count]) => `
+          <button class="filter-chip ${selectedLocation === location ? 'active' : ''}" onclick="toggleLocationChip('${escJs(location)}')">
+            ${esc(location)} (${count})
+          </button>
+        `).join('');
+    }
+
+    function buildCategoryChips(profiles) {
+      const wrap = document.getElementById('categoryChips');
+      const counts = {};
+      profiles.forEach(p => {
+        const category = normalizeCategoryValue(p.category || p.plan);
+        if (!category || category === 'general' || category === 'free') return;
+        counts[category] = (counts[category] || 0) + 1;
+      });
+      wrap.innerHTML = Object.entries(counts)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([category, count]) => `
+          <button class="filter-chip ${selectedCategory === category ? 'active' : ''}" onclick="toggleCategoryChip('${escJs(category)}')">
+            ${esc(category === 'signature' ? 'Signature' : category === 'vip' ? 'VIP' : category === 'featured' ? 'Featured' : category)} (${count})
+          </button>
+        `).join('');
+    }
+
+    function renderActiveFilters() {
+      const wrap = document.getElementById('activeFilters');
+      const pills = [];
+      if (selectedLocation) pills.push(`<button class="active-pill" onclick="clearOneFilter('location')">📍 ${esc(selectedLocation)} ✕</button>`);
+      if (selectedCategory) pills.push(`<button class="active-pill" onclick="clearOneFilter('category')">🏷 ${esc(selectedCategory)} ✕</button>`);
+      if (onlineOnly) pills.push(`<button class="active-pill" onclick="clearOneFilter('online')">🟢 Online only ✕</button>`);
+      Object.entries(quickFlags).forEach(([key, value]) => {
+        if (value) pills.push(`<button class="active-pill" onclick="clearOneFilter('${key}')">${key.toUpperCase()} ✕</button>`);
+      });
+      wrap.innerHTML = pills.length ? pills.join('') : `<span class="text-slate-500 text-sm">No active filters</span>`;
+    }
+
+    function toggleLocationChip(location) {
+      selectedLocation = selectedLocation === location ? '' : location;
+      applyFilters();
+    }
+
+    function toggleCategoryChip(category) {
+      selectedCategory = selectedCategory === category ? '' : category;
+      applyFilters();
+    }
+
+    function clearOneFilter(type) {
+      if (type === 'location') selectedLocation = '';
+      if (type === 'category') selectedCategory = '';
+      if (type === 'online') onlineOnly = false;
+      if (quickFlags[type] !== undefined) quickFlags[type] = false;
+      syncButtons();
+      applyFilters();
+    }
+
+    window.toggleLocationChip = toggleLocationChip;
+    window.toggleCategoryChip = toggleCategoryChip;
+    window.clearOneFilter = clearOneFilter;
+
+    async function incrementView(profileId){
+      if(viewedProfiles.has(profileId)) return;
+      viewedProfiles.add(profileId);
+
+      const key = `viewed_profile_${profileId}`;
+      if(localStorage.getItem(key)) return;
+      localStorage.setItem(key, '1');
+
+      try{
+        const profile = allProfiles.find(p => p.id === profileId);
+        if(!profile) return;
+        const newCount = (profile.views_count || 0) + 1;
+        const { error } = await supabaseClient.from('profiles').update({ views_count: newCount }).eq('id', profileId);
+        if(error) throw error;
+        profile.views_count = newCount;
+        applyFilters();
+      }catch(err){
+        console.error('View increment failed:', err);
+      }
+    }
+
+    async function likeProfile(profileId){
+      if(hasLiked(profileId)) return;
+      try{
+        const profile = allProfiles.find(p => p.id === profileId);
+        if(!profile) return;
+        const newCount = (profile.likes_count || 0) + 1;
+        const { error } = await supabaseClient.from('profiles').update({ likes_count: newCount }).eq('id', profileId);
+        if(error) throw error;
+        profile.likes_count = newCount;
+        const likedIds = getLikedIds();
+        likedIds.push(profileId);
+        setLikedIds(likedIds);
+        applyFilters();
+      }catch(err){
+        console.error('Like failed:', err);
+      }
+    }
+
+    window.likeProfile = likeProfile;
+
+    function applyFilters() {
+      const q = searchInput.value.trim().toLowerCase();
+      const sortValue = sortFilter.value;
+
+      let filtered = allProfiles.filter(p => {
+        const hay = [
+          getDisplayName(p),
+          getDisplayDescription(p),
+          getDisplayLocation(p),
+          normalizeCategoryValue(p.category || p.plan),
+          getPriceRange(p),
+          p.username || ''
+        ].join(' ').toLowerCase();
+
+        if (q && !hay.includes(q)) return false;
+        if (selectedLocation && getDisplayLocation(p) !== selectedLocation) return false;
+        if (selectedCategory && normalizeCategoryValue(p.category || p.plan) !== selectedCategory) return false;
+        if (onlineOnly && !p.is_online) return false;
+        if (quickFlags.vvip && !(p.is_vvip || normalizeCategoryValue(p.category || p.plan) === 'signature')) return false;
+        if (quickFlags.vip && !(p.is_vip || normalizeCategoryValue(p.category || p.plan) === 'vip')) return false;
+        if (quickFlags.featured && !(p.is_featured || normalizeCategoryValue(p.category || p.plan) === 'featured')) return false;
+        if (quickFlags.verified && !p.is_verified) return false;
+
+        return true;
+      });
+
+      if (sortValue === 'likes') {
+        filtered.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
+      } else if (sortValue === 'views') {
+        filtered.sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+      } else if (sortValue === 'name') {
+        filtered.sort((a, b) => getDisplayName(a).localeCompare(getDisplayName(b)));
+      } else {
+        filtered.sort((a, b) => getRankScore(b) - getRankScore(a) || (a.sort_order || 0) - (b.sort_order || 0) || (b.id || 0) - (a.id || 0));
+      }
+
+      const vvip = filtered.filter(p => p.is_vvip || normalizeCategoryValue(p.category || p.plan) === 'signature');
+      const featured = filtered
+        .filter(p => ((p.is_featured || p.is_vip || ['featured','vip'].includes(normalizeCategoryValue(p.category || p.plan))) && !(p.is_vvip || normalizeCategoryValue(p.category || p.plan) === 'signature')))
+        .slice(0, 8);
+      const regular = filtered.filter(p => !(p.is_vvip || normalizeCategoryValue(p.category || p.plan) === 'signature'));
+
+      statProfiles.textContent = filtered.length;
+      statFeatured.textContent = vvip.length + featured.length;
+
+      vvipFeedEl.innerHTML = vvip.length ? vvip.map(p => card(p, true)).join('') : emptyCard('No signature profiles', 'Try another filter.');
+      featuredFeedEl.innerHTML = featured.length ? featured.map(p => card(p, true)).join('') : emptyCard('No featured profiles', 'Try another filter.');
+      feedEl.innerHTML = regular.length ? regular.map(p => card(p, false)).join('') : emptyCard('No matching profiles', 'Try another search or filter.');
+
+      document.getElementById('vvipSection').classList.toggle('section-hidden', vvip.length === 0);
+      document.getElementById('featured').classList.toggle('section-hidden', featured.length === 0);
+
+      buildLocationChips(allProfiles);
+      buildCategoryChips(allProfiles);
+      renderActiveFilters();
+    }
+
+    async function loadProfiles(showLoading = true){
+      try{
+        if (showLoading) {
+          feedEl.innerHTML = emptyCard('Loading premium profiles...', 'The velvet rope is opening.');
+          featuredFeedEl.innerHTML = emptyCard('Loading featured profiles...', 'Please wait a moment.');
+          vvipFeedEl.innerHTML = emptyCard('Loading signature profiles...', 'Curated access is warming up.');
+          setStatus('Loading profiles...', 'Fetching profiles from Supabase.');
+        }
+
+        const { data, error } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .order('sort_order', { ascending: true })
+          .order('id', { ascending: false });
+
+        if(error) throw error;
+
+        allProfiles = (data || [])
+          .map(normalizePublicProfile)
+          .filter(p => {
+            if (String(p.status || '').toLowerCase() !== 'active') return false;
+            if (String(p.payment_status || '').toLowerCase() !== 'paid') return false;
+            if (!p.image_url) return false;
+            return true;
+          });
+
+        applyFilters();
+        setStatus('Profiles live', `${allProfiles.length} active profiles loaded.`);
+      }catch(err){
+        console.error('Supabase load failed:', err);
+        allProfiles = [];
+        applyFilters();
+        feedEl.innerHTML = emptyCard('Could not load profiles', err.message || 'The page is live, but profile data is temporarily unavailable.');
+        featuredFeedEl.innerHTML = emptyCard('Featured unavailable', 'Profile connection issue.');
+        vvipFeedEl.innerHTML = emptyCard('Signature unavailable', 'Profile connection issue.');
+        setStatus('Connection issue', err.message || 'Homepage still works, but profile data could not be loaded.', true);
+      }
+    }
+
+    async function refreshUserUi(){
+      try{
+        const { data } = await supabaseClient.auth.getSession();
+        const session = data.session;
+        if(session){
+          accountStatus.textContent = session.user.email === OWNER_EMAIL ? `Owner: ${session.user.email}` : `Signed in: ${session.user.email}`;
+          logoutBtn.classList.remove('hidden');
+          loginOpenBtn.classList.add('hidden');
+          registerOpenBtn.classList.add('hidden');
+          if(session.user.email === OWNER_EMAIL) adminBtn.classList.remove('hidden');
+          else adminBtn.classList.add('hidden');
+        }else{
+          accountStatus.textContent = 'Guest';
+          logoutBtn.classList.add('hidden');
+          loginOpenBtn.classList.remove('hidden');
+          registerOpenBtn.classList.remove('hidden');
+          adminBtn.classList.add('hidden');
+        }
+      }catch(err){
+        console.error(err);
+        accountStatus.textContent = 'Guest';
+        logoutBtn.classList.add('hidden');
+        loginOpenBtn.classList.remove('hidden');
+        registerOpenBtn.classList.remove('hidden');
+        adminBtn.classList.add('hidden');
+      }
+    }
+
+    async function registerUser(){
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+      const msg = document.getElementById('registerMsg');
+      msg.textContent = '';
+
+      try{
+        const { error } = await supabaseClient.auth.signUp({ email, password });
+        if(error){ msg.textContent = error.message; return; }
+        msg.textContent = 'Account created. Check your email if confirmation is enabled.';
+      }catch(err){
+        msg.textContent = 'Registration is temporarily unavailable.';
+      }
+    }
+
+    async function loginUser(){
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const msg = document.getElementById('loginMsg');
+      msg.textContent = '';
+
+      try{
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if(error){ msg.textContent = error.message; return; }
+        closeModal(loginModal);
+        await refreshUserUi();
+      }catch(err){
+        msg.textContent = 'Login is temporarily unavailable.';
+      }
+    }
+
+    async function logoutUser(){
+      try{
+        await supabaseClient.auth.signOut();
+      }catch(err){
+        console.error(err);
+      }
+      await refreshUserUi();
+    }
+
+    function openUpgradeModal(profileId, plan, amount) {
+      document.getElementById('upgradeProfileId').value = profileId;
+      document.getElementById('upgradePlan').value = plan;
+      document.getElementById('upgradeAmount').value = amount;
+      document.getElementById('upgradeSummary').textContent = `${plan.toUpperCase()} plan - KES ${amount} per week`;
+      document.getElementById('upgradeMsg').textContent = '';
+      upgradeModal.classList.remove('hidden');
+      upgradeModal.classList.add('flex');
+    }
+
+    function closeUpgradeModal() {
+      upgradeModal.classList.add('hidden');
+      upgradeModal.classList.remove('flex');
+    }
+
+    window.openUpgradeModal = openUpgradeModal;
+
+    async function submitUpgrade(){
+      const profileId = document.getElementById('upgradeProfileId').value;
+      const plan = document.getElementById('upgradePlan').value;
+      const amount = Number(document.getElementById('upgradeAmount').value);
+      const payerName = document.getElementById('payerName').value.trim();
+      const payerPhone = document.getElementById('payerPhone').value.trim();
+      const transactionCode = document.getElementById('transactionCode').value.trim();
+      const msg = document.getElementById('upgradeMsg');
+
+      msg.textContent = '';
+
+      if (!payerName || !payerPhone || !transactionCode) {
+        msg.textContent = 'Please fill all payment details.';
+        return;
+      }
+
+      try {
+        const { error } = await supabaseClient.from('payments').insert([{
+          profile_id: Number(profileId),
+          plan_name: plan,
+          amount: amount,
+          method: 'mpesa',
+          transaction_code: transactionCode,
+          payer_name: payerName,
+          payer_phone: payerPhone,
+          status: 'pending'
+        }]);
+
+        if (error) throw error;
+
+        msg.textContent = 'Payment submitted. Your upgrade will be activated after confirmation.';
+        setTimeout(() => {
+          closeUpgradeModal();
+          document.getElementById('payerName').value = '';
+          document.getElementById('payerPhone').value = '';
+          document.getElementById('transactionCode').value = '';
+        }, 1400);
+      } catch (err) {
+        console.error(err);
+        msg.textContent = 'Could not submit payment right now.';
+      }
+    }
+
+    function updateLogoGlow() {
+      if (!siteLogo) return;
+      const y = Math.min(window.scrollY, 200);
+      const intensity = y / 200;
+      siteLogo.style.transform = `scale(${1 + intensity * 0.05})`;
+      siteLogo.style.filter = `brightness(${1 + intensity * 0.15}) saturate(${1 + intensity * 0.15})`;
+      siteLogo.style.boxShadow = `
+        0 0 0 1px rgba(255,255,255,${0.05 + intensity * 0.1}),
+        0 0 ${10 + intensity * 20}px rgba(255,115,0,${0.1 + intensity * 0.2}),
+        0 0 ${20 + intensity * 30}px rgba(255,79,183,${0.08 + intensity * 0.2}),
+        0 0 ${30 + intensity * 50}px rgba(255,213,77,${0.05 + intensity * 0.15})
+      `;
+    }
+
+    function initRealtimeProfiles(){
+      if (profilesRealtimeChannel) return;
+
+      profilesRealtimeChannel = supabaseClient
+        .channel('public:profiles-live')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'profiles' },
+          async (payload) => {
+            console.log('Live update from vault:', payload);
+            await loadProfiles(false);
+          }
+        )
+        .subscribe((status) => {
+          console.log('Realtime status:', status);
+        });
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    sortFilter.addEventListener('change', applyFilters);
+
+    document.getElementById('onlineOnlyBtn').addEventListener('click', () => {
+      onlineOnly = !onlineOnly;
+      syncButtons();
+      applyFilters();
+    });
+
+    document.querySelectorAll('.quick-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.filter;
+        quickFlags[key] = !quickFlags[key];
+        syncButtons();
+        applyFilters();
+      });
+    });
+
+    document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+      searchInput.value = '';
+      sortFilter.value = 'default';
+      selectedLocation = '';
+      selectedCategory = '';
+      onlineOnly = false;
+      quickFlags = { vvip:false, vip:false, featured:false, verified:false };
+      syncButtons();
+      applyFilters();
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', () => loadProfiles(true));
+    loginOpenBtn.addEventListener('click', () => openModal(loginModal));
+    registerOpenBtn.addEventListener('click', () => openModal(registerModal));
+
+    document.querySelectorAll('.closeModal').forEach(btn => btn.addEventListener('click', () => {
+      closeModal(loginModal);
+      closeModal(registerModal);
+    }));
+
+    document.getElementById('loginBtn').addEventListener('click', loginUser);
+    document.getElementById('registerBtn').addEventListener('click', registerUser);
+    logoutBtn.addEventListener('click', logoutUser);
+    document.getElementById('closeUpgradeBtn').addEventListener('click', closeUpgradeModal);
+    document.getElementById('submitUpgradeBtn').addEventListener('click', submitUpgrade);
+
+    supabaseClient.auth.onAuthStateChange(async () => {
+      await refreshUserUi();
+    });
+
+    window.addEventListener('scroll', updateLogoGlow);
+
     syncButtons();
-    applyFilters();
-  });
-});
-
-document.getElementById('clearFiltersBtn').addEventListener('click', () => {
-  searchInput.value = '';
-  sortFilter.value = 'default';
-  selectedLocation = '';
-  selectedCategory = '';
-  onlineOnly = false;
-  quickFlags = { vvip:false, vip:false, featured:false, verified:false };
-  syncButtons();
-  applyFilters();
-});
-
-document.getElementById('refreshBtn').addEventListener('click', loadProfiles);
-loginOpenBtn.addEventListener('click', () => openModal(loginModal));
-registerOpenBtn.addEventListener('click', () => openModal(registerModal));
-document.querySelectorAll('.closeModal').forEach(btn => btn.addEventListener('click', () => { closeModal(loginModal); closeModal(registerModal); }));
-document.getElementById('loginBtn').addEventListener('click', loginUser);
-document.getElementById('registerBtn').addEventListener('click', registerUser);
-logoutBtn.addEventListener('click', logoutUser);
-supabaseClient.auth.onAuthStateChange(async () => { await refreshUserUi(); });
-
-syncButtons();
-loadProfiles();
-refreshUserUi();
-</script>
+    loadProfiles(true).then(() => {
+      initRealtimeProfiles();
+    });
+    refreshUserUi();
+    updateLogoGlow();
+  </script>
 </body>
 </html>
