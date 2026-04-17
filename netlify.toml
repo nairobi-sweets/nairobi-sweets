@@ -1,2 +1,5 @@
+[build]
+  publish = "."
+
 [functions]
-  directory = "my_functions"
+  directory = "functions"
