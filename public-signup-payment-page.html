@@ -522,7 +522,7 @@
             </div>
             <div>
               <label for="age">Age</label>
-              <input id="age" placeholder="26" />
+              <input id="age" type="number" min="18" max="99" step="1" placeholder="26" />
             </div>
           </div>
 
@@ -764,6 +764,7 @@
       const name = fields.name.value.trim();
       const phone = fields.phone.value.trim();
       const slug = fields.slug.value.trim() || slugify(name || phone || 'profile');
+      const ageValue = fields.age.value.trim();
 
       return {
         id: state.savedProfileId || undefined,
@@ -783,7 +784,7 @@
         phone,
         whatsapp: phone,
         location: fields.location.value.trim(),
-        age: fields.age.value.trim(),
+        age: ageValue ? Number(ageValue) : null,
         rate_kses: `KES ${priceForPlan(plan)}/week`,
         bio: fields.bio.value.trim(),
         image_url: state.imageUrl || null,
@@ -801,6 +802,12 @@
       if (!fields.phone.value.trim()) throw new Error('Phone is required.');
       if (!fields.location.value.trim()) throw new Error('Location is required.');
       if (!fields.bio.value.trim()) throw new Error('Bio is required.');
+
+      const ageValue = fields.age.value.trim();
+      if (ageValue && Number.isNaN(Number(ageValue))) {
+        throw new Error('Age must be a valid number.');
+      }
+
       if (!state.imagePath && !fields.imageFile.files?.[0]) {
         throw new Error('Profile image is required.');
       }
@@ -861,17 +868,17 @@
           payload.created_at = new Date().toISOString();
         }
 
-        let query = supabase.from(PROFILES_TABLE);
-
         let result;
         if (state.savedProfileId) {
-          result = await query
+          result = await supabase
+            .from(PROFILES_TABLE)
             .update(payload)
             .eq('id', state.savedProfileId)
             .select()
             .single();
         } else {
-          result = await query
+          result = await supabase
+            .from(PROFILES_TABLE)
             .insert(payload)
             .select()
             .single();
@@ -963,6 +970,7 @@
           data.customer_message || 'STK sent. Check your phone and enter your M-Pesa PIN.'
         );
       } catch (error) {
+        setStatus('profile', 'failed');
         setStatus('payment', 'failed');
         showMessage($('formMessage'), 'error', error.message || 'Something went wrong.');
       } finally {
