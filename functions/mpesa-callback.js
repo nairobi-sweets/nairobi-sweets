@@ -92,13 +92,15 @@ export async function handler(event) {
   }
 
   if (!supabaseUrl || !supabaseServiceRoleKey) {
-    return json(500, { error: 'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY' });
+    return json(500, {
+      error: 'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY'
+    });
   }
 
   try {
     const raw = JSON.parse(event.body || '{}');
-
     const stkCallback = raw?.Body?.stkCallback;
+
     if (!stkCallback) {
       return json(400, { error: 'Invalid M-Pesa callback payload' });
     }
@@ -118,8 +120,10 @@ export async function handler(event) {
       merchantRequestID,
       checkoutRequestID,
       resultCode,
+      resultDesc,
       receipt,
-      phone
+      phone,
+      amount
     });
 
     let payment = null;
