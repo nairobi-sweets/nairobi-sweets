@@ -3,925 +3,1154 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nairobi Sweets | Join & Pay</title>
+  <title>Nairobi Sweets | Signup + Payment</title>
   <style>
-    :root {
-      --bg: #060816;
-      --bg2: #0c1333;
-      --panel: rgba(16, 24, 56, 0.96);
-      --panel-2: rgba(22, 34, 76, 0.98);
-      --line: rgba(255,255,255,0.08);
-      --text: #eef3ff;
-      --muted: #9ca7cf;
-      --gold: #ffd54a;
-      --pink: #ff4db7;
-      --green: #42d67e;
-      --blue: #33b6ff;
-      --red: #ff6478;
-      --shadow: 0 18px 45px rgba(0,0,0,0.34);
+    :root{
+      --bg:#050816;
+      --panel:#111b4f;
+      --panel-2:#16235f;
+      --line:rgba(255,255,255,0.09);
+      --text:#f6f7fb;
+      --muted:#b8c0e0;
+      --gold:#f4d35e;
+      --blue:#40b8ff;
+      --green:#65d39a;
+      --pink:#ff4f87;
+      --danger:#ff6b6b;
+      --shadow:0 24px 60px rgba(0,0,0,0.35);
+      --radius:22px;
     }
 
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      min-height: 100%;
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      font-family:Inter,Segoe UI,Arial,sans-serif;
       background:
-        radial-gradient(circle at 20% 0%, rgba(88, 23, 136, 0.35), transparent 28%),
-        radial-gradient(circle at 85% 10%, rgba(9, 128, 255, 0.18), transparent 22%),
-        linear-gradient(180deg, #050816, #040612 60%, #03040d 100%);
-      color: var(--text);
-      font-family: Inter, Arial, sans-serif;
+        radial-gradient(circle at top right, rgba(33,78,255,.22), transparent 25%),
+        radial-gradient(circle at top left, rgba(255,79,135,.12), transparent 20%),
+        #020617;
+      color:var(--text);
     }
 
-    body { padding: 20px; }
-    .app { max-width: 1380px; margin: 0 auto; }
-    .topbar, .panel {
-      background: linear-gradient(180deg, var(--panel), var(--panel-2));
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
+    body{
+      min-height:100vh;
+      padding:28px 16px 60px;
     }
 
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 18px 20px;
-      margin-bottom: 18px;
-      position: sticky;
-      top: 12px;
-      z-index: 10;
-      backdrop-filter: blur(12px);
+    .shell{
+      max-width:1180px;
+      margin:0 auto;
     }
 
-    .brand h1 { margin: 0; font-size: 28px; }
-    .brand p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
-
-    .shell {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 18px;
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      background:linear-gradient(135deg, rgba(28,39,102,.95), rgba(21,34,89,.95));
+      border:1px solid var(--line);
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      padding:18px 20px;
+      margin-bottom:18px;
+      position:sticky;
+      top:10px;
+      z-index:5;
+      backdrop-filter:blur(10px);
     }
 
-    .pad { padding: 20px; }
-    .hero {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 18px;
-      margin-bottom: 18px;
+    .brand h1{
+      margin:0 0 6px;
+      font-size:24px;
+      font-weight:800;
     }
 
-    .hero-card {
-      min-height: 300px;
-      position: relative;
-      overflow: hidden;
+    .brand p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
     }
 
-    .hero-art {
-      position: absolute;
-      inset: 0;
+    .top-pills{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      padding:10px 16px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.05);
+      color:#fff;
+      white-space:nowrap;
+    }
+
+    .pill.gold{background:rgba(244,211,94,.16); color:#ffe78d}
+    .pill.green{background:rgba(101,211,154,.14); color:#9cf0be}
+    .pill.blue{background:rgba(64,184,255,.14); color:#8ed7ff}
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.25fr 1fr;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .hero-card,
+    .steps-card,
+    .main-card,
+    .preview-card,
+    .status-card{
+      background:linear-gradient(180deg, rgba(18,28,84,.96), rgba(18,28,84,.9));
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+    }
+
+    .hero-card{
+      padding:22px;
+      min-height:228px;
       background:
-        radial-gradient(circle at 70% 20%, rgba(255,213,74,.24), transparent 20%),
-        radial-gradient(circle at 20% 70%, rgba(255,77,183,.16), transparent 30%),
-        linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
-      pointer-events: none;
+        radial-gradient(circle at 20% 20%, rgba(255,79,135,.12), transparent 26%),
+        radial-gradient(circle at 80% 35%, rgba(64,184,255,.12), transparent 24%),
+        linear-gradient(180deg, rgba(18,28,84,.96), rgba(18,28,84,.92));
     }
 
-    .hero-copy { position: relative; z-index: 1; }
-    .hero-copy h2 { font-size: 38px; line-height: 1.05; margin: 0 0 12px; }
-    .hero-copy p { margin: 0 0 18px; color: var(--muted); max-width: 640px; }
-
-    .chips, .button-row, .pricing-grid, .steps, .mini-list { display: flex; flex-wrap: wrap; gap: 10px; }
-    .chip {
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 12px;
-      font-weight: 800;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .chip.gold { background: rgba(255,213,74,0.16); color: #ffe593; }
-    .chip.green { background: rgba(66,214,126,0.16); color: #baffd1; }
-    .chip.blue { background: rgba(51,182,255,0.16); color: #c9efff; }
-
-    .panel h3 { margin: 0 0 14px; font-size: 22px; }
-    .subtle { color: var(--muted); }
-    .tiny { font-size: 12px; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .hidden { display: none !important; }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+    .hero-card h2{
+      margin:0 0 10px;
+      font-size:34px;
+      line-height:1.08;
     }
 
-    .stat {
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 14px;
-    }
-    .stat .label { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
-    .stat .value { font-size: 28px; font-weight: 800; }
-
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .stack { display: grid; gap: 12px; }
-
-    label {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 6px;
-      color: #d8def7;
-      font-weight: 700;
+    .hero-card p{
+      margin:0;
+      color:var(--muted);
+      font-size:16px;
+      max-width:720px;
     }
 
-    input, select, textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 15px;
-      outline: none;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: rgba(255,213,74,.85);
-      box-shadow: 0 0 0 3px rgba(255,213,74,0.12);
+    .price-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:20px;
     }
 
-    textarea { min-height: 96px; resize: vertical; }
-
-    .btn {
-      appearance: none;
-      border: 0;
-      border-radius: 14px;
-      padding: 12px 16px;
-      font-weight: 800;
-      font-size: 14px;
-      cursor: pointer;
-      transition: transform .12s ease, filter .12s ease, opacity .12s ease;
-    }
-    .btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
-    .btn:disabled { opacity: .6; cursor: not-allowed; }
-    .btn-primary { background: var(--gold); color: #1a1200; }
-    .btn-secondary { background: #2a355e; color: var(--text); }
-    .btn-green { background: var(--green); color: #07160e; }
-    .btn-blue { background: var(--blue); color: #05131b; }
-    .btn-danger { background: var(--red); color: #fff; }
-
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+    .price-pill{
+      border-radius:999px;
+      padding:10px 16px;
+      font-size:14px;
+      font-weight:800;
+      border:1px solid rgba(255,255,255,.07);
     }
 
-    .price-card {
-      border-radius: 20px;
-      padding: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      cursor: pointer;
-      transition: .2s ease;
-      position: relative;
-    }
-    .price-card:hover { transform: translateY(-2px); }
-    .price-card.active {
-      border-color: rgba(255,213,74,.9);
-      box-shadow: 0 0 0 3px rgba(255,213,74,.12);
-      background: rgba(255,213,74,0.07);
-    }
-    .price-card .title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
-    .price-card .price { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
-    .price-card .meta { color: var(--muted); font-size: 13px; }
-    .badge {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 11px;
-      font-weight: 800;
-      background: rgba(255,255,255,0.08);
+    .price-pill.featured{background:rgba(244,211,94,.14); color:#ffe78d}
+    .price-pill.vip{background:rgba(64,184,255,.14); color:#9dddff}
+    .price-pill.vvip{background:rgba(101,211,154,.14); color:#a7f6c7}
+
+    .steps-card{
+      padding:18px;
     }
 
-    .preview-shell {
-      display: grid;
-      gap: 12px;
-      position: sticky;
-      top: 96px;
+    .steps-card h3{
+      margin:0 0 14px;
+      font-size:20px;
     }
 
-    .preview-card {
-      overflow: hidden;
-      border-radius: 22px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-    }
-    .preview-image {
-      width: 100%;
-      height: 360px;
-      object-fit: cover;
-      object-position: center 20%;
-      background: #09112a;
-      display: block;
-    }
-    .preview-meta { padding: 16px; display: grid; gap: 8px; }
-    .preview-title { font-size: 24px; font-weight: 800; }
-    .preview-loc { color: var(--muted); }
-
-    .notice {
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      font-size: 14px;
-      line-height: 1.4;
-    }
-    .info { background: rgba(51,182,255,0.08); color: #d5f2ff; }
-    .success { background: rgba(66,214,126,0.09); color: #dfffea; }
-    .warn { background: rgba(255,182,72,0.10); color: #ffe4bf; }
-    .error { background: rgba(255,100,120,0.10); color: #ffd9df; }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    .step {
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 14px;
-    }
-    .step-num {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      background: rgba(255,213,74,0.14);
-      color: #ffe593;
-      font-weight: 900;
-      margin-bottom: 10px;
+    .steps{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
     }
 
-    .footer-note {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
+    .step{
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:14px;
+      background:rgba(255,255,255,0.03);
+      min-height:130px;
     }
 
-    .loader {
-      display: inline-block;
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.28);
-      border-top-color: white;
-      animation: spin .8s linear infinite;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    @media (max-width: 1120px) {
-      .shell, .hero { grid-template-columns: 1fr; }
-      .preview-shell { position: static; }
-      .pricing-grid, .steps, .stats { grid-template-columns: 1fr; }
+    .step-num{
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      background:rgba(244,211,94,.16);
+      color:#ffe78d;
+      margin-bottom:10px;
     }
 
-    @media (max-width: 780px) {
-      body { padding: 10px; }
-      .topbar {
-        position: static;
-        padding: 14px;
-        border-radius: 18px;
+    .step h4{
+      margin:0 0 8px;
+      font-size:16px;
+    }
+
+    .step p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .content-grid{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:14px;
+    }
+
+    .main-card{
+      padding:18px;
+    }
+
+    .main-card h3,
+    .preview-card h3,
+    .status-card h3{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+
+    .helper{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+    }
+
+    .tip{
+      background:rgba(64,184,255,.08);
+      border:1px solid rgba(64,184,255,.18);
+      color:#d8efff;
+      border-radius:16px;
+      padding:12px 14px;
+      margin-bottom:14px;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .plan-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .plan-card{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.035);
+      border-radius:22px;
+      padding:16px;
+      cursor:pointer;
+      transition:.2s ease;
+      position:relative;
+      min-height:128px;
+    }
+
+    .plan-card.active{
+      border-color:rgba(244,211,94,.55);
+      box-shadow:inset 0 0 0 1px rgba(244,211,94,.22);
+    }
+
+    .plan-card .tag{
+      position:absolute;
+      top:12px;
+      right:12px;
+      font-size:11px;
+      font-weight:800;
+      border-radius:999px;
+      padding:6px 10px;
+      background:rgba(255,255,255,.08);
+      color:#fff;
+    }
+
+    .plan-card h4{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+
+    .plan-card .price{
+      font-size:26px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    .plan-card p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .field-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .field{
+      margin-bottom:12px;
+    }
+
+    .field label{
+      display:block;
+      margin-bottom:8px;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea{
+      width:100%;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      color:#fff;
+      border-radius:16px;
+      padding:14px 14px;
+      font-size:15px;
+      outline:none;
+    }
+
+    .field textarea{
+      min-height:96px;
+      resize:vertical;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder{
+      color:#93a1d2;
+    }
+
+    .checks{
+      display:grid;
+      gap:10px;
+      margin:4px 0 14px;
+    }
+
+    .check{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      font-size:14px;
+      color:#fff;
+    }
+
+    .check input{
+      margin-top:3px;
+      accent-color:var(--pink);
+    }
+
+    .file-note{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    button{
+      border:none;
+      cursor:pointer;
+      font-weight:800;
+      border-radius:16px;
+      padding:14px 18px;
+      transition:.18s ease;
+    }
+
+    button:hover{transform:translateY(-1px)}
+    button:disabled{opacity:.65; cursor:not-allowed; transform:none}
+
+    .btn-blue{
+      background:linear-gradient(180deg, #3ab9ff, #1e9ef7);
+      color:#041024;
+    }
+
+    .btn-soft{
+      background:rgba(255,255,255,.08);
+      color:#fff;
+    }
+
+    .btn-gold{
+      background:linear-gradient(180deg, #ffd84b, #f4c51e);
+      color:#241800;
+    }
+
+    .message{
+      margin-top:14px;
+      display:none;
+      border-radius:16px;
+      padding:14px;
+      font-size:14px;
+      line-height:1.45;
+    }
+
+    .preview-card{
+      padding:18px;
+    }
+
+    .preview-box{
+      overflow:hidden;
+      border-radius:24px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+    }
+
+    .preview-image-wrap{
+      aspect-ratio:4/3.1;
+      background:#1b2142;
+      overflow:hidden;
+    }
+
+    .preview-image{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      background:#2d3568;
+    }
+
+    .preview-content{
+      padding:16px;
+    }
+
+    .preview-name{
+      font-size:22px;
+      font-weight:900;
+      margin:0 0 4px;
+    }
+
+    .preview-location{
+      color:var(--muted);
+      font-size:15px;
+      margin-bottom:12px;
+    }
+
+    .preview-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    .chip{
+      border-radius:999px;
+      padding:7px 12px;
+      font-size:12px;
+      font-weight:800;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .chip.gold{background:rgba(244,211,94,.16); color:#ffe78d}
+    .chip.green{background:rgba(101,211,154,.14); color:#aef3ca}
+    .chip.blue{background:rgba(64,184,255,.14); color:#9dddff}
+
+    .preview-bio{
+      color:#e8ebf9;
+      font-size:15px;
+      line-height:1.45;
+      min-height:46px;
+    }
+
+    .status-card{
+      padding:18px;
+      margin-top:14px;
+    }
+
+    .status-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .status-box{
+      min-height:78px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.035);
+      padding:12px;
+    }
+
+    .status-box small{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:8px;
+    }
+
+    .status-box strong{
+      display:block;
+      font-size:22px;
+      font-weight:900;
+      text-transform:lowercase;
+    }
+
+    .footer-note{
+      margin-top:16px;
+      text-align:center;
+      color:#98a4d3;
+      font-size:12px;
+    }
+
+    @media (max-width: 980px){
+      .hero-grid,
+      .content-grid{
+        grid-template-columns:1fr;
       }
-      .brand h1 { font-size: 24px; }
-      .brand p { font-size: 13px; line-height: 1.45; }
-      .hero-copy h2 { font-size: 30px; }
-      .hero-copy p { font-size: 14px; }
-      .form-grid, .form-grid-3, .pricing-grid, .steps, .stats { grid-template-columns: 1fr; }
-      .shell, .hero { grid-template-columns: 1fr; gap: 14px; }
-      .preview-shell { position: static; top: auto; }
-      .panel, .topbar { border-radius: 18px; }
-      .pad { padding: 16px; }
-      .price-card { padding: 14px; border-radius: 16px; }
-      .price-card .title { font-size: 18px; }
-      .price-card .price { font-size: 26px; }
-      input, select, textarea {
-        min-height: 52px;
-        font-size: 16px;
-        border-radius: 12px;
+    }
+
+    @media (max-width: 760px){
+      .topbar{
+        flex-direction:column;
+        align-items:flex-start;
       }
-      textarea { min-height: 110px; }
-      label { font-size: 14px; }
-      .button-row {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 10px;
+
+      .steps{
+        grid-template-columns:1fr;
       }
-      .btn {
-        width: 100%;
-        min-height: 52px;
-        font-size: 16px;
-        border-radius: 12px;
+
+      .plan-grid,
+      .status-grid,
+      .field-grid{
+        grid-template-columns:1fr;
       }
-      .preview-image {
-        height: 300px;
+
+      .hero-card h2{
+        font-size:28px;
       }
-      .preview-title { font-size: 22px; }
-      .stats { gap: 10px; }
-      .stat .value { font-size: 18px; }
-      .footer-note { padding: 0 4px 12px; }
-      .mobile-sticky-pay {
-        position: sticky;
-        bottom: 10px;
-        z-index: 30;
-        margin-top: 14px;
-        padding: 10px;
-        border-radius: 16px;
-        background: rgba(9, 14, 34, 0.92);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.08);
-        box-shadow: 0 12px 30px rgba(0,0,0,0.28);
-      }
-      .mobile-sticky-pay .btn { margin: 0; }
     }
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="shell">
     <div class="topbar">
       <div class="brand">
         <h1>Nairobi Sweets</h1>
         <p>Create your profile, pay by M-Pesa, and go live faster than a matatu changing lanes.</p>
       </div>
-      <div class="chips">
-        <span class="chip gold">Signup + Payment</span>
-        <span class="chip green">STK Push Ready</span>
-        <span class="chip blue">Auto Activation</span>
+      <div class="top-pills">
+        <div class="pill gold">Signup + Payment</div>
+        <div class="pill green">STK Push Ready</div>
+        <div class="pill blue">Auto Activation</div>
       </div>
     </div>
 
-    <div class="hero">
-      <div class="panel hero-card pad">
-        <div class="hero-art"></div>
-        <div class="hero-copy">
-          <h2>Join Nairobi Sweets and go live in a few taps.</h2>
-          <p>Fill your profile, upload your image, choose a plan, and pay straight from your phone. Once payment lands, your profile can be activated automatically.</p>
-          <div class="chips">
-            <span class="chip gold">Featured KES 1000/week</span>
-            <span class="chip blue">VIP KES 1500/week</span>
-            <span class="chip green">VVIP / Signature KES 3000/week</span>
-          </div>
+    <div class="hero-grid">
+      <section class="hero-card">
+        <h2>Join Nairobi Sweets and go live in a few taps.</h2>
+        <p>Fill your profile, upload your image, choose a plan, and pay straight from your phone. Once payment lands, your profile can be activated automatically.</p>
+        <div class="price-pills">
+          <div class="price-pill featured">Featured KES 1000/week</div>
+          <div class="price-pill vip">VIP KES 1500/week</div>
+          <div class="price-pill vvip">VVIP / Signature KES 3000/week</div>
         </div>
-      </div>
+      </section>
 
-      <div class="panel pad">
+      <section class="steps-card">
         <h3>How it works</h3>
         <div class="steps">
           <div class="step">
             <div class="step-num">1</div>
-            <strong>Create profile</strong>
-            <div class="subtle tiny" style="margin-top:8px;">Add your name, location, bio, phone, and profile image.</div>
+            <h4>Create profile</h4>
+            <p>Add your name, location, bio, phone, and profile image.</p>
           </div>
           <div class="step">
             <div class="step-num">2</div>
-            <strong>Pick a plan</strong>
-            <div class="subtle tiny" style="margin-top:8px;">Choose Featured, VIP, or Signature depending on how much spotlight you want.</div>
+            <h4>Pick a plan</h4>
+            <p>Choose Featured, VIP, or Signature depending on how much spotlight you want.</p>
           </div>
           <div class="step">
             <div class="step-num">3</div>
-            <strong>Pay by M-Pesa</strong>
-            <div class="subtle tiny" style="margin-top:8px;">Tap the payment button, approve the STK prompt, and wait for activation.</div>
+            <h4>Pay by M-Pesa</h4>
+            <p>Tap the payment button, approve the STK prompt, and wait for activation.</p>
           </div>
         </div>
-      </div>
+      </section>
     </div>
 
-    <div class="shell">
-      <div class="panel pad">
+    <div class="content-grid">
+      <section class="main-card">
         <h3>Create your profile</h3>
-        <div class="subtle" style="margin-bottom:14px;">This page saves a draft profile first, then sends an M-Pesa STK push using your selected plan.</div>
-        <div class="notice info" style="margin-top:0; margin-bottom:14px;">Mobile tip: fill your details, upload one clear vertical photo, then tap the big pay button at the bottom.</div>
+        <p class="helper">This page saves a draft profile first, then sends an M-Pesa STK push using your selected plan.</p>
 
-        <div class="stack">
-          <div class="pricing-grid" id="pricingGrid">
-            <div class="price-card active" data-plan="featured" data-amount="1000">
-              <span class="badge">Starter</span>
-              <div class="title">Featured</div>
-              <div class="price">KES 1000</div>
-              <div class="meta">Good for quick visibility and weekly renewals.</div>
-            </div>
-            <div class="price-card" data-plan="vip" data-amount="1500">
-              <span class="badge">Popular</span>
-              <div class="title">VIP</div>
-              <div class="price">KES 1500</div>
-              <div class="meta">Stronger visibility with a premium weekly spot.</div>
-            </div>
-            <div class="price-card" data-plan="signature" data-amount="3000">
-              <span class="badge">Top shelf</span>
-              <div class="title">VVIP / Signature</div>
-              <div class="price">KES 3000</div>
-              <div class="meta">Maximum spotlight for the profiles that want the velvet rope.</div>
-            </div>
-          </div>
-
-          <div class="form-grid">
-            <div>
-              <label for="name">Display name</label>
-              <input id="name" placeholder="Thickbabe 💗💋" />
-            </div>
-            <div>
-              <label for="phone">Phone / WhatsApp</label>
-              <input id="phone" placeholder="0794888548" />
-            </div>
-          </div>
-
-          <div class="form-grid">
-            <div>
-              <label for="whatsappName">WhatsApp name</label>
-              <input id="whatsappName" placeholder="What we should call you on WhatsApp" />
-            </div>
-            <div>
-              <label for="reminderWindow">Reminder schedule</label>
-              <select id="reminderWindow">
-                <option value="15m">15 minutes after signup</option>
-                <option value="1h" selected>1 hour after signup</option>
-                <option value="24h">24 hours after signup</option>
-                <option value="off">No reminders</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="stack" style="gap:10px;">
-            <label style="display:flex; gap:10px; align-items:flex-start; font-weight:600;">
-              <input id="waConsent" type="checkbox" checked style="width:auto; min-height:auto; margin-top:3px;" />
-              <span>Send me WhatsApp onboarding updates and payment reminders.</span>
-            </label>
-            <label style="display:flex; gap:10px; align-items:flex-start; font-weight:600;">
-              <input id="waRenewalConsent" type="checkbox" checked style="width:auto; min-height:auto; margin-top:3px;" />
-              <span>Send renewal reminders before my weekly plan expires.</span>
-            </label>
-          </div>
-
-          <div class="notice info" style="margin-top:0;">
-            After signup, WhatsApp can send a welcome message, payment prompt reminder, and renewal reminders before expiry.
-          </div>
-
-          <div class="form-grid">
-            <div>
-              <label for="location">Location</label>
-              <input id="location" placeholder="Joyland, Ruaka Square" />
-            </div>
-            <div>
-              <label for="age">Age</label>
-              <input id="age" placeholder="26" />
-            </div>
-          </div>
-
-          <div class="form-grid-3">
-            <div>
-              <label for="plan">Plan</label>
-              <select id="plan">
-                <option value="featured">featured</option>
-                <option value="vip" selected>vip</option>
-                <option value="signature">signature</option>
-                <option value="vvip">vvip</option>
-              </select>
-            </div>
-            <div>
-              <label for="amount">Amount</label>
-              <input id="amount" type="number" value="1500" />
-            </div>
-            <div>
-              <label for="slug">Slug</label>
-              <input id="slug" placeholder="thickbabe" />
-            </div>
-          </div>
-
-          <div>
-            <label for="bio">Bio</label>
-            <textarea id="bio" placeholder="Tell clients a little about yourself."></textarea>
-          </div>
-
-          <div>
-            <label for="imageFile">Profile image</label>
-            <input id="imageFile" type="file" accept="image/*" />
-            <div class="tiny subtle" style="margin-top:8px;">Upload the image first, then we save the profile and send STK.</div>
-          </div>
-
-          <div class="button-row">
-            <button id="uploadBtn" class="btn btn-blue">Upload image only</button>
-            <button id="saveDraftBtn" class="btn btn-secondary">Save draft only</button>
-          </div>
-
-          <div class="mobile-sticky-pay">
-            <button id="payBtn" class="btn btn-primary">Create profile + Pay now</button>
-          </div>
-
-          <div id="formMessage" class="notice info hidden"></div>
+        <div class="tip">
+          Mobile tip: fill your details, upload one clear vertical photo, then tap the big pay button at the bottom.
         </div>
-      </div>
 
-      <div class="preview-shell">
-        <div class="panel pad">
+        <div class="plan-grid">
+          <div class="plan-card active" data-plan="featured" data-amount="1000">
+            <span class="tag">Starter</span>
+            <h4>Featured</h4>
+            <div class="price">KES 1000</div>
+            <p>Good for quick visibility and weekly renewals.</p>
+          </div>
+
+          <div class="plan-card" data-plan="vip" data-amount="1500">
+            <span class="tag">Popular</span>
+            <h4>VIP</h4>
+            <div class="price">KES 1500</div>
+            <p>Stronger visibility with a premium weekly spot.</p>
+          </div>
+
+          <div class="plan-card" data-plan="vvip" data-amount="3000">
+            <span class="tag">Top shelf</span>
+            <h4>VVIP / Signature</h4>
+            <div class="price">KES 3000</div>
+            <p>Maximum spotlight for the profiles that want the velvet rope.</p>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="display-name">Display name</label>
+            <input id="display-name" type="text" placeholder="e.g. stk test 2" />
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone / WhatsApp</label>
+            <input id="phone" type="text" placeholder="2547XXXXXXXX or 07XXXXXXXX" />
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="whatsapp-name">WhatsApp name</label>
+            <input id="whatsapp-name" type="text" placeholder="e.g. stk test" />
+          </div>
+
+          <div class="field">
+            <label for="reminder-schedule">Reminder schedule</label>
+            <select id="reminder-schedule">
+              <option value="15 minutes after signup">15 minutes after signup</option>
+              <option value="30 minutes after signup">30 minutes after signup</option>
+              <option value="1 hour after signup">1 hour after signup</option>
+              <option value="same day evening">Same day evening</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="checks">
+          <label class="check">
+            <input id="send-onboarding" type="checkbox" checked />
+            <span>Send me WhatsApp onboarding updates and payment reminders.</span>
+          </label>
+
+          <label class="check">
+            <input id="send-renewal" type="checkbox" checked />
+            <span>Send renewal reminders before my weekly plan expires.</span>
+          </label>
+        </div>
+
+        <div class="tip">
+          After signup, WhatsApp can send a welcome message, payment prompt reminder, and renewal reminders before expiry.
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="location">Location</label>
+            <input id="location" type="text" placeholder="Nairobi" value="Nairobi" />
+          </div>
+
+          <div class="field">
+            <label for="age">Age</label>
+            <input id="age" type="number" min="18" max="60" placeholder="26" />
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="plan">Plan</label>
+            <select id="plan">
+              <option value="featured">featured</option>
+              <option value="vip" selected>vip</option>
+              <option value="vvip">vvip</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="amount">Amount</label>
+            <input id="amount" type="number" value="1500" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="slug">Slug</label>
+          <input id="slug" type="text" placeholder="stk-test-2" />
+        </div>
+
+        <div class="field">
+          <label for="bio">Bio</label>
+          <textarea id="bio" placeholder="Short profile bio..."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="profile-image">Profile image</label>
+          <input id="profile-image" type="file" accept="image/*" />
+          <div class="file-note">Upload the image first, then we save the profile and send STK.</div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-blue" id="upload-image-btn" type="button">Upload image only</button>
+          <button class="btn-soft" id="save-draft-btn" type="button">Save draft only</button>
+          <button class="btn-gold" id="create-profile-pay-btn" type="button">Create profile + Pay now</button>
+        </div>
+
+        <div class="message" id="payment-message"></div>
+      </section>
+
+      <div>
+        <section class="preview-card">
           <h3>Live preview</h3>
-          <div class="preview-card">
-            <img id="previewImage" class="preview-image" alt="Preview" />
-            <div class="preview-meta">
-              <div class="preview-title" id="previewName">Your profile preview</div>
-              <div class="preview-loc" id="previewLocation">Location shows here</div>
-              <div class="chips">
-                <span class="chip gold" id="previewPlan">VIP</span>
-                <span class="chip green" id="previewRate">KES 1500/week</span>
+          <div class="preview-box">
+            <div class="preview-image-wrap">
+              <img
+                id="preview-image"
+                class="preview-image"
+                alt="Preview"
+                src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1200&auto=format&fit=crop"
+              />
+            </div>
+            <div class="preview-content">
+              <div class="preview-name" id="preview-name">Your name here</div>
+              <div class="preview-location" id="preview-location">Nairobi</div>
+              <div class="preview-chips">
+                <span class="chip gold" id="preview-plan-chip">VIP</span>
+                <span class="chip green" id="preview-price-chip">KES 1,500/week</span>
               </div>
-              <div class="subtle" id="previewBio">Your bio preview will appear here once you type it in.</div>
+              <div class="preview-bio" id="preview-bio">Your profile bio will appear here.</div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div class="panel pad">
+        <section class="status-card">
           <h3>Status</h3>
-          <div class="stats">
-            <div class="stat">
-              <div class="label">Profile save</div>
-              <div class="value tiny" id="statusProfile">waiting</div>
+          <div class="status-grid">
+            <div class="status-box">
+              <small>Profile save</small>
+              <strong id="profile-save-status">idle</strong>
             </div>
-            <div class="stat">
-              <div class="label">Image upload</div>
-              <div class="value tiny" id="statusImage">waiting</div>
+            <div class="status-box">
+              <small>Image upload</small>
+              <strong id="image-upload-status">idle</strong>
             </div>
-            <div class="stat">
-              <div class="label">Payment</div>
-              <div class="value tiny" id="statusPayment">waiting</div>
+            <div class="status-box">
+              <small>Payment</small>
+              <strong id="payment-status">idle</strong>
             </div>
-          </div>
-          <div class="stats" style="margin-top:12px;">
-            <div class="stat">
-              <div class="label">WhatsApp onboarding</div>
-              <div class="value tiny" id="statusWhatsApp">waiting</div>
+            <div class="status-box">
+              <small>WhatsApp onboarding</small>
+              <strong id="whatsapp-status">idle</strong>
             </div>
-            <div class="stat">
-              <div class="label">Reminder status</div>
-              <div class="value tiny" id="statusReminder">waiting</div>
+            <div class="status-box">
+              <small>Reminder status</small>
+              <strong id="reminder-status">idle</strong>
             </div>
-            <div class="stat">
-              <div class="label">Renewal reminders</div>
-              <div class="value tiny" id="statusRenewal">waiting</div>
+            <div class="status-box">
+              <small>Renewal reminders</small>
+              <strong id="renewal-status">idle</strong>
             </div>
           </div>
-          <div id="paymentMessage" class="notice info hidden"></div>
-        </div>
+        </section>
       </div>
     </div>
 
-    <div class="footer-note">Configure Supabase and the Netlify STK function in the script before publishing. This page assumes the payment backend lives at <span class="mono">/.netlify/functions/mpesa-stk-push</span>.</div>
+    <div class="footer-note">
+      Configure Supabase and the Netlify STK function in the script before publishing. This page assumes the payment backend lives at <strong>/.netlify/functions/mpesa-stk-push</strong>.
+    </div>
   </div>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
-    const STORAGE_BUCKET = 'profile-images';
-    const PROFILES_TABLE = 'profiles';
-    const STK_FUNCTION_URL = '/.netlify/functions/mpesa-stk-push';
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const MPESA_STK_ENDPOINT = "/.netlify/functions/mpesa-stk-push";
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: false }
-    });
-
-    const $ = id => document.getElementById(id);
-    const fields = {
-      name: $('name'),
-      phone: $('phone'),
-      whatsappName: $('whatsappName'),
-      reminderWindow: $('reminderWindow'),
-      waConsent: $('waConsent'),
-      waRenewalConsent: $('waRenewalConsent'),
-      location: $('location'),
-      age: $('age'),
-      plan: $('plan'),
-      amount: $('amount'),
-      slug: $('slug'),
-      bio: $('bio'),
-      imageFile: $('imageFile')
+    const PLAN_PRICES = {
+      featured: 1000,
+      vip: 1500,
+      vvip: 3000
     };
 
-    const state = {
-      imageUrl: '',
-      imagePath: '',
-      savedProfileId: null,
-      saving: false,
-      uploading: false,
-      paying: false
+    const planLabels = {
+      featured: "Featured",
+      vip: "VIP",
+      vvip: "VVIP / Signature"
     };
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let uploadedImageUrl = null;
+
+    function normalizePhone(phone) {
+      if (!phone) return null;
+      let p = String(phone).replace(/\D/g, "");
+      if (p.startsWith("0")) p = "254" + p.slice(1);
+      if (p.startsWith("7") && p.length === 9) p = "254" + p;
+      if (p.startsWith("254") && p.length === 12) return p;
+      return null;
+    }
 
     function slugify(text) {
-      return String(text || '')
+      return String(text || "")
         .toLowerCase()
         .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
     }
 
-    function priceForPlan(plan) {
-      switch ((plan || '').toLowerCase()) {
-        case 'featured': return 1000;
-        case 'vip': return 1500;
-        case 'signature':
-        case 'vvip': return 3000;
-        default: return 1500;
-      }
+    function setStatusBox(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(value || "idle").toLowerCase();
     }
 
-    function showMessage(node, type, text) {
-      node.className = `notice ${type}`;
-      node.textContent = text;
-      node.classList.remove('hidden');
+    function setMessage(message, isError = false) {
+      const box = document.getElementById("payment-message");
+      if (!box) return;
+      box.textContent = message;
+      box.style.display = "block";
+      box.style.background = isError
+        ? "rgba(255,80,80,0.12)"
+        : "rgba(80,200,120,0.12)";
+      box.style.border = isError
+        ? "1px solid rgba(255,80,80,0.35)"
+        : "1px solid rgba(80,200,120,0.35)";
+      box.style.color = "#fff";
     }
 
-    function hideMessage(node) {
-      node.classList.add('hidden');
-      node.textContent = '';
-    }
-
-    function setBusy(button, busy, busyLabel, idleLabel) {
-      button.disabled = busy;
-      button.innerHTML = busy ? `<span class="loader"></span>${busyLabel}` : idleLabel;
-    }
-
-    function setStatus(kind, value) {
-      if (kind === 'profile') $('statusProfile').textContent = value;
-      if (kind === 'image') $('statusImage').textContent = value;
-      if (kind === 'payment') $('statusPayment').textContent = value;
-      if (kind === 'whatsapp') $('statusWhatsApp').textContent = value;
-      if (kind === 'reminder') $('statusReminder').textContent = value;
-      if (kind === 'renewal') $('statusRenewal').textContent = value;
+    function clearMessage() {
+      const box = document.getElementById("payment-message");
+      if (!box) return;
+      box.style.display = "none";
+      box.textContent = "";
     }
 
     function updatePreview() {
-      $('previewName').textContent = fields.name.value.trim() || fields.slug.value.trim() || 'Your profile preview';
-      $('previewLocation').textContent = fields.location.value.trim() || 'Location shows here';
-      $('previewPlan').textContent = fields.plan.value.toUpperCase();
-      $('previewRate').textContent = `KES ${Number(fields.amount.value || 0).toLocaleString()}/week`;
-      $('previewBio').textContent = fields.bio.value.trim() || 'Your bio preview will appear here once you type it in.';
-      $('previewImage').src = state.imageUrl || 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000"><rect width="100%" height="100%" fill="#0d1530"/><text x="50%" y="50%" fill="#8fa2d8" font-size="36" text-anchor="middle" font-family="Arial">No image yet</text></svg>`);
+      const displayName = document.getElementById("display-name").value.trim() || "Your name here";
+      const location = document.getElementById("location").value.trim() || "Nairobi";
+      const bio = document.getElementById("bio").value.trim() || "Your profile bio will appear here.";
+      const plan = document.getElementById("plan").value || "vip";
+      const amount = Number(document.getElementById("amount").value || PLAN_PRICES[plan] || 0);
+
+      document.getElementById("preview-name").textContent = displayName;
+      document.getElementById("preview-location").textContent = location;
+      document.getElementById("preview-bio").textContent = bio;
+      document.getElementById("preview-plan-chip").textContent = planLabels[plan] || plan.toUpperCase();
+      document.getElementById("preview-price-chip").textContent = `KES ${amount.toLocaleString()}/week`;
+    }
+
+    function syncPlanCards(activePlan) {
+      document.querySelectorAll(".plan-card").forEach(card => {
+        card.classList.toggle("active", card.dataset.plan === activePlan);
+      });
+    }
+
+    function applyPlan(plan, amount) {
+      document.getElementById("plan").value = plan;
+      document.getElementById("amount").value = amount;
+      syncPlanCards(plan);
+      updatePreview();
     }
 
     function collectPayload() {
-      const plan = fields.plan.value;
-      const name = fields.name.value.trim();
-      const phone = fields.phone.value.trim();
-      const slug = (fields.slug.value.trim() || slugify(name || phone || 'profile'));
+      const displayName = document.getElementById("display-name").value.trim();
+      const whatsappName = document.getElementById("whatsapp-name").value.trim();
+      const phoneRaw = document.getElementById("phone").value.trim();
+      const reminderSchedule = document.getElementById("reminder-schedule").value;
+      const location = document.getElementById("location").value.trim();
+      const age = Number(document.getElementById("age").value || 0);
+      const plan = document.getElementById("plan").value || "featured";
+      const amount = Number(document.getElementById("amount").value || 0);
+      const slugInput = document.getElementById("slug").value.trim();
+      const bio = document.getElementById("bio").value.trim();
+      const sendOnboarding = document.getElementById("send-onboarding").checked;
+      const sendRenewal = document.getElementById("send-renewal").checked;
+      const profileImageFile = document.getElementById("profile-image").files?.[0] || null;
+
+      const phone = normalizePhone(phoneRaw);
+      const slug = slugInput || slugify(displayName || whatsappName || "profile");
+
       return {
-        id: state.savedProfileId,
-        name,
-        username: name,
-        whatsapp_name: fields.whatsappName.value.trim() || name,
-        whatsapp_opt_in: fields.waConsent.checked,
-        renewal_opt_in: fields.waRenewalConsent.checked,
-        reminder_window: fields.reminderWindow.value,
-        onboarding_status: fields.waConsent.checked ? 'queued' : 'off',
-        reminder_status: fields.reminderWindow.value === 'off' ? 'off' : 'queued',
-        slug,
-        category: plan,
-        plan,
-        status: 'draft',
-        payment_status: 'pending',
+        displayName,
+        whatsappName,
         phone,
-        whatsapp: phone,
-        location: fields.location.value.trim(),
-        age: fields.age.value.trim(),
-        rate_kses: `KES ${priceForPlan(plan)}/week`,
-        bio: fields.bio.value.trim(),
-        image_url: state.imageUrl || null,
-        image_path: state.imagePath || null,
-        image_position: 20,
-        featured: ['featured', 'vip', 'vvip', 'signature'].includes(plan),
-        verified: false,
-        online: false,
-        updated_at: new Date().toISOString(),
-        created_at: new Date().toISOString()
+        reminderSchedule,
+        location,
+        age,
+        plan,
+        amount,
+        slug,
+        bio,
+        sendOnboarding,
+        sendRenewal,
+        profileImageFile
       };
     }
 
-    function validatePayload() {
-      if (!fields.name.value.trim()) throw new Error('Display name is required.');
-      if (!fields.phone.value.trim()) throw new Error('Phone is required.');
-      if (!fields.location.value.trim()) throw new Error('Location is required.');
-      if (!fields.bio.value.trim()) throw new Error('Bio is required.');
-      if (!state.imageUrl && !fields.imageFile.files?.[0]) throw new Error('Profile image is required.');
+    async function uploadProfileImage(file, slug) {
+      if (!file) return { publicUrl: uploadedImageUrl };
+
+      const fileExt = file.name.split(".").pop() || "jpg";
+      const fileName = `${slug || "profile"}-${Date.now()}.${fileExt}`;
+      const filePath = `public-signups/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from("profile-images")
+        .upload(filePath, file, { upsert: true });
+
+      if (error) throw error;
+
+      const { data: publicData } = supabase.storage
+        .from("profile-images")
+        .getPublicUrl(filePath);
+
+      return {
+        publicUrl: publicData.publicUrl,
+        path: data.path
+      };
     }
 
-    async function uploadImage() {
-      const file = fields.imageFile.files?.[0];
-      if (!file) throw new Error('Choose an image first.');
+    async function saveDraftProfile(payload, imageUrl = null) {
+      const insertPayload = {
+        name: payload.displayName,
+        stage_name: payload.displayName,
+        whatsapp_name: payload.whatsappName,
+        phone: payload.phone,
+        whatsapp: payload.phone,
+        location: payload.location,
+        age: payload.age || null,
+        bio: payload.bio,
+        description: payload.bio,
+        category: "featured",
+        plan: payload.plan,
+        price_range: `${payload.amount}`,
+        slug: payload.slug,
+        payment_status: "pending",
+        status: "pending",
+        online: false,
+        verified: false,
+        featured: false,
+        is_featured: false,
+        reminder_schedule: payload.reminderSchedule,
+        send_onboarding: payload.sendOnboarding,
+        send_renewal: payload.sendRenewal,
+        profile_image_url: imageUrl,
+        image_url: imageUrl,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
 
-      setBusy($('uploadBtn'), true, 'Uploading…', 'Upload image only');
-      setStatus('image', 'uploading');
+      const { data, error } = await supabase
+        .from("profiles")
+        .insert(insertPayload)
+        .select()
+        .single();
 
-      try {
-        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-        const safeName = slugify(fields.slug.value || fields.name.value || 'profile');
-        const fileName = `${Date.now()}-${safeName}.${ext}`;
-        const path = `${safeName}/${fileName}`;
-
-        const { data, error } = await supabase.storage
-          .from(STORAGE_BUCKET)
-          .upload(path, file, { cacheControl: '3600', upsert: true, contentType: file.type || 'image/jpeg' });
-
-        if (error) throw error;
-
-        const publicUrl = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(data.path)?.data?.publicUrl || '';
-        state.imagePath = data.path;
-        state.imageUrl = publicUrl;
-        setStatus('image', 'uploaded');
-        updatePreview();
-        return publicUrl;
-      } finally {
-        setBusy($('uploadBtn'), false, 'Uploading…', 'Upload image only');
-      }
+      if (error) throw error;
+      return data;
     }
 
-    async function saveDraft() {
-      setBusy($('saveDraftBtn'), true, 'Saving…', 'Save draft only');
-      setStatus('profile', 'saving');
-
+    async function uploadImageOnly() {
       try {
-        validatePayload();
-        if (!state.imageUrl && fields.imageFile.files?.[0]) {
-          await uploadImage();
+        clearMessage();
+        const payload = collectPayload();
+
+        if (!payload.profileImageFile) {
+          throw new Error("Choose a profile image first.");
         }
 
-        const payload = collectPayload();
-        if (!payload.id) delete payload.id;
+        setStatusBox("image-upload-status", "uploading");
+        setMessage("Uploading image...");
 
-        const { data, error } = await supabase
-          .from(PROFILES_TABLE)
-          .upsert(payload, { onConflict: 'id' })
-          .select()
-          .single();
+        const upload = await uploadProfileImage(payload.profileImageFile, payload.slug);
+        uploadedImageUrl = upload.publicUrl;
 
-        if (error) throw error;
-
-        state.savedProfileId = data.id;
-        setStatus('profile', 'saved');
-        return data;
-      } finally {
-        setBusy($('saveDraftBtn'), false, 'Saving…', 'Save draft only');
+        document.getElementById("preview-image").src = uploadedImageUrl;
+        setStatusBox("image-upload-status", "uploaded");
+        setMessage("Image uploaded successfully.");
+      } catch (error) {
+        console.error(error);
+        setStatusBox("image-upload-status", "failed");
+        setMessage(error.message || "Image upload failed.", true);
       }
     }
 
-    async function queueWhatsAppAutomation(profile) {
-      if (!fields.waConsent.checked && !fields.waRenewalConsent.checked) {
-        setStatus('whatsapp', 'off');
-        setStatus('reminder', 'off');
-        setStatus('renewal', 'off');
-        return;
-      }
-
+    async function saveDraftOnly() {
       try {
-        const res = await fetch('/.netlify/functions/whatsapp-onboarding', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            profile_id: profile.id,
-            name: fields.name.value.trim(),
-            whatsapp_name: fields.whatsappName.value.trim() || fields.name.value.trim(),
-            phone: fields.phone.value.trim(),
-            plan: fields.plan.value,
-            amount: Number(fields.amount.value || 0),
-            reminder_window: fields.reminderWindow.value,
-            whatsapp_opt_in: fields.waConsent.checked,
-            renewal_opt_in: fields.waRenewalConsent.checked
-          })
-        });
+        clearMessage();
+        const payload = collectPayload();
 
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || 'WhatsApp onboarding queue failed.');
+        if (!payload.displayName) throw new Error("Display name is required.");
+        if (!payload.phone) throw new Error("Valid phone is required.");
 
-        setStatus('whatsapp', fields.waConsent.checked ? 'queued' : 'off');
-        setStatus('reminder', fields.reminderWindow.value === 'off' ? 'off' : 'queued');
-        setStatus('renewal', fields.waRenewalConsent.checked ? 'queued' : 'off');
+        let imageUrl = uploadedImageUrl;
+
+        if (payload.profileImageFile && !imageUrl) {
+          setStatusBox("image-upload-status", "uploading");
+          const upload = await uploadProfileImage(payload.profileImageFile, payload.slug);
+          imageUrl = upload.publicUrl;
+          uploadedImageUrl = imageUrl;
+          document.getElementById("preview-image").src = imageUrl;
+          setStatusBox("image-upload-status", "uploaded");
+        }
+
+        setStatusBox("profile-save-status", "saving");
+        setMessage("Saving draft profile...");
+
+        const profile = await saveDraftProfile(payload, imageUrl);
+        setStatusBox("profile-save-status", "saved");
+        setMessage(`Draft saved. Profile ID: ${profile.id}`);
       } catch (error) {
-        setStatus('whatsapp', 'failed');
-        setStatus('reminder', 'failed');
-        setStatus('renewal', 'failed');
-        console.error('WHATSAPP QUEUE ERROR', error);
+        console.error(error);
+        setStatusBox("profile-save-status", "failed");
+        setMessage(error.message || "Draft save failed.", true);
       }
     }
 
     async function createProfileAndPay() {
-      setBusy($('payBtn'), true, 'Sending STK…', 'Create profile + Pay now');
-      hideMessage($('formMessage'));
-      hideMessage($('paymentMessage'));
-      setStatus('payment', 'sending');
-
       try {
-        validatePayload();
-        const profile = await saveDraft();
-        await queueWhatsAppAutomation(profile);
-        const amount = Number(fields.amount.value || priceForPlan(fields.plan.value));
+        clearMessage();
 
-        const res = await fetch(STK_FUNCTION_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            profile_id: profile.id,
-            phone: fields.phone.value.trim(),
-            amount,
-            description: `Payment for ${fields.name.value.trim()}`,
-            account_reference: fields.slug.value.trim() || slugify(fields.name.value.trim())
-          })
+        setStatusBox("profile-save-status", "saving");
+        setStatusBox("image-upload-status", "waiting");
+        setStatusBox("payment-status", "waiting");
+        setStatusBox("whatsapp-status", "waiting");
+        setStatusBox("reminder-status", "waiting");
+        setStatusBox("renewal-status", "waiting");
+
+        const payload = collectPayload();
+
+        if (!payload.displayName) throw new Error("Display name is required.");
+        if (!payload.phone) throw new Error("Valid phone is required. Use 07... or 2547...");
+        if (!payload.plan) throw new Error("Plan is required.");
+        if (!payload.amount || payload.amount <= 0) throw new Error("Amount must be greater than 0.");
+
+        let imageUrl = uploadedImageUrl;
+
+        if (payload.profileImageFile && !imageUrl) {
+          setMessage("Uploading image...");
+          setStatusBox("image-upload-status", "uploading");
+
+          const upload = await uploadProfileImage(payload.profileImageFile, payload.slug);
+          imageUrl = upload.publicUrl;
+          uploadedImageUrl = imageUrl;
+
+          document.getElementById("preview-image").src = imageUrl;
+          setStatusBox("image-upload-status", "uploaded");
+        } else if (imageUrl) {
+          setStatusBox("image-upload-status", "uploaded");
+        } else {
+          setStatusBox("image-upload-status", "skipped");
+        }
+
+        setMessage("Saving profile draft...");
+        const profile = await saveDraftProfile(payload, imageUrl);
+        setStatusBox("profile-save-status", "saved");
+
+        setMessage("Sending M-Pesa STK push...");
+        setStatusBox("payment-status", "processing");
+
+        const stkBody = {
+          phone: payload.phone,
+          amount: payload.amount,
+          plan: payload.plan,
+          name: payload.displayName,
+          profile_id: profile.id,
+          slug: payload.slug,
+          account_reference: payload.slug,
+          description: `Payment for ${payload.plan} profile`
+        };
+
+        const stkRes = await fetch(MPESA_STK_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(stkBody)
         });
 
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || 'Failed to send STK push.');
+        const stkJson = await stkRes.json().catch(() => ({}));
 
-        setStatus('payment', 'sent');
-        showMessage($('paymentMessage'), 'success', data.customer_message || 'STK sent. Check your phone and enter your M-Pesa PIN.');
+        if (!stkRes.ok) {
+          console.error("STK ERROR:", stkJson);
+          setStatusBox("payment-status", "failed");
+          setStatusBox("whatsapp-status", "failed");
+          setStatusBox("reminder-status", "failed");
+          setStatusBox("renewal-status", "failed");
+
+          throw new Error(
+            stkJson?.error ||
+            stkJson?.message ||
+            stkJson?.mpesa?.errorMessage ||
+            "MPESA STK request failed"
+          );
+        }
+
+        setStatusBox("payment-status", "sent");
+        setStatusBox("whatsapp-status", "queued");
+        setStatusBox("reminder-status", "queued");
+        setStatusBox("renewal-status", "queued");
+
+        setMessage("STK sent. Check your phone and enter your M-Pesa PIN.");
+        console.log("STK SUCCESS:", stkJson);
       } catch (error) {
-        setStatus('payment', 'failed');
-        showMessage($('formMessage'), 'error', error.message || 'Something went wrong.');
-      } finally {
-        setBusy($('payBtn'), false, 'Sending STK…', 'Create profile + Pay now');
+        console.error(error);
+        setMessage(error.message || "Something went wrong.", true);
       }
     }
 
-    function attachEvents() {
-      ['name', 'phone', 'whatsappName', 'location', 'age', 'plan', 'amount', 'slug', 'bio'].forEach(key => {
-        fields[key].addEventListener('input', updatePreview);
+    document.querySelectorAll(".plan-card").forEach(card => {
+      card.addEventListener("click", () => {
+        const plan = card.dataset.plan;
+        const amount = Number(card.dataset.amount || 0);
+        applyPlan(plan, amount);
       });
+    });
 
-      fields.name.addEventListener('blur', () => {
-        if (!fields.slug.value.trim()) fields.slug.value = slugify(fields.name.value);
-        updatePreview();
-      });
+    document.getElementById("plan").addEventListener("change", (e) => {
+      const plan = e.target.value;
+      const amount = PLAN_PRICES[plan] || 0;
+      document.getElementById("amount").value = amount;
+      syncPlanCards(plan);
+      updatePreview();
+    });
 
-      fields.plan.addEventListener('change', () => {
-        fields.amount.value = priceForPlan(fields.plan.value);
-        document.querySelectorAll('.price-card').forEach(card => {
-          card.classList.toggle('active', card.dataset.plan === fields.plan.value || (fields.plan.value === 'vvip' && card.dataset.plan === 'signature'));
-        });
-        updatePreview();
-      });
+    document.getElementById("amount").addEventListener("input", updatePreview);
+    document.getElementById("display-name").addEventListener("input", () => {
+      const name = document.getElementById("display-name").value.trim();
+      const slugEl = document.getElementById("slug");
+      if (!slugEl.dataset.manual) slugEl.value = slugify(name);
+      updatePreview();
+    });
+    document.getElementById("location").addEventListener("input", updatePreview);
+    document.getElementById("bio").addEventListener("input", updatePreview);
 
-      document.querySelectorAll('.price-card').forEach(card => {
-        card.addEventListener('click', () => {
-          const plan = card.dataset.plan;
-          fields.plan.value = plan;
-          fields.amount.value = card.dataset.amount;
-          document.querySelectorAll('.price-card').forEach(x => x.classList.remove('active'));
-          card.classList.add('active');
-          updatePreview();
-        });
-      });
+    document.getElementById("slug").addEventListener("input", () => {
+      document.getElementById("slug").dataset.manual = "true";
+    });
 
-      fields.imageFile.addEventListener('change', () => {
-        const file = fields.imageFile.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          state.imageUrl = reader.result;
-          updatePreview();
-        };
-        reader.readAsDataURL(file);
-      });
+    document.getElementById("profile-image").addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-      $('uploadBtn').addEventListener('click', async () => {
-        hideMessage($('formMessage'));
-        try {
-          await uploadImage();
-          showMessage($('formMessage'), 'success', 'Image uploaded successfully.');
-        } catch (error) {
-          setStatus('image', 'failed');
-          showMessage($('formMessage'), 'error', error.message || 'Image upload failed.');
-        }
-      });
+      const localUrl = URL.createObjectURL(file);
+      document.getElementById("preview-image").src = localUrl;
+    });
 
-      $('saveDraftBtn').addEventListener('click', async () => {
-        hideMessage($('formMessage'));
-        try {
-          const data = await saveDraft();
-          showMessage($('formMessage'), 'success', `Draft saved. Profile ID: ${data.id}`);
-        } catch (error) {
-          setStatus('profile', 'failed');
-          showMessage($('formMessage'), 'error', error.message || 'Failed to save draft.');
-        }
-      });
+    document.getElementById("upload-image-btn").addEventListener("click", uploadImageOnly);
+    document.getElementById("save-draft-btn").addEventListener("click", saveDraftOnly);
+    document.getElementById("create-profile-pay-btn").addEventListener("click", createProfileAndPay);
 
-      $('payBtn').addEventListener('click', createProfileAndPay);
-    }
-
-    attachEvents();
+    applyPlan("vip", 1500);
     updatePreview();
   </script>
 </body>
