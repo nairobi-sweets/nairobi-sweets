@@ -1,520 +1,1045 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Nairobi Sweets – Signup & Pay</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nairobi Sweets | Join & Pay</title>
+  <style>
+    :root {
+      --bg: #060816;
+      --bg2: #0c1333;
+      --panel: rgba(16, 24, 56, 0.96);
+      --panel-2: rgba(22, 34, 76, 0.98);
+      --line: rgba(255,255,255,0.08);
+      --text: #eef3ff;
+      --muted: #9ca7cf;
+      --gold: #ffd54a;
+      --pink: #ff4db7;
+      --green: #42d67e;
+      --blue: #33b6ff;
+      --red: #ff6478;
+      --shadow: 0 18px 45px rgba(0,0,0,0.34);
+    }
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#0b0f2c,#121a4d);
-  color:#fff;
-  padding:20px;
-}
+    * { box-sizing: border-box; }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-}
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(88, 23, 136, 0.35), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(9, 128, 255, 0.18), transparent 22%),
+        linear-gradient(180deg, #050816, #040612 60%, #03040d 100%);
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+    }
 
-h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
+    body { padding: 20px; }
+    .app { max-width: 1380px; margin: 0 auto; }
 
-.card {
-  background: rgba(255,255,255,0.05);
-  padding:20px;
-  border-radius:16px;
-  margin-bottom:20px;
-  backdrop-filter: blur(10px);
-}
+    .topbar, .panel {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
 
-input, select, textarea {
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border-radius:8px;
-  border:none;
-  background:#0f153f;
-  color:#fff;
-}
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      position: sticky;
+      top: 12px;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+    }
 
-button {
-  width:100%;
-  padding:14px;
-  border-radius:10px;
-  border:none;
-  background:#ffd84b;
-  font-weight:bold;
-  cursor:pointer;
-  color:#000;
-  font-size:16px;
-}
+    .brand h1 { margin: 0; font-size: 28px; }
+    .brand p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 
-button:disabled {
-  opacity:0.6;
-}
+    .shell {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+    }
 
-.status {
-  margin-top:12px;
-  font-size:14px;
-}
+    .pad { padding: 20px; }
 
-.plan {
-  display:flex;
-  gap:10px;
-  margin-bottom:15px;
-}
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
 
-.plan div {
-  flex:1;
-  padding:12px;
-  border-radius:12px;
-  background:#1b245c;
-  text-align:center;
-  cursor:pointer;
-}
+    .hero-card {
+      min-height: 300px;
+      position: relative;
+      overflow: hidden;
+    }
 
-.plan .active {
-  border:2px solid #ffd84b;
-}
-</style>
+    .hero-art {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 70% 20%, rgba(255,213,74,.24), transparent 20%),
+        radial-gradient(circle at 20% 70%, rgba(255,77,183,.16), transparent 30%),
+        linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+      pointer-events: none;
+    }
 
+    .hero-copy { position: relative; z-index: 1; }
+    .hero-copy h2 { font-size: 38px; line-height: 1.05; margin: 0 0 12px; }
+    .hero-copy p { margin: 0 0 18px; color: var(--muted); max-width: 640px; }
+
+    .chips, .button-row, .pricing-grid, .steps, .mini-list { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .chip {
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .chip.gold { background: rgba(255,213,74,0.16); color: #ffe593; }
+    .chip.green { background: rgba(66,214,126,0.16); color: #baffd1; }
+    .chip.blue { background: rgba(51,182,255,0.16); color: #c9efff; }
+
+    .panel h3 { margin: 0 0 14px; font-size: 22px; }
+    .subtle { color: var(--muted); }
+    .tiny { font-size: 12px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .hidden { display: none !important; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stat {
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 14px;
+    }
+
+    .stat .label { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+    .stat .value { font-size: 28px; font-weight: 800; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .stack { display: grid; gap: 12px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #d8def7;
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(255,213,74,.85);
+      box-shadow: 0 0 0 3px rgba(255,213,74,0.12);
+    }
+
+    textarea { min-height: 96px; resize: vertical; }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform .12s ease, filter .12s ease, opacity .12s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .btn-primary { background: var(--gold); color: #1a1200; }
+    .btn-secondary { background: #2a355e; color: var(--text); }
+    .btn-green { background: var(--green); color: #07160e; }
+    .btn-blue { background: var(--blue); color: #05131b; }
+    .btn-danger { background: var(--red); color: #fff; }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .price-card {
+      border-radius: 20px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      cursor: pointer;
+      transition: .2s ease;
+      position: relative;
+    }
+
+    .price-card:hover { transform: translateY(-2px); }
+
+    .price-card.active {
+      border-color: rgba(255,213,74,.9);
+      box-shadow: 0 0 0 3px rgba(255,213,74,.12);
+      background: rgba(255,213,74,0.07);
+    }
+
+    .price-card .title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+    .price-card .price { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+    .price-card .meta { color: var(--muted); font-size: 13px; }
+
+    .badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .preview-shell {
+      display: grid;
+      gap: 12px;
+      position: sticky;
+      top: 96px;
+    }
+
+    .preview-card {
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .preview-image {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+      object-position: center 20%;
+      background: #09112a;
+      display: block;
+    }
+
+    .preview-meta { padding: 16px; display: grid; gap: 8px; }
+    .preview-title { font-size: 24px; font-weight: 800; }
+    .preview-loc { color: var(--muted); }
+
+    .notice {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .info { background: rgba(51,182,255,0.08); color: #d5f2ff; }
+    .success { background: rgba(66,214,126,0.09); color: #dfffea; }
+    .warn { background: rgba(255,182,72,0.10); color: #ffe4bf; }
+    .error { background: rgba(255,100,120,0.10); color: #ffd9df; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .step {
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 14px;
+    }
+
+    .step-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,213,74,0.14);
+      color: #ffe593;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .loader {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.28);
+      border-top-color: white;
+      animation: spin .8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 1120px) {
+      .shell, .hero { grid-template-columns: 1fr; }
+      .preview-shell { position: static; }
+      .pricing-grid, .steps, .stats { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 780px) {
+      body { padding: 10px; }
+
+      .topbar {
+        position: static;
+        padding: 14px;
+        border-radius: 18px;
+      }
+
+      .brand h1 { font-size: 24px; }
+      .brand p { font-size: 13px; line-height: 1.45; }
+      .hero-copy h2 { font-size: 30px; }
+      .hero-copy p { font-size: 14px; }
+
+      .form-grid,
+      .form-grid-3,
+      .pricing-grid,
+      .steps,
+      .stats { grid-template-columns: 1fr; }
+
+      .shell, .hero { grid-template-columns: 1fr; gap: 14px; }
+
+      .preview-shell {
+        position: static;
+        top: auto;
+      }
+
+      .panel, .topbar { border-radius: 18px; }
+      .pad { padding: 16px; }
+      .price-card { padding: 14px; border-radius: 16px; }
+      .price-card .title { font-size: 18px; }
+      .price-card .price { font-size: 26px; }
+
+      input, select, textarea {
+        min-height: 52px;
+        font-size: 16px;
+        border-radius: 12px;
+      }
+
+      textarea { min-height: 110px; }
+      label { font-size: 14px; }
+
+      .button-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .btn {
+        width: 100%;
+        min-height: 52px;
+        font-size: 16px;
+        border-radius: 12px;
+      }
+
+      .preview-image { height: 300px; }
+      .preview-title { font-size: 22px; }
+      .stats { gap: 10px; }
+      .stat .value { font-size: 18px; }
+      .footer-note { padding: 0 4px 12px; }
+
+      .mobile-sticky-pay {
+        position: sticky;
+        bottom: 10px;
+        z-index: 30;
+        margin-top: 14px;
+        padding: 10px;
+        border-radius: 16px;
+        background: rgba(9, 14, 34, 0.92);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.28);
+      }
+
+      .mobile-sticky-pay .btn { margin: 0; }
+    }
+  </style>
 </head>
-
 <body>
-
-<div class="container">
-
-<h1>Nairobi Sweets</h1>
-<p>Create your profile, pay via M-Pesa, go live instantly.</p>
-
-<div class="card">
-
-<h3>Create your profile</h3>
-
-<div class="plan">
-  <div onclick="selectPlan('featured',1000,this)" class="active">Featured<br>KES 1000</div>
-  <div onclick="selectPlan('vip',1500,this)">VIP<br>KES 1500</div>
-  <div onclick="selectPlan('vvip',3000,this)">VVIP<br>KES 3000</div>
-</div>
-
-<input id="name" placeholder="Display Name"/>
-<input id="phone" placeholder="07XXXXXXXX"/>
-<input id="location" placeholder="Location"/>
-<input id="age" type="number" placeholder="Age"/>
-<input id="slug" placeholder="Username / slug"/>
-<textarea id="bio" placeholder="Bio"></textarea>
-
-<input id="imageFile" type="file" accept="image/*"/>
-
-<button id="payBtn" onclick="createProfileAndPay()">Create profile + Pay now</button>
-
-<div class="status" id="status"></div>
-
-</div>
-
-</div>
-
-<script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const supabase = createClient(
-  "https://dkjlvyynvgtijccitvvd.supabase.co",
-  "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm"
-);
-
-const STK_URL = "/.netlify/functions/mpesa-stk-push";
-
-let selectedPlan = "featured";
-let selectedAmount = 1000;
-let uploadedImageUrl = null;
-
-function setStatus(msg){ document.getElementById("status").innerText = msg; }
-function setLoading(v){ document.getElementById("payBtn").disabled = v; }
-
-window.selectPlan = (plan, amount, el) => {
-  selectedPlan = plan;
-  selectedAmount = amount;
-  document.querySelectorAll(".plan div").forEach(d => d.classList.remove("active"));
-  el.classList.add("active");
-};
-
-function normalizePhone(phone){
-  let p = phone.replace(/\D/g,'');
-  if(p.startsWith("0")) p="254"+p.slice(1);
-  if(p.startsWith("7")) p="254"+p;
-  if(!/^254[17]\d{8}$/.test(p)) throw new Error("Invalid phone");
-  return p;
-}
-
-function cleanFileName(name){
-  return name.replace(/[^a-zA-Z0-9._-]/g,"_").toLowerCase();
-}
-
-async function uploadImage(file){
-  const safe = cleanFileName(file.name);
-  const path = `profiles/${Date.now()}-${safe}`;
-
-  const { error } = await supabase.storage
-    .from("profile-images")
-    .upload(path, file);
-
-  if(error) throw error;
-
-  const { data } = supabase.storage
-    .from("profile-images")
-    .getPublicUrl(path);
-
-  return data.publicUrl;
-}
-
-async function saveProfile(data){
-  const { data:res, error } = await supabase
-    .from("profiles")
-    .insert(data)
-    .select()
-    .single();
-
-  if(error) throw error;
-  return res;
-}
-
-window.createProfileAndPay = async () => {
-try{
-  setLoading(true);
-  setStatus("Processing...");
-
-  const name = document.getElementById("name").value.trim();
-  const phone = normalizePhone(document.getElementById("phone").value);
-  const location = document.getElementById("location").value;
-  const age = Number(document.getElementById("age").value);
-  const slug = document.getElementById("slug").value || name.toLowerCase();
-  const bio = document.getElementById("bio").value;
-
-  const file = document.getElementById("imageFile").files[0];
-
-  if(!name || !phone) throw new Error("Missing required fields");
-
-  if(file){
-    setStatus("Uploading image...");
-    uploadedImageUrl = await uploadImage(file);
-  }
-
-  setStatus("Saving profile...");
-
-  const profile = await saveProfile({
-    name,
-    phone,
-    whatsapp: phone,
-    location,
-    age,
-    plan: selectedPlan,
-    slug,
-    bio,
-    image_url: uploadedImageUrl,
-    payment_status: "pending",
-    status: "draft"
-  });
-
-  setStatus("Sending STK...");
-
-  const res = await fetch(STK_URL,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      profile_id: profile.id,
-      phone,
-      amount: selectedAmount,
-      accountReference: slug,
-      transactionDesc: `Payment for ${name}`
-    })
-  });
-
-  let json;
-  try{
-    json = await res.json();
-  }catch{
-    throw new Error("STK endpoint not responding correctly");
-  }
-
-  if(!res.ok){
-    throw new Error(json.error || "Payment failed");
-  }
-
-  setStatus("STK sent 📱 Check your phone");
-
-}catch(err){
-  console.error(err);
-  setStatus("❌ "+err.message);
-}finally{
-  setLoading(false);
-}
-};
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Nairobi Sweets – Signup & Pay</title>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#0b0f2c,#121a4d);
-  color:#fff;
-  padding:20px;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-}
-
-h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
-
-.card {
-  background: rgba(255,255,255,0.05);
-  padding:20px;
-  border-radius:16px;
-  margin-bottom:20px;
-  backdrop-filter: blur(10px);
-}
-
-input, select, textarea {
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border-radius:8px;
-  border:none;
-  background:#0f153f;
-  color:#fff;
-}
-
-button {
-  width:100%;
-  padding:14px;
-  border-radius:10px;
-  border:none;
-  background:#ffd84b;
-  font-weight:bold;
-  cursor:pointer;
-  color:#000;
-  font-size:16px;
-}
-
-button:disabled {
-  opacity:0.6;
-}
-
-.status {
-  margin-top:12px;
-  font-size:14px;
-}
-
-.plan {
-  display:flex;
-  gap:10px;
-  margin-bottom:15px;
-}
-
-.plan div {
-  flex:1;
-  padding:12px;
-  border-radius:12px;
-  background:#1b245c;
-  text-align:center;
-  cursor:pointer;
-}
-
-.plan .active {
-  border:2px solid #ffd84b;
-}
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h1>Nairobi Sweets</h1>
-<p>Create your profile, pay via M-Pesa, go live instantly.</p>
-
-<div class="card">
-
-<h3>Create your profile</h3>
-
-<div class="plan">
-  <div onclick="selectPlan('featured',1000,this)" class="active">Featured<br>KES 1000</div>
-  <div onclick="selectPlan('vip',1500,this)">VIP<br>KES 1500</div>
-  <div onclick="selectPlan('vvip',3000,this)">VVIP<br>KES 3000</div>
-</div>
-
-<input id="name" placeholder="Display Name"/>
-<input id="phone" placeholder="07XXXXXXXX"/>
-<input id="location" placeholder="Location"/>
-<input id="age" type="number" placeholder="Age"/>
-<input id="slug" placeholder="Username / slug"/>
-<textarea id="bio" placeholder="Bio"></textarea>
-
-<input id="imageFile" type="file" accept="image/*"/>
-
-<button id="payBtn" onclick="createProfileAndPay()">Create profile + Pay now</button>
-
-<div class="status" id="status"></div>
-
-</div>
-
-</div>
-
-<script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const supabase = createClient(
-  "https://dkjlvyynvgtijccitvvd.supabase.co",
-  "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm"
-);
-
-const STK_URL = "/.netlify/functions/mpesa-stk-push";
-
-let selectedPlan = "featured";
-let selectedAmount = 1000;
-let uploadedImageUrl = null;
-
-function setStatus(msg){ document.getElementById("status").innerText = msg; }
-function setLoading(v){ document.getElementById("payBtn").disabled = v; }
-
-window.selectPlan = (plan, amount, el) => {
-  selectedPlan = plan;
-  selectedAmount = amount;
-  document.querySelectorAll(".plan div").forEach(d => d.classList.remove("active"));
-  el.classList.add("active");
-};
-
-function normalizePhone(phone){
-  let p = phone.replace(/\D/g,'');
-  if(p.startsWith("0")) p="254"+p.slice(1);
-  if(p.startsWith("7")) p="254"+p;
-  if(!/^254[17]\d{8}$/.test(p)) throw new Error("Invalid phone");
-  return p;
-}
-
-function cleanFileName(name){
-  return name.replace(/[^a-zA-Z0-9._-]/g,"_").toLowerCase();
-}
-
-async function uploadImage(file){
-  const safe = cleanFileName(file.name);
-  const path = `profiles/${Date.now()}-${safe}`;
-
-  const { error } = await supabase.storage
-    .from("profile-images")
-    .upload(path, file);
-
-  if(error) throw error;
-
-  const { data } = supabase.storage
-    .from("profile-images")
-    .getPublicUrl(path);
-
-  return data.publicUrl;
-}
-
-async function saveProfile(data){
-  const { data:res, error } = await supabase
-    .from("profiles")
-    .insert(data)
-    .select()
-    .single();
-
-  if(error) throw error;
-  return res;
-}
-
-window.createProfileAndPay = async () => {
-try{
-  setLoading(true);
-  setStatus("Processing...");
-
-  const name = document.getElementById("name").value.trim();
-  const phone = normalizePhone(document.getElementById("phone").value);
-  const location = document.getElementById("location").value;
-  const age = Number(document.getElementById("age").value);
-  const slug = document.getElementById("slug").value || name.toLowerCase();
-  const bio = document.getElementById("bio").value;
-
-  const file = document.getElementById("imageFile").files[0];
-
-  if(!name || !phone) throw new Error("Missing required fields");
-
-  if(file){
-    setStatus("Uploading image...");
-    uploadedImageUrl = await uploadImage(file);
-  }
-
-  setStatus("Saving profile...");
-
-  const profile = await saveProfile({
-    name,
-    phone,
-    whatsapp: phone,
-    location,
-    age,
-    plan: selectedPlan,
-    slug,
-    bio,
-    image_url: uploadedImageUrl,
-    payment_status: "pending",
-    status: "draft"
-  });
-
-  setStatus("Sending STK...");
-
-  const res = await fetch(STK_URL,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      profile_id: profile.id,
-      phone,
-      amount: selectedAmount,
-      accountReference: slug,
-      transactionDesc: `Payment for ${name}`
-    })
-  });
-
-  let json;
-  try{
-    json = await res.json();
-  }catch{
-    throw new Error("STK endpoint not responding correctly");
-  }
-
-  if(!res.ok){
-    throw new Error(json.error || "Payment failed");
-  }
-
-  setStatus("STK sent 📱 Check your phone");
-
-}catch(err){
-  console.error(err);
-  setStatus("❌ "+err.message);
-}finally{
-  setLoading(false);
-}
-};
-</script>
-
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Nairobi Sweets</h1>
+        <p>Create your profile, pay by M-Pesa, and go live faster than a matatu changing lanes.</p>
+      </div>
+      <div class="chips">
+        <span class="chip gold">Signup + Payment</span>
+        <span class="chip green">STK Push Ready</span>
+        <span class="chip blue">Auto Activation</span>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="panel hero-card pad">
+        <div class="hero-art"></div>
+        <div class="hero-copy">
+          <h2>Join Nairobi Sweets and go live in a few taps.</h2>
+          <p>Fill your profile, upload your image, choose a plan, and pay straight from your phone. Once payment lands, your profile can be activated automatically.</p>
+          <div class="chips">
+            <span class="chip gold">Featured KES 1000/week</span>
+            <span class="chip blue">VIP KES 1500/week</span>
+            <span class="chip green">VVIP / Signature KES 3000/week</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel pad">
+        <h3>How it works</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <strong>Create profile</strong>
+            <div class="subtle tiny" style="margin-top:8px;">Add your name, location, bio, phone, and profile image.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <strong>Pick a plan</strong>
+            <div class="subtle tiny" style="margin-top:8px;">Choose Featured, VIP, or Signature depending on how much spotlight you want.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <strong>Pay by M-Pesa</strong>
+            <div class="subtle tiny" style="margin-top:8px;">Tap the payment button, approve the STK prompt, and wait for activation.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="shell">
+      <div class="panel pad">
+        <h3>Create your profile</h3>
+        <div class="subtle" style="margin-bottom:14px;">This page saves a draft profile first, then sends an M-Pesa STK push using your selected plan.</div>
+        <div class="notice info" style="margin-top:0; margin-bottom:14px;">Mobile tip: fill your details, upload one clear vertical photo, then tap the big pay button at the bottom.</div>
+
+        <div class="stack">
+          <div class="pricing-grid" id="pricingGrid">
+            <div class="price-card" data-plan="featured" data-amount="1000">
+              <span class="badge">Starter</span>
+              <div class="title">Featured</div>
+              <div class="price">KES 1000</div>
+              <div class="meta">Good for quick visibility and weekly renewals.</div>
+            </div>
+
+            <div class="price-card active" data-plan="vip" data-amount="1500">
+              <span class="badge">Popular</span>
+              <div class="title">VIP</div>
+              <div class="price">KES 1500</div>
+              <div class="meta">Stronger visibility with a premium weekly spot.</div>
+            </div>
+
+            <div class="price-card" data-plan="signature" data-amount="3000">
+              <span class="badge">Top shelf</span>
+              <div class="title">VVIP / Signature</div>
+              <div class="price">KES 3000</div>
+              <div class="meta">Maximum spotlight for the profiles that want the velvet rope.</div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label for="name">Display name</label>
+              <input id="name" placeholder="Thickbabe 💗💋" />
+            </div>
+            <div>
+              <label for="phone">Phone / WhatsApp</label>
+              <input id="phone" placeholder="0794888548" />
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label for="whatsappName">WhatsApp name</label>
+              <input id="whatsappName" placeholder="What we should call you on WhatsApp" />
+            </div>
+            <div>
+              <label for="reminderWindow">Reminder schedule</label>
+              <select id="reminderWindow">
+                <option value="15m">15 minutes after signup</option>
+                <option value="1h" selected>1 hour after signup</option>
+                <option value="24h">24 hours after signup</option>
+                <option value="off">No reminders</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="stack" style="gap:10px;">
+            <label style="display:flex; gap:10px; align-items:flex-start; font-weight:600;">
+              <input id="waConsent" type="checkbox" checked style="width:auto; min-height:auto; margin-top:3px;" />
+              <span>Send me WhatsApp onboarding updates and payment reminders.</span>
+            </label>
+            <label style="display:flex; gap:10px; align-items:flex-start; font-weight:600;">
+              <input id="waRenewalConsent" type="checkbox" checked style="width:auto; min-height:auto; margin-top:3px;" />
+              <span>Send renewal reminders before my weekly plan expires.</span>
+            </label>
+          </div>
+
+          <div class="notice info" style="margin-top:0;">
+            After signup, WhatsApp can send a welcome message, payment prompt reminder, and renewal reminders before expiry.
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label for="location">Location</label>
+              <input id="location" placeholder="Joyland, Ruaka Square" />
+            </div>
+            <div>
+              <label for="age">Age</label>
+              <input id="age" placeholder="26" />
+            </div>
+          </div>
+
+          <div class="form-grid-3">
+            <div>
+              <label for="plan">Plan</label>
+              <select id="plan">
+                <option value="featured">featured</option>
+                <option value="vip" selected>vip</option>
+                <option value="signature">signature</option>
+                <option value="vvip">vvip</option>
+              </select>
+            </div>
+            <div>
+              <label for="amount">Amount</label>
+              <input id="amount" type="number" value="1500" />
+            </div>
+            <div>
+              <label for="slug">Slug</label>
+              <input id="slug" placeholder="thickbabe" />
+            </div>
+          </div>
+
+          <div>
+            <label for="bio">Bio</label>
+            <textarea id="bio" placeholder="Tell clients a little about yourself."></textarea>
+          </div>
+
+          <div>
+            <label for="imageFile">Profile image</label>
+            <input id="imageFile" type="file" accept="image/*" />
+            <div class="tiny subtle" style="margin-top:8px;">Upload the image first, then we save the profile and send STK.</div>
+          </div>
+
+          <div class="button-row">
+            <button id="uploadBtn" class="btn btn-blue" type="button">Upload image only</button>
+            <button id="saveDraftBtn" class="btn btn-secondary" type="button">Save draft only</button>
+          </div>
+
+          <div class="mobile-sticky-pay">
+            <button id="payBtn" class="btn btn-primary" type="button">Create profile + Pay now</button>
+          </div>
+
+          <div id="formMessage" class="notice info hidden"></div>
+        </div>
+      </div>
+
+      <div class="preview-shell">
+        <div class="panel pad">
+          <h3>Live preview</h3>
+          <div class="preview-card">
+            <img id="previewImage" class="preview-image" alt="Preview" />
+            <div class="preview-meta">
+              <div class="preview-title" id="previewName">Your profile preview</div>
+              <div class="preview-loc" id="previewLocation">Location shows here</div>
+              <div class="chips">
+                <span class="chip gold" id="previewPlan">VIP</span>
+                <span class="chip green" id="previewRate">KES 1500/week</span>
+              </div>
+              <div class="subtle" id="previewBio">Your bio preview will appear here once you type it in.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel pad">
+          <h3>Status</h3>
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Profile save</div>
+              <div class="value tiny" id="statusProfile">waiting</div>
+            </div>
+            <div class="stat">
+              <div class="label">Image upload</div>
+              <div class="value tiny" id="statusImage">waiting</div>
+            </div>
+            <div class="stat">
+              <div class="label">Payment</div>
+              <div class="value tiny" id="statusPayment">waiting</div>
+            </div>
+          </div>
+
+          <div class="stats" style="margin-top:12px;">
+            <div class="stat">
+              <div class="label">WhatsApp onboarding</div>
+              <div class="value tiny" id="statusWhatsApp">waiting</div>
+            </div>
+            <div class="stat">
+              <div class="label">Reminder status</div>
+              <div class="value tiny" id="statusReminder">waiting</div>
+            </div>
+            <div class="stat">
+              <div class="label">Renewal reminders</div>
+              <div class="value tiny" id="statusRenewal">waiting</div>
+            </div>
+          </div>
+
+          <div id="paymentMessage" class="notice info hidden"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Configure Supabase and the Netlify STK function in the script before publishing. This page assumes the payment backend lives at
+      <span class="mono">/.netlify/functions/mpesa-stk-push</span>.
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+    const STORAGE_BUCKET = 'profile-images';
+    const PROFILES_TABLE = 'profiles';
+    const STK_FUNCTION_URL = '/.netlify/functions/mpesa-stk-push';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false }
+    });
+
+    const $ = (id) => document.getElementById(id);
+
+    const fields = {
+      name: $('name'),
+      phone: $('phone'),
+      whatsappName: $('whatsappName'),
+      reminderWindow: $('reminderWindow'),
+      waConsent: $('waConsent'),
+      waRenewalConsent: $('waRenewalConsent'),
+      location: $('location'),
+      age: $('age'),
+      plan: $('plan'),
+      amount: $('amount'),
+      slug: $('slug'),
+      bio: $('bio'),
+      imageFile: $('imageFile')
+    };
+
+    const state = {
+      previewImageUrl: '',
+      imageUrl: '',
+      imagePath: '',
+      savedProfileId: null
+    };
+
+    const PLACEHOLDER_IMAGE =
+      'data:image/svg+xml;utf8,' +
+      encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000">
+          <rect width="100%" height="100%" fill="#0d1530"/>
+          <text x="50%" y="50%" fill="#8fa2d8" font-size="36" text-anchor="middle" font-family="Arial">
+            No image yet
+          </text>
+        </svg>
+      `);
+
+    function slugify(text) {
+      return String(text || '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function normalizePlan(plan) {
+      const value = String(plan || '').toLowerCase();
+      if (value === 'vvip') return 'signature';
+      return value;
+    }
+
+    function priceForPlan(plan) {
+      switch (normalizePlan(plan)) {
+        case 'featured':
+          return 1000;
+        case 'vip':
+          return 1500;
+        case 'signature':
+          return 3000;
+        default:
+          return 1500;
+      }
+    }
+
+    function showMessage(node, type, text) {
+      node.className = `notice ${type}`;
+      node.textContent = text;
+      node.classList.remove('hidden');
+    }
+
+    function hideMessage(node) {
+      node.classList.add('hidden');
+      node.textContent = '';
+    }
+
+    function setBusy(button, busy, busyLabel, idleLabel) {
+      button.disabled = busy;
+      button.innerHTML = busy ? `<span class="loader"></span>${busyLabel}` : idleLabel;
+    }
+
+    function setStatus(kind, value) {
+      if (kind === 'profile') $('statusProfile').textContent = value;
+      if (kind === 'image') $('statusImage').textContent = value;
+      if (kind === 'payment') $('statusPayment').textContent = value;
+      if (kind === 'whatsapp') $('statusWhatsApp').textContent = value;
+      if (kind === 'reminder') $('statusReminder').textContent = value;
+      if (kind === 'renewal') $('statusRenewal').textContent = value;
+    }
+
+    function currentDisplayImage() {
+      return state.previewImageUrl || state.imageUrl || PLACEHOLDER_IMAGE;
+    }
+
+    function syncPriceCards() {
+      const selectedPlan = normalizePlan(fields.plan.value);
+      document.querySelectorAll('.price-card').forEach((card) => {
+        card.classList.toggle('active', card.dataset.plan === selectedPlan);
+      });
+    }
+
+    function updatePreview() {
+      $('previewName').textContent =
+        fields.name.value.trim() || fields.slug.value.trim() || 'Your profile preview';
+
+      $('previewLocation').textContent =
+        fields.location.value.trim() || 'Location shows here';
+
+      $('previewPlan').textContent = normalizePlan(fields.plan.value).toUpperCase();
+      $('previewRate').textContent = `KES ${Number(fields.amount.value || 0).toLocaleString()}/week`;
+      $('previewBio').textContent =
+        fields.bio.value.trim() || 'Your bio preview will appear here once you type it in.';
+      $('previewImage').src = currentDisplayImage();
+
+      syncPriceCards();
+    }
+
+    function collectPayload() {
+      const rawPlan = fields.plan.value;
+      const plan = normalizePlan(rawPlan);
+      const name = fields.name.value.trim();
+      const phone = fields.phone.value.trim();
+      const slug = fields.slug.value.trim() || slugify(name || phone || 'profile');
+
+      return {
+        id: state.savedProfileId || undefined,
+        name,
+        username: name,
+        whatsapp_name: fields.whatsappName.value.trim() || name,
+        whatsapp_opt_in: fields.waConsent.checked,
+        renewal_opt_in: fields.waRenewalConsent.checked,
+        reminder_window: fields.reminderWindow.value,
+        onboarding_status: fields.waConsent.checked ? 'queued' : 'off',
+        reminder_status: fields.reminderWindow.value === 'off' ? 'off' : 'queued',
+        slug,
+        category: plan,
+        plan,
+        status: 'draft',
+        payment_status: 'pending',
+        phone,
+        whatsapp: phone,
+        location: fields.location.value.trim(),
+        age: fields.age.value.trim(),
+        rate_kses: `KES ${priceForPlan(plan)}/week`,
+        bio: fields.bio.value.trim(),
+        image_url: state.imageUrl || null,
+        image_path: state.imagePath || null,
+        image_position: 20,
+        featured: ['featured', 'vip', 'signature'].includes(plan),
+        verified: false,
+        online: false,
+        updated_at: new Date().toISOString()
+      };
+    }
+
+    function validatePayload() {
+      if (!fields.name.value.trim()) throw new Error('Display name is required.');
+      if (!fields.phone.value.trim()) throw new Error('Phone is required.');
+      if (!fields.location.value.trim()) throw new Error('Location is required.');
+      if (!fields.bio.value.trim()) throw new Error('Bio is required.');
+      if (!state.imagePath && !fields.imageFile.files?.[0]) {
+        throw new Error('Profile image is required.');
+      }
+    }
+
+    async function uploadImage() {
+      const file = fields.imageFile.files?.[0];
+      if (!file) throw new Error('Choose an image first.');
+
+      setBusy($('uploadBtn'), true, 'Uploading…', 'Upload image only');
+      setStatus('image', 'uploading');
+
+      try {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const safeName = slugify(fields.slug.value || fields.name.value || 'profile');
+        const fileName = `${Date.now()}-${safeName}.${ext}`;
+        const path = `${safeName}/${fileName}`;
+
+        const { data, error } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .upload(path, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: file.type || 'image/jpeg'
+          });
+
+        if (error) throw error;
+
+        const publicUrl =
+          supabase.storage.from(STORAGE_BUCKET).getPublicUrl(data.path)?.data?.publicUrl || '';
+
+        state.imagePath = data.path;
+        state.imageUrl = publicUrl;
+        state.previewImageUrl = publicUrl;
+
+        setStatus('image', 'uploaded');
+        updatePreview();
+        return publicUrl;
+      } finally {
+        setBusy($('uploadBtn'), false, 'Uploading…', 'Upload image only');
+      }
+    }
+
+    async function saveDraft() {
+      setBusy($('saveDraftBtn'), true, 'Saving…', 'Save draft only');
+      setStatus('profile', 'saving');
+
+      try {
+        validatePayload();
+
+        if (!state.imagePath && fields.imageFile.files?.[0]) {
+          await uploadImage();
+        }
+
+        const payload = collectPayload();
+
+        if (!state.savedProfileId) {
+          payload.created_at = new Date().toISOString();
+        }
+
+        let query = supabase.from(PROFILES_TABLE);
+
+        let result;
+        if (state.savedProfileId) {
+          result = await query
+            .update(payload)
+            .eq('id', state.savedProfileId)
+            .select()
+            .single();
+        } else {
+          result = await query
+            .insert(payload)
+            .select()
+            .single();
+        }
+
+        const { data, error } = result;
+        if (error) throw error;
+
+        state.savedProfileId = data.id;
+        setStatus('profile', 'saved');
+        return data;
+      } finally {
+        setBusy($('saveDraftBtn'), false, 'Saving…', 'Save draft only');
+      }
+    }
+
+    async function queueWhatsAppAutomation(profile) {
+      if (!fields.waConsent.checked && !fields.waRenewalConsent.checked) {
+        setStatus('whatsapp', 'off');
+        setStatus('reminder', 'off');
+        setStatus('renewal', 'off');
+        return;
+      }
+
+      try {
+        const res = await fetch('/.netlify/functions/whatsapp-onboarding', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            profile_id: profile.id,
+            name: fields.name.value.trim(),
+            whatsapp_name: fields.whatsappName.value.trim() || fields.name.value.trim(),
+            phone: fields.phone.value.trim(),
+            plan: normalizePlan(fields.plan.value),
+            amount: Number(fields.amount.value || 0),
+            reminder_window: fields.reminderWindow.value,
+            whatsapp_opt_in: fields.waConsent.checked,
+            renewal_opt_in: fields.waRenewalConsent.checked
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'WhatsApp onboarding queue failed.');
+
+        setStatus('whatsapp', fields.waConsent.checked ? 'queued' : 'off');
+        setStatus('reminder', fields.reminderWindow.value === 'off' ? 'off' : 'queued');
+        setStatus('renewal', fields.waRenewalConsent.checked ? 'queued' : 'off');
+      } catch (error) {
+        setStatus('whatsapp', 'failed');
+        setStatus('reminder', 'failed');
+        setStatus('renewal', 'failed');
+        console.error('WHATSAPP QUEUE ERROR', error);
+      }
+    }
+
+    async function createProfileAndPay() {
+      setBusy($('payBtn'), true, 'Sending STK…', 'Create profile + Pay now');
+      hideMessage($('formMessage'));
+      hideMessage($('paymentMessage'));
+      setStatus('payment', 'sending');
+
+      try {
+        validatePayload();
+
+        const profile = await saveDraft();
+        await queueWhatsAppAutomation(profile);
+
+        const amount = Number(fields.amount.value || priceForPlan(fields.plan.value));
+
+        const res = await fetch(STK_FUNCTION_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            profile_id: profile.id,
+            phone: fields.phone.value.trim(),
+            amount,
+            description: `Payment for ${fields.name.value.trim()}`,
+            account_reference: fields.slug.value.trim() || slugify(fields.name.value.trim())
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Failed to send STK push.');
+
+        setStatus('payment', 'sent');
+        showMessage(
+          $('paymentMessage'),
+          'success',
+          data.customer_message || 'STK sent. Check your phone and enter your M-Pesa PIN.'
+        );
+      } catch (error) {
+        setStatus('payment', 'failed');
+        showMessage($('formMessage'), 'error', error.message || 'Something went wrong.');
+      } finally {
+        setBusy($('payBtn'), false, 'Sending STK…', 'Create profile + Pay now');
+      }
+    }
+
+    function attachEvents() {
+      ['name', 'phone', 'whatsappName', 'location', 'age', 'plan', 'amount', 'slug', 'bio'].forEach((key) => {
+        fields[key].addEventListener('input', updatePreview);
+      });
+
+      fields.name.addEventListener('blur', () => {
+        if (!fields.slug.value.trim()) {
+          fields.slug.value = slugify(fields.name.value);
+        }
+        updatePreview();
+      });
+
+      fields.plan.addEventListener('change', () => {
+        const normalized = normalizePlan(fields.plan.value);
+        fields.amount.value = priceForPlan(normalized);
+        updatePreview();
+      });
+
+      document.querySelectorAll('.price-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          const plan = card.dataset.plan;
+          fields.plan.value = plan;
+          fields.amount.value = card.dataset.amount;
+          updatePreview();
+        });
+      });
+
+      fields.imageFile.addEventListener('change', () => {
+        const file = fields.imageFile.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          state.previewImageUrl = reader.result;
+          updatePreview();
+        };
+        reader.readAsDataURL(file);
+
+        state.imageUrl = '';
+        state.imagePath = '';
+        setStatus('image', 'waiting');
+      });
+
+      $('uploadBtn').addEventListener('click', async () => {
+        hideMessage($('formMessage'));
+        try {
+          await uploadImage();
+          showMessage($('formMessage'), 'success', 'Image uploaded successfully.');
+        } catch (error) {
+          setStatus('image', 'failed');
+          showMessage($('formMessage'), 'error', error.message || 'Image upload failed.');
+        }
+      });
+
+      $('saveDraftBtn').addEventListener('click', async () => {
+        hideMessage($('formMessage'));
+        try {
+          const data = await saveDraft();
+          showMessage($('formMessage'), 'success', `Draft saved. Profile ID: ${data.id}`);
+        } catch (error) {
+          setStatus('profile', 'failed');
+          showMessage($('formMessage'), 'error', error.message || 'Failed to save draft.');
+        }
+      });
+
+      $('payBtn').addEventListener('click', createProfileAndPay);
+    }
+
+    attachEvents();
+    updatePreview();
+  </script>
 </body>
 </html>
