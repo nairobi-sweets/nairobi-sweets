@@ -22,7 +22,6 @@
     }
 
     * { box-sizing: border-box; }
-
     html, body {
       margin: 0;
       min-height: 100%;
@@ -36,7 +35,6 @@
 
     body { padding: 20px; }
     .app { max-width: 1380px; margin: 0 auto; }
-
     .topbar, .panel {
       background: linear-gradient(180deg, var(--panel), var(--panel-2));
       border: 1px solid var(--line);
@@ -67,7 +65,6 @@
     }
 
     .pad { padding: 20px; }
-
     .hero {
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
@@ -96,7 +93,6 @@
     .hero-copy p { margin: 0 0 18px; color: var(--muted); max-width: 640px; }
 
     .chips, .button-row, .pricing-grid, .steps, .mini-list { display: flex; flex-wrap: wrap; gap: 10px; }
-
     .chip {
       border-radius: 999px;
       padding: 8px 12px;
@@ -105,7 +101,6 @@
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.08);
     }
-
     .chip.gold { background: rgba(255,213,74,0.16); color: #ffe593; }
     .chip.green { background: rgba(66,214,126,0.16); color: #baffd1; }
     .chip.blue { background: rgba(51,182,255,0.16); color: #c9efff; }
@@ -128,7 +123,6 @@
       border: 1px solid rgba(255,255,255,0.08);
       padding: 14px;
     }
-
     .stat .label { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
     .stat .value { font-size: 28px; font-weight: 800; }
 
@@ -154,7 +148,6 @@
       font-size: 15px;
       outline: none;
     }
-
     input:focus, select:focus, textarea:focus {
       border-color: rgba(255,213,74,.85);
       box-shadow: 0 0 0 3px rgba(255,213,74,0.12);
@@ -172,7 +165,6 @@
       cursor: pointer;
       transition: transform .12s ease, filter .12s ease, opacity .12s ease;
     }
-
     .btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
     .btn:disabled { opacity: .6; cursor: not-allowed; }
     .btn-primary { background: var(--gold); color: #1a1200; }
@@ -196,19 +188,15 @@
       transition: .2s ease;
       position: relative;
     }
-
     .price-card:hover { transform: translateY(-2px); }
-
     .price-card.active {
       border-color: rgba(255,213,74,.9);
       box-shadow: 0 0 0 3px rgba(255,213,74,.12);
       background: rgba(255,213,74,0.07);
     }
-
     .price-card .title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
     .price-card .price { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
     .price-card .meta { color: var(--muted); font-size: 13px; }
-
     .badge {
       position: absolute;
       top: 12px;
@@ -233,7 +221,6 @@
       border: 1px solid rgba(255,255,255,0.08);
       background: rgba(255,255,255,0.04);
     }
-
     .preview-image {
       width: 100%;
       height: 360px;
@@ -242,7 +229,6 @@
       background: #09112a;
       display: block;
     }
-
     .preview-meta { padding: 16px; display: grid; gap: 8px; }
     .preview-title { font-size: 24px; font-weight: 800; }
     .preview-loc { color: var(--muted); }
@@ -255,7 +241,6 @@
       font-size: 14px;
       line-height: 1.4;
     }
-
     .info { background: rgba(51,182,255,0.08); color: #d5f2ff; }
     .success { background: rgba(66,214,126,0.09); color: #dfffea; }
     .warn { background: rgba(255,182,72,0.10); color: #ffe4bf; }
@@ -266,14 +251,12 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
     }
-
     .step {
       border-radius: 18px;
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
       padding: 14px;
     }
-
     .step-num {
       width: 34px;
       height: 34px;
@@ -304,10 +287,7 @@
       margin-right: 8px;
       vertical-align: middle;
     }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 1120px) {
       .shell, .hero { grid-template-columns: 1fr; }
@@ -317,65 +297,48 @@
 
     @media (max-width: 780px) {
       body { padding: 10px; }
-
       .topbar {
         position: static;
         padding: 14px;
         border-radius: 18px;
       }
-
       .brand h1 { font-size: 24px; }
       .brand p { font-size: 13px; line-height: 1.45; }
       .hero-copy h2 { font-size: 30px; }
       .hero-copy p { font-size: 14px; }
-
-      .form-grid,
-      .form-grid-3,
-      .pricing-grid,
-      .steps,
-      .stats { grid-template-columns: 1fr; }
-
+      .form-grid, .form-grid-3, .pricing-grid, .steps, .stats { grid-template-columns: 1fr; }
       .shell, .hero { grid-template-columns: 1fr; gap: 14px; }
-
-      .preview-shell {
-        position: static;
-        top: auto;
-      }
-
+      .preview-shell { position: static; top: auto; }
       .panel, .topbar { border-radius: 18px; }
       .pad { padding: 16px; }
       .price-card { padding: 14px; border-radius: 16px; }
       .price-card .title { font-size: 18px; }
       .price-card .price { font-size: 26px; }
-
       input, select, textarea {
         min-height: 52px;
         font-size: 16px;
         border-radius: 12px;
       }
-
       textarea { min-height: 110px; }
       label { font-size: 14px; }
-
       .button-row {
         display: grid;
         grid-template-columns: 1fr;
         gap: 10px;
       }
-
       .btn {
         width: 100%;
         min-height: 52px;
         font-size: 16px;
         border-radius: 12px;
       }
-
-      .preview-image { height: 300px; }
+      .preview-image {
+        height: 300px;
+      }
       .preview-title { font-size: 22px; }
       .stats { gap: 10px; }
       .stat .value { font-size: 18px; }
       .footer-note { padding: 0 4px 12px; }
-
       .mobile-sticky-pay {
         position: sticky;
         bottom: 10px;
@@ -388,7 +351,6 @@
         border: 1px solid rgba(255,255,255,0.08);
         box-shadow: 0 12px 30px rgba(0,0,0,0.28);
       }
-
       .mobile-sticky-pay .btn { margin: 0; }
     }
   </style>
@@ -451,20 +413,18 @@
 
         <div class="stack">
           <div class="pricing-grid" id="pricingGrid">
-            <div class="price-card" data-plan="featured" data-amount="1000">
+            <div class="price-card active" data-plan="featured" data-amount="1000">
               <span class="badge">Starter</span>
               <div class="title">Featured</div>
               <div class="price">KES 1000</div>
               <div class="meta">Good for quick visibility and weekly renewals.</div>
             </div>
-
-            <div class="price-card active" data-plan="vip" data-amount="1500">
+            <div class="price-card" data-plan="vip" data-amount="1500">
               <span class="badge">Popular</span>
               <div class="title">VIP</div>
               <div class="price">KES 1500</div>
               <div class="meta">Stronger visibility with a premium weekly spot.</div>
             </div>
-
             <div class="price-card" data-plan="signature" data-amount="3000">
               <span class="badge">Top shelf</span>
               <div class="title">VVIP / Signature</div>
@@ -522,7 +482,7 @@
             </div>
             <div>
               <label for="age">Age</label>
-              <input id="age" type="number" min="18" max="99" step="1" placeholder="26" />
+              <input id="age" placeholder="26" />
             </div>
           </div>
 
@@ -558,12 +518,12 @@
           </div>
 
           <div class="button-row">
-            <button id="uploadBtn" class="btn btn-blue" type="button">Upload image only</button>
-            <button id="saveDraftBtn" class="btn btn-secondary" type="button">Save draft only</button>
+            <button id="uploadBtn" class="btn btn-blue">Upload image only</button>
+            <button id="saveDraftBtn" class="btn btn-secondary">Save draft only</button>
           </div>
 
           <div class="mobile-sticky-pay">
-            <button id="payBtn" class="btn btn-primary" type="button">Create profile + Pay now</button>
+            <button id="payBtn" class="btn btn-primary">Create profile + Pay now</button>
           </div>
 
           <div id="formMessage" class="notice info hidden"></div>
@@ -603,7 +563,6 @@
               <div class="value tiny" id="statusPayment">waiting</div>
             </div>
           </div>
-
           <div class="stats" style="margin-top:12px;">
             <div class="stat">
               <div class="label">WhatsApp onboarding</div>
@@ -618,16 +577,12 @@
               <div class="value tiny" id="statusRenewal">waiting</div>
             </div>
           </div>
-
           <div id="paymentMessage" class="notice info hidden"></div>
         </div>
       </div>
     </div>
 
-    <div class="footer-note">
-      Configure Supabase and the Netlify STK function in the script before publishing. This page assumes the payment backend lives at
-      <span class="mono">/.netlify/functions/mpesa-stk-push</span>.
-    </div>
+    <div class="footer-note">Configure Supabase and the Netlify STK function in the script before publishing. This page assumes the payment backend lives at <span class="mono">/.netlify/functions/mpesa-stk-push</span>.</div>
   </div>
 
   <script type="module">
@@ -643,8 +598,7 @@
       auth: { persistSession: false }
     });
 
-    const $ = (id) => document.getElementById(id);
-
+    const $ = id => document.getElementById(id);
     const fields = {
       name: $('name'),
       phone: $('phone'),
@@ -662,22 +616,13 @@
     };
 
     const state = {
-      previewImageUrl: '',
       imageUrl: '',
       imagePath: '',
-      savedProfileId: null
+      savedProfileId: null,
+      saving: false,
+      uploading: false,
+      paying: false
     };
-
-    const PLACEHOLDER_IMAGE =
-      'data:image/svg+xml;utf8,' +
-      encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000">
-          <rect width="100%" height="100%" fill="#0d1530"/>
-          <text x="50%" y="50%" fill="#8fa2d8" font-size="36" text-anchor="middle" font-family="Arial">
-            No image yet
-          </text>
-        </svg>
-      `);
 
     function slugify(text) {
       return String(text || '')
@@ -687,22 +632,13 @@
         .replace(/^-+|-+$/g, '');
     }
 
-    function normalizePlan(plan) {
-      const value = String(plan || '').toLowerCase();
-      if (value === 'vvip') return 'signature';
-      return value;
-    }
-
     function priceForPlan(plan) {
-      switch (normalizePlan(plan)) {
-        case 'featured':
-          return 1000;
-        case 'vip':
-          return 1500;
+      switch ((plan || '').toLowerCase()) {
+        case 'featured': return 1000;
+        case 'vip': return 1500;
         case 'signature':
-          return 3000;
-        default:
-          return 1500;
+        case 'vvip': return 3000;
+        default: return 1500;
       }
     }
 
@@ -731,43 +667,22 @@
       if (kind === 'renewal') $('statusRenewal').textContent = value;
     }
 
-    function currentDisplayImage() {
-      return state.previewImageUrl || state.imageUrl || PLACEHOLDER_IMAGE;
-    }
-
-    function syncPriceCards() {
-      const selectedPlan = normalizePlan(fields.plan.value);
-      document.querySelectorAll('.price-card').forEach((card) => {
-        card.classList.toggle('active', card.dataset.plan === selectedPlan);
-      });
-    }
-
     function updatePreview() {
-      $('previewName').textContent =
-        fields.name.value.trim() || fields.slug.value.trim() || 'Your profile preview';
-
-      $('previewLocation').textContent =
-        fields.location.value.trim() || 'Location shows here';
-
-      $('previewPlan').textContent = normalizePlan(fields.plan.value).toUpperCase();
+      $('previewName').textContent = fields.name.value.trim() || fields.slug.value.trim() || 'Your profile preview';
+      $('previewLocation').textContent = fields.location.value.trim() || 'Location shows here';
+      $('previewPlan').textContent = fields.plan.value.toUpperCase();
       $('previewRate').textContent = `KES ${Number(fields.amount.value || 0).toLocaleString()}/week`;
-      $('previewBio').textContent =
-        fields.bio.value.trim() || 'Your bio preview will appear here once you type it in.';
-      $('previewImage').src = currentDisplayImage();
-
-      syncPriceCards();
+      $('previewBio').textContent = fields.bio.value.trim() || 'Your bio preview will appear here once you type it in.';
+      $('previewImage').src = state.imageUrl || 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000"><rect width="100%" height="100%" fill="#0d1530"/><text x="50%" y="50%" fill="#8fa2d8" font-size="36" text-anchor="middle" font-family="Arial">No image yet</text></svg>`);
     }
 
     function collectPayload() {
-      const rawPlan = fields.plan.value;
-      const plan = normalizePlan(rawPlan);
+      const plan = fields.plan.value;
       const name = fields.name.value.trim();
       const phone = fields.phone.value.trim();
-      const slug = fields.slug.value.trim() || slugify(name || phone || 'profile');
-      const ageValue = fields.age.value.trim();
-
+      const slug = (fields.slug.value.trim() || slugify(name || phone || 'profile'));
       return {
-        id: state.savedProfileId || undefined,
+        id: state.savedProfileId,
         name,
         username: name,
         whatsapp_name: fields.whatsappName.value.trim() || name,
@@ -784,16 +699,17 @@
         phone,
         whatsapp: phone,
         location: fields.location.value.trim(),
-        age: ageValue ? Number(ageValue) : null,
+        age: fields.age.value.trim(),
         rate_kses: `KES ${priceForPlan(plan)}/week`,
         bio: fields.bio.value.trim(),
         image_url: state.imageUrl || null,
         image_path: state.imagePath || null,
         image_position: 20,
-        featured: ['featured', 'vip', 'signature'].includes(plan),
+        featured: ['featured', 'vip', 'vvip', 'signature'].includes(plan),
         verified: false,
         online: false,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        created_at: new Date().toISOString()
       };
     }
 
@@ -802,15 +718,7 @@
       if (!fields.phone.value.trim()) throw new Error('Phone is required.');
       if (!fields.location.value.trim()) throw new Error('Location is required.');
       if (!fields.bio.value.trim()) throw new Error('Bio is required.');
-
-      const ageValue = fields.age.value.trim();
-      if (ageValue && Number.isNaN(Number(ageValue))) {
-        throw new Error('Age must be a valid number.');
-      }
-
-      if (!state.imagePath && !fields.imageFile.files?.[0]) {
-        throw new Error('Profile image is required.');
-      }
+      if (!state.imageUrl && !fields.imageFile.files?.[0]) throw new Error('Profile image is required.');
     }
 
     async function uploadImage() {
@@ -828,21 +736,13 @@
 
         const { data, error } = await supabase.storage
           .from(STORAGE_BUCKET)
-          .upload(path, file, {
-            cacheControl: '3600',
-            upsert: true,
-            contentType: file.type || 'image/jpeg'
-          });
+          .upload(path, file, { cacheControl: '3600', upsert: true, contentType: file.type || 'image/jpeg' });
 
         if (error) throw error;
 
-        const publicUrl =
-          supabase.storage.from(STORAGE_BUCKET).getPublicUrl(data.path)?.data?.publicUrl || '';
-
+        const publicUrl = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(data.path)?.data?.publicUrl || '';
         state.imagePath = data.path;
         state.imageUrl = publicUrl;
-        state.previewImageUrl = publicUrl;
-
         setStatus('image', 'uploaded');
         updatePreview();
         return publicUrl;
@@ -857,34 +757,19 @@
 
       try {
         validatePayload();
-
-        if (!state.imagePath && fields.imageFile.files?.[0]) {
+        if (!state.imageUrl && fields.imageFile.files?.[0]) {
           await uploadImage();
         }
 
         const payload = collectPayload();
+        if (!payload.id) delete payload.id;
 
-        if (!state.savedProfileId) {
-          payload.created_at = new Date().toISOString();
-        }
+        const { data, error } = await supabase
+          .from(PROFILES_TABLE)
+          .upsert(payload, { onConflict: 'id' })
+          .select()
+          .single();
 
-        let result;
-        if (state.savedProfileId) {
-          result = await supabase
-            .from(PROFILES_TABLE)
-            .update(payload)
-            .eq('id', state.savedProfileId)
-            .select()
-            .single();
-        } else {
-          result = await supabase
-            .from(PROFILES_TABLE)
-            .insert(payload)
-            .select()
-            .single();
-        }
-
-        const { data, error } = result;
         if (error) throw error;
 
         state.savedProfileId = data.id;
@@ -912,7 +797,7 @@
             name: fields.name.value.trim(),
             whatsapp_name: fields.whatsappName.value.trim() || fields.name.value.trim(),
             phone: fields.phone.value.trim(),
-            plan: normalizePlan(fields.plan.value),
+            plan: fields.plan.value,
             amount: Number(fields.amount.value || 0),
             reminder_window: fields.reminderWindow.value,
             whatsapp_opt_in: fields.waConsent.checked,
@@ -942,10 +827,8 @@
 
       try {
         validatePayload();
-
         const profile = await saveDraft();
         await queueWhatsAppAutomation(profile);
-
         const amount = Number(fields.amount.value || priceForPlan(fields.plan.value));
 
         const res = await fetch(STK_FUNCTION_URL, {
@@ -953,10 +836,11 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             profile_id: profile.id,
-            phone: fields.phone.value.trim(),
+            phone: fields.phone.value.trim().replace(/^0/, "254"),
             amount,
             description: `Payment for ${fields.name.value.trim()}`,
-            account_reference: fields.slug.value.trim() || slugify(fields.name.value.trim())
+            accountReference: fields.slug.value.trim() || slugify(fields.name.value.trim()),
+            username: fields.slug.value.trim() || slugify(fields.name.value.trim())
           })
         });
 
@@ -964,13 +848,8 @@
         if (!res.ok) throw new Error(data.error || 'Failed to send STK push.');
 
         setStatus('payment', 'sent');
-        showMessage(
-          $('paymentMessage'),
-          'success',
-          data.customer_message || 'STK sent. Check your phone and enter your M-Pesa PIN.'
-        );
+        showMessage($('paymentMessage'), 'success', data.customer_message || 'STK sent. Check your phone and enter your M-Pesa PIN.');
       } catch (error) {
-        setStatus('profile', 'failed');
         setStatus('payment', 'failed');
         showMessage($('formMessage'), 'error', error.message || 'Something went wrong.');
       } finally {
@@ -979,28 +858,30 @@
     }
 
     function attachEvents() {
-      ['name', 'phone', 'whatsappName', 'location', 'age', 'plan', 'amount', 'slug', 'bio'].forEach((key) => {
+      ['name', 'phone', 'whatsappName', 'location', 'age', 'plan', 'amount', 'slug', 'bio'].forEach(key => {
         fields[key].addEventListener('input', updatePreview);
       });
 
       fields.name.addEventListener('blur', () => {
-        if (!fields.slug.value.trim()) {
-          fields.slug.value = slugify(fields.name.value);
-        }
+        if (!fields.slug.value.trim()) fields.slug.value = slugify(fields.name.value);
         updatePreview();
       });
 
       fields.plan.addEventListener('change', () => {
-        const normalized = normalizePlan(fields.plan.value);
-        fields.amount.value = priceForPlan(normalized);
+        fields.amount.value = priceForPlan(fields.plan.value);
+        document.querySelectorAll('.price-card').forEach(card => {
+          card.classList.toggle('active', card.dataset.plan === fields.plan.value || (fields.plan.value === 'vvip' && card.dataset.plan === 'signature'));
+        });
         updatePreview();
       });
 
-      document.querySelectorAll('.price-card').forEach((card) => {
+      document.querySelectorAll('.price-card').forEach(card => {
         card.addEventListener('click', () => {
           const plan = card.dataset.plan;
           fields.plan.value = plan;
           fields.amount.value = card.dataset.amount;
+          document.querySelectorAll('.price-card').forEach(x => x.classList.remove('active'));
+          card.classList.add('active');
           updatePreview();
         });
       });
@@ -1008,17 +889,12 @@
       fields.imageFile.addEventListener('change', () => {
         const file = fields.imageFile.files?.[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = () => {
-          state.previewImageUrl = reader.result;
+          state.imageUrl = reader.result;
           updatePreview();
         };
         reader.readAsDataURL(file);
-
-        state.imageUrl = '';
-        state.imagePath = '';
-        setStatus('image', 'waiting');
       });
 
       $('uploadBtn').addEventListener('click', async () => {
