@@ -1,121 +1,172 @@
-/* netlify/functions/mpesa-callback.js */
+import { createClient } from '@supabase/supabase-js';
 
-const DEFAULT_TABLE = process.env.MPESA_REQUESTS_TABLE || "stk_push_payments";
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const json = (statusCode, body) => ({
-  statusCode,
-  headers: {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  },
-  body: JSON.stringify(body),
+const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
+  auth: { persistSession: false }
 });
 
-function safeString(value) {
-  return value == null ? "" : String(value).trim();
+function json(statusCode, body) {
+  return {
+    statusCode,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    },
+    body: JSON.stringify(body)
+  };
 }
 
 function findMetadataValue(items, name) {
   if (!Array.isArray(items)) return null;
-  const found = items.find((item) => item && item.Name === name);
-  return found ? found.Value ?? null : null;
+  const match = items.find((item) => item && item.Name === name);
+  return match ? match.Value ?? null : null;
 }
 
-async function updateSupabaseByCheckoutRequestID(checkoutRequestID, patch) {
-  const supabaseUrl = safeString(process.env.SUPABASE_URL);
-  const serviceRoleKey = safeString(process.env.SUPABASE_SERVICE_ROLE_KEY);
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    return { skipped: true, reason: "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY" };
-  }
-
-  const endpoint =
-    `${supabaseUrl.replace(/\/$/, "")}/rest/v1/${DEFAULT_TABLE}` +
-    `?checkout_request_id=eq.${encodeURIComponent(checkoutRequestID)}`;
-
-  const res = await fetch(endpoint, {
-    method: "PATCH",
-    headers: {
-      apikey: serviceRoleKey,
-      Authorization: `Bearer ${serviceRoleKey}`,
-      "Content-Type": "application/json",
-      Prefer: "return=representation",
-    },
-    body: JSON.stringify(patch),
-  });
-
-  const text = await res.text();
-
-  if (!res.ok) {
-    throw new Error(`Supabase callback update failed: ${res.status} ${text}`);
-  }
-
-  return { ok: true, data: text ? JSON.parse(text) : null };
+function normalizePhone(phone) {
+  if (!phone) return null;
+  let p = String(phone).replace(/\D/g, '');
+  if (p.startsWith('0')) p = `254${p.slice(1)}`;
+  if (p.startsWith('7') && p.length === 9) p = `254${p}`;
+  if (p.startsWith('254') && p.length === 12) return p;
+  return p || null;
 }
 
-exports.handler = async (event) => {
-  if (event.httpMethod === "OPTIONS") {
-    return json(200, { ok: true });
+function flagsForPlan(plan) {
+  const clean = String(plan || '').toLowerCase();
+
+  return {
+    plan: clean,
+    is_featured: clean === 'featured' || clean === 'vip' || clean === 'signature' || clean === 'vvip',
+    is_vip: clean === 'vip',
+    is_vvip: clean === 'signature' || clean === 'vvip'
+  };
+}
+
+async function markProfilePaid(paymentRow) {
+  if (!paymentRow?.profile_id) return;
+
+  const flags = flagsForPlan(paymentRow.plan);
+
+  const patch = {
+    payment_status: 'paid',
+    status: 'active',
+    plan: flags.plan || paymentRow.plan || 'featured',
+    category: flags.plan || paymentRow.plan || 'featured',
+    is_featured: flags.is_featured,
+    is_vip: flags.is_vip,
+    is_vvip: flags.is_vvip,
+    updated_at: new Date().toISOString()
+  };
+
+  const { error } = await supabase
+    .from('profiles')
+    .update(patch)
+    .eq('id', paymentRow.profile_id);
+
+  if (error) {
+    throw new Error(`Failed to update profile after payment: ${error.message}`);
+  }
+}
+
+export async function handler(event) {
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+      },
+      body: ''
+    };
   }
 
-  if (event.httpMethod !== "POST") {
-    return json(405, { ok: false, error: "Method not allowed" });
+  if (event.httpMethod !== 'POST') {
+    return json(405, { error: 'Method not allowed' });
+  }
+
+  if (!supabaseUrl || !supabaseServiceRoleKey) {
+    return json(500, { error: 'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY' });
   }
 
   try {
-    const body = JSON.parse(event.body || "{}");
+    const payload = JSON.parse(event.body || '{}');
+    const callback = payload?.Body?.stkCallback;
 
-    const stkCallback = body?.Body?.stkCallback || {};
-    const merchantRequestID = safeString(stkCallback.MerchantRequestID);
-    const checkoutRequestID = safeString(stkCallback.CheckoutRequestID);
-    const resultCode = Number(stkCallback.ResultCode ?? -1);
-    const resultDesc = safeString(stkCallback.ResultDesc);
-    const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
+    if (!callback) {
+      return json(400, { error: 'Invalid callback payload' });
+    }
 
-    const amount = findMetadataValue(callbackMetadata, "Amount");
-    const mpesaReceiptNumber = findMetadataValue(callbackMetadata, "MpesaReceiptNumber");
-    const transactionDate = findMetadataValue(callbackMetadata, "TransactionDate");
-    const phoneNumber = findMetadataValue(callbackMetadata, "PhoneNumber");
+    const checkoutRequestId = callback.CheckoutRequestID || null;
+    const merchantRequestId = callback.MerchantRequestID || null;
+    const resultCode = Number(callback.ResultCode ?? -1);
+    const resultDesc = callback.ResultDesc || null;
+    const metadata = callback.CallbackMetadata?.Item || [];
 
-    const status = resultCode === 0 ? "paid" : "failed";
+    const amount = findMetadataValue(metadata, 'Amount');
+    const mpesaReceiptNumber = findMetadataValue(metadata, 'MpesaReceiptNumber');
+    const transactionDate = findMetadataValue(metadata, 'TransactionDate');
+    const phoneNumberRaw = findMetadataValue(metadata, 'PhoneNumber');
+    const phoneNumber = normalizePhone(phoneNumberRaw);
 
-    const patch = {
-      merchant_request_id: merchantRequestID || null,
-      checkout_request_id: checkoutRequestID || null,
+    if (!checkoutRequestId) {
+      return json(400, { error: 'CheckoutRequestID missing in callback' });
+    }
+
+    const { data: paymentRow, error: lookupError } = await supabase
+      .from('stk_push_payments')
+      .select('*')
+      .eq('checkout_request_id', checkoutRequestId)
+      .single();
+
+    if (lookupError || !paymentRow) {
+      return json(404, {
+        error: 'Matching STK payment row not found',
+        checkout_request_id: checkoutRequestId
+      });
+    }
+
+    const paymentPatch = {
+      merchant_request_id: merchantRequestId,
+      checkout_request_id: checkoutRequestId,
       result_code: resultCode,
-      result_desc: resultDesc || null,
-      mpesa_receipt_number: mpesaReceiptNumber ? String(mpesaReceiptNumber) : null,
+      result_desc: resultDesc,
+      mpesa_receipt_number: mpesaReceiptNumber,
       transaction_date: transactionDate ? String(transactionDate) : null,
-      callback_phone: phoneNumber ? String(phoneNumber) : null,
-      callback_amount: amount != null ? Number(amount) : null,
-      status,
-      paid_at: resultCode === 0 ? new Date().toISOString() : null,
-      raw_callback: body,
-      updated_at: new Date().toISOString(),
+      phone: phoneNumber || paymentRow.phone || null,
+      amount: amount != null ? Number(amount) : paymentRow.amount,
+      callback_payload: payload,
+      callback_received_at: new Date().toISOString(),
+      response_payload: payload,
+      status: resultCode === 0 ? 'paid' : 'failed',
+      updated_at: new Date().toISOString()
     };
 
-    if (checkoutRequestID) {
-      try {
-        await updateSupabaseByCheckoutRequestID(checkoutRequestID, patch);
-      } catch (dbErr) {
-        console.error("Supabase callback update warning:", dbErr.message);
-      }
-    } else {
-      console.error("Missing CheckoutRequestID in callback payload");
+    const { error: updateError } = await supabase
+      .from('stk_push_payments')
+      .update(paymentPatch)
+      .eq('id', paymentRow.id);
+
+    if (updateError) {
+      throw new Error(`Failed to update STK payment row: ${updateError.message}`);
+    }
+
+    if (resultCode === 0) {
+      await markProfilePaid(paymentRow);
     }
 
     return json(200, {
-      ResultCode: 0,
-      ResultDesc: "Accepted",
+      ok: true,
+      result_code: resultCode,
+      checkout_request_id: checkoutRequestId
     });
   } catch (error) {
-    console.error("mpesa-callback error:", error);
-
-    return json(200, {
-      ResultCode: 0,
-      ResultDesc: "Accepted",
+    return json(500, {
+      error: error.message || 'Callback handler failed'
     });
   }
-};
+}
