@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Join Nairobi Sweets</title>
+  <meta name="description" content="Submit your profile to Nairobi Sweets for review and premium listing approval." />
+  <link rel="icon" type="image/png" href="/logo.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --bg-1:#060812;
+      --bg-2:#0b1020;
+      --gold-1:#facc15;
+      --gold-2:#f59e0b;
+      --pink-1:#ec4899;
+      --pink-2:#db2777;
+      --line:rgba(255,255,255,.08);
+      --text-soft:#cbd5e1;
+      --text-faint:#94a3b8;
+      --glass:rgba(9,14,28,.78);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      min-height:100vh;
+      color:#f8fafc;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(236,72,153,.10), transparent 22%),
+        radial-gradient(circle at 90% 10%, rgba(250,204,21,.08), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(124,58,237,.06), transparent 22%),
+        linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .grid-lines{
+      background-image:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    .glass{
+      background: var(--glass);
+      border:1px solid var(--line);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 22px 60px rgba(0,0,0,.30);
+    }
+
+    .hero-shell{
+      background:
+        linear-gradient(135deg, rgba(33,14,52,.94), rgba(14,20,52,.95)),
+        linear-gradient(90deg, #2a143d 0%, #1a1f4f 55%, #0f1938 100%);
+      box-shadow: 0 30px 80px rgba(0,0,0,.40);
+    }
+
+    .btn{
+      transition: transform .18s ease, filter .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .btn:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .btn-gold{
+      background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      color:#111827;
+      font-weight:800;
+      border-radius:18px;
+    }
+
+    .btn-pink{
+      background: linear-gradient(135deg, var(--pink-1), var(--pink-2));
+      color:white;
+      font-weight:700;
+      border-radius:18px;
+    }
+
+    .btn-dark{
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.07);
+      color:white;
+      border-radius:18px;
+    }
+
+    .input-premium,
+    .select-premium,
+    .textarea-premium{
+      width:100%;
+      padding:14px 16px;
+      border-radius:18px;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.08);
+      outline:none;
+      color:white;
+    }
+
+    .textarea-premium{
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    .input-premium:focus,
+    .select-premium:focus,
+    .textarea-premium:focus{
+      border-color: rgba(236,72,153,.55);
+      box-shadow: 0 0 0 3px rgba(236,72,153,.10);
+    }
+
+    .subtle-label{
+      color:#f9a8d4;
+      font-size:12px;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      font-weight:700;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      padding:6px 12px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.04em;
+    }
+
+    .badge-gold{
+      background:linear-gradient(135deg, var(--gold-1), var(--gold-2));
+      color:#111827;
+    }
+
+    .badge-pink{
+      background:linear-gradient(135deg, var(--pink-1), var(--pink-2));
+      color:white;
+    }
+
+    .badge-dark{
+      background:rgba(15,23,42,.85);
+      color:#f8fafc;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .preview-card{
+      background: linear-gradient(180deg, rgba(17,24,39,.82), rgba(10,14,25,.88));
+      border:1px solid rgba(255,255,255,.07);
+      box-shadow:0 18px 50px rgba(0,0,0,.28);
+      border-radius: 28px;
+      overflow: hidden;
+    }
+
+    .preview-image{
+      width:100%;
+      height:420px;
+      object-fit:cover;
+      object-position:center 20%;
+      display:block;
+      background:#0b1120;
+    }
+
+    .notice{
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .notice.info{
+      background: rgba(51,182,255,.08);
+      color: #d5f2ff;
+    }
+
+    .notice.success{
+      background: rgba(34,197,94,.10);
+      color: #dcfce7;
+    }
+
+    .notice.warn{
+      background: rgba(245,158,11,.11);
+      color: #fde68a;
+    }
+
+    .notice.error{
+      background: rgba(239,68,68,.11);
+      color: #fecaca;
+    }
+
+    .hidden{display:none !important}
+
+    .fade-in{
+      animation: fadeIn .45s ease forwards;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(12px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+  </style>
+</head>
+<body class="grid-lines">
+  <main class="max-w-7xl mx-auto px-4 py-8 md:py-12">
+    <section class="hero-shell rounded-[32px] p-[1px] mb-8 fade-in">
+      <div class="glass rounded-[31px] px-6 py-8 md:px-10 md:py-12 grid lg:grid-cols-2 gap-8 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-pink-100 mb-5">
+            <span class="w-2 h-2 rounded-full bg-green-400"></span>
+            Private submission • admin review • premium activation
+          </div>
+
+          <p class="subtle-label mb-3">Join Nairobi Sweets</p>
+          <h1 class="text-4xl md:text-6xl font-extrabold leading-[1.02] tracking-tight">
+            Submit your profile for private review and premium listing
+          </h1>
+          <p class="text-slate-300 mt-5 text-base md:text-lg max-w-2xl">
+            Send your details, upload your image, choose your preferred plan, and our team will review your submission before activation.
+          </p>
+
+          <div class="flex flex-wrap gap-3 mt-7">
+            <span class="badge badge-gold">👑 Signature ready</span>
+            <span class="badge badge-pink">★ Featured visibility</span>
+            <span class="badge badge-dark">✔ Admin reviewed</span>
+          </div>
+
+          <div class="mt-8 text-sm text-slate-400 space-y-2">
+            <p>1. Submit profile</p>
+            <p>2. Admin reviews and approves</p>
+            <p>3. Payment and activation follow</p>
+          </div>
+        </div>
+
+        <div class="preview-card">
+          <img id="previewImage" class="preview-image" alt="Preview">
+          <div class="p-5">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div id="previewName" class="text-2xl font-extrabold text-pink-200">Your preview</div>
+                <div id="previewLocation" class="text-sm text-slate-400 mt-1">Location will appear here</div>
+              </div>
+              <span id="previewPlan" class="badge badge-gold">Featured</span>
+            </div>
+
+            <p id="previewBio" class="text-sm text-slate-300 mt-4">
+              Your profile bio preview will appear here once you start typing.
+            </p>
+
+            <div class="flex flex-wrap gap-2 mt-4">
+              <span class="badge badge-dark">Pending approval</span>
+              <span class="badge badge-dark">Private review</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-[32px] p-6 md:p-8 fade-in">
+      <div class="grid lg:grid-cols-2 gap-8">
+        <div>
+          <p class="subtle-label mb-3">Application form</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold text-white">Create your submission</h2>
+          <p class="text-slate-400 mt-3">
+            Fill out your details carefully. Submissions enter the approval queue before going live.
+          </p>
+
+          <form id="joinForm" class="mt-8 space-y-4">
+            <div>
+              <label class="block text-sm text-slate-300 mb-2" for="name">Display name</label>
+              <input id="name" class="input-premium" type="text" placeholder="Vanessa" required>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm text-slate-300 mb-2" for="phone">Phone / WhatsApp</label>
+                <input id="phone" class="input-premium" type="text" placeholder="07XXXXXXXX" required>
+              </div>
+              <div>
+                <label class="block text-sm text-slate-300 mb-2" for="location">Location</label>
+                <input id="location" class="input-premium" type="text" placeholder="Westlands, Nairobi" required>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm text-slate-300 mb-2" for="age">Age</label>
+                <input id="age" class="input-premium" type="number" min="18" max="99" placeholder="24">
+              </div>
+              <div>
+                <label class="block text-sm text-slate-300 mb-2" for="requestedPlan">Requested plan</label>
+                <select id="requestedPlan" class="select-premium">
+                  <option value="featured">Featured - KES 1000/week</option>
+                  <option value="vip">VIP - KES 1500/week</option>
+                  <option value="signature">Signature - KES 3000/week</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm text-slate-300 mb-2" for="bio">Bio</label>
+              <textarea id="bio" class="textarea-premium" placeholder="Tell us about your style, vibe, and profile presentation." required></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm text-slate-300 mb-2" for="photo">Profile image</label>
+              <input id="photo" class="input-premium" type="file" accept="image/*">
+              <p class="text-xs text-slate-500 mt-2">
+                Upload a clear high-quality image. This will be reviewed before publication.
+              </p>
+            </div>
+
+            <div>
+              <label class="block text-sm text-slate-300 mb-2" for="email">Email (optional)</label>
+              <input id="email" class="input-premium" type="email" placeholder="you@example.com">
+            </div>
+
+            <button id="submitBtn" type="submit" class="btn btn-pink w-full px-5 py-4 text-base">
+              Submit profile for review
+            </button>
+
+            <div id="formMessage" class="notice info hidden"></div>
+          </form>
+        </div>
+
+        <div>
+          <div class="rounded-[28px] border border-white/10 bg-white/[0.03] p-5">
+            <h3 class="text-2xl font-bold text-yellow-300">What happens next</h3>
+            <div class="mt-5 space-y-4 text-sm text-slate-300">
+              <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div class="font-bold text-white">1. Submission received</div>
+                <p class="mt-1">Your profile enters the private admin approval queue.</p>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div class="font-bold text-white">2. Review and approval</div>
+                <p class="mt-1">Our team checks profile quality, image quality, and requested plan.</p>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div class="font-bold text-white">3. Activation and upgrade</div>
+                <p class="mt-1">Approved profiles can be activated and upgraded through M-Pesa payment flow.</p>
+              </div>
+            </div>
+
+            <div class="mt-6 rounded-2xl border border-pink-500/20 bg-pink-500/8 p-4 text-sm text-pink-100">
+              Keep your details accurate. Approval is smoother when the image is clear and the bio is complete.
+            </div>
+
+            <div class="mt-6">
+              <a href="/" class="btn btn-dark inline-flex px-4 py-3 text-sm">← Back to homepage</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+    const STORAGE_BUCKET = 'profile-images';
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById('joinForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const formMessage = document.getElementById('formMessage');
+
+    const nameInput = document.getElementById('name');
+    const phoneInput = document.getElementById('phone');
+    const locationInput = document.getElementById('location');
+    const ageInput = document.getElementById('age');
+    const requestedPlanInput = document.getElementById('requestedPlan');
+    const bioInput = document.getElementById('bio');
+    const photoInput = document.getElementById('photo');
+    const emailInput = document.getElementById('email');
+
+    const previewImage = document.getElementById('previewImage');
+    const previewName = document.getElementById('previewName');
+    const previewLocation = document.getElementById('previewLocation');
+    const previewPlan = document.getElementById('previewPlan');
+    const previewBio = document.getElementById('previewBio');
+
+    const placeholderPreview =
+      'data:image/svg+xml;utf8,' +
+      encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200">
+          <rect width="100%" height="100%" fill="#0d1530"/>
+          <text x="50%" y="50%" fill="#8fa2d8" font-size="34" text-anchor="middle" font-family="Arial">
+            Profile preview
+          </text>
+        </svg>
+      `);
+
+    function showMessage(type, text) {
+      formMessage.className = `notice ${type}`;
+      formMessage.textContent = text;
+      formMessage.classList.remove('hidden');
+    }
+
+    function hideMessage() {
+      formMessage.classList.add('hidden');
+      formMessage.textContent = '';
+    }
+
+    function slugify(text) {
+      return String(text || '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function normalizePhone(phone) {
+      let p = String(phone || '').replace(/\D/g, '');
+      if (p.startsWith('0')) p = `254${p.slice(1)}`;
+      if (p.startsWith('7') && p.length === 9) p = `254${p}`;
+      return p;
+    }
+
+    function priceText(plan) {
+      const clean = String(plan || '').toLowerCase();
+      if (clean === 'vip') return 'VIP';
+      if (clean === 'signature') return 'Signature';
+      return 'Featured';
+    }
+
+    function updatePreview() {
+      previewName.textContent = nameInput.value.trim() || 'Your preview';
+      previewLocation.textContent = locationInput.value.trim() || 'Location will appear here';
+      previewPlan.textContent = priceText(requestedPlanInput.value);
+      previewBio.textContent = bioInput.value.trim() || 'Your profile bio preview will appear here once you start typing.';
+    }
+
+    function setButtonBusy(busy, text = 'Submit profile for review') {
+      submitBtn.disabled = busy;
+      submitBtn.textContent = busy ? 'Submitting...' : text;
+    }
+
+    async function uploadUserImage(file, slug) {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const safeSlug = slug || `profile-${Date.now()}`;
+      const path = `submissions/${safeSlug}-${Date.now()}.${ext}`;
+
+      const { data, error } = await supabaseClient.storage
+        .from(STORAGE_BUCKET)
+        .upload(path, file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: file.type || 'image/jpeg'
+        });
+
+      if (error) throw error;
+
+      const publicUrl = supabaseClient.storage
+        .from(STORAGE_BUCKET)
+        .getPublicUrl(data.path)
+        .data.publicUrl;
+
+      return {
+        imageUrl: publicUrl,
+        imagePath: data.path
+      };
+    }
+
+    async function handleSubmit(event) {
+      event.preventDefault();
+      hideMessage();
+      setButtonBusy(true);
+
+      try {
+        const name = nameInput.value.trim();
+        const phone = normalizePhone(phoneInput.value);
+        const location = locationInput.value.trim();
+        const age = ageInput.value ? Number(ageInput.value) : null;
+        const requestedPlan = requestedPlanInput.value;
+        const bio = bioInput.value.trim();
+        const email = emailInput.value.trim();
+
+        if (!name) throw new Error('Display name is required.');
+        if (!phone) throw new Error('Phone / WhatsApp is required.');
+        if (!location) throw new Error('Location is required.');
+        if (!bio) throw new Error('Bio is required.');
+
+        const slugBase = slugify(name || phone || 'profile');
+        const slug = `${slugBase}-${Date.now().toString().slice(-6)}`;
+
+        let uploadedImageUrl = '';
+        let uploadedImagePath = '';
+
+        const file = photoInput.files?.[0];
+        if (file) {
+          const uploaded = await uploadUserImage(file, slug);
+          uploadedImageUrl = uploaded.imageUrl;
+          uploadedImagePath = uploaded.imagePath;
+        }
+
+        const payload = {
+          name,
+          username: name,
+          slug,
+          phone,
+          whatsapp: phone,
+          location,
+          age,
+          bio,
+          description: bio,
+          email: email || null,
+          image_url: uploadedImageUrl || null,
+          avatar_url: uploadedImageUrl || null,
+          image_path: uploadedImagePath || null,
+          image_position: 20,
+          requested_plan: requestedPlan,
+          category: 'featured',
+          plan: 'featured',
+          status: 'pending',
+          payment_status: 'unpaid',
+          approval_status: 'pending',
+          onboarding_step: 'submitted',
+          submitted_at: new Date().toISOString(),
+          is_vip: false,
+          is_vvip: false,
+          is_featured: false,
+          is_verified: false,
+          is_online: false,
+          featured: false,
+          verified: false,
+          online: false,
+          rate_kses:
+            requestedPlan === 'vip'
+              ? 'KES 1500/week'
+              : requestedPlan === 'signature'
+              ? 'KES 3000/week'
+              : 'KES 1000/week',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+
+        const { error } = await supabaseClient
+          .from('profiles')
+          .insert([payload]);
+
+        if (error) throw error;
+
+        showMessage(
+          'success',
+          'Your profile has been submitted successfully. It is now waiting for admin review.'
+        );
+
+        form.reset();
+        previewImage.src = placeholderPreview;
+        updatePreview();
+      } catch (error) {
+        console.error(error);
+        showMessage('error', error.message || 'Could not submit your profile right now.');
+      } finally {
+        setButtonBusy(false);
+      }
+    }
+
+    [nameInput, locationInput, requestedPlanInput, bioInput].forEach(input => {
+      input.addEventListener('input', updatePreview);
+    });
+
+    photoInput.addEventListener('change', () => {
+      const file = photoInput.files?.[0];
+      if (!file) {
+        previewImage.src = placeholderPreview;
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        previewImage.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    form.addEventListener('submit', handleSubmit);
+
+    previewImage.src = placeholderPreview;
+    updatePreview();
+  </script>
+</body>
+</html>
