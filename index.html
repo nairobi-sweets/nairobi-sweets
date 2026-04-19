@@ -618,14 +618,14 @@
         <input id="upgradeAmount" type="hidden">
 
         <div class="rounded-2xl chip p-4">
-          <p class="text-sm text-slate-300">Pay with M-Pesa STK Push</p>
+          <p class="text-sm text-slate-300">Send payment via M-Pesa</p>
           <p class="text-lg font-bold text-white mt-1">Till Number: 568912</p>
           <p id="upgradeSummary" class="text-sm text-yellow-300 mt-2"></p>
-          <p class="text-xs text-slate-400 mt-2">Enter your name and phone number. We will send an STK prompt to your phone.</p>
         </div>
 
         <input id="payerName" type="text" placeholder="Your name" class="input-premium">
         <input id="payerPhone" type="text" placeholder="Phone number" class="input-premium">
+        <input id="transactionCode" type="text" placeholder="M-Pesa transaction code" class="input-premium">
 
         <button id="submitUpgradeBtn" class="btn btn-pink w-full p-3 font-semibold">Pay with M-Pesa</button>
         <p id="upgradeMsg" class="text-sm text-slate-300"></p>
@@ -638,3 +638,795 @@
     const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
     const OWNER_EMAIL = 'nairobisweets05@gmail.com';
     const PLACEHOLDER = 'https://via.placeholder.com/1200x1500/0f172a/f8fafc?text=Nairobi+Sweets';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const ANALYTICS_TABLE = 'analytics_events';
+
+    function getSessionId() {
+      let id = localStorage.getItem('ns_session_id');
+      if (!id) {
+        id = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        localStorage.setItem('ns_session_id', id);
+      }
+      return id;
+    }
+
+    async function trackEvent(eventName, payload = {}) {
+      try {
+        await supabaseClient.from(ANALYTICS_TABLE).insert([{
+          event_name: eventName,
+          profile_id: payload.profile_id ?? null,
+          payment_id: payload.payment_id ?? null,
+          session_id: getSessionId(),
+          page_path: window.location.pathname,
+          plan: payload.plan ?? null,
+          amount: payload.amount ?? null,
+          meta: payload.meta ?? {}
+        }]);
+      } catch (err) {
+        console.error('Analytics track failed:', err);
+      }
+    }
+
+
+    let allProfiles = [];
+    const viewedProfiles = new Set();
+    let selectedLocation = '';
+    let selectedCategory = '';
+    let onlineOnly = false;
+    let quickFlags = { vvip: false, vip: false, featured: false, verified: false };
+    let profilesRealtimeChannel = null;
+
+    const feedEl = document.getElementById('feed');
+    const featuredFeedEl = document.getElementById('featuredFeed');
+    const vvipFeedEl = document.getElementById('vvipFeed');
+    const searchInput = document.getElementById('searchInput');
+    const statusEl = document.getElementById('status');
+    const substatusEl = document.getElementById('substatus');
+    const statProfiles = document.getElementById('statProfiles');
+    const statFeatured = document.getElementById('statFeatured');
+    const accountStatus = document.getElementById('accountStatus');
+    const adminBtn = document.getElementById('adminBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginOpenBtn = document.getElementById('loginOpenBtn');
+    const registerOpenBtn = document.getElementById('registerOpenBtn');
+    const loginModal = document.getElementById('loginModal');
+    const registerModal = document.getElementById('registerModal');
+    const sortFilter = document.getElementById('sortFilter');
+    const siteLogo = document.getElementById('siteLogo');
+    const upgradeModal = document.getElementById('upgradeModal');
+
+    function esc(v){ return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
+    function escJs(v){ return String(v ?? '').replaceAll('\\', '\\\\').replaceAll("'", "\\'"); }
+    function safe(v, fallback = '') { return v === null || v === undefined || v === '' ? fallback : v; }
+
+    function normalizeCategoryValue(value){
+      const raw = String(value || '').trim().toLowerCase();
+      if (!raw) return 'general';
+      if (raw.includes('signature') || raw.includes('premium') || raw.includes('vvip')) return 'signature';
+      if (raw.includes('vip')) return 'vip';
+      if (raw.includes('featured') || raw.includes('sweet')) return 'featured';
+      if (raw.includes('free')) return 'free';
+      return raw;
+    }
+
+    function normalizePublicProfile(p = {}) {
+      const category = normalizeCategoryValue(
+        p.category || p.plan || p.plan_name || p.category_name
+      );
+
+      const name = safe(
+        p.name,
+        safe(p.stage_name, safe(p.username, safe(p.full_name, 'Unnamed profile')))
+      );
+
+      const description = safe(
+        p.description,
+        safe(p.bio, 'No description available.')
+      );
+
+      const imageUrl = getDisplayImage(p);
+      const location = getDisplayLocation(p);
+
+      const isVvip = Boolean(
+        p.is_vvip ??
+        (category === 'signature')
+      );
+
+      const isVip = Boolean(
+        p.is_vip ??
+        (category === 'vip')
+      );
+
+      const isFeatured = Boolean(
+        p.is_featured ??
+        p.featured ??
+        (category === 'featured')
+      );
+
+      const isVerified = Boolean(
+        p.is_verified ??
+        p.verified ??
+        imageUrl
+      );
+
+      const isOnline = Boolean(
+        p.is_online ??
+        p.online ??
+        (String(p.status || '').toLowerCase() === 'active')
+      );
+
+      const paymentStatus = String(
+        p.payment_status ||
+        (String(p.status || '').toLowerCase() === 'active' ? 'paid' : 'unpaid')
+      ).toLowerCase();
+
+      const status = String(p.status || (isOnline ? 'active' : 'pending')).toLowerCase();
+
+      return {
+        ...p,
+        name,
+        stage_name: safe(p.stage_name, name),
+        description,
+        bio: safe(p.bio, description),
+        location,
+        category,
+        plan: p.plan || category,
+        price_range: getPriceRange(p),
+        image_url: imageUrl,
+        profile_image_url: imageUrl,
+        whatsapp: safe(p.whatsapp, safe(p.phone, '')),
+        phone: safe(p.phone, safe(p.whatsapp, '')),
+        is_vvip: isVvip,
+        is_vip: isVip,
+        is_featured: isFeatured,
+        is_verified: isVerified,
+        is_online: isOnline,
+        featured: Boolean(p.featured ?? isFeatured),
+        verified: Boolean(p.verified ?? isVerified),
+        online: Boolean(p.online ?? isOnline),
+        payment_status: paymentStatus,
+        status,
+        likes_count: Number(p.likes_count || 0),
+        views_count: Number(p.views_count || 0),
+        sort_order: Number(p.sort_order || 0),
+        object_fit: getDisplayFit(p),
+        image_position: getDisplayPosition(p)
+      };
+    }
+
+    function getDisplayName(profile){
+      return safe(profile.stage_name, safe(profile.name, 'Unnamed profile'));
+    }
+
+    function getDisplayDescription(profile){
+      return safe(profile.bio, safe(profile.description, 'No description available.'));
+    }
+
+    function getDisplayImage(profile){
+      return safe(profile.profile_image_url, safe(profile.image_url, PLACEHOLDER));
+    }
+
+    function getDisplayLocation(profile){
+      return safe(profile.location, 'Not specified');
+    }
+
+    function getDisplayPosition(profile){
+      const pos = safe(profile.image_position, '');
+      if (pos) return pos;
+      const x = Number.isFinite(Number(profile.image_position_x)) ? Number(profile.image_position_x) : 50;
+      const y = Number.isFinite(Number(profile.image_position_y)) ? Number(profile.image_position_y) : 50;
+      return `${x}% ${y}%`;
+    }
+
+    function getDisplayFit(profile){
+      return safe(profile.object_fit, safe(profile.image_zoom, 'cover'));
+    }
+
+    function getWhatsAppNumber(profile){
+      return safe(profile.whatsapp, safe(profile.phone, '')).replace(/[^\d]/g, '');
+    }
+
+    function getPhoneNumber(profile){
+      return safe(profile.phone, safe(profile.whatsapp, '')).replace(/[^\d+]/g, '');
+    }
+
+    function getPriceRange(profile){
+      const pricePerWeek = Number(profile.price_per_week || 0);
+      if (pricePerWeek > 0) return `KES ${pricePerWeek}/week`;
+      return safe(profile.price_range, 'Private pricing');
+    }
+
+    function getImageVersion(profile){
+      return encodeURIComponent(
+        safe(profile.updated_at, safe(profile.id, 'static'))
+      );
+    }
+
+    function setStatus(main, sub, error=false){
+      statusEl.textContent = main;
+      substatusEl.textContent = sub || '';
+      statusEl.className = error ? 'text-2xl font-extrabold text-red-300' : 'text-2xl font-extrabold text-pink-200';
+    }
+
+    function emptyCard(title, subtitle){
+      return `<div class="glass rounded-3xl p-8 text-center text-slate-300 col-span-full"><div class="text-xl font-semibold text-pink-300 mb-2">${esc(title)}</div><p class="text-slate-400">${esc(subtitle)}</p></div>`;
+    }
+
+    function openModal(el){ el.classList.remove('hidden'); el.classList.add('flex'); }
+    function closeModal(el){ el.classList.add('hidden'); el.classList.remove('flex'); }
+
+    function getLikedIds(){
+      try { return JSON.parse(localStorage.getItem('likedProfileIds') || '[]'); }
+      catch { return []; }
+    }
+
+    function setLikedIds(ids){ localStorage.setItem('likedProfileIds', JSON.stringify(ids)); }
+    function hasLiked(id){ return getLikedIds().includes(id); }
+
+    function getRankScore(p){
+      return (p.is_vvip ? 10000 : 0) +
+        (p.is_vip ? 3000 : 0) +
+        (p.is_featured ? 2000 : 0) +
+        (p.is_verified ? 1000 : 0) +
+        (p.is_online ? 500 : 0) +
+        ((p.likes_count || 0) * 20) +
+        ((p.views_count || 0) * 2) -
+        ((p.sort_order || 0) * 0.1);
+    }
+
+    function card(profile, featured=false){
+      const name = getDisplayName(profile);
+      const description = getDisplayDescription(profile);
+      const imageUrl = getDisplayImage(profile);
+      const imagePosition = getDisplayPosition(profile);
+      const imageFit = getDisplayFit(profile);
+      const location = getDisplayLocation(profile);
+      const category = normalizeCategoryValue(profile.category || profile.plan);
+      const displayCategory =
+        category === 'signature' ? 'Signature' :
+        category === 'vip' ? 'VIP' :
+        category === 'featured' ? 'Featured' :
+        category;
+      const vvip = !!profile.is_vvip || category === 'signature';
+      const vip = !!profile.is_vip || category === 'vip';
+      const verified = !!profile.is_verified || !!profile.verified;
+      const isFeatured = !!profile.is_featured || !!profile.featured || featured || category === 'featured';
+      const online = !!profile.is_online || !!profile.online;
+      const liked = hasLiked(profile.id);
+      const altText = `${displayCategory || 'Premium'} profile in Nairobi - ${name}`;
+      const rank = Math.round(getRankScore(profile));
+      const whatsappNumber = getWhatsAppNumber(profile);
+      const phoneNumber = getPhoneNumber(profile);
+      const imgSrc = `${imageUrl}${imageUrl.includes('?') ? '&' : '?'}v=${getImageVersion(profile)}`;
+
+      return `<article class="glass card-hover ${vvip ? 'vvip-glow' : ((vip || isFeatured) ? 'vip-glow' : 'soft-glow')} rounded-[24px] overflow-hidden fade-in">
+        <div class="relative">
+          <img src="${esc(imgSrc)}" alt="${esc(altText)}" class="card-image" style="object-position:${esc(imagePosition)};object-fit:${esc(imageFit)};" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
+          <div class="absolute top-3 left-3 flex gap-2 flex-wrap">
+            ${vvip ? '<span class="badge badge-gold">👑 Signature</span>' : ''}
+            ${vip ? '<span class="badge badge-gold">VIP</span>' : ''}
+            ${isFeatured ? '<span class="badge badge-pink">Featured</span>' : ''}
+            ${verified ? '<span class="badge badge-green">Verified</span>' : ''}
+            ${online ? '<span class="badge badge-dark">Online</span>' : ''}
+          </div>
+          <div class="absolute bottom-3 right-3 rounded-full bg-black/55 border border-white/10 px-3 py-1.5 text-xs font-bold text-yellow-200">
+            Rank ${rank}
+          </div>
+        </div>
+
+        <div class="p-4">
+          <div class="min-w-0">
+            <h3 class="profile-name truncate">${esc(name)}</h3>
+            <p class="profile-category mt-1">${esc(displayCategory || 'General')}</p>
+          </div>
+
+          <div class="flex flex-wrap gap-2 mt-3">
+            <button class="text-xs px-3 py-1 rounded-full chip hover:bg-white/15" onclick="toggleLocationChip('${escJs(location)}')">${esc(location)}</button>
+            <span class="text-xs px-3 py-1 rounded-full chip">${esc(getPriceRange(profile))}</span>
+          </div>
+
+          <p class="text-slate-300 text-sm mt-3 text-clamp-3">${esc(description)}</p>
+
+          <div class="flex flex-wrap gap-2 mt-3 text-sm text-slate-300">
+            <button onclick="likeProfile('${profile.id}')" class="btn stat-chip ${liked ? 'bg-pink-600 text-white border-pink-500' : 'hover:bg-white/10'}">
+              ❤️ ${profile.likes_count || 0}
+            </button>
+            <span class="stat-chip">👁 ${profile.views_count || 0}</span>
+            ${online ? '<span class="stat-chip bg-green-500/20 text-green-300 border border-green-400/20">🟢 Online</span>' : ''}
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 mt-4">
+            <a href="${whatsappNumber ? `https://wa.me/${whatsappNumber}` : '#'}" target="_blank" rel="noopener noreferrer" data-track="whatsapp" data-profile-id="${esc(profile.id)}" data-plan="${esc(profile.plan || profile.category || '')}" class="btn text-center px-3 py-3 rounded-2xl bg-green-500 hover:bg-green-400 text-white font-semibold text-sm ${!whatsappNumber ? 'opacity-50 pointer-events-none' : ''}">💬 WhatsApp</a>
+            <a href="${phoneNumber ? `tel:${phoneNumber}` : '#'}" class="btn call-btn text-center px-3 py-3 rounded-2xl text-sm ${!phoneNumber ? 'opacity-50 pointer-events-none' : ''}">📞 Call</a>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 mt-3">
+            <button onclick="openUpgradeModal('${profile.id}', 'featured', 1000)" class="btn btn-dark text-xs px-2 py-2 rounded-xl">Featured</button>
+            <button onclick="openUpgradeModal('${profile.id}', 'vip', 1500)" class="btn btn-dark text-xs px-2 py-2 rounded-xl">VIP</button>
+            <button onclick="openUpgradeModal('${profile.id}', 'signature', 3000)" class="btn btn-gold text-xs px-2 py-2 rounded-xl">👑 Signature</button>
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function syncButtons() {
+      document.getElementById('onlineOnlyBtn').classList.toggle('active', onlineOnly);
+      document.querySelectorAll('.quick-filter').forEach(btn => {
+        btn.classList.toggle('active', !!quickFlags[btn.dataset.filter]);
+      });
+    }
+
+    function buildLocationChips(profiles) {
+      const wrap = document.getElementById('locationChips');
+      const counts = {};
+      profiles.forEach(p => {
+        const location = getDisplayLocation(p);
+        if (!location || location === 'Not specified') return;
+        counts[location] = (counts[location] || 0) + 1;
+      });
+      wrap.innerHTML = Object.entries(counts)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([location, count]) => `
+          <button class="filter-chip ${selectedLocation === location ? 'active' : ''}" onclick="toggleLocationChip('${escJs(location)}')">
+            ${esc(location)} (${count})
+          </button>
+        `).join('');
+    }
+
+    function buildCategoryChips(profiles) {
+      const wrap = document.getElementById('categoryChips');
+      const counts = {};
+      profiles.forEach(p => {
+        const category = normalizeCategoryValue(p.category || p.plan);
+        if (!category || category === 'general' || category === 'free') return;
+        counts[category] = (counts[category] || 0) + 1;
+      });
+      wrap.innerHTML = Object.entries(counts)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([category, count]) => `
+          <button class="filter-chip ${selectedCategory === category ? 'active' : ''}" onclick="toggleCategoryChip('${escJs(category)}')">
+            ${esc(category === 'signature' ? 'Signature' : category === 'vip' ? 'VIP' : category === 'featured' ? 'Featured' : category)} (${count})
+          </button>
+        `).join('');
+    }
+
+    function renderActiveFilters() {
+      const wrap = document.getElementById('activeFilters');
+      const pills = [];
+      if (selectedLocation) pills.push(`<button class="active-pill" onclick="clearOneFilter('location')">📍 ${esc(selectedLocation)} ✕</button>`);
+      if (selectedCategory) pills.push(`<button class="active-pill" onclick="clearOneFilter('category')">🏷 ${esc(selectedCategory)} ✕</button>`);
+      if (onlineOnly) pills.push(`<button class="active-pill" onclick="clearOneFilter('online')">🟢 Online only ✕</button>`);
+      Object.entries(quickFlags).forEach(([key, value]) => {
+        if (value) pills.push(`<button class="active-pill" onclick="clearOneFilter('${key}')">${key.toUpperCase()} ✕</button>`);
+      });
+      wrap.innerHTML = pills.length ? pills.join('') : `<span class="text-slate-500 text-sm">No active filters</span>`;
+    }
+
+    function toggleLocationChip(location) {
+      selectedLocation = selectedLocation === location ? '' : location;
+      applyFilters();
+    }
+
+    function toggleCategoryChip(category) {
+      selectedCategory = selectedCategory === category ? '' : category;
+      applyFilters();
+    }
+
+    function clearOneFilter(type) {
+      if (type === 'location') selectedLocation = '';
+      if (type === 'category') selectedCategory = '';
+      if (type === 'online') onlineOnly = false;
+      if (quickFlags[type] !== undefined) quickFlags[type] = false;
+      syncButtons();
+      applyFilters();
+    }
+
+    window.toggleLocationChip = toggleLocationChip;
+    window.toggleCategoryChip = toggleCategoryChip;
+    window.clearOneFilter = clearOneFilter;
+
+    async function incrementView(profileId){
+      if(viewedProfiles.has(profileId)) return;
+      viewedProfiles.add(profileId);
+
+      const key = `viewed_profile_${profileId}`;
+      if(localStorage.getItem(key)) return;
+      localStorage.setItem(key, '1');
+
+      try{
+        const profile = allProfiles.find(p => String(p.id) === String(profileId));
+        if(!profile) return;
+        const newCount = (profile.views_count || 0) + 1;
+        const { error } = await supabaseClient.from('profiles').update({ views_count: newCount }).eq('id', profileId);
+        if(error) throw error;
+        profile.views_count = newCount;
+        applyFilters();
+        await trackEvent('profile_viewed', {
+          profile_id: profileId,
+          plan: profile.plan || profile.category || null,
+          meta: { source: 'homepage' }
+        });
+      }catch(err){
+        console.error('View increment failed:', err);
+      }
+    }
+
+    async function likeProfile(profileId){
+      if(hasLiked(profileId)) return;
+      try{
+        const profile = allProfiles.find(p => String(p.id) === String(profileId));
+        if(!profile) return;
+        const newCount = (profile.likes_count || 0) + 1;
+        const { error } = await supabaseClient.from('profiles').update({ likes_count: newCount }).eq('id', profileId);
+        if(error) throw error;
+        profile.likes_count = newCount;
+        const likedIds = getLikedIds();
+        likedIds.push(profileId);
+        setLikedIds(likedIds);
+        applyFilters();
+        await trackEvent('profile_liked', {
+          profile_id: profileId,
+          plan: profile.plan || profile.category || null,
+          meta: { source: 'homepage' }
+        });
+      }catch(err){
+        console.error('Like failed:', err);
+      }
+    }
+
+    window.likeProfile = likeProfile;
+
+    function applyFilters() {
+      const q = searchInput.value.trim().toLowerCase();
+      const sortValue = sortFilter.value;
+
+      let filtered = allProfiles.filter(p => {
+        const hay = [
+          getDisplayName(p),
+          getDisplayDescription(p),
+          getDisplayLocation(p),
+          normalizeCategoryValue(p.category || p.plan),
+          getPriceRange(p),
+          p.username || ''
+        ].join(' ').toLowerCase();
+
+        if (q && !hay.includes(q)) return false;
+        if (selectedLocation && getDisplayLocation(p) !== selectedLocation) return false;
+        if (selectedCategory && normalizeCategoryValue(p.category || p.plan) !== selectedCategory) return false;
+        if (onlineOnly && !p.is_online) return false;
+        if (quickFlags.vvip && !(p.is_vvip || normalizeCategoryValue(p.category || p.plan) === 'signature')) return false;
+        if (quickFlags.vip && !(p.is_vip || normalizeCategoryValue(p.category || p.plan) === 'vip')) return false;
+        if (quickFlags.featured && !(p.is_featured || normalizeCategoryValue(p.category || p.plan) === 'featured')) return false;
+        if (quickFlags.verified && !p.is_verified) return false;
+
+        return true;
+      });
+
+      if (sortValue === 'likes') {
+        filtered.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
+      } else if (sortValue === 'views') {
+        filtered.sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+      } else if (sortValue === 'name') {
+        filtered.sort((a, b) => getDisplayName(a).localeCompare(getDisplayName(b)));
+      } else {
+        filtered.sort((a, b) => getRankScore(b) - getRankScore(a) || (a.sort_order || 0) - (b.sort_order || 0) || (b.id || 0) - (a.id || 0));
+      }
+
+      const vvip = filtered.filter(p => p.is_vvip || normalizeCategoryValue(p.category || p.plan) === 'signature');
+      const featured = filtered
+        .filter(p => ((p.is_featured || p.is_vip || ['featured','vip'].includes(normalizeCategoryValue(p.category || p.plan))) && !(p.is_vvip || normalizeCategoryValue(p.category || p.plan) === 'signature')))
+        .slice(0, 8);
+      const regular = filtered.filter(p => !(p.is_vvip || normalizeCategoryValue(p.category || p.plan) === 'signature'));
+
+      statProfiles.textContent = filtered.length;
+      statFeatured.textContent = vvip.length + featured.length;
+
+      vvipFeedEl.innerHTML = vvip.length ? vvip.map(p => card(p, true)).join('') : emptyCard('No signature profiles', 'Try another filter.');
+      featuredFeedEl.innerHTML = featured.length ? featured.map(p => card(p, true)).join('') : emptyCard('No featured profiles', 'Try another filter.');
+      feedEl.innerHTML = regular.length ? regular.map(p => card(p, false)).join('') : emptyCard('No matching profiles', 'Try another search or filter.');
+
+      [...vvip, ...featured, ...regular].forEach(p => incrementView(p.id));
+
+      document.getElementById('vvipSection').classList.toggle('section-hidden', vvip.length === 0);
+      document.getElementById('featured').classList.toggle('section-hidden', featured.length === 0);
+
+      buildLocationChips(allProfiles);
+      buildCategoryChips(allProfiles);
+      renderActiveFilters();
+    }
+
+    async function loadProfiles(showLoading = true){
+      try{
+        if (showLoading) {
+          feedEl.innerHTML = emptyCard('Loading premium profiles...', 'The velvet rope is opening.');
+          featuredFeedEl.innerHTML = emptyCard('Loading featured profiles...', 'Please wait a moment.');
+          vvipFeedEl.innerHTML = emptyCard('Loading signature profiles...', 'Curated access is warming up.');
+          setStatus('Loading profiles...', 'Fetching profiles from Supabase.');
+        }
+
+        const { data, error } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .order('sort_order', { ascending: true })
+          .order('id', { ascending: false });
+
+        if(error) throw error;
+
+        allProfiles = (data || [])
+          .map(normalizePublicProfile)
+          .filter(p => {
+            if (String(p.status || '').toLowerCase() !== 'active') return false;
+            if (String(p.approval_status || '').toLowerCase() !== 'approved') return false;
+            if (!p.image_url) return false;
+            return true;
+          });
+
+        applyFilters();
+        setStatus('Profiles live', `${allProfiles.length} active profiles loaded.`);
+      }catch(err){
+        console.error('Supabase load failed:', err);
+        allProfiles = [];
+        applyFilters();
+        feedEl.innerHTML = emptyCard('Could not load profiles', err.message || 'The page is live, but profile data is temporarily unavailable.');
+        featuredFeedEl.innerHTML = emptyCard('Featured unavailable', 'Profile connection issue.');
+        vvipFeedEl.innerHTML = emptyCard('Signature unavailable', 'Profile connection issue.');
+        setStatus('Connection issue', err.message || 'Homepage still works, but profile data could not be loaded.', true);
+      }
+    }
+
+    async function refreshUserUi(){
+      try{
+        const { data } = await supabaseClient.auth.getSession();
+        const session = data.session;
+        if(session){
+          accountStatus.textContent = session.user.email === OWNER_EMAIL ? `Owner: ${session.user.email}` : `Signed in: ${session.user.email}`;
+          logoutBtn.classList.remove('hidden');
+          loginOpenBtn.classList.add('hidden');
+          registerOpenBtn.classList.add('hidden');
+          if(session.user.email === OWNER_EMAIL) adminBtn.classList.remove('hidden');
+          else adminBtn.classList.add('hidden');
+        }else{
+          accountStatus.textContent = 'Guest';
+          logoutBtn.classList.add('hidden');
+          loginOpenBtn.classList.remove('hidden');
+          registerOpenBtn.classList.remove('hidden');
+          adminBtn.classList.add('hidden');
+        }
+      }catch(err){
+        console.error(err);
+        accountStatus.textContent = 'Guest';
+        logoutBtn.classList.add('hidden');
+        loginOpenBtn.classList.remove('hidden');
+        registerOpenBtn.classList.remove('hidden');
+        adminBtn.classList.add('hidden');
+      }
+    }
+
+    async function registerUser(){
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+      const msg = document.getElementById('registerMsg');
+      msg.textContent = '';
+
+      try{
+        const { error } = await supabaseClient.auth.signUp({ email, password });
+        if(error){ msg.textContent = error.message; return; }
+        msg.textContent = 'Account created. Check your email if confirmation is enabled.';
+      }catch(err){
+        msg.textContent = 'Registration is temporarily unavailable.';
+      }
+    }
+
+    async function loginUser(){
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const msg = document.getElementById('loginMsg');
+      msg.textContent = '';
+
+      try{
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if(error){ msg.textContent = error.message; return; }
+        closeModal(loginModal);
+        await refreshUserUi();
+      }catch(err){
+        msg.textContent = 'Login is temporarily unavailable.';
+      }
+    }
+
+    async function logoutUser(){
+      try{
+        await supabaseClient.auth.signOut();
+      }catch(err){
+        console.error(err);
+      }
+      await refreshUserUi();
+    }
+
+    function openUpgradeModal(profileId, plan, amount) {
+      document.getElementById('upgradeProfileId').value = profileId;
+      document.getElementById('upgradePlan').value = plan;
+      document.getElementById('upgradeAmount').value = amount;
+      document.getElementById('upgradeSummary').textContent = `${plan.toUpperCase()} plan - KES ${amount} per week`;
+      document.getElementById('upgradeMsg').textContent = '';
+      upgradeModal.classList.remove('hidden');
+      upgradeModal.classList.add('flex');
+
+      trackEvent('upgrade_clicked', {
+        profile_id: profileId,
+        plan,
+        amount,
+        meta: { source: 'upgrade_modal_open' }
+      });
+    }
+
+    function closeUpgradeModal() {
+      upgradeModal.classList.add('hidden');
+      upgradeModal.classList.remove('flex');
+    }
+
+    window.openUpgradeModal = openUpgradeModal;
+
+    async function submitUpgrade(){
+      const profileId = document.getElementById('upgradeProfileId').value;
+      const plan = document.getElementById('upgradePlan').value;
+      const amount = Number(document.getElementById('upgradeAmount').value);
+      const payerName = document.getElementById('payerName').value.trim();
+      const payerPhone = document.getElementById('payerPhone').value.trim();
+      const msg = document.getElementById('upgradeMsg');
+
+      msg.textContent = '';
+
+      if (!payerName || !payerPhone) {
+        msg.textContent = 'Please fill your name and phone number.';
+        return;
+      }
+
+      try {
+        msg.textContent = 'Sending STK push...';
+
+        const res = await fetch('/.netlify/functions/mpesa-stk-push', {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            profile_id: profileId,
+            phone: payerPhone,
+            plan
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if(!res.ok) throw new Error(data.error || 'Failed to send STK push');
+
+        await trackEvent('stk_push_started', {
+          profile_id: profileId,
+          plan,
+          amount,
+          meta: { payer_name: payerName, payer_phone: payerPhone }
+        });
+
+        msg.textContent = data.customer_message || 'Check your phone and enter M-Pesa PIN.';
+
+        setTimeout(() => {
+          closeUpgradeModal();
+          document.getElementById('payerName').value = '';
+          document.getElementById('payerPhone').value = '';
+          const codeInput = document.getElementById('transactionCode');
+          if (codeInput) codeInput.value = '';
+        }, 2200);
+      } catch (err) {
+        console.error(err);
+        msg.textContent = err.message || 'Could not start payment right now.';
+      }
+    }
+
+    function updateLogoGlow() {
+      if (!siteLogo) return;
+      const y = Math.min(window.scrollY, 200);
+      const intensity = y / 200;
+      siteLogo.style.transform = `scale(${1 + intensity * 0.05})`;
+      siteLogo.style.filter = `brightness(${1 + intensity * 0.15}) saturate(${1 + intensity * 0.15})`;
+      siteLogo.style.boxShadow = `
+        0 0 0 1px rgba(255,255,255,${0.05 + intensity * 0.1}),
+        0 0 ${10 + intensity * 20}px rgba(255,115,0,${0.1 + intensity * 0.2}),
+        0 0 ${20 + intensity * 30}px rgba(255,79,183,${0.08 + intensity * 0.2}),
+        0 0 ${30 + intensity * 50}px rgba(255,213,77,${0.05 + intensity * 0.15})
+      `;
+    }
+
+    function initRealtimeProfiles(){
+      if (profilesRealtimeChannel) return;
+
+      profilesRealtimeChannel = supabaseClient
+        .channel('public:profiles-live')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'profiles' },
+          async (payload) => {
+            console.log('Live update from vault:', payload);
+            await loadProfiles(false);
+          }
+        )
+        .subscribe((status) => {
+          console.log('Realtime status:', status);
+        });
+    }
+
+    document.addEventListener('click', async (event) => {
+      const btn = event.target.closest('[data-track]');
+      if (!btn) return;
+
+      const kind = btn.dataset.track;
+      const profileId = btn.dataset.profileId || null;
+      const plan = btn.dataset.plan || null;
+
+      if (kind === 'whatsapp') {
+        await trackEvent('whatsapp_clicked', {
+          profile_id: profileId,
+          plan,
+          meta: { source: 'profile_card' }
+        });
+      }
+    });
+
+    searchInput.addEventListener('input', applyFilters);
+    sortFilter.addEventListener('change', applyFilters);
+
+    document.getElementById('onlineOnlyBtn').addEventListener('click', () => {
+      onlineOnly = !onlineOnly;
+      syncButtons();
+      applyFilters();
+    });
+
+    document.querySelectorAll('.quick-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.filter;
+        quickFlags[key] = !quickFlags[key];
+        syncButtons();
+        applyFilters();
+      });
+    });
+
+    document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+      searchInput.value = '';
+      sortFilter.value = 'default';
+      selectedLocation = '';
+      selectedCategory = '';
+      onlineOnly = false;
+      quickFlags = { vvip:false, vip:false, featured:false, verified:false };
+      syncButtons();
+      applyFilters();
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', () => loadProfiles(true));
+    loginOpenBtn.addEventListener('click', () => openModal(loginModal));
+    registerOpenBtn.addEventListener('click', () => openModal(registerModal));
+
+    document.querySelectorAll('.closeModal').forEach(btn => btn.addEventListener('click', () => {
+      closeModal(loginModal);
+      closeModal(registerModal);
+    }));
+
+    document.getElementById('loginBtn').addEventListener('click', loginUser);
+    document.getElementById('registerBtn').addEventListener('click', registerUser);
+    logoutBtn.addEventListener('click', logoutUser);
+    document.getElementById('closeUpgradeBtn').addEventListener('click', closeUpgradeModal);
+    document.getElementById('submitUpgradeBtn').addEventListener('click', submitUpgrade);
+
+    supabaseClient.auth.onAuthStateChange(async () => {
+      await refreshUserUi();
+    });
+
+    window.addEventListener('scroll', updateLogoGlow);
+
+    syncButtons();
+    trackEvent('homepage_view');
+    loadProfiles(true).then(() => {
+      initRealtimeProfiles();
+    });
+    refreshUserUi();
+    updateLogoGlow();
+  </script>
+</body>
+</html>
