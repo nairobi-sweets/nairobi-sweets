@@ -370,6 +370,9 @@
       <div class="stat panel"><div class="label">Pending payments</div><div class="value" id="statPending">0</div></div>
       <div class="stat panel"><div class="label">Paid</div><div class="value" id="statPaid">0</div></div>
       <div class="stat panel"><div class="label">Estimated weekly</div><div class="value" id="statRevenue">KES 0</div></div>
+      <div class="stat panel"><div class="label">Pending review</div><div class="value" id="statPendingReview">0</div></div>
+      <div class="stat panel"><div class="label">Approved</div><div class="value" id="statApproved">0</div></div>
+      <div class="stat panel"><div class="label">Rejected</div><div class="value" id="statRejected">0</div></div>
     </div>
 
     <div class="shell">
@@ -613,6 +616,19 @@
         <div class="view" id="queueView">
           <div class="panel pad">
             <div class="section-title">
+              <h2>Profile approval queue</h2>
+              <span id="profileQueueCount" class="muted tiny">0 pending</span>
+            </div>
+            <div class="tabs">
+              <button class="tab-btn active" data-profile-queue-filter="pending">Pending</button>
+              <button class="tab-btn" data-profile-queue-filter="all">All</button>
+            </div>
+            <div class="queue-grid" id="profileQueueGrid"></div>
+            <div id="profileQueueMessage" class="notice info hidden"></div>
+          </div>
+
+          <div class="panel pad" style="margin-top: 16px;">
+            <div class="section-title">
               <h2>Payment approval queue</h2>
               <span id="queueCount" class="muted tiny">0 pending</span>
             </div>
@@ -648,10 +664,12 @@
       session: null,
       profiles: [],
       queue: [],
+      pendingProfiles: [],
       currentId: null,
       imageUrl: '',
       imagePath: '',
-      queueMode: 'pending'
+      queueMode: 'pending',
+      profileQueueMode: 'pending'
     };
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -664,6 +682,7 @@
     const uploadMessage = $('uploadMessage');
     const tableMessage = $('tableMessage');
     const queueMessage = $('queueMessage');
+    const profileQueueMessage = $('profileQueueMessage');
     const loginMessage = $('loginMessage');
 
     const fields = {
@@ -1131,19 +1150,42 @@
       $('imageFile').value = '';
     }
 
-    function renderStats() {
+    async function calculateRevenue() {
+      const { data, error } = await supabase
+        .from(PAYMENTS_TABLE)
+        .select('amount,status');
+
+      if (error) throw error;
+
+      return (data || [])
+        .filter(item => String(item.status || '').toLowerCase() === 'paid')
+        .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    }
+
+    async function renderStats() {
       const total = state.profiles.length;
       const active = state.profiles.filter(p => p.status === 'active').length;
       const pending = state.profiles.filter(p => p.payment_status === 'pending').length;
       const paid = state.profiles.filter(p => p.payment_status === 'paid').length;
-      const estimated = state.profiles
-        .filter(p => p.status === 'active' && p.payment_status === 'paid')
-        .reduce((sum, p) => sum + priceForPlan(p.category || p.plan), 0);
+      const pendingReview = state.profiles.filter(p => String(p.approval_status || '').toLowerCase() === 'pending').length;
+      const approved = state.profiles.filter(p => String(p.approval_status || '').toLowerCase() === 'approved').length;
+      const rejected = state.profiles.filter(p => String(p.approval_status || '').toLowerCase() === 'rejected').length;
+
       $('statTotal').textContent = total;
       $('statActive').textContent = active;
       $('statPending').textContent = pending;
       $('statPaid').textContent = paid;
-      $('statRevenue').textContent = `KES ${estimated.toLocaleString()}`;
+      $('statPendingReview').textContent = pendingReview;
+      $('statApproved').textContent = approved;
+      $('statRejected').textContent = rejected;
+
+      try {
+        const revenue = await calculateRevenue();
+        $('statRevenue').textContent = `KES ${revenue.toLocaleString()}`;
+      } catch (error) {
+        console.error('REVENUE ERROR', error);
+        $('statRevenue').textContent = 'KES 0';
+      }
     }
 
     function renderProfiles() {
@@ -1231,6 +1273,83 @@
       `).join('');
     }
 
+    function renderPendingProfiles() {
+      const grid = $('profileQueueGrid');
+      if (!grid) return;
+
+      const items = state.pendingProfiles.filter(item =>
+        state.profileQueueMode === 'all'
+          ? true
+          : String(item.approval_status || 'pending').toLowerCase() === 'pending'
+      );
+
+      $('profileQueueCount').textContent = `${items.length} ${state.profileQueueMode}`;
+
+      if (!items.length) {
+        grid.innerHTML = '<div class="queue-card muted">No profile submissions found.</div>';
+        return;
+      }
+
+      grid.innerHTML = items.map(profile => `
+        <div class="queue-card">
+          <div class="section-title">
+            <h3 style="font-size:18px; margin:0;">${escapeHtml(profile.name || 'No name')}</h3>
+            <span class="chip ${String(profile.approval_status || 'pending').toLowerCase() === 'approved' ? 'c-paid' : String(profile.approval_status || 'pending').toLowerCase() === 'rejected' ? 'c-unpaid' : 'c-pending'}">
+              ${escapeHtml(profile.approval_status || 'pending')}
+            </span>
+          </div>
+
+          <div class="member-cell" style="margin-top: 10px;">
+            <img class="thumb" src="${escapeHtml(profile.image_url || 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'140\'><rect width=\'100%\' height=\'100%\' fill=\'#11182f\'/></svg>'))}" alt="thumb" />
+            <div>
+              <div class="tiny muted">Phone: ${escapeHtml(profile.phone || '-')}</div>
+              <div class="tiny muted">Location: ${escapeHtml(profile.location || '-')}</div>
+              <div class="tiny muted">Requested plan: ${escapeHtml(profile.requested_plan || profile.plan || '-')}</div>
+              <div class="tiny muted">Submitted: ${profile.submitted_at ? escapeHtml(new Date(profile.submitted_at).toLocaleString()) : '-'}</div>
+            </div>
+          </div>
+
+          <div class="tiny muted" style="margin-top: 10px;">
+            ${escapeHtml(profile.bio || 'No bio')}
+          </div>
+
+          <div class="button-row" style="margin-top: 12px;">
+            <button class="btn btn-green" data-profile-queue-action="approve" data-id="${escapeHtml(profile.id)}">Approve</button>
+            <button class="btn btn-orange" data-profile-queue-action="review" data-id="${escapeHtml(profile.id)}">Review</button>
+            <button class="btn btn-danger" data-profile-queue-action="reject" data-id="${escapeHtml(profile.id)}">Reject</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function loadPendingProfiles() {
+      hideMessage(profileQueueMessage);
+
+      try {
+        await requireAdmin();
+
+        const { data, error } = await withTimeout(
+          supabase
+            .from(PROFILES_TABLE)
+            .select('*')
+            .in('approval_status', ['pending', 'rejected', 'approved'])
+            .order('submitted_at', { ascending: false }),
+          SAVE_TIMEOUT_MS,
+          'Loading profile approval queue timed out.'
+        );
+
+        if (error) throw error;
+
+        state.pendingProfiles = (data || []).map(normalizeProfile);
+        renderPendingProfiles();
+      } catch (error) {
+        console.error('LOAD PENDING PROFILES ERROR', error);
+        state.pendingProfiles = [];
+        renderPendingProfiles();
+        showMessage(profileQueueMessage, 'error', error.message || 'Could not load pending profiles.');
+      }
+    }
+
     async function loadProfiles() {
       showMessage(tableMessage, 'info', 'Loading profiles…');
       try {
@@ -1243,7 +1362,7 @@
         if (error) throw error;
         state.profiles = (data || []).map(normalizeProfile);
         renderProfiles();
-        renderStats();
+        await renderStats();
         hideMessage(tableMessage);
       } catch (error) {
         console.error('LOAD PROFILES ERROR', error);
@@ -1432,7 +1551,7 @@
 
         state.currentId = result.data.id;
 
-        await Promise.all([loadProfiles(), loadQueue()]);
+        await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]);
 
         const latest = state.profiles.find(
           p => String(p.id) === String(state.currentId)
@@ -1539,15 +1658,55 @@
     async function approveQueueItem(queueId, profileId) {
       try {
         await requireAdmin();
-        if (profileId) await activateWeek(profileId);
-        const { error } = await withTimeout(
-          supabase.from(PAYMENTS_TABLE).upsert({ id: queueId, status: 'paid', approved_at: new Date().toISOString() }),
+
+        const { error: paymentError } = await withTimeout(
+          supabase.from(PAYMENTS_TABLE).upsert({
+            id: queueId,
+            status: 'paid',
+            approved_at: new Date().toISOString()
+          }),
           SAVE_TIMEOUT_MS,
           'Queue approval timed out.'
         );
-        if (error) throw error;
+
+        if (paymentError) throw paymentError;
+
+        if (profileId) {
+          const profile = state.profiles.find(p => String(p.id) === String(profileId))
+            || state.pendingProfiles.find(p => String(p.id) === String(profileId));
+
+          const requestedPlan = String(profile?.requested_plan || profile?.plan || 'featured').toLowerCase();
+          const normalizedPlan = requestedPlan === 'signature' ? 'vvip' : requestedPlan;
+
+          const { error: profileError } = await withTimeout(
+            supabase.from(PROFILES_TABLE).upsert({
+              id: profileId,
+              payment_status: 'paid',
+              approval_status: 'approved',
+              status: 'active',
+              onboarding_step: 'live',
+              approved_at: new Date().toISOString(),
+              approved_by: state.session?.user?.email || state.session?.user?.id || 'admin',
+              category: normalizedPlan,
+              plan: normalizedPlan,
+              is_featured: ['featured', 'vip', 'vvip', 'signature'].includes(requestedPlan),
+              is_vip: requestedPlan === 'vip',
+              is_vvip: ['vvip', 'signature'].includes(requestedPlan),
+              featured: ['featured', 'vip', 'vvip', 'signature'].includes(requestedPlan),
+              online: true,
+              is_online: true,
+              expires_at: addDaysISO(7),
+              updated_at: new Date().toISOString()
+            }),
+            SAVE_TIMEOUT_MS,
+            'Profile activation timed out.'
+          );
+
+          if (profileError) throw profileError;
+        }
+
         showMessage(queueMessage, 'success', 'Queue item approved.');
-        await loadQueue();
+        await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]);
       } catch (error) {
         console.error('APPROVE QUEUE ERROR', error);
         showMessage(queueMessage, 'error', error.message || 'Approval failed.');
@@ -1569,6 +1728,88 @@
         console.error('REJECT QUEUE ERROR', error);
         showMessage(queueMessage, 'error', error.message || 'Reject failed.');
       }
+    }
+
+    async function approveProfileSubmission(profileId) {
+      try {
+        await requireAdmin();
+
+        const profile = state.profiles.find(p => String(p.id) === String(profileId))
+          || state.pendingProfiles.find(p => String(p.id) === String(profileId));
+
+        const requestedPlan = String(profile?.requested_plan || profile?.plan || 'featured').toLowerCase();
+        const normalizedPlan = requestedPlan === 'signature' ? 'vvip' : requestedPlan;
+
+        const patch = {
+          id: profileId,
+          approval_status: 'approved',
+          approved_at: new Date().toISOString(),
+          approved_by: state.session?.user?.email || state.session?.user?.id || 'admin',
+          onboarding_step: 'approved',
+          status: 'active',
+          payment_status: profile?.payment_status || 'unpaid',
+          category: normalizedPlan,
+          plan: normalizedPlan,
+          is_featured: ['featured', 'vip', 'vvip', 'signature'].includes(requestedPlan),
+          is_vip: requestedPlan === 'vip',
+          is_vvip: ['vvip', 'signature'].includes(requestedPlan),
+          featured: ['featured', 'vip', 'vvip', 'signature'].includes(requestedPlan),
+          verified: Boolean(profile?.image_url),
+          is_verified: Boolean(profile?.image_url),
+          updated_at: new Date().toISOString()
+        };
+
+        const { error } = await withTimeout(
+          supabase.from(PROFILES_TABLE).upsert(patch),
+          SAVE_TIMEOUT_MS,
+          'Profile approval timed out.'
+        );
+
+        if (error) throw error;
+
+        showMessage(profileQueueMessage, 'success', 'Profile approved successfully.');
+        await Promise.all([loadProfiles(), loadPendingProfiles()]);
+      } catch (error) {
+        console.error('APPROVE PROFILE SUBMISSION ERROR', error);
+        showMessage(profileQueueMessage, 'error', error.message || 'Profile approval failed.');
+      }
+    }
+
+    async function rejectProfileSubmission(profileId) {
+      try {
+        await requireAdmin();
+
+        const { error } = await withTimeout(
+          supabase.from(PROFILES_TABLE).upsert({
+            id: profileId,
+            approval_status: 'rejected',
+            status: 'hidden',
+            onboarding_step: 'rejected',
+            updated_at: new Date().toISOString()
+          }),
+          SAVE_TIMEOUT_MS,
+          'Profile rejection timed out.'
+        );
+
+        if (error) throw error;
+
+        showMessage(profileQueueMessage, 'success', 'Profile rejected.');
+        await Promise.all([loadProfiles(), loadPendingProfiles()]);
+      } catch (error) {
+        console.error('REJECT PROFILE SUBMISSION ERROR', error);
+        showMessage(profileQueueMessage, 'error', error.message || 'Profile rejection failed.');
+      }
+    }
+
+    function openProfileForReview(profileId) {
+      const profile = state.profiles.find(p => String(p.id) === String(profileId))
+        || state.pendingProfiles.find(p => String(p.id) === String(profileId));
+
+      if (!profile) return;
+
+      fillForm(profile);
+      switchView('editorView');
+      showMessage(formMessage, 'info', `Loaded ${profile.name || 'profile'} into the editor for review.`);
     }
 
     async function autoFillMissingData() {
@@ -1606,7 +1847,7 @@
         renderSession();
         hideAuthModal();
         showMessage(appMessage, 'success', 'Logged in successfully.');
-        await Promise.all([loadProfiles(), loadQueue()]);
+        await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]);
       } catch (error) {
         console.error('LOGIN ERROR', error);
         showMessage(loginMessage, 'error', error.message || 'Login failed.');
@@ -1623,7 +1864,8 @@
       renderSession();
       renderProfiles();
       renderQueue();
-      renderStats();
+      renderPendingProfiles();
+      await renderStats();
       showAuthModal();
       showMessage(appMessage, 'info', 'Logged out.');
     }
@@ -1659,8 +1901,8 @@
       $('filterPayment').addEventListener('change', renderProfiles);
       $('sortBy').addEventListener('change', renderProfiles);
 
-      $('refreshBtn').addEventListener('click', async () => { await Promise.all([loadProfiles(), loadQueue()]); });
-      $('quickRefresh').addEventListener('click', async () => { await Promise.all([loadProfiles(), loadQueue()]); });
+      $('refreshBtn').addEventListener('click', async () => { await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]); });
+      $('quickRefresh').addEventListener('click', async () => { await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]); });
       $('quickAutofill').addEventListener('click', autoFillMissingData);
       $('quickNewVip').addEventListener('click', () => { clearForm(); fields.category.value = 'vip'; fields.rate_kses.value = priceText('vip'); switchView('editorView'); });
       $('quickFeatured').addEventListener('click', () => { $('filterPlan').value = 'featured'; renderProfiles(); switchView('dashboardView'); });
@@ -1721,11 +1963,30 @@
         if (btn.dataset.queueAction === 'reject') await rejectQueueItem(queueId);
       });
 
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+      $('profileQueueGrid').addEventListener('click', async event => {
+        const btn = event.target.closest('[data-profile-queue-action]');
+        if (!btn) return;
+
+        const profileId = btn.dataset.id;
+        const action = btn.dataset.profileQueueAction;
+
+        if (action === 'approve') await approveProfileSubmission(profileId);
+        if (action === 'reject') await rejectProfileSubmission(profileId);
+        if (action === 'review') openProfileForReview(profileId);
+      });
+
+      document.querySelectorAll('[data-queue-filter]').forEach(btn => btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-queue-filter]').forEach(x => x.classList.remove('active'));
         btn.classList.add('active');
         state.queueMode = btn.dataset.queueFilter;
         renderQueue();
+      }));
+
+      document.querySelectorAll('[data-profile-queue-filter]').forEach(btn => btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-profile-queue-filter]').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        state.profileQueueMode = btn.dataset.profileQueueFilter;
+        renderPendingProfiles();
       }));
 
       document.addEventListener('keydown', event => {
@@ -1744,7 +2005,8 @@
       updatePreview();
       renderProfiles();
       renderQueue();
-      renderStats();
+      renderPendingProfiles();
+      await renderStats();
 
       if (SUPABASE_URL.includes('YOUR_PROJECT') || SUPABASE_ANON_KEY.includes('YOUR_PUBLIC')) {
         showMessage(appMessage, 'warn', 'Update SUPABASE_URL and SUPABASE_ANON_KEY in the script first.');
@@ -1766,7 +2028,7 @@
 
       try {
         await requireAdmin();
-        await Promise.all([loadProfiles(), loadQueue()]);
+        await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]);
       } catch (error) {
         console.error('BOOT ERROR', error);
         showMessage(appMessage, 'error', error.message || 'Startup failed.');
@@ -1786,6 +2048,11 @@
       },
       async testQueue() {
         const result = await supabase.from(PAYMENTS_TABLE).select('*').limit(1);
+        console.log(result);
+        return result;
+      },
+      async testPendingProfiles() {
+        const result = await supabase.from(PROFILES_TABLE).select('*').eq('approval_status', 'pending').limit(5);
         console.log(result);
         return result;
       }
