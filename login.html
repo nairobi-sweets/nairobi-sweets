@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nairobi Sweets | Login</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --bg:#060915;
+      --panel:#12204b;
+      --line:rgba(255,255,255,.08);
+      --text:#f8f9ff;
+      --muted:#9ea8cb;
+      --gold:#ffd54a;
+      --blue:#49b8ff;
+      --danger:#ff5d7f;
+      --radius:20px;
+      --shadow:0 20px 50px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(131,56,236,.17), transparent 25%),
+        radial-gradient(circle at top right, rgba(0,180,216,.12), transparent 25%),
+        var(--bg);
+      color:var(--text);
+      padding:20px;
+    }
+
+    .card{
+      width:100%;
+      max-width:460px;
+      background:linear-gradient(180deg,#132357,#10204d);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:28px;
+    }
+
+    h1{
+      margin:0 0 8px;
+      font-size:30px;
+    }
+
+    .sub{
+      margin:0 0 20px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.5;
+    }
+
+    label{
+      display:block;
+      margin:0 0 6px;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    input{
+      width:100%;
+      padding:14px 16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:#fff;
+      margin:0 0 14px;
+      font-size:16px;
+      outline:none;
+    }
+
+    input::placeholder{
+      color:#95a0c8;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:4px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:14px;
+      padding:14px 18px;
+      font-size:15px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .btn-gold{
+      background:var(--gold);
+      color:#111;
+      flex:1 1 180px;
+    }
+
+    .btn-blue{
+      background:var(--blue);
+      color:#08111f;
+      flex:1 1 180px;
+    }
+
+    .msg{
+      margin-top:14px;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      min-height:52px;
+      line-height:1.45;
+    }
+
+    .msg.error{
+      color:#ffd5de;
+      background:rgba(255,93,127,.09);
+    }
+
+    .msg.success{
+      color:#caffdf;
+      background:rgba(39,209,123,.09);
+    }
+
+    .links{
+      margin-top:16px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .links a{
+      color:#9fdcff;
+      text-decoration:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Login</h1>
+    <p class="sub">
+      Sign in to manage your Nairobi Sweets profile, renewal, and performance stats.
+    </p>
+
+    <label for="email">Email</label>
+    <input id="email" type="email" placeholder="you@example.com" />
+
+    <label for="password">Password</label>
+    <input id="password" type="password" placeholder="Your password" />
+
+    <div class="actions">
+      <button class="btn btn-gold" onclick="login()">Login</button>
+      <button class="btn btn-blue" onclick="goToSignup()">Create account</button>
+    </div>
+
+    <div id="msg" class="msg">Ready.</div>
+
+    <div class="links">
+      New here? Use the public signup page to create your account and profile in one flow.
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function byId(id) {
+      return document.getElementById(id);
+    }
+
+    function setMsg(text, type = "") {
+      const el = byId("msg");
+      el.textContent = text;
+      el.className = `msg ${type}`.trim();
+    }
+
+    async function login() {
+      try {
+        const email = byId("email").value.trim();
+        const password = byId("password").value.trim();
+
+        if (!email) throw new Error("Email is required.");
+        if (!password) throw new Error("Password is required.");
+
+        setMsg("Signing you in...");
+
+        const { error } = await sb.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+
+        setMsg("Login successful. Redirecting...", "success");
+        window.location.href = "/user-dashboard.html";
+      } catch (err) {
+        console.error(err);
+        setMsg(err.message || "Login failed.", "error");
+      }
+    }
+
+    function goToSignup() {
+      window.location.href = "/public-signup-payment-page.html";
+    }
+
+    // Auto-forward if already logged in
+    (async function checkSession() {
+      const { data } = await sb.auth.getSession();
+      if (data?.session) {
+        window.location.href = "/user-dashboard.html";
+      }
+    })();
+  </script>
+</body>
+</html>
