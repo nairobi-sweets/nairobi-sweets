@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nairobi Sweets | Payment Status</title>
+  <meta name="theme-color" content="#0b0b12" />
+  <style>
+    :root{
+      --bg:#07070c;
+      --bg2:#10101a;
+      --card:rgba(255,255,255,0.06);
+      --card-border:rgba(255,255,255,0.12);
+      --text:#ffffff;
+      --muted:rgba(255,255,255,0.72);
+      --soft:rgba(255,255,255,0.5);
+      --gold:#f5c15d;
+      --gold-2:#ffdf8c;
+      --pink:#ff4fa3;
+      --danger:#ff6b6b;
+      --success:#47d16c;
+      --info:#72b5ff;
+      --shadow:0 18px 60px rgba(0,0,0,0.45);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      padding:0;
+      min-height:100%;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(255,79,163,0.17), transparent 22%),
+        radial-gradient(circle at top left, rgba(245,193,93,0.18), transparent 28%),
+        linear-gradient(160deg, #05050a 0%, #0a0b12 52%, #0f1020 100%);
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .page{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px 16px;
+    }
+
+    .shell{
+      width:100%;
+      max-width:960px;
+      display:grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap:24px;
+    }
+
+    .hero,
+    .panel{
+      border:1px solid var(--card-border);
+      background:var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .hero{
+      padding:32px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:720px;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(245,193,93,0.14), transparent 22%),
+        radial-gradient(circle at 80% 20%, rgba(255,79,163,0.12), transparent 26%);
+      pointer-events:none;
+    }
+
+    .brand-chip{
+      position:relative;
+      z-index:1;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      width:max-content;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(255,255,255,0.05);
+    }
+
+    .brand-dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--pink),var(--gold));
+      box-shadow:0 0 18px rgba(255,79,163,0.45);
+    }
+
+    .brand-chip span{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .hero-copy{
+      position:relative;
+      z-index:1;
+      margin-top:26px;
+    }
+
+    .hero h1{
+      margin:0 0 14px;
+      font-size:clamp(2rem,4vw,3.8rem);
+      line-height:0.96;
+      letter-spacing:-0.04em;
+      max-width:520px;
+    }
+
+    .hero h1 .accent{
+      background:linear-gradient(90deg,var(--gold),var(--gold-2),#fff0c9);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .hero p{
+      margin:0;
+      max-width:520px;
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.72;
+    }
+
+    .steps{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:14px;
+      margin-top:30px;
+    }
+
+    .step{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      padding:16px;
+      border-radius:18px;
+      background:rgba(255,255,255,0.045);
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .step-num{
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 34px;
+      font-weight:800;
+      font-size:0.95rem;
+      color:#17120a;
+      background:linear-gradient(135deg,var(--gold),#ffe29f);
+    }
+
+    .step strong{
+      display:block;
+      margin-bottom:5px;
+      font-size:1rem;
+    }
+
+    .step span{
+      color:var(--soft);
+      line-height:1.6;
+      font-size:0.93rem;
+    }
+
+    .hero-foot{
+      position:relative;
+      z-index:1;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:28px;
+    }
+
+    .pill{
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.045);
+      border:1px solid rgba(255,255,255,0.08);
+      color:var(--muted);
+      font-size:0.9rem;
+    }
+
+    .panel{
+      padding:28px;
+      min-height:720px;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+      margin-bottom:18px;
+    }
+
+    .panel-head h2{
+      margin:0;
+      font-size:1.7rem;
+      letter-spacing:-0.03em;
+    }
+
+    .panel-head p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:0.95rem;
+      line-height:1.6;
+    }
+
+    .badge{
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(255,255,255,0.045);
+      color:var(--muted);
+      font-size:0.84rem;
+      white-space:nowrap;
+    }
+
+    .status-card{
+      margin-top:10px;
+      padding:24px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,0.09);
+      background:rgba(255,255,255,0.04);
+      text-align:center;
+    }
+
+    .status-ring{
+      width:92px;
+      height:92px;
+      border-radius:50%;
+      margin:0 auto 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid rgba(255,255,255,0.14);
+      background:rgba(255,255,255,0.03);
+      font-size:2rem;
+    }
+
+    .status-title{
+      font-size:1.45rem;
+      font-weight:800;
+      letter-spacing:-0.03em;
+      margin-bottom:8px;
+    }
+
+    .status-text{
+      color:var(--muted);
+      line-height:1.7;
+      font-size:0.96rem;
+      max-width:480px;
+      margin:0 auto;
+    }
+
+    .tone-pending .status-ring{
+      color:var(--gold);
+      border-color:rgba(245,193,93,0.25);
+      box-shadow:0 0 0 10px rgba(245,193,93,0.06);
+    }
+
+    .tone-success .status-ring{
+      color:var(--success);
+      border-color:rgba(71,209,108,0.28);
+      box-shadow:0 0 0 10px rgba(71,209,108,0.06);
+    }
+
+    .tone-failed .status-ring{
+      color:var(--danger);
+      border-color:rgba(255,107,107,0.24);
+      box-shadow:0 0 0 10px rgba(255,107,107,0.06);
+    }
+
+    .tone-info .status-ring{
+      color:var(--info);
+      border-color:rgba(114,181,255,0.24);
+      box-shadow:0 0 0 10px rgba(114,181,255,0.06);
+    }
+
+    .meta-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:18px;
+    }
+
+    .meta-box{
+      padding:16px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.04);
+    }
+
+    .meta-k{
+      font-size:0.78rem;
+      text-transform:uppercase;
+      letter-spacing:0.09em;
+      color:var(--soft);
+      margin-bottom:8px;
+    }
+
+    .meta-v{
+      font-size:0.98rem;
+      font-weight:700;
+      word-break:break-word;
+    }
+
+    .log-box{
+      margin-top:16px;
+      padding:16px;
+      border-radius:16px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      color:var(--muted);
+      line-height:1.65;
+      font-size:0.93rem;
+    }
+
+    .actions{
+      display:grid;
+      gap:12px;
+      margin-top:18px;
+    }
+
+    .btn{
+      width:100%;
+      border:none;
+      outline:none;
+      border-radius:18px;
+      padding:15px 18px;
+      font-size:1rem;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .18s ease, opacity .18s ease;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn:disabled{opacity:.65; cursor:not-allowed; transform:none}
+
+    .btn-primary{
+      background:linear-gradient(135deg,var(--gold),#ffd98e);
+      color:#16120a;
+      box-shadow:0 10px 30px rgba(245,193,93,0.24);
+    }
+
+    .btn-secondary{
+      background:rgba(255,255,255,0.06);
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn-danger{
+      background:rgba(255,107,107,0.10);
+      color:#ffd2d2;
+      border:1px solid rgba(255,107,107,0.22);
+    }
+
+    .tiny{
+      margin-top:14px;
+      text-align:center;
+      color:var(--soft);
+      font-size:0.83rem;
+      line-height:1.55;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    @media (max-width: 960px){
+      .shell{
+        grid-template-columns:1fr;
+        max-width:720px;
+      }
+
+      .hero,
+      .panel{
+        min-height:auto;
+      }
+    }
+
+    @media (max-width: 640px){
+      .page{padding:16px}
+      .hero,
+      .panel{padding:20px}
+      .meta-grid{grid-template-columns:1fr}
+      .panel-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="shell">
+      <section class="hero">
+        <div>
+          <div class="brand-chip">
+            <div class="brand-dot"></div>
+            <span>Nairobi Sweets • Payment tracking</span>
+          </div>
+
+          <div class="hero-copy">
+            <h1>We’re tracking your <span class="accent">payment status</span>.</h1>
+            <p>
+              This page checks whether your M-Pesa STK Push has been completed.
+              If you already received the prompt on your phone, enter your PIN there and this page will update.
+            </p>
+          </div>
+
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div>
+                <strong>Check your phone</strong>
+                <span>Look for the M-Pesa STK Push prompt sent to your Safaricom number.</span>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div>
+                <strong>Enter your M-Pesa PIN</strong>
+                <span>Complete the payment approval on your device to continue profile activation.</span>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div>
+                <strong>Wait for confirmation</strong>
+                <span>This page refreshes the payment status automatically and shows the latest result.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-foot">
+          <div class="pill">Auto-refresh enabled</div>
+          <div class="pill">STK Push tracking</div>
+          <div class="pill">Activation flow ready</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Payment Status</h2>
+            <p>Keep this page open while your payment is being processed.</p>
+          </div>
+          <div class="badge" id="liveBadge">Live check</div>
+        </div>
+
+        <div id="statusCard" class="status-card tone-pending">
+          <div class="status-ring" id="statusIcon">⌛</div>
+          <div class="status-title" id="statusTitle">Waiting for payment</div>
+          <div class="status-text" id="statusText">
+            We are checking the M-Pesa transaction. Complete the prompt on your phone if you have not done so yet.
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-box">
+              <div class="meta-k">Phone</div>
+              <div class="meta-v" id="phoneValue">-</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-k">Amount</div>
+              <div class="meta-v" id="amountValue">-</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-k">Checkout Request ID</div>
+              <div class="meta-v" id="checkoutValue">-</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-k">Merchant Request ID</div>
+              <div class="meta-v" id="merchantValue">-</div>
+            </div>
+          </div>
+
+          <div class="log-box" id="logBox">
+            Initializing payment status check...
+          </div>
+
+          <div class="actions">
+            <button id="refreshBtn" class="btn btn-primary" type="button">Refresh Status</button>
+            <button id="retryBtn" class="btn btn-secondary hidden" type="button">Try Payment Again</button>
+            <button id="homeBtn" class="btn btn-danger" type="button">Back to Signup Page</button>
+          </div>
+
+          <div class="tiny">
+            If payment succeeds, your profile can then move into review, approval, or activation depending on your backend flow.
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const STATUS_ENDPOINT = "/.netlify/functions/payment-status";
+    const SIGNUP_PAGE = "/public-signup-payment-page.html";
+
+    const params = new URLSearchParams(window.location.search);
+
+    const statusCard = document.getElementById("statusCard");
+    const statusIcon = document.getElementById("statusIcon");
+    const statusTitle = document.getElementById("statusTitle");
+    const statusText = document.getElementById("statusText");
+    const phoneValue = document.getElementById("phoneValue");
+    const amountValue = document.getElementById("amountValue");
+    const checkoutValue = document.getElementById("checkoutValue");
+    const merchantValue = document.getElementById("merchantValue");
+    const logBox = document.getElementById("logBox");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const retryBtn = document.getElementById("retryBtn");
+    const homeBtn = document.getElementById("homeBtn");
+    const liveBadge = document.getElementById("liveBadge");
+
+    const checkoutRequestID = params.get("checkoutRequestID") || "";
+    const merchantRequestID = params.get("merchantRequestID") || "";
+    const phone = params.get("phone") || "";
+    const amount = params.get("amount") || "";
+    const incomingMessage = params.get("message") || "";
+
+    let pollTimer = null;
+    let pollCount = 0;
+    const MAX_POLLS = 40;
+    const POLL_INTERVAL = 5000;
+
+    function setMeta() {
+      phoneValue.textContent = phone || "-";
+      amountValue.textContent = amount ? `KES ${Number(amount).toLocaleString()}` : "-";
+      checkoutValue.textContent = checkoutRequestID || "-";
+      merchantValue.textContent = merchantRequestID || "-";
+    }
+
+    function setTone(tone) {
+      statusCard.classList.remove("tone-pending", "tone-success", "tone-failed", "tone-info");
+      statusCard.classList.add(tone);
+    }
+
+    function setState({ tone, icon, title, text, log }) {
+      setTone(tone);
+      statusIcon.textContent = icon;
+      statusTitle.textContent = title;
+      statusText.textContent = text;
+      if (log) logBox.textContent = log;
+    }
+
+    function stopPolling() {
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+    }
+
+    function showRetry(show) {
+      retryBtn.classList.toggle("hidden", !show);
+    }
+
+    function humanMessageFromResult(payload) {
+      return (
+        payload?.message ||
+        payload?.CustomerMessage ||
+        payload?.customerMessage ||
+        payload?.ResultDesc ||
+        payload?.resultDesc ||
+        payload?.status_message ||
+        "Status updated."
+      );
+    }
+
+    function normalizeStatus(payload) {
+      const rawStatus = String(
+        payload?.status ||
+        payload?.payment_status ||
+        payload?.result ||
+        payload?.state ||
+        ""
+      ).toLowerCase();
+
+      const resultCode = String(
+        payload?.ResultCode ??
+        payload?.resultCode ??
+        payload?.result_code ??
+        ""
+      );
+
+      const resultDesc =
+        payload?.ResultDesc ||
+        payload?.resultDesc ||
+        payload?.result_desc ||
+        "";
+
+      if (
+        rawStatus.includes("success") ||
+        rawStatus.includes("paid") ||
+        rawStatus.includes("completed") ||
+        resultCode === "0"
+      ) {
+        return {
+          kind: "success",
+          message: resultDesc || "Payment completed successfully."
+        };
+      }
+
+      if (
+        rawStatus.includes("failed") ||
+        rawStatus.includes("cancel") ||
+        rawStatus.includes("declined") ||
+        rawStatus.includes("timeout") ||
+        rawStatus.includes("reversed") ||
+        resultCode === "1032" ||
+        resultCode === "1037" ||
+        resultCode === "2001" ||
+        resultCode === "1"
+      ) {
+        return {
+          kind: "failed",
+          message: resultDesc || "Payment was not completed."
+        };
+      }
+
+      return {
+        kind: "pending",
+        message: resultDesc || "Payment is still pending."
+      };
+    }
+
+    async function fetchPaymentStatus() {
+      if (!checkoutRequestID) {
+        setState({
+          tone: "tone-failed",
+          icon: "⚠",
+          title: "Missing checkout request",
+          text: "This page needs a valid checkoutRequestID in the URL to track your payment.",
+          log: "No checkoutRequestID was found in the page URL."
+        });
+        liveBadge.textContent = "Tracking unavailable";
+        refreshBtn.disabled = true;
+        showRetry(true);
+        stopPolling();
+        return;
+      }
+
+      refreshBtn.disabled = true;
+      liveBadge.textContent = "Checking...";
+
+      try {
+        const url = `${STATUS_ENDPOINT}?checkoutRequestID=${encodeURIComponent(checkoutRequestID)}`;
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        let data = {};
+        try {
+          data = await response.json();
+        } catch (e) {
+          data = {};
+        }
+
+        if (!response.ok) {
+          const message =
+            data?.error ||
+            data?.message ||
+            `Status request failed with code ${response.status}`;
+          throw new Error(message);
+        }
+
+        const normalized = normalizeStatus(data);
+        const friendly = humanMessageFromResult(data);
+
+        if (normalized.kind === "success") {
+          setState({
+            tone: "tone-success",
+            icon: "✓",
+            title: "Payment successful",
+            text: "Your M-Pesa payment has been confirmed. Your profile can now move to the next activation stage.",
+            log: friendly
+          });
+          liveBadge.textContent = "Confirmed";
+          refreshBtn.disabled = false;
+          showRetry(false);
+          stopPolling();
+          return;
+        }
+
+        if (normalized.kind === "failed") {
+          setState({
+            tone: "tone-failed",
+            icon: "✕",
+            title: "Payment not completed",
+            text: "The transaction did not complete successfully. You can retry the payment from the signup page.",
+            log: friendly
+          });
+          liveBadge.textContent = "Failed";
+          refreshBtn.disabled = false;
+          showRetry(true);
+          stopPolling();
+          return;
+        }
+
+        setState({
+          tone: "tone-pending",
+          icon: "⌛",
+          title: "Waiting for payment",
+          text: "We are still waiting for confirmation from M-Pesa. If prompted, complete the request on your phone.",
+          log: incomingMessage || friendly || "Payment is still pending."
+        });
+
+        liveBadge.textContent = "Pending";
+        refreshBtn.disabled = false;
+        showRetry(false);
+      } catch (error) {
+        setState({
+          tone: "tone-info",
+          icon: "ℹ",
+          title: "Still checking",
+          text: "We could not confirm the latest payment state right now. This can happen briefly while systems sync.",
+          log: error.message || "Unable to fetch payment status."
+        });
+
+        liveBadge.textContent = "Retry needed";
+        refreshBtn.disabled = false;
+      }
+    }
+
+    function startPolling() {
+      stopPolling();
+      pollTimer = setInterval(async () => {
+        pollCount += 1;
+        await fetchPaymentStatus();
+
+        if (pollCount >= MAX_POLLS) {
+          stopPolling();
+          liveBadge.textContent = "Manual refresh";
+          logBox.textContent = "Auto-check paused after several attempts. You can still refresh status manually.";
+        }
+      }, POLL_INTERVAL);
+    }
+
+    refreshBtn.addEventListener("click", async () => {
+      await fetchPaymentStatus();
+    });
+
+    retryBtn.addEventListener("click", () => {
+      const retryParams = new URLSearchParams();
+      if (phone) retryParams.set("phone", phone);
+      if (amount) retryParams.set("amount", amount);
+      window.location.href = `${SIGNUP_PAGE}?${retryParams.toString()}`;
+    });
+
+    homeBtn.addEventListener("click", () => {
+      window.location.href = SIGNUP_PAGE;
+    });
+
+    setMeta();
+
+    if (incomingMessage) {
+      logBox.textContent = incomingMessage;
+    } else {
+      logBox.textContent = "Preparing to check transaction status...";
+    }
+
+    fetchPaymentStatus();
+    startPolling();
+  </script>
+</body>
+</html>
