@@ -1,47 +1,94 @@
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+
 const json = (statusCode, body) => ({
   statusCode,
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "POST, OPTIONS"
   },
-  body: JSON.stringify(body),
+  body: JSON.stringify(body)
 });
 
-function safeString(v) {
-  return v == null ? "" : String(v).trim();
-}
-
 function normalizePhone(phone) {
-  if (!phone) return null;
-
-  let p = String(phone).replace(/\D/g, "");
-  if (p.startsWith("0")) p = `254${p.slice(1)}`;
-  if (p.startsWith("7") && p.length === 9) p = `254${p}`;
-  if (/^2547\d{8}$/.test(p)) return p;
-
-  return null;
+  let p = String(phone || "").trim().replace(/\s+/g, "");
+  if (p.startsWith("+254")) return p.slice(1);
+  if (p.startsWith("254")) return p;
+  if (p.startsWith("0")) return "254" + p.slice(1);
+  return p;
 }
 
-function toNumber(value) {
-  if (value == null) return null;
-  const v = String(value).trim();
-  if (v === "") return null;
-
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
-}
-
-function timestampNow() {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mi = String(d.getMinutes()).padStart(2, "0");
-  const ss = String(d.getSeconds()).padStart(2, "0");
+function getTimestamp() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mi = String(now.getMinutes()).padStart(2, "0");
+  const ss = String(now.getSeconds()).padStart(2, "0");
   return `${yyyy}${mm}${dd}${hh}${mi}${ss}`;
+}
+
+async function getMpesaAccessToken() {
+  const consumerKey = process.env.MPESA_CONSUMER_KEY;
+  const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
+
+  if (!consumerKey || !consumerSecret) {
+    throw new Error("Missing MPESA_CONSUMER_KEY or MPESA_CONSUMER_SECRET");
+  }
+
+  const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString("base64");
+  const baseUrl =
+    process.env.MPESA_ENVIRONMENT === "production"
+      ? "https://api.safaricom.co.ke"
+      : "https://sandbox.safaricom.co.ke";
+
+  const res = await fetch(`${baseUrl}/oauth/v1/generate?grant_type=client_credentials`, {
+    method: "GET",
+    headers: {
+      Authorization: `Basic ${auth}`
+    }
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data.access_token) {
+    throw new Error(`Failed to get M-Pesa token: ${JSON.stringify(data)}`);
+  }
+
+  return {
+    accessToken: data.access_token,
+    baseUrl
+  };
+}
+
+async function insertPaymentRow(row) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+  }
+
+  const res = await fetch(`${supabaseUrl}/rest/v1/stk_push_payments`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": serviceRoleKey,
+      "Authorization": `Bearer ${serviceRoleKey}`,
+      "Prefer": "return=representation"
+    },
+    body: JSON.stringify([row])
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(`Failed to insert payment row: ${JSON.stringify(data)}`);
+  }
+
+  return data[0];
 }
 
 exports.handler = async (event) => {
@@ -50,216 +97,120 @@ exports.handler = async (event) => {
   }
 
   if (event.httpMethod !== "POST") {
-    return json(405, { error: "Method not allowed" });
+    return json(405, { ok: false, error: "Method not allowed" });
   }
 
   try {
-    const {
-      MPESA_CONSUMER_KEY,
-      MPESA_CONSUMER_SECRET,
-      MPESA_SHORTCODE,
-      MPESA_PASSKEY,
-      MPESA_CALLBACK_URL,
-      MPESA_ENVIRONMENT,
-      SUPABASE_URL,
-      SUPABASE_SERVICE_ROLE_KEY,
-    } = process.env;
-
-    const missing = [
-      ["MPESA_CONSUMER_KEY", MPESA_CONSUMER_KEY],
-      ["MPESA_CONSUMER_SECRET", MPESA_CONSUMER_SECRET],
-      ["MPESA_SHORTCODE", MPESA_SHORTCODE],
-      ["MPESA_PASSKEY", MPESA_PASSKEY],
-      ["MPESA_CALLBACK_URL", MPESA_CALLBACK_URL],
-      ["SUPABASE_URL", SUPABASE_URL],
-      ["SUPABASE_SERVICE_ROLE_KEY", SUPABASE_SERVICE_ROLE_KEY],
-    ]
-      .filter(([, v]) => !v)
-      .map(([k]) => k);
-
-    if (missing.length) {
-      return json(500, {
-        error: "Missing env vars",
-        missing,
-      });
-    }
-
     const body = JSON.parse(event.body || "{}");
 
+    const profileId = body.profile_id || null;
+    const name = String(body.name || "").trim();
     const phone = normalizePhone(body.phone);
-    const amount = toNumber(body.amount);
-    const name = safeString(body.name) || "NairobiSweets";
-    const plan = safeString(body.plan) || "vip";
-    const location = safeString(body.location) || null;
-    const slug = safeString(body.slug) || null;
+    const email = String(body.email || "").trim();
+    const location = String(body.location || "").trim();
+    const bio = String(body.bio || "").trim();
+    const photoUrl = String(body.photo_url || "").trim();
+    const amount = Number(body.amount || 1000);
 
-    const rawProfileId = body.profile_id;
-    const profile_id =
-      rawProfileId === undefined || rawProfileId === null || String(rawProfileId).trim() === ""
-        ? null
-        : rawProfileId;
-
-    if (!phone) {
-      return json(400, {
-        error: "Invalid phone format. Use 2547XXXXXXXX",
-      });
+    if (!profileId) {
+      return json(400, { ok: false, error: "Missing profile_id" });
     }
 
-    if (!amount || amount <= 0) {
-      return json(400, {
-        error: "Invalid amount",
-      });
+    if (!name) {
+      return json(400, { ok: false, error: "Missing name" });
     }
 
-    const baseURL =
-      MPESA_ENVIRONMENT === "production"
-        ? "https://api.safaricom.co.ke"
-        : "https://sandbox.safaricom.co.ke";
+    if (!/^254\d{9}$/.test(phone)) {
+      return json(400, { ok: false, error: "Invalid phone number format" });
+    }
 
-    const auth = Buffer.from(
-      `${MPESA_CONSUMER_KEY}:${MPESA_CONSUMER_SECRET}`
-    ).toString("base64");
+    const shortcode = process.env.MPESA_SHORTCODE;
+    const passkey = process.env.MPESA_PASSKEY;
+    const callbackUrl = process.env.MPESA_CALLBACK_URL;
 
-    const tokenRes = await fetch(
-      `${baseURL}/oauth/v1/generate?grant_type=client_credentials`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${auth}`,
-        },
-      }
-    );
-
-    const tokenText = await tokenRes.text();
-    let tokenData;
-
-    try {
-      tokenData = JSON.parse(tokenText);
-    } catch {
+    if (!shortcode || !passkey || !callbackUrl) {
       return json(500, {
-        error: "Failed to parse token response",
-        raw: tokenText,
+        ok: false,
+        error: "Missing MPESA_SHORTCODE, MPESA_PASSKEY, or MPESA_CALLBACK_URL"
       });
     }
 
-    if (!tokenRes.ok || !tokenData.access_token) {
-      return json(500, {
-        error: "Failed to get access token",
-        tokenData,
-      });
-    }
-
-    const timestamp = timestampNow();
-    const password = Buffer.from(
-      `${MPESA_SHORTCODE}${MPESA_PASSKEY}${timestamp}`
-    ).toString("base64");
+    const { accessToken, baseUrl } = await getMpesaAccessToken();
+    const timestamp = getTimestamp();
+    const password = Buffer.from(`${shortcode}${passkey}${timestamp}`).toString("base64");
 
     const stkPayload = {
-      BusinessShortCode: MPESA_SHORTCODE,
+      BusinessShortCode: shortcode,
       Password: password,
       Timestamp: timestamp,
       TransactionType: "CustomerPayBillOnline",
-      Amount: Math.round(amount),
+      Amount: amount,
       PartyA: phone,
-      PartyB: MPESA_SHORTCODE,
+      PartyB: shortcode,
       PhoneNumber: phone,
-      CallBackURL: MPESA_CALLBACK_URL,
-      AccountReference: slug || name,
-      TransactionDesc: `${plan} plan payment`,
+      CallBackURL: callbackUrl,
+      AccountReference: "NairobiSweets",
+      TransactionDesc: "Profile Activation"
     };
 
-    const stkRes = await fetch(
-      `${baseURL}/mpesa/stkpush/v1/processrequest`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${tokenData.access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(stkPayload),
-      }
-    );
-
-    const stkText = await stkRes.text();
-    let stkData;
-
-    try {
-      stkData = JSON.parse(stkText);
-    } catch {
-      return json(500, {
-        error: "Failed to parse STK response",
-        raw: stkText,
-      });
-    }
-
-    if (!stkRes.ok || stkData.ResponseCode !== "0") {
-      return json(500, {
-        error: "STK push failed",
-        stkData,
-      });
-    }
-
-    const paymentRow = {
-      profile_id,
-      phone,
-      amount: Math.round(amount),
-      name,
-      plan,
-      location,
-      slug,
-      status: "pending",
-      merchant_request_id: stkData.MerchantRequestID || null,
-      checkout_request_id: stkData.CheckoutRequestID || null,
-      response_code: stkData.ResponseCode || null,
-      response_description: stkData.ResponseDescription || null,
-      customer_message: stkData.CustomerMessage || null,
-      response_payload: stkData,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/stk_push_payments`, {
+    const stkRes = await fetch(`${baseUrl}/mpesa/stkpush/v1/processrequest`, {
       method: "POST",
       headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        "Content-Type": "application/json",
-        Prefer: "return=representation",
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify(paymentRow),
+      body: JSON.stringify(stkPayload)
     });
 
-    const saveText = await saveRes.text();
-    let saved;
+    const stkData = await stkRes.json();
 
-    try {
-      saved = saveText ? JSON.parse(saveText) : null;
-    } catch {
-      saved = saveText;
-    }
-
-    if (!saveRes.ok) {
-      return json(500, {
-        error: "STK sent but DB save failed",
-        details: saved,
-        stkData,
+    if (!stkRes.ok || !stkData.CheckoutRequestID) {
+      return json(400, {
+        ok: false,
+        error:
+          stkData.errorMessage ||
+          stkData.ResponseDescription ||
+          "STK push request failed",
+        raw: stkData
       });
     }
 
+    await insertPaymentRow({
+      profile_id: profileId,
+      checkout_request_id: stkData.CheckoutRequestID,
+      merchant_request_id: stkData.MerchantRequestID || "",
+      phone,
+      amount,
+      status: "pending",
+      result_code: null,
+      result_desc: stkData.CustomerMessage || stkData.ResponseDescription || "",
+      mpesa_receipt_number: null,
+      raw_request: {
+        frontend_payload: {
+          profile_id: profileId,
+          name,
+          phone,
+          email,
+          location,
+          bio,
+          photo_url: photoUrl,
+          amount
+        },
+        stk_payload: stkPayload
+      }
+    });
+
     return json(200, {
-      success: true,
-      message: "STK push sent",
+      ok: true,
       checkoutRequestID: stkData.CheckoutRequestID,
-      merchantRequestID: stkData.MerchantRequestID,
-      customerMessage: stkData.CustomerMessage,
-      payment: saved,
+      merchantRequestID: stkData.MerchantRequestID || "",
+      customerMessage: stkData.CustomerMessage || "STK request accepted for processing."
     });
   } catch (err) {
-    console.error("STK ERROR:", err);
-
+    console.error("mpesa-stk-push error:", err);
     return json(500, {
-      error: "Server error",
-      details: err.message,
+      ok: false,
+      error: err.message || "Internal server error"
     });
   }
 };
