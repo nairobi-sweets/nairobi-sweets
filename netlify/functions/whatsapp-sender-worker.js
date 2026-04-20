@@ -28,6 +28,10 @@ async function sbSelect(path) {
   const supabaseUrl = safeString(process.env.SUPABASE_URL);
   const serviceRole = safeString(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
+  if (!supabaseUrl || !serviceRole) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+  }
+
   const res = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
     method: "GET",
     headers: {
@@ -55,6 +59,10 @@ async function sbSelect(path) {
 async function sbPatch(table, filter, patch) {
   const supabaseUrl = safeString(process.env.SUPABASE_URL);
   const serviceRole = safeString(process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+  if (!supabaseUrl || !serviceRole) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+  }
 
   const res = await fetch(`${supabaseUrl}/rest/v1/${table}?${filter}`, {
     method: "PATCH",
@@ -88,9 +96,7 @@ async function sendWhatsAppText({ to, message }) {
   const apiVersion = safeString(process.env.WHATSAPP_API_VERSION) || "v20.0";
 
   if (!token || !phoneNumberId) {
-    throw new Error(
-      "Missing WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID"
-    );
+    throw new Error("Missing WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID");
   }
 
   const url = `https://graph.facebook.com/${apiVersion}/${phoneNumberId}/messages`;
@@ -133,6 +139,14 @@ async function sendWhatsAppText({ to, message }) {
   return data;
 }
 
+function buildRestPath(parts) {
+  return parts
+    .join("?")
+    .replace("?select", "?select")
+    .replaceAll("?", "&")
+    .replace("&select", "?select");
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return json(200, { ok: true });
@@ -143,31 +157,17 @@ exports.handler = async (event) => {
   }
 
   try {
-    const supabaseUrl = safeString(process.env.SUPABASE_URL);
-    const serviceRole = safeString(process.env.SUPABASE_SERVICE_ROLE_KEY);
-
-    if (!supabaseUrl || !serviceRole) {
-      return json(500, {
-        error: "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
-      });
-    }
-
     const nowIso = new Date().toISOString();
 
-    // Fetch pending messages that are due now
     const pendingRows = await sbSelect(
-      [
+      buildRestPath([
         "whatsapp_queue",
         "select=id,profile_id,phone,template,message,status,scheduled_for,meta",
         "status=eq.pending",
         `scheduled_for=lte.${encodeURIComponent(nowIso)}`,
         "order=scheduled_for.asc",
         "limit=20",
-      ]
-        .join("?")
-        .replace("?select", "?select")
-        .replaceAll("?", "&")
-        .replace("&select", "?select")
+      ])
     );
 
     let sentCount = 0;
