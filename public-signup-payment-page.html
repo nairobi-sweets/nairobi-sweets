@@ -1,210 +1,923 @@
-<script>
-  // ---------- helpers ----------
-  function byId(id) {
-    return document.getElementById(id);
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nairobi Sweets | Create Profile & Pay</title>
+  <meta name="theme-color" content="#0b0b12" />
+  <style>
+    :root{
+      --bg:#07070c;
+      --bg2:#10101a;
+      --card:rgba(255,255,255,0.06);
+      --card-border:rgba(255,255,255,0.12);
+      --text:#ffffff;
+      --muted:rgba(255,255,255,0.72);
+      --soft:rgba(255,255,255,0.5);
+      --gold:#f5c15d;
+      --gold-2:#ffdf8c;
+      --pink:#ff4fa3;
+      --danger:#ff6b6b;
+      --success:#47d16c;
+      --shadow:0 18px 60px rgba(0,0,0,0.45);
+      --radius:22px;
+      --radius-sm:14px;
+    }
 
-  function textValue(id) {
-    const el = byId(id);
-    if (!el) return "";
-    return String(el.value ?? "").trim();
-  }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(255,79,163,0.17), transparent 22%),
+        radial-gradient(circle at top left, rgba(245,193,93,0.18), transparent 28%),
+        linear-gradient(160deg, #05050a 0%, #0a0b12 52%, #0f1020 100%);
+      color:var(--text);
+      min-height:100%;
+    }
 
-  function nullableText(value) {
-    const v = String(value ?? "").trim();
-    return v === "" ? null : v;
-  }
+    a{color:inherit;text-decoration:none}
 
-  function nullableInt(value) {
-    const v = String(value ?? "").trim();
-    if (v === "") return null;
-    const n = Number(v);
-    return Number.isInteger(n) ? n : null;
-  }
+    .page{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:32px 18px;
+    }
 
-  function nullableNumber(value) {
-    const v = String(value ?? "").trim();
-    if (v === "") return null;
-    const n = Number(v);
-    return Number.isFinite(n) ? n : null;
-  }
+    .shell{
+      width:100%;
+      max-width:1150px;
+      display:grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap:26px;
+      align-items:stretch;
+    }
 
-  function normalizePhone(phone) {
-    let p = String(phone ?? "").replace(/\D/g, "");
-    if (!p) return null;
-    if (p.startsWith("0")) p = "254" + p.slice(1);
-    if (p.startsWith("7") && p.length === 9) p = "254" + p;
-    if (/^2547\d{8}$/.test(p)) return p;
-    return p;
-  }
+    .hero, .panel{
+      border:1px solid var(--card-border);
+      background:var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
 
-  function slugify(value) {
-    return String(value ?? "")
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  }
+    .hero{
+      padding:34px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:760px;
+    }
 
-  function sanitizeProfilePayload(raw) {
-    const cleaned = {};
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(245,193,93,0.14), transparent 22%),
+        radial-gradient(circle at 80% 25%, rgba(255,79,163,0.12), transparent 26%);
+      pointer-events:none;
+    }
 
-    for (const [key, value] of Object.entries(raw)) {
-      // never send empty string into integer / numeric fields
-      if (["id", "profile_id", "age"].includes(key)) {
-        const n = nullableInt(value);
-        if (n !== null) cleaned[key] = n;
-        continue;
+    .brand-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:999px;
+      background:rgba(255,255,255,0.05);
+      width:max-content;
+      position:relative;
+      z-index:1;
+    }
+
+    .brand-dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--pink),var(--gold));
+      box-shadow:0 0 18px rgba(255,79,163,0.55);
+    }
+
+    .brand-chip span{
+      font-size:13px;
+      color:var(--muted);
+      letter-spacing:0.2px;
+    }
+
+    .hero-copy{
+      position:relative;
+      z-index:1;
+      margin-top:28px;
+    }
+
+    .hero h1{
+      margin:0 0 16px;
+      font-size:clamp(2.1rem,4vw,4rem);
+      line-height:0.96;
+      letter-spacing:-0.04em;
+      max-width:620px;
+    }
+
+    .hero h1 .accent{
+      background:linear-gradient(90deg,var(--gold),var(--gold-2),#fff0c9);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .hero p{
+      margin:0;
+      max-width:560px;
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.7;
+    }
+
+    .benefits{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:28px;
+    }
+
+    .benefit{
+      padding:18px 16px;
+      border-radius:18px;
+      background:rgba(255,255,255,0.045);
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .benefit strong{
+      display:block;
+      font-size:1.05rem;
+      margin-bottom:6px;
+      color:#fff;
+    }
+
+    .benefit span{
+      font-size:0.92rem;
+      color:var(--soft);
+      line-height:1.55;
+    }
+
+    .pricing{
+      position:relative;
+      z-index:1;
+      margin-top:34px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+
+    .price-card{
+      padding:18px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,0.1);
+      background:rgba(255,255,255,0.04);
+      transition:transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .price-card:hover{
+      transform:translateY(-2px);
+      border-color:rgba(245,193,93,0.35);
+    }
+
+    .price-card.featured{
+      background:linear-gradient(180deg, rgba(245,193,93,0.15), rgba(255,255,255,0.05));
+      border-color:rgba(245,193,93,0.35);
+    }
+
+    .tier{
+      font-size:0.84rem;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:var(--gold-2);
+      margin-bottom:10px;
+    }
+
+    .price{
+      font-size:1.8rem;
+      font-weight:800;
+      letter-spacing:-0.04em;
+      margin-bottom:6px;
+    }
+
+    .price small{
+      font-size:0.85rem;
+      color:var(--soft);
+      font-weight:500;
+      margin-left:4px;
+    }
+
+    .price-card p{
+      font-size:0.92rem;
+      line-height:1.55;
+      color:var(--soft);
+    }
+
+    .hero-foot{
+      position:relative;
+      z-index:1;
+      margin-top:34px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .mini-pill{
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.045);
+      border:1px solid rgba(255,255,255,0.08);
+      color:var(--muted);
+      font-size:0.92rem;
+    }
+
+    .panel{
+      padding:28px;
+      min-height:760px;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+      margin-bottom:20px;
+    }
+
+    .panel-head h2{
+      margin:0;
+      font-size:1.8rem;
+      letter-spacing:-0.03em;
+    }
+
+    .panel-head p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:0.95rem;
+      line-height:1.6;
+      max-width:420px;
+    }
+
+    .secure-badge{
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(255,255,255,0.045);
+      color:var(--muted);
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:0.85rem;
+      white-space:nowrap;
+    }
+
+    form{
+      display:grid;
+      gap:14px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .field label{
+      font-size:0.92rem;
+      color:#fff;
+      font-weight:600;
+    }
+
+    .field input,
+    .field textarea,
+    .field select{
+      width:100%;
+      border:none;
+      outline:none;
+      border-radius:16px;
+      padding:15px 16px;
+      background:rgba(255,255,255,0.06);
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.09);
+      transition:border-color .2s ease, background .2s ease, transform .15s ease;
+      font-size:0.97rem;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder{
+      color:rgba(255,255,255,0.38);
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus{
+      border-color:rgba(245,193,93,0.48);
+      background:rgba(255,255,255,0.075);
+    }
+
+    .field textarea{
+      resize:vertical;
+      min-height:108px;
+    }
+
+    .hint{
+      font-size:0.82rem;
+      color:var(--soft);
+      line-height:1.5;
+    }
+
+    .upload-wrap{
+      display:grid;
+      gap:10px;
+      padding:16px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,0.18);
+      background:rgba(255,255,255,0.035);
+    }
+
+    .upload-wrap input[type="file"]{
+      padding:12px;
+      background:rgba(255,255,255,0.04);
+      border-radius:14px;
+    }
+
+    .preview{
+      display:none;
+      width:100%;
+      max-height:260px;
+      object-fit:cover;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.12);
+      background:#0d0f18;
+    }
+
+    .summary{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:4px;
+    }
+
+    .summary-box{
+      padding:16px;
+      border-radius:16px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .summary-box .k{
+      font-size:0.78rem;
+      text-transform:uppercase;
+      letter-spacing:0.09em;
+      color:var(--soft);
+      margin-bottom:8px;
+    }
+
+    .summary-box .v{
+      font-size:1rem;
+      font-weight:700;
+      color:#fff;
+    }
+
+    .notice{
+      border-radius:18px;
+      padding:14px 15px;
+      background:rgba(245,193,93,0.08);
+      border:1px solid rgba(245,193,93,0.22);
+      color:#ffe7b0;
+      font-size:0.9rem;
+      line-height:1.6;
+    }
+
+    .actions{
+      display:grid;
+      gap:12px;
+      margin-top:6px;
+    }
+
+    .btn{
+      width:100%;
+      border:none;
+      outline:none;
+      border-radius:18px;
+      padding:16px 18px;
+      font-size:1rem;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .18s ease, opacity .18s ease, filter .18s ease;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn:disabled{opacity:.65; cursor:not-allowed; transform:none}
+
+    .btn-primary{
+      background:linear-gradient(135deg,var(--gold),#ffd98e);
+      color:#16120a;
+      box-shadow:0 10px 30px rgba(245,193,93,0.26);
+    }
+
+    .btn-secondary{
+      background:rgba(255,255,255,0.06);
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+
+    .status{
+      display:none;
+      padding:14px 16px;
+      border-radius:16px;
+      font-size:0.95rem;
+      line-height:1.55;
+      border:1px solid transparent;
+    }
+
+    .status.show{display:block}
+    .status.info{
+      background:rgba(255,255,255,0.05);
+      border-color:rgba(255,255,255,0.09);
+      color:var(--muted);
+    }
+    .status.success{
+      background:rgba(71,209,108,0.08);
+      border-color:rgba(71,209,108,0.28);
+      color:#bcf7cb;
+    }
+    .status.error{
+      background:rgba(255,107,107,0.08);
+      border-color:rgba(255,107,107,0.24);
+      color:#ffc0c0;
+    }
+
+    .tiny{
+      font-size:0.82rem;
+      color:var(--soft);
+      line-height:1.55;
+      text-align:center;
+      margin-top:2px;
+    }
+
+    .footer-note{
+      margin-top:18px;
+      text-align:center;
+      color:var(--soft);
+      font-size:0.84rem;
+      line-height:1.55;
+    }
+
+    .hidden{display:none !important}
+
+    @media (max-width: 980px){
+      .shell{
+        grid-template-columns:1fr;
+        max-width:760px;
       }
-
-      if (["amount"].includes(key)) {
-        const n = nullableNumber(value);
-        if (n !== null) cleaned[key] = n;
-        continue;
-      }
-
-      if (typeof value === "string") {
-        const trimmed = value.trim();
-        cleaned[key] = trimmed === "" ? null : trimmed;
-      } else if (value !== undefined) {
-        cleaned[key] = value;
+      .hero, .panel{
+        min-height:auto;
       }
     }
 
-    return cleaned;
-  }
+    @media (max-width: 640px){
+      .page{padding:16px}
+      .hero, .panel{padding:20px}
+      .grid,
+      .pricing,
+      .benefits,
+      .summary{
+        grid-template-columns:1fr;
+      }
+      .panel-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .hero h1{
+        font-size:2.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="shell">
+      <section class="hero">
+        <div>
+          <div class="brand-chip">
+            <div class="brand-dot"></div>
+            <span>Nairobi Sweets • Premium profile activation</span>
+          </div>
 
-  // ---------- build payload ----------
-  function collectProfilePayload() {
-    const rawId =
-      textValue("profile_id") ||
-      textValue("profileId") ||
-      textValue("id");
+          <div class="hero-copy">
+            <h1>Create your profile. <span class="accent">Pay. Go live.</span></h1>
+            <p>
+              Join Nairobi Sweets with a clean premium onboarding flow. Submit your details,
+              upload your image, choose your listing tier, and complete payment via M-Pesa STK Push.
+            </p>
+          </div>
 
-    const rawDisplayName = textValue("display_name") || textValue("name");
-    const rawSlug = textValue("slug");
+          <div class="benefits">
+            <div class="benefit">
+              <strong>Fast onboarding</strong>
+              <span>Your profile details are collected before payment so activation can move smoothly.</span>
+            </div>
+            <div class="benefit">
+              <strong>M-Pesa checkout</strong>
+              <span>Enter your Safaricom number and confirm payment directly on your phone.</span>
+            </div>
+            <div class="benefit">
+              <strong>Premium placement</strong>
+              <span>Choose the visibility level that fits your profile strategy and budget.</span>
+            </div>
+          </div>
 
-    const raw = {
-      // IMPORTANT: id is only included if valid integer
-      id: rawId,
+          <div class="pricing">
+            <div class="price-card">
+              <div class="tier">Featured</div>
+              <div class="price">KES 1,000 <small>/ week</small></div>
+              <p>Entry placement with strong visibility for a clean weekly launch.</p>
+            </div>
+            <div class="price-card featured">
+              <div class="tier">VIP</div>
+              <div class="price">KES 1,500 <small>/ week</small></div>
+              <p>Higher priority exposure for profiles that want better positioning.</p>
+            </div>
+            <div class="price-card">
+              <div class="tier">VVIP / Signature</div>
+              <div class="price">KES 3,000 <small>/ week</small></div>
+              <p>Top-tier premium spotlight for the strongest visibility on the platform.</p>
+            </div>
+          </div>
+        </div>
 
-      display_name: rawDisplayName,
-      whatsapp_name: textValue("whatsapp_name"),
-      phone: normalizePhone(textValue("phone") || textValue("whatsapp_phone")),
-      reminder_schedule: textValue("reminder_schedule"),
-      location: textValue("location"),
-      age: textValue("age"),
-      plan: textValue("plan"),
-      amount: textValue("amount"),
-      slug: rawSlug || slugify(rawDisplayName),
-      bio: textValue("bio"),
+        <div class="hero-foot">
+          <div class="mini-pill">Live M-Pesa flow</div>
+          <div class="mini-pill">Profile submission + payment in one page</div>
+          <div class="mini-pill">Clean mobile-friendly experience</div>
+        </div>
+      </section>
 
-      // keep these only if your table already has them
-      payment_status: "pending",
-      status: "pending_review",
-      updated_at: new Date().toISOString()
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Create Profile & Pay</h2>
+            <p>Fill in your details carefully. After you submit, an M-Pesa prompt will be sent to your phone.</p>
+          </div>
+          <div class="secure-badge">Secure checkout</div>
+        </div>
+
+        <form id="signupForm">
+          <div class="grid">
+            <div class="field">
+              <label for="name">Full name</label>
+              <input id="name" name="name" type="text" placeholder="Enter your full name" required />
+            </div>
+            <div class="field">
+              <label for="phone">M-Pesa phone number</label>
+              <input id="phone" name="phone" type="tel" placeholder="07XXXXXXXX or 2547XXXXXXXX" required />
+              <div class="hint">Use the number that will receive the STK Push prompt.</div>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="age">Age</label>
+              <input id="age" name="age" type="number" min="18" max="99" placeholder="Enter age" required />
+            </div>
+            <div class="field">
+              <label for="location">Location</label>
+              <input id="location" name="location" type="text" placeholder="e.g. Nairobi, Westlands" required />
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="category">Profile plan</label>
+              <select id="category" name="category" required>
+                <option value="">Select plan</option>
+                <option value="Featured">Featured - KES 1,000 / week</option>
+                <option value="VIP">VIP - KES 1,500 / week</option>
+                <option value="VVIP">VVIP / Signature - KES 3,000 / week</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="whatsapp">WhatsApp number</label>
+              <input id="whatsapp" name="whatsapp" type="tel" placeholder="Optional, can match phone number" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="bio">Short bio</label>
+            <textarea id="bio" name="bio" placeholder="Tell us a little about yourself..."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="image">Profile image</label>
+            <div class="upload-wrap">
+              <input id="image" name="image" type="file" accept="image/*" />
+              <div class="hint">Upload a clear image. Large images may take longer if your backend stores them.</div>
+              <img id="preview" class="preview" alt="Image preview" />
+            </div>
+          </div>
+
+          <div class="summary">
+            <div class="summary-box">
+              <div class="k">Selected plan</div>
+              <div class="v" id="summaryPlan">Not selected</div>
+            </div>
+            <div class="summary-box">
+              <div class="k">Amount to pay</div>
+              <div class="v" id="summaryAmount">KES 0</div>
+            </div>
+          </div>
+
+          <div class="notice">
+            After you tap <strong>Create Profile & Pay</strong>, Nairobi Sweets will send an STK Push request
+            to your phone. Complete the M-Pesa PIN prompt on your device to finish activation.
+          </div>
+
+          <div id="statusBox" class="status info"></div>
+
+          <div class="actions">
+            <button id="submitBtn" class="btn btn-primary" type="submit">Create Profile & Pay</button>
+            <button id="resetBtn" class="btn btn-secondary" type="button">Reset Form</button>
+          </div>
+
+          <div class="tiny">
+            By proceeding, you confirm that the submitted details are accurate and ready for profile review or activation.
+          </div>
+        </form>
+
+        <div class="footer-note">
+          Nairobi Sweets premium onboarding portal
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const STK_PUSH_ENDPOINT = "/.netlify/functions/mpesa-stk-push";
+    const PAYMENT_STATUS_PAGE = "/payment-status.html";
+
+    const PLAN_PRICES = {
+      "Featured": 1000,
+      "VIP": 1500,
+      "VVIP": 3000
     };
 
-    return sanitizeProfilePayload(raw);
-  }
+    const form = document.getElementById("signupForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const statusBox = document.getElementById("statusBox");
+    const categoryEl = document.getElementById("category");
+    const summaryPlan = document.getElementById("summaryPlan");
+    const summaryAmount = document.getElementById("summaryAmount");
+    const imageInput = document.getElementById("image");
+    const preview = document.getElementById("preview");
 
-  // ---------- save profile ----------
-  async function saveProfileDraft() {
-    try {
-      const payload = collectProfilePayload();
-
-      if (!payload.display_name) {
-        throw new Error("Display name is required.");
-      }
-
-      if (!payload.phone) {
-        throw new Error("Phone is required.");
-      }
-
-      if (!payload.amount || payload.amount <= 0) {
-        throw new Error("Amount is required.");
-      }
-
-      // IMPORTANT:
-      // - for NEW profile: do NOT send id
-      // - for EXISTING profile: update by id
-      let result, error;
-
-      if (payload.id) {
-        const existingId = payload.id;
-        const updatePayload = { ...payload };
-        delete updatePayload.id;
-
-        ({ data: result, error } = await supabase
-          .from("profiles")
-          .update(updatePayload)
-          .eq("id", existingId)
-          .select()
-          .single());
-      } else {
-        const insertPayload = { ...payload };
-        delete insertPayload.id;
-
-        ({ data: result, error } = await supabase
-          .from("profiles")
-          .insert([insertPayload])
-          .select()
-          .single());
-      }
-
-      if (error) throw error;
-
-      // save returned id back into hidden field if present
-      if (result?.id) {
-        if (byId("profile_id")) byId("profile_id").value = result.id;
-        if (byId("profileId")) byId("profileId").value = result.id;
-        if (byId("id")) byId("id").value = result.id;
-      }
-
-      return result;
-    } catch (err) {
-      console.error("PROFILE SAVE ERROR:", err);
-      throw err;
+    function showStatus(message, type = "info") {
+      statusBox.className = `status show ${type}`;
+      statusBox.textContent = message;
     }
-  }
 
-  // ---------- create profile + pay ----------
-  async function createProfileAndPay() {
-    try {
-      // 1. save profile first
-      const profile = await saveProfileDraft();
+    function hideStatus() {
+      statusBox.className = "status info";
+      statusBox.textContent = "";
+    }
 
-      // 2. build payment payload
-      const paymentPayload = {
-        profile_id: profile?.id ?? null,
-        phone: normalizePhone(textValue("phone") || textValue("whatsapp_phone")),
-        amount: nullableNumber(textValue("amount")),
-        name: textValue("display_name") || textValue("name"),
-        plan: textValue("plan"),
-        location: textValue("location"),
-        slug: textValue("slug") || slugify(textValue("display_name") || textValue("name"))
-      };
+    function sanitize(value) {
+      return value == null ? "" : String(value).trim();
+    }
 
-      const res = await fetch("/.netlify/functions/mpesa-stk-push", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(paymentPayload)
+    function normalizePhone(input) {
+      let phone = sanitize(input).replace(/\s+/g, "").replace(/[^\d+]/g, "");
+
+      if (!phone) return "";
+
+      if (phone.startsWith("+")) {
+        phone = phone.slice(1);
+      }
+
+      if (phone.startsWith("254") && phone.length === 12) {
+        return phone;
+      }
+
+      if (phone.startsWith("0") && phone.length === 10) {
+        return "254" + phone.slice(1);
+      }
+
+      if (phone.startsWith("7") && phone.length === 9) {
+        return "254" + phone;
+      }
+
+      return phone;
+    }
+
+    function getAmountForPlan(plan) {
+      return PLAN_PRICES[plan] || 0;
+    }
+
+    function updatePlanSummary() {
+      const plan = categoryEl.value;
+      const amount = getAmountForPlan(plan);
+
+      summaryPlan.textContent = plan || "Not selected";
+      summaryAmount.textContent = amount ? `KES ${amount.toLocaleString()}` : "KES 0";
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
+    }
 
-      const data = await res.json();
+    async function collectPayload() {
+      const name = sanitize(document.getElementById("name").value);
+      const phoneRaw = sanitize(document.getElementById("phone").value);
+      const age = sanitize(document.getElementById("age").value);
+      const location = sanitize(document.getElementById("location").value);
+      const category = sanitize(document.getElementById("category").value);
+      const whatsappRaw = sanitize(document.getElementById("whatsapp").value);
+      const bio = sanitize(document.getElementById("bio").value);
+      const imageFile = imageInput.files && imageInput.files[0] ? imageInput.files[0] : null;
 
-      if (!res.ok) {
-        console.error("STK PUSH ERROR:", data);
-        throw new Error(data?.error || "STK push failed");
+      const phone = normalizePhone(phoneRaw);
+      const whatsapp = whatsappRaw ? normalizePhone(whatsappRaw) : phone;
+      const amount = getAmountForPlan(category);
+
+      if (!name) throw new Error("Please enter your full name.");
+      if (!phone) throw new Error("Please enter a valid M-Pesa phone number.");
+      if (!age || Number(age) < 18) throw new Error("Age must be 18 or above.");
+      if (!location) throw new Error("Please enter your location.");
+      if (!category || !amount) throw new Error("Please select a valid profile plan.");
+
+      let imageBase64 = null;
+      let imageName = null;
+      let imageType = null;
+
+      if (imageFile) {
+        imageBase64 = await fileToBase64(imageFile);
+        imageName = imageFile.name || "profile-image";
+        imageType = imageFile.type || "image/jpeg";
       }
 
-      console.log("STK PUSH OK:", data);
-      alert(data.customerMessage || "STK push sent. Check your phone.");
-    } catch (err) {
-      console.error(err);
-      alert(err.message || "Something went wrong.");
+      return {
+        name,
+        phone,
+        age: Number(age),
+        location,
+        category,
+        amount,
+        whatsapp,
+        bio,
+        image_base64: imageBase64,
+        image_name: imageName,
+        image_type: imageType,
+        source: "public-signup-payment-page",
+        currency: "KES"
+      };
     }
-  }
-</script>
+
+    function setLoading(isLoading) {
+      submitBtn.disabled = isLoading;
+      resetBtn.disabled = isLoading;
+      submitBtn.textContent = isLoading ? "Processing..." : "Create Profile & Pay";
+    }
+
+    function redirectToStatusPage(data, fallbackPhone, fallbackAmount) {
+      const params = new URLSearchParams();
+
+      const checkoutId =
+        data?.CheckoutRequestID ||
+        data?.checkoutRequestID ||
+        data?.checkout_request_id ||
+        data?.merchantRequestId ||
+        data?.MerchantRequestID ||
+        "";
+
+      const merchantId =
+        data?.MerchantRequestID ||
+        data?.merchantRequestID ||
+        data?.merchant_request_id ||
+        "";
+
+      const customerMessage =
+        data?.CustomerMessage ||
+        data?.customerMessage ||
+        data?.message ||
+        "STK Push sent. Please complete payment on your phone.";
+
+      const amount =
+        data?.amount ||
+        fallbackAmount ||
+        "";
+
+      const phone =
+        data?.phone ||
+        fallbackPhone ||
+        "";
+
+      if (checkoutId) params.set("checkoutRequestID", checkoutId);
+      if (merchantId) params.set("merchantRequestID", merchantId);
+      if (phone) params.set("phone", phone);
+      if (amount) params.set("amount", amount);
+      if (customerMessage) params.set("message", customerMessage);
+
+      window.location.href = `${PAYMENT_STATUS_PAGE}?${params.toString()}`;
+    }
+
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files && imageInput.files[0] ? imageInput.files[0] : null;
+      if (!file) {
+        preview.src = "";
+        preview.style.display = "none";
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+      preview.style.display = "block";
+    });
+
+    categoryEl.addEventListener("change", updatePlanSummary);
+    updatePlanSummary();
+
+    resetBtn.addEventListener("click", () => {
+      form.reset();
+      preview.src = "";
+      preview.style.display = "none";
+      hideStatus();
+      updatePlanSummary();
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideStatus();
+
+      try {
+        setLoading(true);
+
+        const payload = await collectPayload();
+
+        showStatus("Submitting your profile and requesting M-Pesa STK Push...", "info");
+
+        const response = await fetch(STK_PUSH_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        let result = {};
+        try {
+          result = await response.json();
+        } catch (_) {
+          result = {};
+        }
+
+        if (!response.ok) {
+          const errMsg =
+            result?.error ||
+            result?.message ||
+            `Request failed with status ${response.status}`;
+          throw new Error(errMsg);
+        }
+
+        const successMessage =
+          result?.CustomerMessage ||
+          result?.customerMessage ||
+          result?.message ||
+          "STK Push sent successfully. Please check your phone and enter your M-Pesa PIN.";
+
+        showStatus(successMessage, "success");
+
+        setTimeout(() => {
+          redirectToStatusPage(result, payload.phone, payload.amount);
+        }, 1200);
+      } catch (error) {
+        console.error("Signup/payment error:", error);
+        showStatus(error.message || "Something went wrong. Please try again.", "error");
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
