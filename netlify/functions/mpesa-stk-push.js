@@ -1,15 +1,45 @@
-exports.handler = async (event) => {
-  const json = (statusCode, body) => ({
-    statusCode,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-    },
-    body: JSON.stringify(body),
-  });
+// netlify/functions/mpesa-stk-push.js
 
+const json = (statusCode, body) => ({
+  statusCode,
+  headers: {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  },
+  body: JSON.stringify(body),
+});
+
+function normalizePhone(phone) {
+  if (!phone) return null;
+  let p = String(phone).replace(/\D/g, "");
+  if (p.startsWith("0")) p = `254${p.slice(1)}`;
+  if (p.startsWith("7") && p.length === 9) p = `254${p}`;
+  if (/^2547\d{8}$/.test(p)) return p;
+  return null;
+}
+
+function timestampNow() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+  const ss = String(d.getSeconds()).padStart(2, "0");
+  return `${yyyy}${mm}${dd}${hh}${mi}${ss}`;
+}
+
+function nullableInt(value) {
+  if (value === null || value === undefined) return null;
+  const v = String(value).trim();
+  if (v === "") return null;
+  const n = Number(v);
+  return Number.isInteger(n) ? n : null;
+}
+
+exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return json(200, { ok: true });
   }
@@ -30,29 +60,42 @@ exports.handler = async (event) => {
       SUPABASE_SERVICE_ROLE_KEY,
     } = process.env;
 
-    if (
-      !MPESA_CONSUMER_KEY ||
-      !MPESA_CONSUMER_SECRET ||
-      !MPESA_SHORTCODE ||
-      !MPESA_PASSKEY ||
-      !MPESA_CALLBACK_URL ||
-      !MPESA_ENVIRONMENT ||
-      !SUPABASE_URL ||
-      !SUPABASE_SERVICE_ROLE_KEY
-    ) {
-      return json(500, { error: "Missing required environment variables" });
+    const missing = [
+      ["MPESA_CONSUMER_KEY", MPESA_CONSUMER_KEY],
+      ["MPESA_CONSUMER_SECRET", MPESA_CONSUMER_SECRET],
+      ["MPESA_SHORTCODE", MPESA_SHORTCODE],
+      ["MPESA_PASSKEY", MPESA_PASSKEY],
+      ["MPESA_CALLBACK_URL", MPESA_CALLBACK_URL],
+      ["MPESA_ENVIRONMENT", MPESA_ENVIRONMENT],
+      ["SUPABASE_URL", SUPABASE_URL],
+      ["SUPABASE_SERVICE_ROLE_KEY", SUPABASE_SERVICE_ROLE_KEY],
+    ]
+      .filter(([, v]) => !v)
+      .map(([k]) => k);
+
+    if (missing.length) {
+      return json(500, {
+        error: "Missing required environment variables",
+        missing,
+      });
     }
 
     const body = JSON.parse(event.body || "{}");
-    const { phone, amount, name, plan, location, slug } = body;
 
-    if (!phone || !amount) {
-      return json(400, { error: "Phone and amount are required" });
+    const phone = normalizePhone(body.phone || body.whatsapp || body.phone_number);
+    const amount = Number(body.amount);
+    const name = body.name || body.display_name || "NairobiSweets";
+    const plan = body.plan || "vip";
+    const location = body.location || null;
+    const slug = body.slug || null;
+    const profile_id = nullableInt(body.profile_id);
+
+    if (!phone) {
+      return json(400, { error: "Phone must be in format 2547XXXXXXXX" });
     }
 
-    const normalizedPhone = String(phone).replace(/\D/g, "");
-    if (!/^2547\d{8}$/.test(normalizedPhone)) {
-      return json(400, { error: "Phone must be in format 2547XXXXXXXX" });
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return json(400, { error: "Amount must be a positive number" });
     }
 
     const baseURL =
@@ -60,7 +103,7 @@ exports.handler = async (event) => {
         ? "https://api.safaricom.co.ke"
         : "https://sandbox.safaricom.co.ke";
 
-    const auth = Buffer.from(
+    const basicAuth = Buffer.from(
       `${MPESA_CONSUMER_KEY}:${MPESA_CONSUMER_SECRET}`
     ).toString("base64");
 
@@ -69,13 +112,13 @@ exports.handler = async (event) => {
       {
         method: "GET",
         headers: {
-          Authorization: `Basic ${auth}`,
+          Authorization: `Basic ${basicAuth}`,
         },
       }
     );
 
     const tokenText = await tokenRes.text();
-    let tokenData = {};
+    let tokenData;
     try {
       tokenData = JSON.parse(tokenText);
     } catch {
@@ -92,11 +135,7 @@ exports.handler = async (event) => {
       });
     }
 
-    const timestamp = new Date()
-      .toISOString()
-      .replace(/[-:TZ.]/g, "")
-      .slice(0, 14);
-
+    const timestamp = timestampNow();
     const password = Buffer.from(
       `${MPESA_SHORTCODE}${MPESA_PASSKEY}${timestamp}`
     ).toString("base64");
@@ -106,13 +145,13 @@ exports.handler = async (event) => {
       Password: password,
       Timestamp: timestamp,
       TransactionType: "CustomerPayBillOnline",
-      Amount: Number(amount),
-      PartyA: normalizedPhone,
+      Amount: Math.round(amount),
+      PartyA: phone,
       PartyB: MPESA_SHORTCODE,
-      PhoneNumber: normalizedPhone,
+      PhoneNumber: phone,
       CallBackURL: MPESA_CALLBACK_URL,
-      AccountReference: name || "NairobiSweets",
-      TransactionDesc: `${plan || "Plan"} payment`,
+      AccountReference: slug || name || "NairobiSweets",
+      TransactionDesc: `${plan} payment`,
     };
 
     const stkRes = await fetch(`${baseURL}/mpesa/stkpush/v1/processrequest`, {
@@ -125,7 +164,7 @@ exports.handler = async (event) => {
     });
 
     const stkText = await stkRes.text();
-    let stkData = {};
+    let stkData;
     try {
       stkData = JSON.parse(stkText);
     } catch {
@@ -142,6 +181,24 @@ exports.handler = async (event) => {
       });
     }
 
+    const paymentRow = {
+      profile_id,
+      phone,
+      amount: Math.round(amount),
+      name,
+      plan,
+      location,
+      slug,
+      status: "pending",
+      merchant_request_id: stkData.MerchantRequestID || null,
+      checkout_request_id: stkData.CheckoutRequestID || null,
+      response_code: stkData.ResponseCode || null,
+      response_description: stkData.ResponseDescription || null,
+      customer_message: stkData.CustomerMessage || null,
+      response_payload: stkData,
+      updated_at: new Date().toISOString(),
+    };
+
     const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/stk_push_payments`, {
       method: "POST",
       headers: {
@@ -150,26 +207,23 @@ exports.handler = async (event) => {
         "Content-Type": "application/json",
         Prefer: "return=representation",
       },
-      body: JSON.stringify({
-        phone: normalizedPhone,
-        amount: Number(amount),
-        name: name || null,
-        plan: plan || null,
-        location: location || null,
-        slug: slug || null,
-        checkout_request_id: stkData.CheckoutRequestID,
-        merchant_request_id: stkData.MerchantRequestID,
-        status: "pending",
-      }),
+      body: JSON.stringify(paymentRow),
     });
 
     const saveText = await saveRes.text();
-
     if (!saveRes.ok) {
       return json(500, {
         error: "STK sent but DB save failed",
         details: saveText,
+        stkData,
       });
+    }
+
+    let saved = null;
+    try {
+      saved = JSON.parse(saveText);
+    } catch {
+      saved = saveText;
     }
 
     return json(200, {
@@ -177,6 +231,8 @@ exports.handler = async (event) => {
       message: "STK push sent",
       checkoutRequestID: stkData.CheckoutRequestID,
       merchantRequestID: stkData.MerchantRequestID,
+      customerMessage: stkData.CustomerMessage,
+      saved,
     });
   } catch (error) {
     return json(500, {
