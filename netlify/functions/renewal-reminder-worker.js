@@ -133,6 +133,14 @@ async function sbPatch(table, filter, patch) {
   return data;
 }
 
+function buildRestPath(parts) {
+  return parts
+    .join("?")
+    .replace("?select", "?select")
+    .replaceAll("?", "&")
+    .replace("&select", "?select");
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return json(200, { ok: true });
@@ -161,7 +169,7 @@ exports.handler = async (event) => {
 
     // 1) find active paid profiles expiring within 48h
     const expiringProfiles = await sbSelect(
-      [
+      buildRestPath([
         "profiles",
         "select=id,stage_name,phone,whatsapp,category,expires_at,is_active,payment_status",
         "is_active=eq.true",
@@ -169,17 +177,19 @@ exports.handler = async (event) => {
         `expires_at=gte.${encodeURIComponent(nowIso)}`,
         `expires_at=lte.${encodeURIComponent(twoDaysAheadIso)}`,
         "order=expires_at.asc",
-      ].join("?").replace("?select", "?select").replaceAll("?", "&").replace("&select", "?select")
+      ])
     );
 
-    // 2) find already queued reminders so we don't duplicate
+    // 2) find already queued reminders today so we don't duplicate
+    const todayStartIso = `${nowIso.slice(0, 10)}T00:00:00.000Z`;
+
     const queuedRecent = await sbSelect(
-      [
+      buildRestPath([
         "whatsapp_queue",
         "select=id,profile_id,template,status,scheduled_for",
         "template=eq.renewal_reminder",
-        `scheduled_for=gte.${encodeURIComponent(nowIso.slice(0, 10) + "T00:00:00.000Z")}`,
-      ].join("?").replace("?select", "?select").replaceAll("?", "&").replace("&select", "?select")
+        `scheduled_for=gte.${encodeURIComponent(todayStartIso)}`,
+      ])
     );
 
     const alreadyQueued = new Set(
@@ -218,6 +228,7 @@ exports.handler = async (event) => {
           plan: profile.category,
           price_per_week: price,
         },
+        created_at: nowIso,
       });
     }
 
@@ -226,14 +237,14 @@ exports.handler = async (event) => {
       inserted = await sbInsert("whatsapp_queue", rowsToInsert);
     }
 
-    // 3) optionally deactivate profiles already expired
+    // 3) deactivate profiles already expired
     const expiredProfiles = await sbSelect(
-      [
+      buildRestPath([
         "profiles",
         "select=id,expires_at,is_active",
         "is_active=eq.true",
         `expires_at=lt.${encodeURIComponent(nowIso)}`,
-      ].join("?").replace("?select", "?select").replaceAll("?", "&").replace("&select", "?select")
+      ])
     );
 
     let deactivatedCount = 0;
