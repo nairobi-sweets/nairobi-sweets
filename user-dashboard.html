@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nairobi Sweets | Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --bg:#060915;
+      --panel:#12204b;
+      --line:rgba(255,255,255,.08);
+      --text:#f8f9ff;
+      --muted:#9ea8cb;
+      --gold:#ffd54a;
+      --blue:#49b8ff;
+      --green:#27d17b;
+      --danger:#ff5d7f;
+      --radius:20px;
+    }
+
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .wrap{max-width:1100px;margin:auto;padding:20px;}
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:18px;
+      margin-bottom:16px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .btn-gold{background:var(--gold);color:#111;}
+    .btn-blue{background:var(--blue);color:#08111f;}
+    .btn-muted{background:rgba(255,255,255,.1);color:#fff;}
+
+    input, textarea, select{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:#fff;
+      margin-bottom:10px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+    }
+
+    .stat{
+      padding:12px;
+      background:rgba(255,255,255,.05);
+      border-radius:14px;
+    }
+
+    .banner{
+      padding:12px;
+      border-radius:14px;
+      margin-bottom:10px;
+    }
+
+    .pending{background:rgba(255,213,74,.1);}
+    .paid{background:rgba(39,209,123,.1);}
+    .failed{background:rgba(255,93,127,.1);}
+
+    img{max-width:100%;border-radius:14px;}
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <div class="panel">
+    <h2>User Dashboard</h2>
+    <button class="btn btn-muted" onclick="logout()">Logout</button>
+  </div>
+
+  <div id="banner" class="banner"></div>
+
+  <div class="panel stats">
+    <div class="stat">Views: <span id="views">0</span></div>
+    <div class="stat">Clicks: <span id="clicks">0</span></div>
+    <div class="stat">Opens: <span id="opens">0</span></div>
+    <div class="stat">Renew: <span id="renew">0</span></div>
+  </div>
+
+  <div class="panel">
+    <h3>Edit Profile</h3>
+
+    <input id="name" placeholder="Name"/>
+    <input id="phone" placeholder="Phone"/>
+    <input id="location" placeholder="Location"/>
+    <textarea id="bio" placeholder="Bio"></textarea>
+
+    <input type="file" id="image"/>
+
+    <button class="btn btn-blue" onclick="uploadImage()">Upload Image</button>
+    <button class="btn btn-gold" onclick="saveProfile()">Save</button>
+    <button class="btn btn-blue" onclick="renew()">Renew Listing</button>
+  </div>
+
+  <div class="panel">
+    <h3>Preview</h3>
+    <img id="preview_img"/>
+    <div id="preview_name"></div>
+  </div>
+
+</div>
+
+<script>
+const SUPABASE_URL="YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY";
+const sb = supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+let user, profile;
+
+async function init(){
+  const {data} = await sb.auth.getUser();
+  if(!data.user) return window.location="/login.html";
+  user = data.user;
+
+  const {data:prof} = await sb
+    .from("profiles")
+    .select("*")
+    .eq("owner_user_id", user.id)
+    .single();
+
+  profile = prof;
+  fill();
+  loadStats();
+}
+
+function fill(){
+  if(!profile) return;
+  name.value = profile.stage_name || "";
+  phone.value = profile.phone || "";
+  location.value = profile.location || "";
+  bio.value = profile.bio || "";
+
+  preview_name.textContent = profile.stage_name || "";
+  preview_img.src = profile.profile_image_url || "";
+  renderBanner();
+}
+
+function renderBanner(){
+  const b = document.getElementById("banner");
+  if(profile.payment_status==="paid"){
+    b.className="banner paid";
+    b.textContent="Payment successful. Active.";
+  }else if(profile.payment_status==="failed"){
+    b.className="banner failed";
+    b.textContent="Payment failed.";
+  }else{
+    b.className="banner pending";
+    b.textContent="Payment pending...";
+  }
+}
+
+async function saveProfile(){
+  const {data,error}=await sb.from("profiles").update({
+    stage_name:name.value,
+    phone:phone.value,
+    location:location.value,
+    bio:bio.value
+  }).eq("id",profile.id).select().single();
+
+  if(!error){
+    profile=data;
+    fill();
+  }
+}
+
+async function uploadImage(){
+  const file=image.files[0];
+  if(!file) return;
+
+  const nameFile=`${profile.id}-${Date.now()}`;
+  await sb.storage.from("profile-images").upload(nameFile,file,{upsert:true});
+
+  const {data}=sb.storage.from("profile-images").getPublicUrl(nameFile);
+
+  await sb.from("profiles").update({
+    profile_image_url:data.publicUrl
+  }).eq("id",profile.id);
+
+  profile.profile_image_url=data.publicUrl;
+  fill();
+}
+
+async function renew(){
+  await fetch("/.netlify/functions/mpesa-stk-push",{
+    method:"POST",
+    body:JSON.stringify({
+      profile_id:profile.id,
+      phone:profile.phone,
+      amount:1500
+    })
+  });
+  alert("STK sent");
+}
+
+async function loadStats(){
+  const {data}=await sb.from("user_profile_event_summary")
+    .select("*")
+    .eq("profile_id",profile.id)
+    .single();
+
+  if(data){
+    views.textContent=data.profile_views;
+    clicks.textContent=data.whatsapp_clicks;
+    opens.textContent=data.profile_opens;
+    renew.textContent=data.renew_clicks;
+  }
+}
+
+async function logout(){
+  await sb.auth.signOut();
+  window.location="/login.html";
+}
+
+init();
+</script>
+</body>
+</html>
