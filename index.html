@@ -668,7 +668,6 @@
       }
     }
 
-
     let allProfiles = [];
     const viewedProfiles = new Set();
     let selectedLocation = '';
@@ -716,13 +715,13 @@
       );
 
       const name = safe(
-        p.name,
-        safe(p.stage_name, safe(p.username, safe(p.full_name, 'Unnamed profile')))
+        p.stage_name,
+        safe(p.name, safe(p.username, safe(p.full_name, 'Unnamed profile')))
       );
 
       const description = safe(
-        p.description,
-        safe(p.bio, 'No description available.')
+        p.bio,
+        safe(p.description, 'No description available.')
       );
 
       const imageUrl = getDisplayImage(p);
@@ -747,7 +746,7 @@
       const isVerified = Boolean(
         p.is_verified ??
         p.verified ??
-        imageUrl
+        false
       );
 
       const isOnline = Boolean(
@@ -755,13 +754,6 @@
         p.online ??
         (String(p.status || '').toLowerCase() === 'active')
       );
-
-      const paymentStatus = String(
-        p.payment_status ||
-        (String(p.status || '').toLowerCase() === 'active' ? 'paid' : 'unpaid')
-      ).toLowerCase();
-
-      const status = String(p.status || (isOnline ? 'active' : 'pending')).toLowerCase();
 
       return {
         ...p,
@@ -785,8 +777,6 @@
         featured: Boolean(p.featured ?? isFeatured),
         verified: Boolean(p.verified ?? isVerified),
         online: Boolean(p.online ?? isOnline),
-        payment_status: paymentStatus,
-        status,
         likes_count: Number(p.likes_count || 0),
         views_count: Number(p.views_count || 0),
         sort_order: Number(p.sort_order || 0),
@@ -804,7 +794,16 @@
     }
 
     function getDisplayImage(profile){
-      return safe(profile.profile_image_url, safe(profile.image_url, PLACEHOLDER));
+      return safe(
+        profile.profile_image_url,
+        safe(
+          profile.image_url,
+          safe(
+            profile.avatar_url,
+            PLACEHOLDER
+          )
+        )
+      );
     }
 
     function getDisplayLocation(profile){
@@ -1078,7 +1077,7 @@
     window.likeProfile = likeProfile;
 
     function applyFilters() {
-      const q = searchInput.value.trim().toLowerCase();
+      const q = (searchInput.value || '').trim().toLowerCase();
       const sortValue = sortFilter.value;
 
       let filtered = allProfiles.filter(p => {
@@ -1146,21 +1145,14 @@
         }
 
         const { data, error } = await supabaseClient
-          .from('profiles')
+          .from('active_profiles_view')
           .select('*')
           .order('sort_order', { ascending: true })
           .order('id', { ascending: false });
 
         if(error) throw error;
 
-        allProfiles = (data || [])
-          .map(normalizePublicProfile)
-          .filter(p => {
-            if (String(p.status || '').toLowerCase() !== 'active') return false;
-            if (String(p.approval_status || '').toLowerCase() !== 'approved') return false;
-            if (!p.image_url) return false;
-            return true;
-          });
+        allProfiles = (data || []).map(normalizePublicProfile);
 
         applyFilters();
         setStatus('Profiles live', `${allProfiles.length} active profiles loaded.`);
@@ -1343,8 +1335,7 @@
         .on(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'profiles' },
-          async (payload) => {
-            console.log('Live update from vault:', payload);
+          async () => {
             await loadProfiles(false);
           }
         )
