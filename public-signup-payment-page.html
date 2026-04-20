@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nairobi Sweets | Join & Pay</title>
+  <title>Nairobi Sweets | Signup + Payment</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{
@@ -378,6 +378,7 @@
       width:100%;
       height:280px;
       object-fit:cover;
+      object-position:center 20%;
       background:#0b1230;
       display:block;
     }
@@ -494,7 +495,7 @@
         <div class="hero-plans">
           <div class="tag featured">Featured KES 1000/week</div>
           <div class="tag vip">VIP KES 1500/week</div>
-          <div class="tag vvip">VVIP / Signature KES 3000/week</div>
+          <div class="tag vvip">Signature KES 3000/week</div>
         </div>
       </div>
 
@@ -512,7 +513,7 @@
         <div class="step">
           <div class="n">3</div>
           <h3>Pay by M-Pesa</h3>
-          <p>Tap the big payment button, approve the STK prompt, and wait for activation.</p>
+          <p>Tap the payment button, approve the STK prompt, and wait for activation.</p>
         </div>
       </div>
     </div>
@@ -524,23 +525,23 @@
         <div class="tip">Mobile tip: fill your details, upload one clear vertical photo, then tap the big pay button at the bottom.</div>
 
         <div class="plans">
-          <div class="plan-card active" data-plan="featured" data-amount="1000">
+          <div class="plan-card active" data-plan="featured" data-price="1000" data-featured="true" data-vip="false" data-vvip="false">
             <div class="badge">Starter</div>
             <h4>Featured</h4>
             <div class="price">KES 1000</div>
             <p>Good for quick visibility and weekly renewals.</p>
           </div>
 
-          <div class="plan-card" data-plan="vip" data-amount="1500">
+          <div class="plan-card" data-plan="vip" data-price="1500" data-featured="true" data-vip="true" data-vvip="false">
             <div class="badge">Popular</div>
             <h4>VIP</h4>
             <div class="price">KES 1500</div>
             <p>Stronger visibility with a premium weekly spot.</p>
           </div>
 
-          <div class="plan-card" data-plan="signature" data-amount="3000">
+          <div class="plan-card" data-plan="signature" data-price="3000" data-featured="true" data-vip="true" data-vvip="true">
             <div class="badge">Top shelf</div>
-            <h4>VVIP / Signature</h4>
+            <h4>Signature</h4>
             <div class="price">KES 3000</div>
             <p>Maximum spotlight for profiles that want the velvet rope.</p>
           </div>
@@ -550,8 +551,8 @@
 
         <div class="grid-2">
           <div class="field">
-            <label for="display_name">Display name</label>
-            <input id="display_name" placeholder="e.g. Beezy" />
+            <label for="name">Display name</label>
+            <input id="name" placeholder="e.g. Beezy" />
           </div>
           <div class="field">
             <label for="phone">Phone / WhatsApp</label>
@@ -626,7 +627,7 @@
         <div class="field">
           <label for="profile_image">Profile image</label>
           <input id="profile_image" type="file" accept="image/*" />
-          <div class="section-note" style="margin-top:8px;">Upload the image first, then we save the profile and send STK.</div>
+          <div class="section-note" style="margin-top:8px;">Upload the image first, then save the profile and send STK.</div>
         </div>
 
         <div class="action-row">
@@ -642,13 +643,13 @@
         <div class="preview-card">
           <img id="preview_image" class="preview-image" alt="Preview" src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop" />
           <div class="preview-body">
-            <div class="preview-name" id="preview_name">test 6</div>
+            <div class="preview-name" id="preview_name">Preview name</div>
             <div class="preview-location" id="preview_location">Nairobi</div>
             <div class="preview-tags">
               <div class="mini-tag gold" id="preview_plan">VIP</div>
               <div class="mini-tag green" id="preview_price">KES 1,500/week</div>
             </div>
-            <div class="preview-bio" id="preview_bio">hello</div>
+            <div class="preview-bio" id="preview_bio">Preview bio</div>
           </div>
         </div>
 
@@ -695,7 +696,6 @@
     const SUPABASE_BUCKET = "profile-images";
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     let uploadedImageUrl = null;
 
     function byId(id) {
@@ -708,8 +708,17 @@
       box.className = `message ${type}`.trim();
     }
 
-    function setStatus(id, value) {
-      byId(id).textContent = value;
+    function setStatus(key, value) {
+      const map = {
+        profile: "status_profile",
+        image: "status_image",
+        payment: "status_payment",
+        onboarding: "status_onboarding",
+        reminder: "status_reminder",
+        renewal: "status_renewal"
+      };
+      const el = byId(map[key] || key);
+      if (el) el.textContent = value;
     }
 
     function textValue(id) {
@@ -729,13 +738,6 @@
       return Number.isInteger(n) ? n : null;
     }
 
-    function nullableNumber(value) {
-      const v = String(value ?? "").trim();
-      if (v === "") return null;
-      const n = Number(v);
-      return Number.isFinite(n) ? n : null;
-    }
-
     function normalizePhone(phone) {
       let p = String(phone ?? "").replace(/\D/g, "");
       if (!p) return null;
@@ -753,71 +755,26 @@
         .replace(/^-+|-+$/g, "");
     }
 
+    function planFlags(plan) {
+      const clean = String(plan || "").toLowerCase();
+      return {
+        is_featured: clean === "featured" || clean === "vip" || clean === "signature",
+        is_vip: clean === "vip" || clean === "signature",
+        is_vvip: clean === "signature"
+      };
+    }
+
     function formatPlanPrice(plan) {
       if (plan === "featured") return "KES 1,000/week";
       if (plan === "signature") return "KES 3,000/week";
       return "KES 1,500/week";
     }
 
-    function sanitizeProfilePayload(raw) {
-      const cleaned = {};
-
-      for (const [key, value] of Object.entries(raw)) {
-        if (["id", "age"].includes(key)) {
-          const n = nullableInt(value);
-          if (n !== null) cleaned[key] = n;
-          continue;
-        }
-
-        if (["amount"].includes(key)) {
-          const n = nullableNumber(value);
-          if (n !== null) cleaned[key] = n;
-          continue;
-        }
-
-        if (typeof value === "string") {
-          const trimmed = value.trim();
-          cleaned[key] = trimmed === "" ? null : trimmed;
-        } else if (value !== undefined) {
-          cleaned[key] = value;
-        }
-      }
-
-      return cleaned;
-    }
-
-    function collectProfilePayload() {
-      const rawName = textValue("display_name");
-      const rawSlug = textValue("slug");
-
-      const raw = {
-        id: textValue("profile_id"),
-        display_name: rawName,
-        whatsapp_name: textValue("whatsapp_name"),
-        phone: normalizePhone(textValue("phone")),
-        reminder_schedule: textValue("reminder_schedule"),
-        location: textValue("location"),
-        age: textValue("age"),
-        plan: textValue("plan"),
-        amount: textValue("amount"),
-        slug: rawSlug || slugify(rawName),
-        bio: textValue("bio"),
-        image_url: uploadedImageUrl,
-        payment_status: "pending",
-        status: "pending_review",
-        send_onboarding: byId("send_onboarding").checked,
-        send_renewal: byId("send_renewal").checked,
-        updated_at: new Date().toISOString()
-      };
-
-      return sanitizeProfilePayload(raw);
-    }
-
     function refreshPreview() {
       const plan = textValue("plan") || "vip";
-      const name = textValue("display_name") || "test 6";
+      const name = textValue("name") || "Preview name";
       const location = textValue("location") || "Nairobi";
-      const bio = textValue("bio") || "hello";
+      const bio = textValue("bio") || "Preview bio";
 
       byId("preview_name").textContent = name;
       byId("preview_location").textContent = location;
@@ -832,12 +789,13 @@
 
     async function uploadImageOnly() {
       try {
-        setStatus("status_image", "uploading");
+        setStatus("image", "uploading");
+
         const file = byId("profile_image").files[0];
         if (!file) throw new Error("Please choose an image first.");
 
         const ext = file.name.split(".").pop();
-        const fileName = `${Date.now()}-${slugify(textValue("display_name") || "profile")}.${ext}`;
+        const fileName = `${Date.now()}-${slugify(textValue("name") || "profile")}.${ext}`;
 
         const { error: uploadError } = await supabase
           .storage
@@ -854,61 +812,98 @@
         uploadedImageUrl = data.publicUrl;
         refreshPreview();
 
-        setStatus("status_image", "uploaded");
+        setStatus("image", "uploaded");
         setMessage("Image uploaded successfully.", "success");
       } catch (err) {
         console.error(err);
-        setStatus("status_image", "failed");
+        setStatus("image", "failed");
         setMessage(err.message || "Image upload failed.", "error");
       }
     }
 
+    function buildProfilesPayload() {
+      const name = textValue("name");
+      const phone = normalizePhone(textValue("phone"));
+      const whatsappName = textValue("whatsapp_name");
+      const location = textValue("location");
+      const bio = textValue("bio");
+      const age = nullableInt(textValue("age"));
+      const category = textValue("plan") || "vip";
+      const pricePerWeek = nullableInt(textValue("amount"));
+      const slug = textValue("slug") || slugify(name);
+      const flags = planFlags(category);
+
+      return {
+        stage_name: name || null,
+        username: slug || null,
+        bio: bio || null,
+        age: age,
+        location: location || null,
+        phone: phone || null,
+        whatsapp: phone || null,
+        category: category || null,
+        badge: null,
+        price_per_week: pricePerWeek,
+        is_active: false,
+        is_featured: flags.is_featured,
+        is_vip: flags.is_vip,
+        is_vvip: flags.is_vvip,
+        profile_image_url: uploadedImageUrl,
+        cover_image_url: null,
+        image_position: "center 20%",
+        image_position_x: 50,
+        image_position_y: 50,
+        object_fit: "cover",
+        sort_order: 0,
+        likes_count: 0,
+        views_count: 0,
+        instagram_url: null,
+        tiktok_url: null,
+        telegram_url: null,
+        updated_at: new Date().toISOString()
+      };
+    }
+
     async function saveProfileDraft() {
       try {
-        setStatus("status_profile", "saving");
+        setStatus("profile", "saving");
 
-        const payload = collectProfilePayload();
+        const payload = buildProfilesPayload();
 
-        if (!payload.display_name) throw new Error("Display name is required.");
+        if (!payload.stage_name) throw new Error("Display name is required.");
         if (!payload.phone) throw new Error("Phone is required.");
-        if (!payload.amount || payload.amount <= 0) throw new Error("Amount is required.");
+        if (!payload.price_per_week || payload.price_per_week <= 0) {
+          throw new Error("Amount is required.");
+        }
 
+        const profileId = nullableInt(textValue("profile_id"));
         let result, error;
 
-        if (payload.id) {
-          const existingId = payload.id;
-          const updatePayload = { ...payload };
-          delete updatePayload.id;
-
+        if (profileId) {
           ({ data: result, error } = await supabase
             .from("profiles")
-            .update(updatePayload)
-            .eq("id", existingId)
+            .update(payload)
+            .eq("id", profileId)
             .select()
             .single());
         } else {
-          const insertPayload = { ...payload };
-          delete insertPayload.id;
-
           ({ data: result, error } = await supabase
             .from("profiles")
-            .insert([insertPayload])
+            .insert([payload])
             .select()
             .single());
         }
 
         if (error) throw error;
 
-        if (result?.id) {
-          byId("profile_id").value = result.id;
-        }
+        if (result?.id) byId("profile_id").value = result.id;
 
-        setStatus("status_profile", "saved");
+        setStatus("profile", "saved");
         setMessage(`Draft saved. Profile ID: ${result.id}`, "success");
         return result;
       } catch (err) {
         console.error("PROFILE SAVE ERROR:", err);
-        setStatus("status_profile", "failed");
+        setStatus("profile", "failed");
         setMessage(err.message || "Profile save failed.", "error");
         throw err;
       }
@@ -921,17 +916,16 @@
     async function createProfileAndPay() {
       try {
         const profile = await saveProfileDraft();
-
-        setStatus("status_payment", "sending");
+        setStatus("payment", "sending");
 
         const paymentPayload = {
           profile_id: profile?.id ? Number(profile.id) : null,
           phone: normalizePhone(textValue("phone")),
-          amount: nullableNumber(textValue("amount")),
-          name: textValue("display_name"),
+          amount: nullableInt(textValue("amount")),
+          name: textValue("name"),
           plan: textValue("plan"),
           location: textValue("location"),
-          slug: textValue("slug") || slugify(textValue("display_name"))
+          slug: textValue("slug") || slugify(textValue("name"))
         };
 
         const res = await fetch("/.netlify/functions/mpesa-stk-push", {
@@ -944,16 +938,16 @@
 
         if (!res.ok) {
           console.error("STK PUSH ERROR:", data);
-          setStatus("status_payment", "failed");
+          setStatus("payment", "failed");
           setMessage(data?.error || data?.details || "STK push failed", "error");
           return;
         }
 
-        setStatus("status_payment", "sent");
+        setStatus("payment", "sent");
         setMessage(data.customerMessage || "STK push sent. Check your phone.", "success");
       } catch (err) {
         console.error(err);
-        setStatus("status_payment", "failed");
+        setStatus("payment", "failed");
         setMessage(err.message || "Something went wrong.", "error");
       }
     }
@@ -963,12 +957,12 @@
         document.querySelectorAll(".plan-card").forEach((c) => c.classList.remove("active"));
         card.classList.add("active");
         byId("plan").value = card.dataset.plan;
-        byId("amount").value = card.dataset.amount;
+        byId("amount").value = card.dataset.price;
         refreshPreview();
       });
     });
 
-    ["display_name","phone","whatsapp_name","reminder_schedule","location","age","plan","amount","slug","bio","profile_image"]
+    ["name","phone","whatsapp_name","reminder_schedule","location","age","plan","amount","slug","bio","profile_image"]
       .forEach((id) => {
         const el = byId(id);
         if (!el) return;
