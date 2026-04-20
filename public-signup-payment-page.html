@@ -502,18 +502,18 @@
       <div class="hero-right panel">
         <div class="step">
           <div class="n">1</div>
-          <h3>Create profile</h3>
-          <p>Add your name, bio, phone, location, and image.</p>
+          <h3>Create account</h3>
+          <p>Add email, password, and your profile details.</p>
         </div>
         <div class="step">
           <div class="n">2</div>
-          <h3>Pick a plan</h3>
-          <p>Choose Featured, VIP, or Signature depending on your visibility goals.</p>
+          <h3>Choose plan</h3>
+          <p>Pick Featured, VIP, or Signature.</p>
         </div>
         <div class="step">
           <div class="n">3</div>
           <h3>Pay by M-Pesa</h3>
-          <p>Tap the payment button, approve the STK prompt, and wait for activation.</p>
+          <p>Approve the STK prompt and head to your dashboard.</p>
         </div>
       </div>
     </div>
@@ -521,25 +521,25 @@
     <div class="main">
       <div class="left-panel panel">
         <h3 class="section-title">Create your profile</h3>
-        <p class="section-note">This page saves a draft profile first, then sends an M-Pesa STK push using your selected plan.</p>
-        <div class="tip">Mobile tip: fill your details, upload one clear vertical photo, then tap the big pay button at the bottom.</div>
+        <p class="section-note">This page creates or signs in the user, saves a profile draft, then sends an M-Pesa STK push using the selected plan.</p>
+        <div class="tip">Mobile tip: upload one clear vertical photo, then tap the gold button at the bottom.</div>
 
         <div class="plans">
-          <div class="plan-card active" data-plan="featured" data-price="1000" data-featured="true" data-vip="false" data-vvip="false">
+          <div class="plan-card active" data-plan="featured" data-price="1000">
             <div class="badge">Starter</div>
             <h4>Featured</h4>
             <div class="price">KES 1000</div>
             <p>Good for quick visibility and weekly renewals.</p>
           </div>
 
-          <div class="plan-card" data-plan="vip" data-price="1500" data-featured="true" data-vip="true" data-vvip="false">
+          <div class="plan-card" data-plan="vip" data-price="1500">
             <div class="badge">Popular</div>
             <h4>VIP</h4>
             <div class="price">KES 1500</div>
             <p>Stronger visibility with a premium weekly spot.</p>
           </div>
 
-          <div class="plan-card" data-plan="signature" data-price="3000" data-featured="true" data-vip="true" data-vvip="true">
+          <div class="plan-card" data-plan="signature" data-price="3000">
             <div class="badge">Top shelf</div>
             <h4>Signature</h4>
             <div class="price">KES 3000</div>
@@ -548,6 +548,17 @@
         </div>
 
         <input type="hidden" id="profile_id" />
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password" placeholder="Create password (min 6 chars)" />
+          </div>
+        </div>
 
         <div class="grid-2">
           <div class="field">
@@ -695,7 +706,7 @@
     const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
     const SUPABASE_BUCKET = "profile-images";
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let uploadedImageUrl = null;
 
     function byId(id) {
@@ -724,11 +735,6 @@
     function textValue(id) {
       const el = byId(id);
       return el ? String(el.value || "").trim() : "";
-    }
-
-    function nullableText(value) {
-      const v = String(value ?? "").trim();
-      return v === "" ? null : v;
     }
 
     function nullableInt(value) {
@@ -787,6 +793,96 @@
       }
     }
 
+    async function signUpOrSignInUser() {
+      const email = textValue("email");
+      const password = textValue("password");
+
+      if (!email) throw new Error("Email is required.");
+      if (!password || password.length < 6) {
+        throw new Error("Password must be at least 6 characters.");
+      }
+
+      const { data: signUpData, error: signUpError } = await sb.auth.signUp({
+        email,
+        password
+      });
+
+      if (!signUpError && signUpData?.user) {
+        if (signUpData.session) return signUpData.user;
+
+        const { data: signInAfterSignup, error: signInAfterSignupError } =
+          await sb.auth.signInWithPassword({ email, password });
+
+        if (signInAfterSignupError || !signInAfterSignup?.user) {
+          throw new Error(
+            signInAfterSignupError?.message ||
+            "Account created, but auto-login failed."
+          );
+        }
+
+        return signInAfterSignup.user;
+      }
+
+      const { data: signInData, error: signInError } =
+        await sb.auth.signInWithPassword({ email, password });
+
+      if (signInError || !signInData?.user) {
+        throw new Error(
+          signUpError?.message ||
+          signInError?.message ||
+          "Auth failed"
+        );
+      }
+
+      return signInData.user;
+    }
+
+    async function enqueueWhatsAppMessage(payload) {
+      const res = await fetch("/.netlify/functions/whatsapp-enqueue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to enqueue WhatsApp message");
+      }
+      return data;
+    }
+
+    function buildProfilesPayload(ownerUserId = null) {
+      const name = textValue("name");
+      const phone = normalizePhone(textValue("phone"));
+      const location = textValue("location");
+      const bio = textValue("bio");
+      const age = nullableInt(textValue("age"));
+      const category = textValue("plan") || "vip";
+      const pricePerWeek = nullableInt(textValue("amount"));
+      const slug = textValue("slug") || slugify(name);
+      const flags = planFlags(category);
+
+      return {
+        owner_user_id: ownerUserId,
+        stage_name: name || null,
+        username: slug || null,
+        bio: bio || null,
+        age: age,
+        location: location || null,
+        phone: phone || null,
+        whatsapp: phone || null,
+        category: category || null,
+        price_per_week: pricePerWeek,
+        payment_status: "pending",
+        is_active: false,
+        is_featured: flags.is_featured,
+        is_vip: flags.is_vip,
+        is_vvip: flags.is_vvip,
+        profile_image_url: uploadedImageUrl,
+        updated_at: new Date().toISOString()
+      };
+    }
+
     async function uploadImageOnly() {
       try {
         setStatus("image", "uploading");
@@ -797,14 +893,14 @@
         const ext = file.name.split(".").pop();
         const fileName = `${Date.now()}-${slugify(textValue("name") || "profile")}.${ext}`;
 
-        const { error: uploadError } = await supabase
+        const { error: uploadError } = await sb
           .storage
           .from(SUPABASE_BUCKET)
           .upload(fileName, file, { upsert: true });
 
         if (uploadError) throw uploadError;
 
-        const { data } = supabase
+        const { data } = sb
           .storage
           .from(SUPABASE_BUCKET)
           .getPublicUrl(fileName);
@@ -821,54 +917,12 @@
       }
     }
 
-    function buildProfilesPayload() {
-      const name = textValue("name");
-      const phone = normalizePhone(textValue("phone"));
-      const whatsappName = textValue("whatsapp_name");
-      const location = textValue("location");
-      const bio = textValue("bio");
-      const age = nullableInt(textValue("age"));
-      const category = textValue("plan") || "vip";
-      const pricePerWeek = nullableInt(textValue("amount"));
-      const slug = textValue("slug") || slugify(name);
-      const flags = planFlags(category);
-
-      return {
-        stage_name: name || null,
-        username: slug || null,
-        bio: bio || null,
-        age: age,
-        location: location || null,
-        phone: phone || null,
-        whatsapp: phone || null,
-        category: category || null,
-        badge: null,
-        price_per_week: pricePerWeek,
-        is_active: false,
-        is_featured: flags.is_featured,
-        is_vip: flags.is_vip,
-        is_vvip: flags.is_vvip,
-        profile_image_url: uploadedImageUrl,
-        cover_image_url: null,
-        image_position: "center 20%",
-        image_position_x: 50,
-        image_position_y: 50,
-        object_fit: "cover",
-        sort_order: 0,
-        likes_count: 0,
-        views_count: 0,
-        instagram_url: null,
-        tiktok_url: null,
-        telegram_url: null,
-        updated_at: new Date().toISOString()
-      };
-    }
-
     async function saveProfileDraft() {
       try {
         setStatus("profile", "saving");
 
-        const payload = buildProfilesPayload();
+        const user = await signUpOrSignInUser();
+        const payload = buildProfilesPayload(user.id);
 
         if (!payload.stage_name) throw new Error("Display name is required.");
         if (!payload.phone) throw new Error("Phone is required.");
@@ -880,14 +934,14 @@
         let result, error;
 
         if (profileId) {
-          ({ data: result, error } = await supabase
+          ({ data: result, error } = await sb
             .from("profiles")
             .update(payload)
             .eq("id", profileId)
             .select()
             .single());
         } else {
-          ({ data: result, error } = await supabase
+          ({ data: result, error } = await sb
             .from("profiles")
             .insert([payload])
             .select()
@@ -900,6 +954,26 @@
 
         setStatus("profile", "saved");
         setMessage(`Draft saved. Profile ID: ${result.id}`, "success");
+
+        try {
+          if (byId("send_onboarding")?.checked) {
+            await enqueueWhatsAppMessage({
+              profile_id: result.id,
+              phone: payload.whatsapp || payload.phone,
+              template: "welcome",
+              message: `Hi ${payload.stage_name || "there"}, welcome to Nairobi Sweets. Complete payment to go live.`,
+              meta: {
+                owner_user_id: user.id,
+                email: textValue("email")
+              }
+            });
+            setStatus("onboarding", "queued");
+          }
+        } catch (waErr) {
+          console.error("Welcome queue error:", waErr);
+          setStatus("onboarding", "failed");
+        }
+
         return result;
       } catch (err) {
         console.error("PROFILE SAVE ERROR:", err);
@@ -913,13 +987,21 @@
       await saveProfileDraft();
     }
 
+    function redirectToDashboard(profileId = null) {
+      const url = profileId
+        ? `/user-dashboard.html?profile_id=${encodeURIComponent(profileId)}`
+        : `/user-dashboard.html`;
+
+      window.location.href = url;
+    }
+
     async function createProfileAndPay() {
       try {
         const profile = await saveProfileDraft();
         setStatus("payment", "sending");
 
         const paymentPayload = {
-          profile_id: profile?.id ? Number(profile.id) : null,
+          profile_id: profile?.id || null,
           phone: normalizePhone(textValue("phone")),
           amount: nullableInt(textValue("amount")),
           name: textValue("name"),
@@ -944,7 +1026,14 @@
         }
 
         setStatus("payment", "sent");
-        setMessage(data.customerMessage || "STK push sent. Check your phone.", "success");
+        setMessage(
+          data.customerMessage || "STK push sent. Check your phone. Redirecting to your dashboard...",
+          "success"
+        );
+
+        setTimeout(() => {
+          redirectToDashboard(profile?.id || null);
+        }, 1800);
       } catch (err) {
         console.error(err);
         setStatus("payment", "failed");
@@ -962,13 +1051,15 @@
       });
     });
 
-    ["name","phone","whatsapp_name","reminder_schedule","location","age","plan","amount","slug","bio","profile_image"]
-      .forEach((id) => {
-        const el = byId(id);
-        if (!el) return;
-        el.addEventListener("input", refreshPreview);
-        el.addEventListener("change", refreshPreview);
-      });
+    [
+      "email","password","name","phone","whatsapp_name","reminder_schedule",
+      "location","age","plan","amount","slug","bio","profile_image"
+    ].forEach((id) => {
+      const el = byId(id);
+      if (!el) return;
+      el.addEventListener("input", refreshPreview);
+      el.addEventListener("change", refreshPreview);
+    });
 
     refreshPreview();
   </script>
