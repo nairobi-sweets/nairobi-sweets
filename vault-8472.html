@@ -2,2062 +2,943 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nairobi Sweets Next Level Vault</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nairobi Sweets | Vault</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root {
-      --bg: #050815;
-      --bg2: #09112a;
-      --panel: rgba(14, 22, 48, 0.96);
-      --panel-2: rgba(20, 31, 66, 0.98);
-      --line: rgba(255,255,255,0.08);
-      --text: #eef3ff;
-      --muted: #9ca7cf;
-      --gold: #ffd54a;
-      --pink: #ff4db7;
-      --green: #42d67e;
-      --blue: #33b6ff;
-      --red: #ff6478;
-      --orange: #ffb648;
-      --shadow: 0 18px 45px rgba(0,0,0,0.34);
-      --radius: 18px;
+    :root{
+      --bg:#050816;
+      --panel:#12204b;
+      --line:rgba(255,255,255,.08);
+      --text:#f7f8ff;
+      --muted:#a8b1d1;
+      --gold:#ffd54a;
+      --blue:#49b8ff;
+      --green:#27d17b;
+      --danger:#ff5d7f;
+      --radius:20px;
     }
 
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(88, 23, 136, 0.35), transparent 28%),
-        radial-gradient(circle at 85% 10%, rgba(9, 128, 255, 0.18), transparent 22%),
-        linear-gradient(180deg, #050816, #040612 60%, #03040d 100%);
-      color: var(--text);
-      font-family: Inter, Arial, sans-serif;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
     }
 
-    body { padding: 20px; }
-    .app { max-width: 1700px; margin: 0 auto; }
-
-    .shell {
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 18px;
+    .wrap{max-width:1280px;margin:auto;padding:20px}
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:18px;
+      margin-bottom:16px;
     }
 
-    .panel {
-      background: linear-gradient(180deg, var(--panel), var(--panel-2));
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
     }
 
-    .pad { padding: 18px; }
-    .muted { color: var(--muted); }
-    .tiny { font-size: 12px; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .hidden { display: none !important; }
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .btn-gold{background:var(--gold);color:#111;}
+    .btn-blue{background:var(--blue);color:#08111f;}
+    .btn-muted{background:rgba(255,255,255,.08);color:#fff;}
+    .btn-danger{background:var(--danger);color:#fff;}
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 18px;
-      padding: 16px 18px;
-      position: sticky;
-      top: 12px;
-      z-index: 20;
-      backdrop-filter: blur(12px);
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
     }
 
-    .brand { display: flex; flex-direction: column; gap: 4px; }
-    .brand h1 { margin: 0; font-size: 26px; }
-    .brand p { margin: 0; color: var(--muted); font-size: 13px; }
-
-    .top-actions, .row, .button-row, .chip-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
+    .stat{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
     }
 
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .section-title h2, .section-title h3 { margin: 0; }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
+    .stat .k{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:8px;
     }
 
-    .stat {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: rgba(255,255,255,0.035);
-      padding: 14px;
-    }
-    .stat .label { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
-    .stat .value { font-size: 28px; font-weight: 800; }
-
-    .sidebar {
-      position: sticky;
-      top: 92px;
-      align-self: start;
+    .stat .v{
+      font-size:24px;
+      font-weight:900;
     }
 
-    .nav-btn, .btn {
-      appearance: none;
-      border: 0;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-weight: 800;
-      font-size: 14px;
-      cursor: pointer;
-      transition: transform .12s ease, filter .12s ease, opacity .12s ease;
-    }
-    .nav-btn:hover, .btn:hover { transform: translateY(-1px); filter: brightness(1.04); }
-    .nav-btn.active { background: var(--gold); color: #1a1200; }
-    .nav-btn { width: 100%; text-align: left; background: rgba(255,255,255,0.05); color: var(--text); }
-
-    .btn-primary { background: var(--gold); color: #1a1200; }
-    .btn-secondary { background: #2a355e; color: var(--text); }
-    .btn-green { background: var(--green); color: #07160e; }
-    .btn-blue { background: var(--blue); color: #05131b; }
-    .btn-danger { background: var(--red); color: white; }
-    .btn-orange { background: var(--orange); color: #1f0f00; }
-
-    label {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 6px;
-      color: #d8def7;
-      font-weight: 700;
+    .grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:16px;
     }
 
-    input, select, textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 15px;
-      outline: none;
+    input, textarea, select{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:#fff;
+      margin-bottom:10px;
     }
 
-    input:focus, select:focus, textarea:focus {
-      border-color: rgba(255,213,74,.85);
-      box-shadow: 0 0 0 3px rgba(255,213,74,0.12);
+    textarea{min-height:110px;resize:vertical}
+
+    table{
+      width:100%;
+      border-collapse:collapse;
     }
 
-    textarea { min-height: 84px; resize: vertical; }
-    .grid-2, .grid-3, .toolbar, .quick-grid { display: grid; gap: 12px; }
-    .grid-2 { grid-template-columns: 1fr 1fr; }
-    .grid-3 { grid-template-columns: repeat(3, 1fr); }
-    .quick-grid { grid-template-columns: repeat(5, 1fr); }
-    .toolbar { grid-template-columns: 1.2fr .8fr .8fr .8fr auto auto; margin-bottom: 14px; }
-
-    .notice {
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      font-size: 14px;
-      line-height: 1.4;
-    }
-    .info { background: rgba(51,182,255,0.08); color: #d5f2ff; }
-    .success { background: rgba(66,214,126,0.09); color: #dfffea; }
-    .warn { background: rgba(255,182,72,0.10); color: #ffe4bf; }
-    .error { background: rgba(255,100,120,0.10); color: #ffd9df; }
-
-    .chip {
-      border-radius: 999px;
-      padding: 7px 11px;
-      font-size: 12px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-    .c-vip { background: var(--gold); color: #1a1200; }
-    .c-featured { background: var(--pink); color: #fff; }
-    .c-verified { background: var(--green); color: #06140d; }
-    .c-online { background: var(--blue); color: #07131d; }
-    .c-active { background: #2b3255; color: #fff; }
-    .c-paid { background: rgba(66,214,126,0.15); color: #92ffba; }
-    .c-unpaid { background: rgba(255,100,120,0.14); color: #ffbcc6; }
-    .c-pending { background: rgba(255,182,72,0.15); color: #ffd08c; }
-
-    .preview-card {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: rgba(255,255,255,0.03);
-      overflow: hidden;
-    }
-    .preview-image {
-      width: 100%;
-      height: 360px;
-      object-fit: cover;
-      object-position: center 20%;
-      display: block;
-      background: #09112a;
-    }
-    .preview-meta { padding: 14px; display: grid; gap: 8px; }
-    .preview-meta strong { font-size: 19px; }
-
-    .table-wrap { overflow: auto; }
-    table { width: 100%; min-width: 1340px; border-collapse: collapse; }
-    thead th {
-      text-align: left;
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      padding: 14px 12px;
-      border-bottom: 1px solid var(--line);
-      position: sticky;
-      top: 0;
-      background: #101936;
-      z-index: 2;
-    }
-    tbody td {
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      vertical-align: top;
-      font-size: 14px;
-    }
-    tbody tr:hover { background: rgba(255,255,255,0.03); }
-
-    .member-cell { display: flex; gap: 12px; }
-    .thumb {
-      width: 58px;
-      height: 76px;
-      border-radius: 12px;
-      object-fit: cover;
-      background: #12192f;
-      border: 1px solid rgba(255,255,255,0.08);
-      flex: 0 0 auto;
-    }
-    .member-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
-
-    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-    .tab-btn {
-      appearance: none;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-    .tab-btn.active { background: var(--gold); color: #1a1200; }
-
-    .view { display: none; }
-    .view.active { display: block; }
-
-    .queue-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    .queue-card {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 14px;
-      background: rgba(255,255,255,0.03);
+    th, td{
+      text-align:left;
+      padding:10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      font-size:14px;
     }
 
-    .auth-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(3, 7, 18, 0.78);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 18px;
-    }
-    .auth-card {
-      width: 100%;
-      max-width: 480px;
-      border-radius: 24px;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, #111938, #0b1128);
-      box-shadow: var(--shadow);
-      padding: 22px;
-    }
-    .auth-card h2 { margin: 0 0 6px; }
-    .auth-card p { margin: 0 0 16px; color: var(--muted); }
+    .muted{color:var(--muted)}
 
-    .loader {
-      display: inline-block;
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.28);
-      border-top-color: white;
-      animation: spin .8s linear infinite;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    @media (max-width: 1280px) {
-      .shell { grid-template-columns: 1fr; }
-      .sidebar { position: static; }
-      .stat-grid { grid-template-columns: repeat(2, 1fr); }
-      .queue-grid { grid-template-columns: 1fr; }
+    .profile-list{
+      display:grid;
+      gap:10px;
+      max-height:700px;
+      overflow:auto;
     }
 
-    @media (max-width: 860px) {
-      body { padding: 12px; }
-      .topbar { position: static; }
-      .grid-2, .grid-3, .toolbar, .quick-grid, .stat-grid { grid-template-columns: 1fr; }
-      .button-row, .top-actions { flex-direction: column; align-items: stretch; }
-      .btn { width: 100%; }
+    .profile-card{
+      display:grid;
+      grid-template-columns:72px 1fr auto;
+      gap:12px;
+      align-items:center;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      border-radius:16px;
+      padding:12px;
+      cursor:pointer;
+    }
+
+    .profile-card img{
+      width:72px;
+      height:72px;
+      border-radius:14px;
+      object-fit:cover;
+      background:#0a1231;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      background:rgba(255,255,255,.08);
+    }
+
+    .slot-card{
+      display:grid;
+      grid-template-columns:80px 1fr auto;
+      gap:14px;
+      align-items:center;
+      padding:12px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      cursor:grab;
+      margin-bottom:10px;
+    }
+
+    .slot-card.dragging{
+      opacity:.55;
+      transform:scale(.98);
+    }
+
+    .slot-thumb{
+      width:80px;
+      height:80px;
+      border-radius:14px;
+      object-fit:cover;
+      background:#0c1430;
+    }
+
+    .slot-meta h4{
+      margin:0 0 6px;
+      font-size:17px;
+    }
+
+    .slot-meta p{
+      margin:0;
+      color:#9ea8cb;
+      font-size:13px;
+    }
+
+    .slot-actions{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:8px;
+    }
+
+    .slot-badge{
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      background:rgba(255,213,74,.14);
+      color:#ffe07d;
+    }
+
+    .slot-small-btn{
+      border:none;
+      border-radius:10px;
+      padding:8px 10px;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+      background:rgba(255,255,255,.08);
+      color:#fff;
+    }
+
+    .preview{
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      background:rgba(255,255,255,.04);
+    }
+
+    .preview img{
+      width:100%;
+      height:260px;
+      object-fit:cover;
+      background:#0b1230;
+    }
+
+    .preview-body{padding:14px}
+
+    @media (max-width:1000px){
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:640px){
+      .stats{grid-template-columns:1fr}
+      .profile-card{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
-  <div id="authModal" class="auth-modal hidden">
-    <div class="auth-card">
-      <h2>Admin login</h2>
-      <p>Use the owner/admin account allowed by your Supabase policies.</p>
-      <div class="grid-2">
-        <div style="grid-column: 1 / -1;">
-          <label for="loginEmail">Email</label>
-          <input id="loginEmail" type="email" placeholder="admin@example.com" />
-        </div>
-        <div style="grid-column: 1 / -1;">
-          <label for="loginPassword">Password</label>
-          <input id="loginPassword" type="password" placeholder="Password" />
-        </div>
-      </div>
-      <div class="button-row" style="margin-top: 14px;">
-        <button id="loginBtn" class="btn btn-primary">Sign in</button>
-        <button id="closeLoginBtn" class="btn btn-secondary">Close</button>
-      </div>
-      <div id="loginMessage" class="notice info hidden"></div>
+<div class="wrap">
+
+  <div class="panel topbar">
+    <div>
+      <h1 style="margin:0;">Vault</h1>
+      <div class="muted">Admin dashboard for profiles, payments, trends, and homepage control.</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-blue" onclick="refreshAll()">Refresh all</button>
+      <button class="btn btn-muted" onclick="logout()">Logout</button>
     </div>
   </div>
 
-  <div class="app">
-    <div class="topbar panel">
-      <div class="brand">
-        <h1>Nairobi Sweets Next Level Vault</h1>
-        <p>Profiles, payouts, approval queue, quick activation, search, stats, and calmer save flows.</p>
+  <div class="stats panel">
+    <div class="stat"><div class="k">Total profiles</div><div class="v" id="stat_total_profiles">0</div></div>
+    <div class="stat"><div class="k">Active profiles</div><div class="v" id="stat_active_profiles">0</div></div>
+    <div class="stat"><div class="k">Pending payments</div><div class="v" id="stat_pending_payments">0</div></div>
+    <div class="stat"><div class="k">Paid</div><div class="v" id="stat_paid">0</div></div>
+    <div class="stat"><div class="k">Revenue this week</div><div class="v" id="stat_revenue_week">KES 0</div></div>
+
+    <div class="stat"><div class="k">Expiring soon</div><div class="v" id="stat_expiring_soon">0</div></div>
+    <div class="stat"><div class="k">Failed payments</div><div class="v" id="stat_failed">0</div></div>
+    <div class="stat"><div class="k">WA pending</div><div class="v" id="stat_wa_pending">0</div></div>
+    <div class="stat"><div class="k">WA sent</div><div class="v" id="stat_wa_sent">0</div></div>
+    <div class="stat"><div class="k">WA failed</div><div class="v" id="stat_wa_failed">0</div></div>
+  </div>
+
+  <div class="stats panel">
+    <div class="stat"><div class="k">Profile views</div><div class="v" id="stat_profile_views">0</div></div>
+    <div class="stat"><div class="k">WhatsApp clicks</div><div class="v" id="stat_whatsapp_clicks">0</div></div>
+    <div class="stat"><div class="k">Profile opens</div><div class="v" id="stat_profile_opens">0</div></div>
+    <div class="stat"><div class="k">Renew clicks</div><div class="v" id="stat_renew_clicks">0</div></div>
+    <div class="stat"><div class="k">Tracked top profiles</div><div class="v" id="stat_tracked_profiles">0</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;">
+        <h3 style="margin:0;">Profiles</h3>
+        <input id="profile_search" placeholder="Search name, username, phone..." style="max-width:280px;margin:0;" oninput="renderProfileList()" />
       </div>
-      <div class="top-actions">
-        <span id="sessionLabel" class="muted tiny">Checking session…</span>
-        <button id="openLoginBtn" class="btn btn-secondary">Login</button>
-        <button id="logoutBtn" class="btn btn-danger hidden">Logout</button>
-      </div>
+      <div id="profile_list" class="profile-list" style="margin-top:14px;"></div>
     </div>
 
-    <div id="appMessage" class="notice info hidden"></div>
+    <div class="panel">
+      <h3 style="margin-top:0;">Edit profile</h3>
 
-    <div class="stat-grid">
-      <div class="stat panel"><div class="label">Total profiles</div><div class="value" id="statTotal">0</div></div>
-      <div class="stat panel"><div class="label">Active</div><div class="value" id="statActive">0</div></div>
-      <div class="stat panel"><div class="label">Pending payments</div><div class="value" id="statPending">0</div></div>
-      <div class="stat panel"><div class="label">Paid</div><div class="value" id="statPaid">0</div></div>
-      <div class="stat panel"><div class="label">Estimated weekly</div><div class="value" id="statRevenue">KES 0</div></div>
-      <div class="stat panel"><div class="label">Pending review</div><div class="value" id="statPendingReview">0</div></div>
-      <div class="stat panel"><div class="label">Approved</div><div class="value" id="statApproved">0</div></div>
-      <div class="stat panel"><div class="label">Rejected</div><div class="value" id="statRejected">0</div></div>
-    </div>
+      <input type="hidden" id="edit_id" />
 
-    <div class="shell">
-      <aside class="sidebar panel">
-        <div class="pad">
-          <div class="section-title">
-            <h3>Control deck</h3>
-            <span class="tiny muted">One-file vault</span>
-          </div>
+      <label>Name</label>
+      <input id="edit_stage_name" />
 
-          <div class="row" style="flex-direction: column; align-items: stretch;">
-            <button class="nav-btn active" data-view="dashboardView">Dashboard</button>
-            <button class="nav-btn" data-view="editorView">Profile editor</button>
-            <button class="nav-btn" data-view="queueView">Approval queue</button>
-          </div>
+      <label>Username / slug</label>
+      <input id="edit_username" />
 
-          <div class="section-title" style="margin-top: 18px;"><h3>Quick actions</h3></div>
-          <div class="quick-grid">
-            <button id="quickNewVip" class="btn btn-primary">New VIP</button>
-            <button id="quickFeatured" class="btn btn-secondary">Featured</button>
-            <button id="quickTodayExpiry" class="btn btn-orange">Expiring</button>
-            <button id="quickRefresh" class="btn btn-green">Refresh</button>
-            <button id="quickAutofill" class="btn btn-blue">Auto Fill</button>
-          </div>
+      <label>Phone</label>
+      <input id="edit_phone" />
 
-          <div class="section-title" style="margin-top: 18px;"><h3>System</h3></div>
-          <div class="notice info">
-            <div><strong>Config</strong></div>
-            <div class="tiny mono" id="configStatus">Update Supabase config in script.</div>
-          </div>
-          <div class="notice warn">
-            <div><strong>Required tables</strong></div>
-            <div class="tiny">profiles and stk_push_payments</div>
-          </div>
+      <label>WhatsApp</label>
+      <input id="edit_whatsapp" />
+
+      <label>Location</label>
+      <input id="edit_location" />
+
+      <label>Age</label>
+      <input id="edit_age" type="number" />
+
+      <label>Plan</label>
+      <select id="edit_category">
+        <option value="featured">featured</option>
+        <option value="vip">vip</option>
+        <option value="signature">signature</option>
+      </select>
+
+      <label>Price per week</label>
+      <input id="edit_price_per_week" type="number" />
+
+      <label>Bio</label>
+      <textarea id="edit_bio"></textarea>
+
+      <label>Profile image URL</label>
+      <input id="edit_profile_image_url" />
+
+      <label>Homepage slot</label>
+      <input id="edit_homepage_slot" type="number" min="1" />
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <label><input type="checkbox" id="edit_is_active" /> Active</label>
+        <label><input type="checkbox" id="edit_force_featured" /> Force featured</label>
+        <label><input type="checkbox" id="edit_is_featured" /> Featured</label>
+        <label><input type="checkbox" id="edit_is_vip" /> VIP</label>
+        <label><input type="checkbox" id="edit_is_vvip" /> VVIP</label>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+        <button class="btn btn-gold" onclick="saveProfileEdits()">Save profile</button>
+        <button class="btn btn-danger" onclick="deactivateProfile()">Deactivate</button>
+      </div>
+
+      <div id="edit_message" class="muted" style="margin-top:12px;">Select a profile to edit.</div>
+
+      <div class="preview" style="margin-top:16px;">
+        <img id="edit_preview_image" src="" alt="Preview" />
+        <div class="preview-body">
+          <div id="edit_preview_name" style="font-size:20px;font-weight:900;">-</div>
+          <div id="edit_preview_meta" class="muted">-</div>
+          <div id="edit_preview_bio" style="margin-top:10px;">-</div>
         </div>
-      </aside>
-
-      <main>
-        <div class="view active" id="dashboardView">
-          <div class="panel pad">
-            <div class="section-title">
-              <h2>Live profiles</h2>
-              <span id="countLabel" class="muted tiny">0 loaded</span>
-            </div>
-
-            <div class="toolbar">
-              <input id="searchInput" placeholder="Search name, slug, location, phone…" />
-              <select id="filterPlan">
-                <option value="">All plans</option>
-                <option value="featured">featured</option>
-                <option value="vip">vip</option>
-                <option value="vvip">vvip</option>
-                <option value="signature">signature</option>
-              </select>
-              <select id="filterStatus">
-                <option value="">All status</option>
-                <option value="active">active</option>
-                <option value="inactive">inactive</option>
-                <option value="draft">draft</option>
-                <option value="hidden">hidden</option>
-              </select>
-              <select id="filterPayment">
-                <option value="">All payments</option>
-                <option value="paid">paid</option>
-                <option value="pending">pending</option>
-                <option value="unpaid">unpaid</option>
-              </select>
-              <select id="sortBy">
-                <option value="updated_desc">Newest updated</option>
-                <option value="created_desc">Newest created</option>
-                <option value="name_asc">Name A-Z</option>
-              </select>
-              <button id="refreshBtn" class="btn btn-green">Refresh</button>
-            </div>
-
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Member</th>
-                    <th>Location</th>
-                    <th>Plan</th>
-                    <th>Payment</th>
-                    <th>Activation</th>
-                    <th>Expiry</th>
-                    <th>Badges</th>
-                    <th>Updated</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="profilesTable"></tbody>
-              </table>
-            </div>
-            <div id="tableMessage" class="notice info hidden"></div>
-          </div>
-        </div>
-
-        <div class="view" id="editorView">
-          <div class="panel pad">
-            <div class="section-title">
-              <h2>Profile editor</h2>
-              <span id="editModeLabel" class="muted tiny">New profile</span>
-            </div>
-
-            <div class="grid-2">
-              <div>
-                <label for="name">Display name</label>
-                <input id="name" placeholder="Abigail" />
-              </div>
-              <div>
-                <label for="slug">Slug</label>
-                <input id="slug" placeholder="abigail" />
-              </div>
-            </div>
-
-            <div class="grid-3" style="margin-top: 12px;">
-              <div>
-                <label for="category">Plan</label>
-                <select id="category">
-                  <option value="featured">featured</option>
-                  <option value="vip">vip</option>
-                  <option value="vvip">vvip</option>
-                  <option value="signature">signature</option>
-                </select>
-              </div>
-              <div>
-                <label for="status">Status</label>
-                <select id="status">
-                  <option value="active">active</option>
-                  <option value="inactive">inactive</option>
-                  <option value="draft">draft</option>
-                  <option value="hidden">hidden</option>
-                </select>
-              </div>
-              <div>
-                <label for="payment_status">Payment</label>
-                <select id="payment_status">
-                  <option value="paid">paid</option>
-                  <option value="pending">pending</option>
-                  <option value="unpaid">unpaid</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="grid-3" style="margin-top: 12px;">
-              <div>
-                <label for="phone">Phone / WhatsApp</label>
-                <input id="phone" placeholder="0794..." />
-              </div>
-              <div>
-                <label for="location">Location</label>
-                <input id="location" placeholder="Nairobi, Rongai" />
-              </div>
-              <div>
-                <label for="expires_at">Expiry</label>
-                <input id="expires_at" type="datetime-local" />
-              </div>
-            </div>
-
-            <div class="grid-3" style="margin-top: 12px;">
-              <div>
-                <label for="age">Age</label>
-                <input id="age" placeholder="23" />
-              </div>
-              <div>
-                <label for="rate_kses">Rate text</label>
-                <input id="rate_kses" placeholder="KES 1500/week" />
-              </div>
-              <div>
-                <label for="last_seen_at">Last seen</label>
-                <input id="last_seen_at" type="datetime-local" />
-              </div>
-            </div>
-
-            <div style="margin-top: 12px;">
-              <label for="bio">Bio</label>
-              <textarea id="bio" placeholder="Short profile description"></textarea>
-            </div>
-
-            <div class="grid-2" style="margin-top: 16px; align-items: start;">
-              <div>
-                <div class="preview-card">
-                  <img id="previewImage" class="preview-image" alt="Preview" />
-                  <div class="preview-meta">
-                    <strong id="previewName">Preview</strong>
-                    <span id="previewLocation" class="muted">No location yet</span>
-                    <div class="chip-row">
-                      <span class="chip c-vip">VIP</span>
-                      <span class="chip c-featured">Featured</span>
-                      <span class="chip c-verified">Verified</span>
-                      <span class="chip c-online">Online</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <div class="panel pad" style="background: rgba(255,255,255,0.03);">
-                  <div class="section-title">
-                    <h3>Upload & crop</h3>
-                    <span class="tiny mono">Bucket: <span id="bucketLabel">profile-images</span></span>
-                  </div>
-                  <input id="imageFile" type="file" accept="image/*" />
-                  <div style="margin-top: 12px;">
-                    <label for="image_position">Crop position</label>
-                    <input id="image_position" type="range" min="0" max="100" value="20" />
-                    <div class="tiny muted">Center position: <span id="cropLabel">20%</span></div>
-                  </div>
-                  <div class="button-row" style="margin-top: 12px;">
-                    <button id="uploadBtn" class="btn btn-blue">Upload image</button>
-                    <button id="saveCropBtn" class="btn btn-secondary">Save crop only</button>
-                  </div>
-                  <div id="uploadMessage" class="notice info hidden"></div>
-                </div>
-
-                <div class="panel pad" style="margin-top: 12px; background: rgba(255,255,255,0.03);">
-                  <div class="section-title">
-                    <h3>Activation controls</h3>
-                    <span class="tiny muted">One click moves</span>
-                  </div>
-                  <div class="button-row">
-                    <button id="activateWeekBtn" class="btn btn-primary">Activate 1 week</button>
-                    <button id="markPaidBtn" class="btn btn-green">Mark paid</button>
-                    <button id="markPendingBtn" class="btn btn-orange">Mark pending</button>
-                    <button id="deactivateBtn" class="btn btn-danger">Deactivate</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="button-row" style="margin-top: 16px;">
-              <button id="saveBtn" class="btn btn-primary">Save profile</button>
-              <button id="duplicateBtn" class="btn btn-secondary">Duplicate</button>
-              <button id="clearBtn" class="btn btn-secondary">Clear</button>
-              <button id="deleteBtn" class="btn btn-danger">Delete</button>
-            </div>
-            <div id="formMessage" class="notice info hidden"></div>
-          </div>
-        </div>
-
-        <div class="view" id="queueView">
-          <div class="panel pad">
-            <div class="section-title">
-              <h2>Profile approval queue</h2>
-              <span id="profileQueueCount" class="muted tiny">0 pending</span>
-            </div>
-            <div class="tabs">
-              <button class="tab-btn active" data-profile-queue-filter="pending">Pending</button>
-              <button class="tab-btn" data-profile-queue-filter="all">All</button>
-            </div>
-            <div class="queue-grid" id="profileQueueGrid"></div>
-            <div id="profileQueueMessage" class="notice info hidden"></div>
-          </div>
-
-          <div class="panel pad" style="margin-top: 16px;">
-            <div class="section-title">
-              <h2>Payment approval queue</h2>
-              <span id="queueCount" class="muted tiny">0 pending</span>
-            </div>
-            <div class="tabs">
-              <button class="tab-btn active" data-queue-filter="pending">Pending</button>
-              <button class="tab-btn" data-queue-filter="all">All</button>
-            </div>
-            <div class="queue-grid" id="queueGrid"></div>
-            <div id="queueMessage" class="notice info hidden"></div>
-          </div>
-        </div>
-      </main>
+      </div>
     </div>
   </div>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  <section class="panel">
+    <div style="padding:0;">
+      <h3 style="margin:0 0 14px;">Expiring soon</h3>
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Location</th>
+              <th>Plan</th>
+              <th>Payment</th>
+              <th>Days left</th>
+              <th>Expires</th>
+            </tr>
+          </thead>
+          <tbody id="expiring_profiles_tbody">
+            <tr><td colspan="6" class="muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
-    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+  <section class="panel">
+    <div style="padding:0;">
+      <h3 style="margin:0 0 14px;">Top performing profiles</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Plan</th>
+            <th>Views</th>
+            <th>Clicks</th>
+            <th>Opens</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard_admin_tbody">
+          <tr><td colspan="5" class="muted">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-    const PROFILES_TABLE = 'profiles';
-    const PAYMENTS_TABLE = 'stk_push_payments';
-    const STORAGE_BUCKET = 'profile-images';
-    const ADMIN_OWNER_ID = '6d3572d0-7486-4454-8e83-84a115262a93';
+  <section class="panel">
+    <div style="padding:0;">
+      <h3 style="margin:0 0 14px;">Top profiles by clicks</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Profile ID</th>
+            <th>Slug</th>
+            <th>WhatsApp clicks</th>
+            <th>Views</th>
+            <th>Opens</th>
+          </tr>
+        </thead>
+        <tbody id="top_profiles_clicks_tbody">
+          <tr><td colspan="5" class="muted">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-    const ENABLE_OWNER_CHECK = true;
-    const AUTO_SHOW_LOGIN = true;
-    const SAVE_TIMEOUT_MS = 20000;
-    const MAX_RETRIES = 2;
+  <section class="panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+      <div>
+        <h3 style="margin:0;">Homepage Slot Manager</h3>
+        <p style="margin:6px 0 0; color:#9ea8cb;">
+          Drag profiles to reorder featured homepage slots. Top item becomes slot 1.
+        </p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-muted" type="button" onclick="loadSlotManager()">Refresh</button>
+        <button class="btn btn-blue" type="button" onclick="clearAllHomepageSlots()">Clear slots</button>
+        <button class="btn btn-gold" type="button" onclick="saveHomepageSlots()">Save slot order</button>
+      </div>
+    </div>
 
-    const state = {
-      session: null,
-      profiles: [],
-      queue: [],
-      pendingProfiles: [],
-      currentId: null,
-      imageUrl: '',
-      imagePath: '',
-      queueMode: 'pending',
-      profileQueueMode: 'pending'
-    };
+    <div id="slot_manager_message" style="margin-top:12px; color:#9ea8cb;">Loading slot manager...</div>
+    <div id="slot_manager_list" style="margin-top:16px;"></div>
+  </section>
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+</div>
+
+<script>
+  const SUPABASE_URL = "YOUR_SUPABASE_URL";
+  const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let profilesCache = [];
+  let slotProfiles = [];
+
+  function byId(id){ return document.getElementById(id); }
+
+  function formatKes(value){
+    const n = Number(value || 0);
+    return `KES ${n.toLocaleString()}`;
+  }
+
+  function nullableInt(v){
+    const s = String(v ?? "").trim();
+    if (!s) return null;
+    const n = Number(s);
+    return Number.isInteger(n) ? n : null;
+  }
+
+  async function logout(){
+    await sb.auth.signOut();
+    window.location.href = "/login.html";
+  }
+
+  async function fetchSingleRow(viewName){
+    const { data, error } = await sb.from(viewName).select("*").single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function loadAnalyticsSummary(){
+    try{
+      const [profileSummary, revenueSummary, whatsappSummary] = await Promise.all([
+        fetchSingleRow("profile_status_summary"),
+        fetchSingleRow("revenue_summary"),
+        fetchSingleRow("whatsapp_queue_summary")
+      ]);
+
+      byId("stat_total_profiles").textContent = profileSummary.total_profiles ?? 0;
+      byId("stat_active_profiles").textContent = profileSummary.active_profiles ?? 0;
+      byId("stat_pending_payments").textContent = revenueSummary.pending_count ?? 0;
+      byId("stat_paid").textContent = revenueSummary.paid_count ?? 0;
+      byId("stat_revenue_week").textContent = formatKes(revenueSummary.revenue_this_week);
+      byId("stat_expiring_soon").textContent = profileSummary.expiring_soon_profiles ?? 0;
+      byId("stat_failed").textContent = revenueSummary.failed_count ?? 0;
+
+      byId("stat_wa_pending").textContent = whatsappSummary.pending_messages ?? 0;
+      byId("stat_wa_sent").textContent = whatsappSummary.sent_messages ?? 0;
+      byId("stat_wa_failed").textContent = whatsappSummary.failed_messages ?? 0;
+    }catch(err){
+      console.error("Analytics summary failed:", err);
+    }
+  }
+
+  async function loadEventAnalytics(){
+    try{
+      const { data: summary, error: summaryError } = await sb
+        .from("analytics_event_summary")
+        .select("*")
+        .single();
+
+      if (summaryError) throw summaryError;
+
+      const { data: topProfiles, error: topError } = await sb
+        .from("top_profiles_by_clicks")
+        .select("*")
+        .limit(10);
+
+      if (topError) throw topError;
+
+      byId("stat_profile_views").textContent = summary.profile_views ?? 0;
+      byId("stat_whatsapp_clicks").textContent = summary.whatsapp_clicks ?? 0;
+      byId("stat_profile_opens").textContent = summary.profile_opens ?? 0;
+      byId("stat_renew_clicks").textContent = summary.renew_clicks ?? 0;
+      byId("stat_tracked_profiles").textContent = topProfiles?.length ?? 0;
+
+      const tbody = byId("top_profiles_clicks_tbody");
+      tbody.innerHTML = topProfiles?.length
+        ? topProfiles.map(row => `
+          <tr>
+            <td>${row.profile_id ?? "-"}</td>
+            <td>${row.slug ?? "-"}</td>
+            <td>${row.whatsapp_clicks ?? 0}</td>
+            <td>${row.profile_views ?? 0}</td>
+            <td>${row.profile_opens ?? 0}</td>
+          </tr>
+        `).join("")
+        : `<tr><td colspan="5">No event data yet.</td></tr>`;
+    }catch(err){
+      console.error("Event analytics failed:", err);
+    }
+  }
+
+  async function loadExpiringProfiles(){
+    try{
+      const { data, error } = await sb
+        .from("expiring_profiles_view")
+        .select("*")
+        .lte("days_left", 7)
+        .order("expires_at", { ascending: true })
+        .limit(20);
+
+      if (error) throw error;
+
+      const tbody = byId("expiring_profiles_tbody");
+      tbody.innerHTML = !data || !data.length
+        ? `<tr><td colspan="6" class="muted">No expiring profiles found.</td></tr>`
+        : data.map(row => `
+            <tr>
+              <td>${row.stage_name || "-"}</td>
+              <td>${row.location || "-"}</td>
+              <td>${row.category || "-"}</td>
+              <td>${row.payment_status || "-"}</td>
+              <td>${row.days_left ?? "-"}</td>
+              <td>${row.expires_at ? new Date(row.expires_at).toLocaleString() : "-"}</td>
+            </tr>
+          `).join("");
+    }catch(err){
+      console.error("Expiring profiles load failed:", err);
+    }
+  }
+
+  async function loadAdminLeaderboard(){
+    try{
+      const { data, error } = await sb
+        .from("profile_leaderboard_7d")
+        .select("*")
+        .limit(10);
+
+      if (error) throw error;
+
+      const tbody = byId("leaderboard_admin_tbody");
+      tbody.innerHTML = !data || !data.length
+        ? `<tr><td colspan="5" class="muted">No leaderboard data yet.</td></tr>`
+        : data.map(row => `
+            <tr>
+              <td>${row.stage_name || "-"}</td>
+              <td>${row.category || "-"}</td>
+              <td>${row.profile_views ?? 0}</td>
+              <td>${row.whatsapp_clicks ?? 0}</td>
+              <td>${row.profile_opens ?? 0}</td>
+            </tr>
+          `).join("");
+    }catch(err){
+      console.error("Admin leaderboard failed:", err);
+    }
+  }
+
+  async function loadProfiles(){
+    try{
+      const { data, error } = await sb
+        .from("profiles")
+        .select("*")
+        .order("updated_at", { ascending:false })
+        .limit(200);
+
+      if (error) throw error;
+      profilesCache = data || [];
+      renderProfileList();
+    }catch(err){
+      console.error("Load profiles failed:", err);
+    }
+  }
+
+  function renderProfileList(){
+    const q = (byId("profile_search").value || "").toLowerCase().trim();
+    const list = byId("profile_list");
+
+    const filtered = profilesCache.filter(p => {
+      if (!q) return true;
+      return [
+        p.stage_name,
+        p.username,
+        p.phone,
+        p.whatsapp,
+        p.location,
+        p.category
+      ].some(v => String(v || "").toLowerCase().includes(q));
     });
 
-    const $ = id => document.getElementById(id);
-    const appMessage = $('appMessage');
-    const formMessage = $('formMessage');
-    const uploadMessage = $('uploadMessage');
-    const tableMessage = $('tableMessage');
-    const queueMessage = $('queueMessage');
-    const profileQueueMessage = $('profileQueueMessage');
-    const loginMessage = $('loginMessage');
-
-    const fields = {
-      name: $('name'), slug: $('slug'), category: $('category'), status: $('status'), payment_status: $('payment_status'),
-      phone: $('phone'), location: $('location'), expires_at: $('expires_at'), age: $('age'), rate_kses: $('rate_kses'),
-      last_seen_at: $('last_seen_at'), bio: $('bio'), image_position: $('image_position')
-    };
-
-    function showMessage(node, type, text) {
-      node.className = `notice ${type}`;
-      node.textContent = text;
-      node.classList.remove('hidden');
-    }
-    function hideMessage(node) {
-      node.classList.add('hidden');
-      node.textContent = '';
-    }
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-    }
-    function slugify(text) {
-      return String(text || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    }
-    function pad(n) { return String(n).padStart(2, '0'); }
-    function toLocalInputValue(value) {
-      if (!value) return '';
-      const d = new Date(value);
-      if (Number.isNaN(d.getTime())) return '';
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    }
-    function fromLocalInputValue(value) {
-      if (!value) return null;
-      const d = new Date(value);
-      return Number.isNaN(d.getTime()) ? null : d.toISOString();
-    }
-    function addDaysISO(days) {
-      const d = new Date();
-      d.setDate(d.getDate() + days);
-      return d.toISOString();
-    }
-    function priceForPlan(plan) {
-      switch ((plan || '').toLowerCase()) {
-        case 'featured': return 1000;
-        case 'vip': return 1500;
-        case 'vvip':
-        case 'signature': return 3000;
-        default: return 0;
-      }
-    }
-    function priceText(plan) {
-      const amount = priceForPlan(plan);
-      return amount ? `KES ${amount}/week` : 'KES 0';
+    if (!filtered.length){
+      list.innerHTML = `<div class="muted">No profiles found.</div>`;
+      return;
     }
 
-    function getProfileName(profile = {}) {
-      return profile.name || profile.username || profile.display_name || profile.full_name || profile.title || profile.alias || profile.nickname || profile.slug || (profile.phone ? `Profile ${String(profile.phone).slice(-4)}` : '') || 'Profile';
-    }
+    list.innerHTML = filtered.map(p => `
+      <div class="profile-card" onclick='fillEditor(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
+        <img src="${p.profile_image_url || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"}" alt="${p.stage_name || "Profile"}" />
+        <div>
+          <div style="font-size:18px;font-weight:900;">${p.stage_name || "-"}</div>
+          <div class="muted">${p.location || "-"} · ${p.category || "-"} · ${p.payment_status || "pending"}</div>
+        </div>
+        <div>
+          <span class="badge">${p.is_active ? "active" : "inactive"}</span>
+        </div>
+      </div>
+    `).join("");
+  }
 
-    function getProfilePhone(profile = {}) {
-      return profile.phone || profile.whatsapp || profile.phone_number || '';
-    }
+  function fillEditor(profile){
+    byId("edit_id").value = profile.id ?? "";
+    byId("edit_stage_name").value = profile.stage_name || "";
+    byId("edit_username").value = profile.username || "";
+    byId("edit_phone").value = profile.phone || "";
+    byId("edit_whatsapp").value = profile.whatsapp || "";
+    byId("edit_location").value = profile.location || "";
+    byId("edit_age").value = profile.age ?? "";
+    byId("edit_category").value = profile.category || "featured";
+    byId("edit_price_per_week").value = profile.price_per_week ?? "";
+    byId("edit_bio").value = profile.bio || "";
+    byId("edit_profile_image_url").value = profile.profile_image_url || "";
+    byId("edit_homepage_slot").value = profile.homepage_slot ?? "";
+    byId("edit_is_active").checked = !!profile.is_active;
+    byId("edit_force_featured").checked = !!profile.force_featured;
+    byId("edit_is_featured").checked = !!profile.is_featured;
+    byId("edit_is_vip").checked = !!profile.is_vip;
+    byId("edit_is_vvip").checked = !!profile.is_vvip;
 
-    function getProfileSlug(profile = {}) {
-      return profile.slug || slugify(getProfileName(profile)) || (profile.id ? `profile-${profile.id}` : 'profile');
-    }
+    byId("edit_preview_image").src = profile.profile_image_url || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop";
+    byId("edit_preview_name").textContent = profile.stage_name || "-";
+    byId("edit_preview_meta").textContent = `${profile.location || "-"} · ${profile.category || "-"} · ${profile.payment_status || "pending"}`;
+    byId("edit_preview_bio").textContent = profile.bio || "-";
+    byId("edit_message").textContent = `Editing profile ${profile.stage_name || profile.id}`;
+  }
 
-    function getProfileImageUrl(profile = {}) {
-      return profile.image_url || profile.avatar_url || profile.photo_url || profile.profile_image || profile.profile_picture || profile.image || profile.photo || profile.picture || profile.thumbnail_url || (profile.image_path ? `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${profile.image_path}` : '') || '';
-    }
+  async function saveProfileEdits(){
+    try{
+      const id = byId("edit_id").value;
+      if (!id) throw new Error("Select a profile first.");
 
-    function normalizeProfile(profile = {}) {
-      const normalized = { ...profile };
-
-      const rawCategory = String(
-        normalized.category ||
-        normalized.plan ||
-        normalized.plan_name ||
-        ''
-      ).trim().toLowerCase();
-
-      let resolvedCategory = rawCategory;
-      if (rawCategory === 'signature' || rawCategory === 'vvip') resolvedCategory = 'vvip';
-      else if (rawCategory === 'featured') resolvedCategory = 'featured';
-      else if (rawCategory === 'vip') resolvedCategory = 'vip';
-      else if (normalized.is_vvip) resolvedCategory = 'vvip';
-      else if (normalized.is_vip) resolvedCategory = 'vip';
-      else if (normalized.is_featured) resolvedCategory = 'featured';
-      else resolvedCategory = 'vip';
-
-      normalized.name = getProfileName(profile);
-      normalized.username = normalized.username || normalized.name;
-      normalized.slug = getProfileSlug(profile);
-      normalized.phone = getProfilePhone(profile);
-      normalized.whatsapp = normalized.whatsapp || normalized.phone || '';
-      normalized.image_url = getProfileImageUrl(profile);
-      normalized.avatar_url = normalized.avatar_url || normalized.image_url || null;
-
-      normalized.category = resolvedCategory;
-      normalized.plan = normalized.plan || resolvedCategory;
-
-      normalized.is_vip = Boolean(
-        normalized.is_vip ??
-        resolvedCategory === 'vip'
-      );
-
-      normalized.is_vvip = Boolean(
-        normalized.is_vvip ??
-        resolvedCategory === 'vvip'
-      );
-
-      normalized.is_featured = Boolean(
-        normalized.is_featured ??
-        resolvedCategory === 'featured'
-      );
-
-      normalized.is_verified = Boolean(
-        normalized.is_verified ??
-        normalized.verified ??
-        Boolean(normalized.image_url)
-      );
-
-      normalized.is_online = Boolean(
-        normalized.is_online ??
-        normalized.online ??
-        String(normalized.status || '').toLowerCase() === 'active'
-      );
-
-      normalized.featured = Boolean(
-        normalized.featured ??
-        normalized.is_featured
-      );
-
-      normalized.verified = Boolean(
-        normalized.verified ??
-        normalized.is_verified
-      );
-
-      normalized.online = Boolean(
-        normalized.online ??
-        normalized.is_online
-      );
-
-      normalized.rate_kses =
-        normalized.rate_kses ||
-        normalized.rate_text ||
-        priceText(resolvedCategory);
-
-      normalized.payment_status =
-        normalized.payment_status ||
-        (String(normalized.status || '').toLowerCase() === 'active' ? 'paid' : 'unpaid');
-
-      normalized.status =
-        normalized.status ||
-        (normalized.is_online ? 'active' : 'pending');
-
-      normalized.bio =
-        normalized.bio ||
-        normalized.description ||
-        '';
-
-      normalized.location =
-        normalized.location ||
-        '';
-
-      normalized.age =
-        normalized.age ?? null;
-
-      normalized.image_position = (() => {
-        const v = normalized.image_position;
-        if (typeof v === 'number' && Number.isFinite(v)) return v;
-        if (typeof v === 'string') {
-          const match = v.match(/(\d+(?:\.\d+)?)%/);
-          if (match) return Number(match[1]);
-          const asNum = Number(v);
-          if (Number.isFinite(asNum)) return asNum;
-        }
-        return 20;
-      })();
-
-      normalized.last_seen_at = normalized.last_seen_at || null;
-      normalized.expires_at = normalized.expires_at || null;
-
-      return normalized;
-    }
-
-    function buildAutoFillPatch(profile = {}) {
-      const normalized = normalizeProfile(profile);
-      return {
-        id: profile.id,
-        name: normalized.name,
-        username: normalized.username,
-        slug: normalized.slug,
-        phone: normalized.phone,
-        whatsapp: normalized.whatsapp,
-        image_url: normalized.image_url || null,
-        avatar_url: normalized.image_url || null,
-        rate_kses: normalized.rate_kses,
-        payment_status: normalized.payment_status,
+      const payload = {
+        stage_name: byId("edit_stage_name").value.trim() || null,
+        username: byId("edit_username").value.trim() || null,
+        phone: byId("edit_phone").value.trim() || null,
+        whatsapp: byId("edit_whatsapp").value.trim() || null,
+        location: byId("edit_location").value.trim() || null,
+        age: nullableInt(byId("edit_age").value),
+        category: byId("edit_category").value || null,
+        price_per_week: nullableInt(byId("edit_price_per_week").value),
+        bio: byId("edit_bio").value.trim() || null,
+        profile_image_url: byId("edit_profile_image_url").value.trim() || null,
+        homepage_slot: nullableInt(byId("edit_homepage_slot").value),
+        is_active: byId("edit_is_active").checked,
+        force_featured: byId("edit_force_featured").checked,
+        is_featured: byId("edit_is_featured").checked,
+        is_vip: byId("edit_is_vip").checked,
+        is_vvip: byId("edit_is_vvip").checked,
         updated_at: new Date().toISOString()
       };
+
+      const { error } = await sb.from("profiles").update(payload).eq("id", id);
+      if (error) throw error;
+
+      byId("edit_message").textContent = "Profile saved successfully.";
+      await loadProfiles();
+      await loadSlotManager();
+    }catch(err){
+      console.error(err);
+      byId("edit_message").textContent = err.message || "Save failed.";
     }
-    function planChip(plan) {
-      return `<span class="chip c-vip">${escapeHtml(String(plan || 'vip').toUpperCase())}</span>`;
+  }
+
+  async function deactivateProfile(){
+    try{
+      const id = byId("edit_id").value;
+      if (!id) throw new Error("Select a profile first.");
+
+      const { error } = await sb
+        .from("profiles")
+        .update({ is_active:false, updated_at:new Date().toISOString() })
+        .eq("id", id);
+
+      if (error) throw error;
+
+      byId("edit_message").textContent = "Profile deactivated.";
+      await loadProfiles();
+    }catch(err){
+      console.error(err);
+      byId("edit_message").textContent = err.message || "Deactivate failed.";
     }
-    function paymentChip(value) {
-      const v = String(value || '').toLowerCase();
-      if (v === 'paid') return '<span class="chip c-paid">Paid</span>';
-      if (v === 'pending') return '<span class="chip c-pending">Pending</span>';
-      return '<span class="chip c-unpaid">Unpaid</span>';
+  }
+
+  function slotMessage(text, isError = false){
+    const el = byId("slot_manager_message");
+    el.textContent = text;
+    el.style.color = isError ? "#ff9db2" : "#9ea8cb";
+  }
+
+  async function loadSlotManager(){
+    try{
+      slotMessage("Loading slot manager...");
+
+      const { data, error } = await sb
+        .from("homepage_ranked_profiles")
+        .select("id, stage_name, username, category, location, profile_image_url, homepage_slot, force_featured, trending_score")
+        .limit(30);
+
+      if (error) throw error;
+
+      slotProfiles = (data || []).map((row, index) => ({
+        ...row,
+        homepage_slot: row.homepage_slot ?? null,
+        local_order: row.homepage_slot ?? index + 1000
+      }));
+
+      slotProfiles.sort((a, b) => {
+        const aPinned = a.homepage_slot != null ? 0 : 1;
+        const bPinned = b.homepage_slot != null ? 0 : 1;
+        if (aPinned !== bPinned) return aPinned - bPinned;
+        if ((a.homepage_slot ?? 9999) !== (b.homepage_slot ?? 9999)) {
+          return (a.homepage_slot ?? 9999) - (b.homepage_slot ?? 9999);
+        }
+        return (b.trending_score ?? 0) - (a.trending_score ?? 0);
+      });
+
+      renderSlotManager();
+      slotMessage("Drag profiles to reorder homepage slots, then click Save slot order.");
+    }catch(err){
+      console.error("loadSlotManager failed:", err);
+      slotMessage("Failed to load slot manager.", true);
     }
-    function badgeHtml(profile) {
+  }
+
+  function renderSlotManager(){
+    const list = byId("slot_manager_list");
+    if (!slotProfiles.length){
+      list.innerHTML = `<div class="muted">No profiles found.</div>`;
+      return;
+    }
+
+    list.innerHTML = slotProfiles.map((profile, index) => {
+      const image = profile.profile_image_url || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop";
+      const slotNumber = index + 1;
+
       return `
-        <div class="chip-row">
-          ${planChip(profile.category || profile.plan)}
-          ${profile.featured ? '<span class="chip c-featured">Featured</span>' : ''}
-          ${profile.verified !== false ? '<span class="chip c-verified">Verified</span>' : ''}
-          ${profile.online ? '<span class="chip c-online">Online</span>' : ''}
-          <span class="chip c-active">${escapeHtml(profile.status || 'active')}</span>
+        <div class="slot-card"
+             draggable="true"
+             data-id="${profile.id}"
+             data-index="${index}">
+          <img class="slot-thumb" src="${image}" alt="${profile.stage_name || "Profile"}" />
+          <div class="slot-meta">
+            <h4>${profile.stage_name || "-"}</h4>
+            <p>${profile.location || "-"} · ${profile.category || "-"} · Trending ${profile.trending_score ?? 0}</p>
+          </div>
+          <div class="slot-actions">
+            <div class="slot-badge">Slot ${slotNumber}</div>
+            <button class="slot-small-btn" type="button" onclick="toggleForceFeatured('${profile.id}')">
+              ${profile.force_featured ? "Unfeature" : "Force feature"}
+            </button>
+            <button class="slot-small-btn" type="button" onclick="removeHomepageSlot('${profile.id}')">
+              Remove slot
+            </button>
+          </div>
         </div>
       `;
-    }
-    function setBusy(button, busy, busyLabel, idleLabel) {
-      if (!button) return;
-      button.disabled = busy;
-      button.innerHTML = busy ? `<span class="loader"></span>${busyLabel}` : idleLabel;
-    }
-    async function withTimeout(promise, ms, label) {
-      let timer;
-      const timeout = new Promise((_, reject) => timer = setTimeout(() => reject(new Error(label)), ms));
-      try { return await Promise.race([promise, timeout]); }
-      finally { clearTimeout(timer); }
-    }
-    async function retryOperation(fn, retries = MAX_RETRIES) {
-      let lastError;
-      for (let i = 0; i <= retries; i++) {
-        try { return await fn(i); }
-        catch (error) {
-          lastError = error;
-          console.error(`Attempt ${i+1} failed`, error);
-          if (i < retries) await new Promise(r => setTimeout(r, 700 * (i + 1)));
-        }
-      }
-      throw lastError;
-    }
+    }).join("");
 
-    function showAuthModal() { $('authModal').classList.remove('hidden'); }
-    function hideAuthModal() { $('authModal').classList.add('hidden'); }
+    enableSlotDragAndDrop();
+  }
 
-    function renderSession() {
-      $('sessionLabel').textContent = state.session?.user ? `Signed in: ${state.session.user.email || state.session.user.id}` : 'Not logged in';
-      $('logoutBtn').classList.toggle('hidden', !state.session?.user);
-    }
+  function enableSlotDragAndDrop(){
+    const cards = document.querySelectorAll(".slot-card");
+    let dragIndex = null;
 
-    async function requireAdmin() {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) throw error;
-      state.session = data?.session || null;
-      renderSession();
-      if (!state.session) throw new Error('Please log in first.');
-      if (ENABLE_OWNER_CHECK && state.session.user?.id !== ADMIN_OWNER_ID) {
-        throw new Error(`Logged in user is not the allowed owner. Logged in: ${state.session.user?.id}`);
-      }
-      return state.session;
-    }
-
-    function updatePreview() {
-      $('previewName').textContent = fields.name.value || 'Preview';
-      $('previewLocation').textContent = fields.location.value || 'No location yet';
-      $('cropLabel').textContent = `${fields.image_position.value}%`;
-      const img = $('previewImage');
-      img.style.objectPosition = `center ${fields.image_position.value}%`;
-      img.src = state.imageUrl || 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000"><rect width="100%" height="100%" fill="#0d1530"/><text x="50%" y="50%" fill="#8fa2d8" font-size="36" text-anchor="middle" font-family="Arial">No image</text></svg>`);
-    }
-
-    function collectProfile() {
-      const displayName = fields.name.value.trim();
-      const rawCategory = String(fields.category.value || 'vip').trim().toLowerCase();
-
-      let category = rawCategory;
-      if (category === 'signature') category = 'signature';
-      if (category === 'vvip') category = 'vvip';
-      if (category === 'featured') category = 'featured';
-      if (category === 'vip') category = 'vip';
-
-      const phone = String(fields.phone.value || '').replace(/\D/g, '');
-      const normalizedPhone =
-        phone.startsWith('254') ? phone :
-        phone.startsWith('0') ? `254${phone.slice(1)}` :
-        phone.startsWith('7') && phone.length === 9 ? `254${phone}` :
-        phone;
-
-      const imageUrl = state.imageUrl || null;
-
-      const isVip = category === 'vip';
-      const isVvip = category === 'vvip' || category === 'signature';
-      const isFeatured = category === 'featured';
-      const isVerified = Boolean(imageUrl);
-      const isOnline = fields.status.value === 'active';
-
-      return {
-        id: state.currentId || undefined,
-
-        name: displayName || 'Profile',
-        username: displayName || 'Profile',
-        slug: (fields.slug.value || slugify(displayName || normalizedPhone || 'profile')).trim(),
-
-        category,
-        plan: category,
-
-        status: fields.status.value || 'pending',
-        payment_status: fields.payment_status.value || 'unpaid',
-
-        phone: normalizedPhone || null,
-        whatsapp: normalizedPhone || null,
-        location: fields.location.value.trim(),
-        expires_at: fromLocalInputValue(fields.expires_at.value),
-        age: fields.age.value.trim() ? Number(fields.age.value.trim()) : null,
-        rate_kses: fields.rate_kses.value.trim() || priceText(category),
-        last_seen_at: fromLocalInputValue(fields.last_seen_at.value),
-        bio: fields.bio.value.trim(),
-
-        image_url: imageUrl,
-        avatar_url: imageUrl,
-        image_path: state.imagePath || null,
-        image_position: Number(fields.image_position.value ?? 20),
-
-        featured: isFeatured || isVip || isVvip,
-        verified: isVerified,
-        online: isOnline,
-
-        is_vip: isVip,
-        is_vvip: isVvip,
-        is_featured: isFeatured,
-        is_verified: isVerified,
-        is_online: isOnline,
-
-        updated_at: new Date().toISOString()
-      };
-    }
-
-    function validateProfile(profile) {
-      if (!profile.name) throw new Error('Display name is required.');
-      if (!profile.slug) throw new Error('Slug is required.');
-      if (!profile.location) throw new Error('Location is required.');
-      if (!profile.phone) throw new Error('Phone / WhatsApp is required.');
-      if (profile.status === 'active' && !profile.image_url) throw new Error('Active profiles must have a profile picture. Upload an image first.');
-    }
-
-    function fillForm(profile = null) {
-      profile = profile ? normalizeProfile(profile) : null;
-
-      state.currentId = profile?.id || null;
-
-      const resolvedName =
-        profile?.name ||
-        profile?.username ||
-        profile?.display_name ||
-        profile?.full_name ||
-        '';
-
-      const resolvedCategory = (() => {
-        const raw = String(profile?.category || profile?.plan || 'vip').trim().toLowerCase();
-
-        if (raw.includes('signature') || raw === 'vvip') return 'vvip';
-        if (raw === 'featured') return 'featured';
-        if (raw === 'vip') return 'vip';
-
-        if (profile?.is_vvip) return 'vvip';
-        if (profile?.is_vip) return 'vip';
-        if (profile?.is_featured) return 'featured';
-
-        return 'vip';
-      })();
-
-      const resolvedStatus =
-        profile?.status ||
-        (profile?.is_online ? 'active' : 'pending') ||
-        'active';
-
-      const resolvedPaymentStatus =
-        profile?.payment_status ||
-        (profile?.status === 'active' ? 'paid' : 'pending') ||
-        'paid';
-
-      const resolvedPhone =
-        profile?.phone ||
-        profile?.whatsapp ||
-        profile?.phone_number ||
-        '';
-
-      const resolvedLocation =
-        profile?.location ||
-        '';
-
-      const resolvedAge =
-        profile?.age ??
-        '';
-
-      const resolvedRate =
-        profile?.rate_kses ||
-        profile?.rate_text ||
-        priceText(resolvedCategory);
-
-      const resolvedBio =
-        profile?.bio ||
-        profile?.description ||
-        '';
-
-      const resolvedImagePosition = (() => {
-        const v = profile?.image_position;
-
-        if (typeof v === 'number' && Number.isFinite(v)) return v;
-
-        if (typeof v === 'string') {
-          const match = v.match(/(\d+(?:\.\d+)?)%/);
-          if (match) return Number(match[1]);
-          const asNum = Number(v);
-          if (Number.isFinite(asNum)) return asNum;
-        }
-
-        return 20;
-      })();
-
-      state.imageUrl = profile?.image_url || profile?.avatar_url || profile?.profile_image_url || '';
-      state.imagePath = profile?.image_path || '';
-
-      fields.name.value = resolvedName;
-      fields.slug.value = profile?.slug || '';
-      fields.slug.dataset.manual = fields.slug.value ? '1' : '';
-
-      fields.category.value = resolvedCategory;
-      fields.status.value = resolvedStatus;
-      fields.payment_status.value = resolvedPaymentStatus;
-
-      fields.phone.value = resolvedPhone;
-      fields.location.value = resolvedLocation;
-      fields.expires_at.value = toLocalInputValue(profile?.expires_at);
-      fields.age.value = resolvedAge;
-      fields.rate_kses.value = resolvedRate;
-      fields.last_seen_at.value = toLocalInputValue(profile?.last_seen_at);
-      fields.bio.value = resolvedBio;
-      fields.image_position.value = resolvedImagePosition;
-
-      $('editModeLabel').textContent = profile?.id
-        ? `Editing ID ${profile.id}`
-        : 'New profile';
-
-      $('imageFile').value = '';
-
-      updatePreview();
-    }
-
-    function clearForm() {
-      fillForm(null);
-      fields.category.value = 'vip';
-      fields.status.value = 'active';
-      fields.payment_status.value = 'paid';
-      fields.rate_kses.value = priceText('vip');
-      hideMessage(formMessage);
-      $('imageFile').value = '';
-    }
-
-    async function calculateRevenue() {
-      const { data, error } = await supabase
-        .from(PAYMENTS_TABLE)
-        .select('amount,status');
-
-      if (error) throw error;
-
-      return (data || [])
-        .filter(item => String(item.status || '').toLowerCase() === 'paid')
-        .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-    }
-
-    async function renderStats() {
-      const total = state.profiles.length;
-      const active = state.profiles.filter(p => p.status === 'active').length;
-      const pending = state.profiles.filter(p => p.payment_status === 'pending').length;
-      const paid = state.profiles.filter(p => p.payment_status === 'paid').length;
-      const pendingReview = state.profiles.filter(p => String(p.approval_status || '').toLowerCase() === 'pending').length;
-      const approved = state.profiles.filter(p => String(p.approval_status || '').toLowerCase() === 'approved').length;
-      const rejected = state.profiles.filter(p => String(p.approval_status || '').toLowerCase() === 'rejected').length;
-
-      $('statTotal').textContent = total;
-      $('statActive').textContent = active;
-      $('statPending').textContent = pending;
-      $('statPaid').textContent = paid;
-      $('statPendingReview').textContent = pendingReview;
-      $('statApproved').textContent = approved;
-      $('statRejected').textContent = rejected;
-
-      try {
-        const revenue = await calculateRevenue();
-        $('statRevenue').textContent = `KES ${revenue.toLocaleString()}`;
-      } catch (error) {
-        console.error('REVENUE ERROR', error);
-        $('statRevenue').textContent = 'KES 0';
-      }
-    }
-
-    function renderProfiles() {
-      const q = $('searchInput').value.toLowerCase().trim();
-      const plan = $('filterPlan').value;
-      const status = $('filterStatus').value;
-      const payment = $('filterPayment').value;
-      const sortBy = $('sortBy').value;
-
-      let rows = [...state.profiles].filter(p => {
-        const hay = `${p.name||''} ${p.username||''} ${p.slug||''} ${p.location||''} ${p.phone||''}`.toLowerCase();
-        return (!q || hay.includes(q)) && (!plan || (p.category || p.plan) === plan) && (!status || p.status === status) && (!payment || p.payment_status === payment);
+    cards.forEach(card => {
+      card.addEventListener("dragstart", () => {
+        dragIndex = Number(card.dataset.index);
+        card.classList.add("dragging");
       });
 
-      if (sortBy === 'updated_desc') rows.sort((a,b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));
-      if (sortBy === 'created_desc') rows.sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-      if (sortBy === 'name_asc') rows.sort((a,b) => String(a.name||'').localeCompare(String(b.name||'')));
-
-      $('countLabel').textContent = `${rows.length} loaded`;
-      const tbody = $('profilesTable');
-      if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="9" class="muted">No profiles found.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = rows.map(profile => `
-        <tr>
-          <td>
-            <div class="member-cell">
-              <img class="thumb" src="${escapeHtml(profile.image_url || 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'140\'><rect width=\'100%\' height=\'100%\' fill=\'#11182f\'/></svg>'))}" style="object-position:center ${Number(profile.image_position ?? 20)}%;" alt="thumb" />
-              <div>
-                <div class="member-name">${escapeHtml(profile.name || profile.username || 'No Name')}</div>
-                <div class="tiny muted">ID: ${escapeHtml(profile.id || '-')} • ${escapeHtml(profile.slug || '-')}</div>
-                <div class="tiny muted">${escapeHtml(profile.phone || '-')}</div>
-              </div>
-            </div>
-          </td>
-          <td>${escapeHtml(profile.location || '-')}</td>
-          <td><div>${escapeHtml(profile.category || profile.plan || '-')}</div><div class="tiny muted">${escapeHtml(profile.rate_kses || priceText(profile.category || profile.plan))}</div></td>
-          <td>${paymentChip(profile.payment_status)}</td>
-          <td>
-            <div class="chip-row">
-              <button class="btn btn-green" data-action="pay" data-id="${escapeHtml(profile.id)}" style="padding:8px 10px;">Paid</button>
-              <button class="btn btn-orange" data-action="pending" data-id="${escapeHtml(profile.id)}" style="padding:8px 10px;">Pending</button>
-              <button class="btn btn-primary" data-action="week" data-id="${escapeHtml(profile.id)}" style="padding:8px 10px;">+1 week</button>
-            </div>
-          </td>
-          <td>${profile.expires_at ? escapeHtml(new Date(profile.expires_at).toLocaleString()) : '<span class="muted">No expiry</span>'}</td>
-          <td>${badgeHtml(profile)}</td>
-          <td>${profile.updated_at ? escapeHtml(new Date(profile.updated_at).toLocaleString()) : '-'}</td>
-          <td>
-            <div class="button-row">
-              <button class="btn btn-secondary" data-action="edit" data-id="${escapeHtml(profile.id)}" style="padding:8px 10px;">Edit</button>
-              <button class="btn btn-danger" data-action="delete" data-id="${escapeHtml(profile.id)}" style="padding:8px 10px;">Delete</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function renderQueue() {
-      const grid = $('queueGrid');
-      const items = state.queue.filter(item => state.queueMode === 'all' ? true : String(item.status || '').toLowerCase() === 'pending');
-      $('queueCount').textContent = `${items.length} ${state.queueMode}`;
-      if (!items.length) {
-        grid.innerHTML = '<div class="queue-card muted">No queue items found.</div>';
-        return;
-      }
-      grid.innerHTML = items.map(item => `
-        <div class="queue-card">
-          <div class="section-title">
-            <h3 style="font-size:18px; margin:0;">${escapeHtml(item.customer_name || item.profile_name || item.phone || 'Payment')}</h3>
-            ${paymentChip(item.status)}
-          </div>
-          <div class="tiny muted">Phone: ${escapeHtml(item.phone || '-')}</div>
-          <div class="tiny muted">Amount: KES ${Number(item.amount || 0).toLocaleString()}</div>
-          <div class="tiny muted">Mpesa receipt: ${escapeHtml(item.mpesa_receipt_number || item.receipt || '-')}</div>
-          <div class="tiny muted">Profile ID: ${escapeHtml(item.profile_id || '-')}</div>
-          <div class="tiny muted">Created: ${item.created_at ? escapeHtml(new Date(item.created_at).toLocaleString()) : '-'}</div>
-          <div class="button-row" style="margin-top: 12px;">
-            <button class="btn btn-green" data-queue-action="approve" data-id="${escapeHtml(item.id)}" data-profile-id="${escapeHtml(item.profile_id || '')}">Approve</button>
-            <button class="btn btn-danger" data-queue-action="reject" data-id="${escapeHtml(item.id)}">Reject</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function renderPendingProfiles() {
-      const grid = $('profileQueueGrid');
-      if (!grid) return;
-
-      const items = state.pendingProfiles.filter(item =>
-        state.profileQueueMode === 'all'
-          ? true
-          : String(item.approval_status || 'pending').toLowerCase() === 'pending'
-      );
-
-      $('profileQueueCount').textContent = `${items.length} ${state.profileQueueMode}`;
-
-      if (!items.length) {
-        grid.innerHTML = '<div class="queue-card muted">No profile submissions found.</div>';
-        return;
-      }
-
-      grid.innerHTML = items.map(profile => `
-        <div class="queue-card">
-          <div class="section-title">
-            <h3 style="font-size:18px; margin:0;">${escapeHtml(profile.name || 'No name')}</h3>
-            <span class="chip ${String(profile.approval_status || 'pending').toLowerCase() === 'approved' ? 'c-paid' : String(profile.approval_status || 'pending').toLowerCase() === 'rejected' ? 'c-unpaid' : 'c-pending'}">
-              ${escapeHtml(profile.approval_status || 'pending')}
-            </span>
-          </div>
-
-          <div class="member-cell" style="margin-top: 10px;">
-            <img class="thumb" src="${escapeHtml(profile.image_url || 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'140\'><rect width=\'100%\' height=\'100%\' fill=\'#11182f\'/></svg>'))}" alt="thumb" />
-            <div>
-              <div class="tiny muted">Phone: ${escapeHtml(profile.phone || '-')}</div>
-              <div class="tiny muted">Location: ${escapeHtml(profile.location || '-')}</div>
-              <div class="tiny muted">Requested plan: ${escapeHtml(profile.requested_plan || profile.plan || '-')}</div>
-              <div class="tiny muted">Submitted: ${profile.submitted_at ? escapeHtml(new Date(profile.submitted_at).toLocaleString()) : '-'}</div>
-            </div>
-          </div>
-
-          <div class="tiny muted" style="margin-top: 10px;">
-            ${escapeHtml(profile.bio || 'No bio')}
-          </div>
-
-          <div class="button-row" style="margin-top: 12px;">
-            <button class="btn btn-green" data-profile-queue-action="approve" data-id="${escapeHtml(profile.id)}">Approve</button>
-            <button class="btn btn-orange" data-profile-queue-action="review" data-id="${escapeHtml(profile.id)}">Review</button>
-            <button class="btn btn-danger" data-profile-queue-action="reject" data-id="${escapeHtml(profile.id)}">Reject</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    async function loadPendingProfiles() {
-      hideMessage(profileQueueMessage);
-
-      try {
-        await requireAdmin();
-
-        const { data, error } = await withTimeout(
-          supabase
-            .from(PROFILES_TABLE)
-            .select('*')
-            .in('approval_status', ['pending', 'rejected', 'approved'])
-            .order('submitted_at', { ascending: false }),
-          SAVE_TIMEOUT_MS,
-          'Loading profile approval queue timed out.'
-        );
-
-        if (error) throw error;
-
-        state.pendingProfiles = (data || []).map(normalizeProfile);
-        renderPendingProfiles();
-      } catch (error) {
-        console.error('LOAD PENDING PROFILES ERROR', error);
-        state.pendingProfiles = [];
-        renderPendingProfiles();
-        showMessage(profileQueueMessage, 'error', error.message || 'Could not load pending profiles.');
-      }
-    }
-
-    async function loadProfiles() {
-      showMessage(tableMessage, 'info', 'Loading profiles…');
-      try {
-        await requireAdmin();
-        const { data, error } = await withTimeout(
-          supabase.from(PROFILES_TABLE).select('*').order('updated_at', { ascending: false }).limit(600),
-          SAVE_TIMEOUT_MS,
-          'Loading profiles timed out.'
-        );
-        if (error) throw error;
-        state.profiles = (data || []).map(normalizeProfile);
-        renderProfiles();
-        await renderStats();
-        hideMessage(tableMessage);
-      } catch (error) {
-        console.error('LOAD PROFILES ERROR', error);
-        showMessage(tableMessage, 'error', error.message || 'Failed to load profiles.');
-      }
-    }
-
-    async function loadQueue() {
-      hideMessage(queueMessage);
-      try {
-        await requireAdmin();
-        const { data, error } = await withTimeout(
-          supabase.from(PAYMENTS_TABLE).select('*').order('created_at', { ascending: false }).limit(150),
-          SAVE_TIMEOUT_MS,
-          'Loading queue timed out.'
-        );
-        if (error) throw error;
-        state.queue = data || [];
-        renderQueue();
-      } catch (error) {
-        console.error('LOAD QUEUE ERROR', error);
-        showMessage(queueMessage, 'warn', `Queue unavailable: ${error.message || 'table missing or blocked'}`);
-        state.queue = [];
-        renderQueue();
-      }
-    }
-
-    async function uploadImage() {
-      const file = $('imageFile').files?.[0];
-      if (!file) {
-        showMessage(uploadMessage, 'warn', 'Choose an image first.');
-        return;
-      }
-      setBusy($('uploadBtn'), true, 'Uploading…', 'Upload image');
-      hideMessage(uploadMessage);
-      try {
-        await requireAdmin();
-        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-        const safeName = slugify(fields.slug.value || fields.name.value || 'profile');
-        const fileName = `${Date.now()}-${safeName}.${ext}`;
-        const path = `${safeName}/${fileName}`;
-        const { data, error } = await withTimeout(
-          supabase.storage.from(STORAGE_BUCKET).upload(path, file, { cacheControl: '3600', upsert: true, contentType: file.type || 'image/jpeg' }),
-          SAVE_TIMEOUT_MS,
-          'Image upload timed out.'
-        );
-        if (error) throw error;
-        const publicUrl = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(data.path)?.data?.publicUrl || '';
-        state.imagePath = data.path;
-        state.imageUrl = publicUrl;
-        updatePreview();
-        showMessage(uploadMessage, 'success', 'Image uploaded. Save profile next.');
-      } catch (error) {
-        console.error('UPLOAD ERROR', error);
-        showMessage(uploadMessage, 'error', error.message || 'Upload failed.');
-      } finally {
-        setBusy($('uploadBtn'), false, 'Uploading…', 'Upload image');
-      }
-    }
-
-    async function saveCropOnly() {
-      if (!state.currentId) {
-        showMessage(uploadMessage, 'warn', 'Save the profile first, then save crop only.');
-        return;
-      }
-      setBusy($('saveCropBtn'), true, 'Saving crop…', 'Save crop only');
-      try {
-        await requireAdmin();
-        const payload = { id: state.currentId, image_position: Number(fields.image_position.value), updated_at: new Date().toISOString() };
-        const { error } = await withTimeout(supabase.from(PROFILES_TABLE).upsert(payload), SAVE_TIMEOUT_MS, 'Crop save timed out.');
-        if (error) throw error;
-        showMessage(uploadMessage, 'success', 'Crop position saved.');
-        await loadProfiles();
-      } catch (error) {
-        console.error('SAVE CROP ERROR', error);
-        showMessage(uploadMessage, 'error', error.message || 'Crop save failed.');
-      } finally {
-        setBusy($('saveCropBtn'), false, 'Saving crop…', 'Save crop only');
-      }
-    }
-
-    async function saveProfile() {
-      setBusy($('saveBtn'), true, 'Saving…', 'Save profile');
-      hideMessage(formMessage);
-
-      try {
-        await requireAdmin();
-
-        const payload = collectProfile();
-        validateProfile(payload);
-
-        const normalizedCategory = String(payload.category || payload.plan || 'vip').toLowerCase();
-        const normalizedPlan = normalizedCategory === 'signature' ? 'vvip' : normalizedCategory;
-
-        payload.category = normalizedCategory;
-        payload.plan = normalizedPlan;
-
-        payload.is_vip = Boolean(
-          payload.is_vip ??
-          normalizedCategory === 'vip'
-        );
-
-        payload.is_vvip = Boolean(
-          payload.is_vvip ??
-          normalizedCategory === 'vvip' ||
-          normalizedCategory === 'signature'
-        );
-
-        payload.is_featured = Boolean(
-          payload.is_featured ??
-          normalizedCategory === 'featured'
-        );
-
-        payload.is_verified = Boolean(
-          payload.is_verified ??
-          payload.verified ??
-          Boolean(payload.image_url || payload.avatar_url)
-        );
-
-        payload.is_online = Boolean(
-          payload.is_online ??
-          payload.online ??
-          String(payload.status || '').toLowerCase() === 'active'
-        );
-
-        payload.featured = Boolean(
-          payload.featured ??
-          payload.is_featured
-        );
-
-        payload.verified = Boolean(
-          payload.verified ??
-          payload.is_verified
-        );
-
-        payload.online = Boolean(
-          payload.online ??
-          payload.is_online
-        );
-
-        payload.slug = String(
-          payload.slug ||
-          slugify(payload.name || payload.username || payload.phone || 'profile')
-        ).trim();
-
-        payload.updated_at = new Date().toISOString();
-
-        if (payload.id) {
-          const existing = state.profiles.find(p => String(p.id) === String(payload.id));
-          if (existing?.created_at) {
-            payload.created_at = existing.created_at;
-          }
-        }
-
-        if (!payload.id) {
-          delete payload.id;
-        }
-
-        if (!payload.created_at) {
-          payload.created_at = new Date().toISOString();
-        }
-
-        const result = await retryOperation(async attempt => {
-          if (attempt > 0) {
-            showMessage(formMessage, 'warn', `Retrying save… attempt ${attempt + 1}`);
-          }
-
-          return await withTimeout(
-            supabase
-              .from(PROFILES_TABLE)
-              .upsert(payload, { onConflict: 'id' })
-              .select()
-              .single(),
-            SAVE_TIMEOUT_MS,
-            'Save request timed out.'
-          );
-        });
-
-        if (result.error) {
-          throw result.error;
-        }
-
-        if (!result.data?.id) {
-          throw new Error('Save completed, but no profile ID was returned.');
-        }
-
-        state.currentId = result.data.id;
-
-        await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]);
-
-        const latest = state.profiles.find(
-          p => String(p.id) === String(state.currentId)
-        );
-
-        if (latest) {
-          fillForm(latest);
-        }
-
-        showMessage(
-          formMessage,
-          'success',
-          `Profile saved successfully.${latest?.slug ? ` Slug: ${latest.slug}` : ''}`
-        );
-      } catch (error) {
-        console.error('SAVE PROFILE ERROR', error);
-
-        const raw = String(error?.message || 'Save failed.');
-        let friendly = raw;
-
-        if (raw.includes('duplicate key value') || raw.includes('profiles_slug_key')) {
-          friendly = 'That slug already exists. Change the slug and save again.';
-        } else if (raw.includes('is_vip')) {
-          friendly = 'Database schema still expects legacy VIP flags. Run the SQL patch, then save again.';
-        } else if (raw.includes('violates not-null constraint')) {
-          friendly = `A required database column is missing a value. Details: ${raw}`;
-        }
-
-        showMessage(formMessage, 'error', friendly);
-      } finally {
-        setBusy($('saveBtn'), false, 'Saving…', 'Save profile');
-      }
-    }
-
-    async function deleteProfile(profileId = state.currentId) {
-      if (!profileId) return showMessage(formMessage, 'warn', 'Open a profile first.');
-      if (!confirm('Delete this profile?')) return;
-      try {
-        await requireAdmin();
-        const { error } = await withTimeout(supabase.from(PROFILES_TABLE).delete().eq('id', profileId), SAVE_TIMEOUT_MS, 'Delete timed out.');
-        if (error) throw error;
-        if (String(state.currentId) === String(profileId)) clearForm();
-        showMessage(formMessage, 'success', 'Profile deleted.');
-        await loadProfiles();
-      } catch (error) {
-        console.error('DELETE PROFILE ERROR', error);
-        showMessage(formMessage, 'error', error.message || 'Delete failed.');
-      }
-    }
-
-    async function patchCurrentProfile(changes, successText = 'Profile updated.') {
-      if (!state.currentId) throw new Error('Open a profile first.');
-      await requireAdmin();
-      const payload = { id: state.currentId, updated_at: new Date().toISOString(), ...changes };
-      const { data, error } = await withTimeout(
-        supabase.from(PROFILES_TABLE).upsert(payload).select().single(),
-        SAVE_TIMEOUT_MS,
-        'Update timed out.'
-      );
-      if (error) throw error;
-      showMessage(formMessage, 'success', successText);
-      await loadProfiles();
-      const latest = state.profiles.find(p => String(p.id) === String(data.id));
-      if (latest) fillForm(latest);
-    }
-
-    async function activateWeek(profileId = state.currentId) {
-      if (!profileId) return showMessage(formMessage, 'warn', 'Open a profile first.');
-      try {
-        await requireAdmin();
-        const profile = state.profiles.find(p => String(p.id) === String(profileId));
-        const currentExpiry = profile?.expires_at ? new Date(profile.expires_at) : new Date();
-        const base = currentExpiry > new Date() ? currentExpiry : new Date();
-        base.setDate(base.getDate() + 7);
-        const payload = { id: profileId, status: 'active', online: true, payment_status: 'paid', expires_at: base.toISOString(), updated_at: new Date().toISOString() };
-        const { error } = await withTimeout(supabase.from(PROFILES_TABLE).upsert(payload), SAVE_TIMEOUT_MS, 'Activation timed out.');
-        if (error) throw error;
-        showMessage(formMessage, 'success', 'Activated for one more week.');
-        await loadProfiles();
-        const latest = state.profiles.find(p => String(p.id) === String(profileId));
-        if (latest && String(state.currentId) === String(profileId)) fillForm(latest);
-      } catch (error) {
-        console.error('ACTIVATE WEEK ERROR', error);
-        showMessage(formMessage, 'error', error.message || 'Activation failed.');
-      }
-    }
-
-    async function quickPaymentUpdate(profileId, status) {
-      try {
-        await requireAdmin();
-        const payload = { id: profileId, payment_status: status, status: status === 'paid' ? 'active' : undefined, online: status === 'paid' ? true : undefined, updated_at: new Date().toISOString() };
-        Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
-        const { error } = await withTimeout(supabase.from(PROFILES_TABLE).upsert(payload), SAVE_TIMEOUT_MS, 'Payment update timed out.');
-        if (error) throw error;
-        await loadProfiles();
-        const latest = state.profiles.find(p => String(p.id) === String(profileId));
-        if (latest && String(state.currentId) === String(profileId)) fillForm(latest);
-      } catch (error) {
-        console.error('QUICK PAYMENT UPDATE ERROR', error);
-        showMessage(formMessage, 'error', error.message || 'Payment update failed.');
-      }
-    }
-
-    async function approveQueueItem(queueId, profileId) {
-      try {
-        await requireAdmin();
-
-        const { error: paymentError } = await withTimeout(
-          supabase.from(PAYMENTS_TABLE).upsert({
-            id: queueId,
-            status: 'paid',
-            approved_at: new Date().toISOString()
-          }),
-          SAVE_TIMEOUT_MS,
-          'Queue approval timed out.'
-        );
-
-        if (paymentError) throw paymentError;
-
-        if (profileId) {
-          const profile = state.profiles.find(p => String(p.id) === String(profileId))
-            || state.pendingProfiles.find(p => String(p.id) === String(profileId));
-
-          const requestedPlan = String(profile?.requested_plan || profile?.plan || 'featured').toLowerCase();
-          const normalizedPlan = requestedPlan === 'signature' ? 'vvip' : requestedPlan;
-
-          const { error: profileError } = await withTimeout(
-            supabase.from(PROFILES_TABLE).upsert({
-              id: profileId,
-              payment_status: 'paid',
-              approval_status: 'approved',
-              status: 'active',
-              onboarding_step: 'live',
-              approved_at: new Date().toISOString(),
-              approved_by: state.session?.user?.email || state.session?.user?.id || 'admin',
-              category: normalizedPlan,
-              plan: normalizedPlan,
-              is_featured: ['featured', 'vip', 'vvip', 'signature'].includes(requestedPlan),
-              is_vip: requestedPlan === 'vip',
-              is_vvip: ['vvip', 'signature'].includes(requestedPlan),
-              featured: ['featured', 'vip', 'vvip', 'signature'].includes(requestedPlan),
-              online: true,
-              is_online: true,
-              expires_at: addDaysISO(7),
-              updated_at: new Date().toISOString()
-            }),
-            SAVE_TIMEOUT_MS,
-            'Profile activation timed out.'
-          );
-
-          if (profileError) throw profileError;
-        }
-
-        showMessage(queueMessage, 'success', 'Queue item approved.');
-        await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]);
-      } catch (error) {
-        console.error('APPROVE QUEUE ERROR', error);
-        showMessage(queueMessage, 'error', error.message || 'Approval failed.');
-      }
-    }
-
-    async function rejectQueueItem(queueId) {
-      try {
-        await requireAdmin();
-        const { error } = await withTimeout(
-          supabase.from(PAYMENTS_TABLE).upsert({ id: queueId, status: 'rejected', rejected_at: new Date().toISOString() }),
-          SAVE_TIMEOUT_MS,
-          'Queue rejection timed out.'
-        );
-        if (error) throw error;
-        showMessage(queueMessage, 'success', 'Queue item rejected.');
-        await loadQueue();
-      } catch (error) {
-        console.error('REJECT QUEUE ERROR', error);
-        showMessage(queueMessage, 'error', error.message || 'Reject failed.');
-      }
-    }
-
-    async function approveProfileSubmission(profileId) {
-      try {
-        await requireAdmin();
-
-        const profile = state.profiles.find(p => String(p.id) === String(profileId))
-          || state.pendingProfiles.find(p => String(p.id) === String(profileId));
-
-        const requestedPlan = String(profile?.requested_plan || profile?.plan || 'featured').toLowerCase();
-        const normalizedPlan = requestedPlan === 'signature' ? 'vvip' : requestedPlan;
-
-        const patch = {
-          id: profileId,
-          approval_status: 'approved',
-          approved_at: new Date().toISOString(),
-          approved_by: state.session?.user?.email || state.session?.user?.id || 'admin',
-          onboarding_step: 'approved',
-          status: 'active',
-          payment_status: profile?.payment_status || 'unpaid',
-          category: normalizedPlan,
-          plan: normalizedPlan,
-          is_featured: ['featured', 'vip', 'vvip', 'signature'].includes(requestedPlan),
-          is_vip: requestedPlan === 'vip',
-          is_vvip: ['vvip', 'signature'].includes(requestedPlan),
-          featured: ['featured', 'vip', 'vvip', 'signature'].includes(requestedPlan),
-          verified: Boolean(profile?.image_url),
-          is_verified: Boolean(profile?.image_url),
-          updated_at: new Date().toISOString()
-        };
-
-        const { error } = await withTimeout(
-          supabase.from(PROFILES_TABLE).upsert(patch),
-          SAVE_TIMEOUT_MS,
-          'Profile approval timed out.'
-        );
-
-        if (error) throw error;
-
-        showMessage(profileQueueMessage, 'success', 'Profile approved successfully.');
-        await Promise.all([loadProfiles(), loadPendingProfiles()]);
-      } catch (error) {
-        console.error('APPROVE PROFILE SUBMISSION ERROR', error);
-        showMessage(profileQueueMessage, 'error', error.message || 'Profile approval failed.');
-      }
-    }
-
-    async function rejectProfileSubmission(profileId) {
-      try {
-        await requireAdmin();
-
-        const { error } = await withTimeout(
-          supabase.from(PROFILES_TABLE).upsert({
-            id: profileId,
-            approval_status: 'rejected',
-            status: 'hidden',
-            onboarding_step: 'rejected',
+      card.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+      });
+
+      card.addEventListener("dragover", (e) => e.preventDefault());
+
+      card.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const dropIndex = Number(card.dataset.index);
+        if (dragIndex === null || dropIndex === dragIndex) return;
+
+        const moved = slotProfiles.splice(dragIndex, 1)[0];
+        slotProfiles.splice(dropIndex, 0, moved);
+        renderSlotManager();
+      });
+    });
+  }
+
+  async function saveHomepageSlots(){
+    try{
+      slotMessage("Saving homepage slots...");
+
+      for (let i = 0; i < slotProfiles.length; i++) {
+        const profile = slotProfiles[i];
+        const slot = i + 1;
+
+        const { error } = await sb
+          .from("profiles")
+          .update({
+            homepage_slot: slot,
             updated_at: new Date().toISOString()
-          }),
-          SAVE_TIMEOUT_MS,
-          'Profile rejection timed out.'
-        );
+          })
+          .eq("id", profile.id);
 
         if (error) throw error;
-
-        showMessage(profileQueueMessage, 'success', 'Profile rejected.');
-        await Promise.all([loadProfiles(), loadPendingProfiles()]);
-      } catch (error) {
-        console.error('REJECT PROFILE SUBMISSION ERROR', error);
-        showMessage(profileQueueMessage, 'error', error.message || 'Profile rejection failed.');
       }
+
+      slotMessage("Homepage slot order saved successfully.");
+      await loadSlotManager();
+    }catch(err){
+      console.error("saveHomepageSlots failed:", err);
+      slotMessage("Failed to save homepage slots.", true);
     }
+  }
 
-    function openProfileForReview(profileId) {
-      const profile = state.profiles.find(p => String(p.id) === String(profileId))
-        || state.pendingProfiles.find(p => String(p.id) === String(profileId));
+  async function removeHomepageSlot(profileId){
+    try{
+      const { error } = await sb
+        .from("profiles")
+        .update({
+          homepage_slot: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", profileId);
 
+      if (error) throw error;
+
+      slotProfiles = slotProfiles.filter(p => String(p.id) !== String(profileId));
+      renderSlotManager();
+      slotMessage("Homepage slot removed.");
+      await loadSlotManager();
+    }catch(err){
+      console.error("removeHomepageSlot failed:", err);
+      slotMessage("Failed to remove homepage slot.", true);
+    }
+  }
+
+  async function toggleForceFeatured(profileId){
+    try{
+      const profile = slotProfiles.find(p => String(p.id) === String(profileId));
       if (!profile) return;
 
-      fillForm(profile);
-      switchView('editorView');
-      showMessage(formMessage, 'info', `Loaded ${profile.name || 'profile'} into the editor for review.`);
+      const nextValue = !profile.force_featured;
+
+      const { error } = await sb
+        .from("profiles")
+        .update({
+          force_featured: nextValue,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", profileId);
+
+      if (error) throw error;
+
+      profile.force_featured = nextValue;
+      renderSlotManager();
+      slotMessage(nextValue ? "Profile forced into featured band." : "Force featured removed.");
+    }catch(err){
+      console.error("toggleForceFeatured failed:", err);
+      slotMessage("Failed to update featured setting.", true);
     }
+  }
 
-    async function autoFillMissingData() {
-      try {
-        await requireAdmin();
-        if (!state.profiles.length) throw new Error('No profiles loaded.');
-        const ok = confirm(`Auto-fill missing data for ${state.profiles.length} profiles?`);
-        if (!ok) return;
-        showMessage(appMessage, 'info', 'Auto-filling missing profile data…');
-        const patches = state.profiles.map(buildAutoFillPatch);
-        const { error } = await withTimeout(
-          supabase.from(PROFILES_TABLE).upsert(patches, { onConflict: 'id' }),
-          SAVE_TIMEOUT_MS,
-          'Auto-fill timed out.'
-        );
-        if (error) throw error;
-        showMessage(appMessage, 'success', 'Missing profile data filled successfully.');
-        await loadProfiles();
-      } catch (error) {
-        console.error('AUTO FILL ERROR', error);
-        showMessage(appMessage, 'error', error.message || 'Auto-fill failed.');
-      }
+  async function clearAllHomepageSlots(){
+    try{
+      slotMessage("Clearing homepage slots...");
+
+      const ids = slotProfiles.map(p => p.id);
+      if (!ids.length) return;
+
+      const { error } = await sb
+        .from("profiles")
+        .update({
+          homepage_slot: null,
+          updated_at: new Date().toISOString()
+        })
+        .in("id", ids);
+
+      if (error) throw error;
+
+      slotMessage("All homepage slots cleared.");
+      await loadSlotManager();
+    }catch(err){
+      console.error("clearAllHomepageSlots failed:", err);
+      slotMessage("Failed to clear homepage slots.", true);
     }
+  }
 
-    async function login() {
-      setBusy($('loginBtn'), true, 'Signing in…', 'Sign in');
-      hideMessage(loginMessage);
-      try {
-        const email = $('loginEmail').value.trim();
-        const password = $('loginPassword').value;
-        if (!email || !password) throw new Error('Enter email and password.');
-        const { data, error } = await withTimeout(supabase.auth.signInWithPassword({ email, password }), SAVE_TIMEOUT_MS, 'Login timed out.');
-        if (error) throw error;
-        state.session = data.session;
-        renderSession();
-        hideAuthModal();
-        showMessage(appMessage, 'success', 'Logged in successfully.');
-        await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]);
-      } catch (error) {
-        console.error('LOGIN ERROR', error);
-        showMessage(loginMessage, 'error', error.message || 'Login failed.');
-      } finally {
-        setBusy($('loginBtn'), false, 'Signing in…', 'Sign in');
-      }
-    }
+  async function refreshAll(){
+    await Promise.all([
+      loadAnalyticsSummary(),
+      loadEventAnalytics(),
+      loadExpiringProfiles(),
+      loadAdminLeaderboard(),
+      loadProfiles(),
+      loadSlotManager()
+    ]);
+  }
 
-    async function logout() {
-      try { await supabase.auth.signOut(); } catch (error) { console.error(error); }
-      state.session = null;
-      state.profiles = [];
-      state.queue = [];
-      renderSession();
-      renderProfiles();
-      renderQueue();
-      renderPendingProfiles();
-      await renderStats();
-      showAuthModal();
-      showMessage(appMessage, 'info', 'Logged out.');
-    }
-
-    function switchView(viewId) {
-      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === viewId));
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewId));
-    }
-
-    function attachEvents() {
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
-      ['name', 'location', 'image_position'].forEach(key => fields[key].addEventListener('input', updatePreview));
-      fields.name.addEventListener('input', () => {
-        if (!fields.slug.dataset.manual || !fields.slug.value.trim()) fields.slug.value = slugify(fields.name.value);
-      });
-      fields.slug.addEventListener('input', () => {
-        fields.slug.dataset.manual = fields.slug.value.trim() ? '1' : '';
-      });
-      fields.name.addEventListener('blur', () => { if (!fields.slug.value.trim()) fields.slug.value = slugify(fields.name.value); });
-      fields.category.addEventListener('change', () => { if (!fields.rate_kses.value.trim()) fields.rate_kses.value = priceText(fields.category.value); });
-
-      $('imageFile').addEventListener('change', () => {
-        const file = $('imageFile').files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => { state.imageUrl = reader.result; updatePreview(); };
-        reader.readAsDataURL(file);
-      });
-
-      $('searchInput').addEventListener('input', renderProfiles);
-      $('filterPlan').addEventListener('change', renderProfiles);
-      $('filterStatus').addEventListener('change', renderProfiles);
-      $('filterPayment').addEventListener('change', renderProfiles);
-      $('sortBy').addEventListener('change', renderProfiles);
-
-      $('refreshBtn').addEventListener('click', async () => { await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]); });
-      $('quickRefresh').addEventListener('click', async () => { await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]); });
-      $('quickAutofill').addEventListener('click', autoFillMissingData);
-      $('quickNewVip').addEventListener('click', () => { clearForm(); fields.category.value = 'vip'; fields.rate_kses.value = priceText('vip'); switchView('editorView'); });
-      $('quickFeatured').addEventListener('click', () => { $('filterPlan').value = 'featured'; renderProfiles(); switchView('dashboardView'); });
-      $('quickTodayExpiry').addEventListener('click', () => {
-        const now = new Date();
-        const soon = new Date();
-        soon.setDate(soon.getDate() + 1);
-        const rows = state.profiles.filter(p => p.expires_at && new Date(p.expires_at) <= soon && new Date(p.expires_at) >= now);
-        showMessage(appMessage, 'info', `${rows.length} profile(s) expire within 24 hours.`);
-        switchView('dashboardView');
-      });
-
-      $('uploadBtn').addEventListener('click', uploadImage);
-      $('saveCropBtn').addEventListener('click', saveCropOnly);
-      $('saveBtn').addEventListener('click', saveProfile);
-      $('duplicateBtn').addEventListener('click', () => {
-        fields.name.value = `${fields.name.value || 'Profile'} Copy`;
-        fields.slug.value = slugify(fields.name.value);
-        state.currentId = null;
-        $('editModeLabel').textContent = 'Duplicated as new profile';
-        showMessage(formMessage, 'info', 'This is now a new copy. Save to create it.');
-      });
-      $('clearBtn').addEventListener('click', clearForm);
-      $('deleteBtn').addEventListener('click', () => deleteProfile());
-      $('activateWeekBtn').addEventListener('click', () => activateWeek());
-      $('markPaidBtn').addEventListener('click', () => patchCurrentProfile({ payment_status: 'paid', status: 'active', online: true, expires_at: fields.expires_at.value ? fromLocalInputValue(fields.expires_at.value) : addDaysISO(7) }, 'Marked paid and activated.'));
-      $('markPendingBtn').addEventListener('click', () => patchCurrentProfile({ payment_status: 'pending' }, 'Marked pending.'));
-      $('deactivateBtn').addEventListener('click', () => patchCurrentProfile({ status: 'inactive', online: false }, 'Profile deactivated.'));
-
-      $('openLoginBtn').addEventListener('click', showAuthModal);
-      $('closeLoginBtn').addEventListener('click', hideAuthModal);
-      $('loginBtn').addEventListener('click', login);
-      $('logoutBtn').addEventListener('click', logout);
-
-      $('profilesTable').addEventListener('click', async event => {
-        const btn = event.target.closest('[data-action]');
-        if (!btn) return;
-        const id = btn.dataset.id;
-        const action = btn.dataset.action;
-        const profile = state.profiles.find(p => String(p.id) === String(id));
-        if (action === 'edit' && profile) {
-          fillForm(profile);
-          switchView('editorView');
-          showMessage(formMessage, 'info', `Loaded ${profile.name || 'profile'} into the editor.`);
-        }
-        if (action === 'delete') await deleteProfile(id);
-        if (action === 'pay') await quickPaymentUpdate(id, 'paid');
-        if (action === 'pending') await quickPaymentUpdate(id, 'pending');
-        if (action === 'week') await activateWeek(id);
-      });
-
-      $('queueGrid').addEventListener('click', async event => {
-        const btn = event.target.closest('[data-queue-action]');
-        if (!btn) return;
-        const queueId = btn.dataset.id;
-        const profileId = btn.dataset.profileId;
-        if (btn.dataset.queueAction === 'approve') await approveQueueItem(queueId, profileId);
-        if (btn.dataset.queueAction === 'reject') await rejectQueueItem(queueId);
-      });
-
-      $('profileQueueGrid').addEventListener('click', async event => {
-        const btn = event.target.closest('[data-profile-queue-action]');
-        if (!btn) return;
-
-        const profileId = btn.dataset.id;
-        const action = btn.dataset.profileQueueAction;
-
-        if (action === 'approve') await approveProfileSubmission(profileId);
-        if (action === 'reject') await rejectProfileSubmission(profileId);
-        if (action === 'review') openProfileForReview(profileId);
-      });
-
-      document.querySelectorAll('[data-queue-filter]').forEach(btn => btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-queue-filter]').forEach(x => x.classList.remove('active'));
-        btn.classList.add('active');
-        state.queueMode = btn.dataset.queueFilter;
-        renderQueue();
-      }));
-
-      document.querySelectorAll('[data-profile-queue-filter]').forEach(btn => btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-profile-queue-filter]').forEach(x => x.classList.remove('active'));
-        btn.classList.add('active');
-        state.profileQueueMode = btn.dataset.profileQueueFilter;
-        renderPendingProfiles();
-      }));
-
-      document.addEventListener('keydown', event => {
-        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
-          event.preventDefault();
-          saveProfile();
-        }
-      });
-    }
-
-    async function boot() {
-      $('bucketLabel').textContent = STORAGE_BUCKET;
-      $('configStatus').textContent = `${SUPABASE_URL} • ${PROFILES_TABLE} • ${PAYMENTS_TABLE}`;
-      attachEvents();
-      clearForm();
-      updatePreview();
-      renderProfiles();
-      renderQueue();
-      renderPendingProfiles();
-      await renderStats();
-
-      if (SUPABASE_URL.includes('YOUR_PROJECT') || SUPABASE_ANON_KEY.includes('YOUR_PUBLIC')) {
-        showMessage(appMessage, 'warn', 'Update SUPABASE_URL and SUPABASE_ANON_KEY in the script first.');
-      }
-
-      const { data } = await supabase.auth.getSession();
-      state.session = data?.session || null;
-      renderSession();
-      supabase.auth.onAuthStateChange((_event, session) => {
-        state.session = session;
-        renderSession();
-      });
-
-      if (!state.session) {
-        if (AUTO_SHOW_LOGIN) showAuthModal();
-        showMessage(appMessage, 'info', 'Log in to use the vault.');
-        return;
-      }
-
-      try {
-        await requireAdmin();
-        await Promise.all([loadProfiles(), loadQueue(), loadPendingProfiles()]);
-      } catch (error) {
-        console.error('BOOT ERROR', error);
-        showMessage(appMessage, 'error', error.message || 'Startup failed.');
-        showAuthModal();
-      }
-    }
-
-    boot();
-
-    window.vaultDebug = {
-      supabase,
-      state,
-      async testConnection() {
-        const result = await supabase.from(PROFILES_TABLE).select('*').limit(1);
-        console.log(result);
-        return result;
-      },
-      async testQueue() {
-        const result = await supabase.from(PAYMENTS_TABLE).select('*').limit(1);
-        console.log(result);
-        return result;
-      },
-      async testPendingProfiles() {
-        const result = await supabase.from(PROFILES_TABLE).select('*').eq('approval_status', 'pending').limit(5);
-        console.log(result);
-        return result;
-      }
-    };
-  </script>
+  refreshAll();
+</script>
 </body>
 </html>
-                                                                                                                                                                                                                                                                       
