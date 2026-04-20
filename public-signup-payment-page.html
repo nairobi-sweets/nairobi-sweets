@@ -1,101 +1,356 @@
-<!-- FULL FILE -->
-<!-- (trimmed header note: this is SAME working version already given earlier) -->
-<!-- I am re-pasting CLEAN + READY -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nairobi Sweets | Signup</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nairobi Sweets | Create Profile & Pay</title>
+  <style>
+    :root {
+      --bg: #0b0b12;
+      --card: #141421;
+      --soft: #1c1c2b;
+      --text: #f5f5f7;
+      --muted: #b8b8c7;
+      --gold: #d4af37;
+      --pink: #ff4fa3;
+      --line: rgba(255,255,255,0.08);
+      --ok: #2ecc71;
+      --err: #ff5c5c;
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    * { box-sizing: border-box; }
 
-<style>
-body{background:#050816;color:#fff;font-family:Arial;padding:20px}
-input,button{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none}
-button{background:#ffd54a;font-weight:bold}
-</style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(255,79,163,0.12), transparent 25%),
+        radial-gradient(circle at top left, rgba(212,175,55,0.12), transparent 25%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand img {
+      max-width: 140px;
+      max-height: 140px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 14px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: var(--gold);
+      letter-spacing: 0.4px;
+    }
+
+    .brand p {
+      margin: 10px auto 0;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      color: #f2d98a;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--text);
+      outline: none;
+      font-size: 1rem;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #8f90a6;
+    }
+
+    .price-box {
+      margin: 18px 0 12px;
+      padding: 16px;
+      border: 1px solid rgba(212,175,55,0.25);
+      background: rgba(212,175,55,0.06);
+      border-radius: 14px;
+      color: var(--text);
+    }
+
+    .price-box strong {
+      color: var(--gold);
+      font-size: 1.1rem;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 15px 18px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #111;
+      background: linear-gradient(135deg, var(--gold), #f8d76a);
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    .status {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      min-height: 52px;
+      line-height: 1.5;
+    }
+
+    .status.ok {
+      color: #dff8e8;
+      border-color: rgba(46,204,113,0.35);
+      background: rgba(46,204,113,0.08);
+    }
+
+    .status.err {
+      color: #ffe1e1;
+      border-color: rgba(255,92,92,0.35);
+      background: rgba(255,92,92,0.08);
+    }
+
+    .hint {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <div class="brand">
+      <img src="/logo.png" alt="Nairobi Sweets logo" onerror="this.style.display='none'" />
+      <h1>Create Your Profile</h1>
+      <p>Complete your details, then confirm payment via M-Pesa to activate your Nairobi Sweets profile.</p>
+    </div>
 
-<h2>Create Profile + Pay</h2>
+    <div class="card">
+      <form id="signupForm">
+        <div class="grid">
+          <div class="field">
+            <label for="name">Full Name *</label>
+            <input id="name" type="text" placeholder="Enter full name" required />
+          </div>
 
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
+          <div class="field">
+            <label for="phone">Phone Number *</label>
+            <input id="phone" type="tel" placeholder="07XXXXXXXX" required />
+          </div>
 
-<input id="name" placeholder="Name">
-<input id="phone" placeholder="2547XXXXXXXX">
-<input id="location" placeholder="Location">
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com" />
+          </div>
 
-<input id="amount" value="1500">
-<input type="file" id="image">
+          <div class="field">
+            <label for="location">Location</label>
+            <input id="location" type="text" placeholder="Nairobi" />
+          </div>
 
-<button onclick="uploadImage()">Upload Image</button>
-<button onclick="saveProfile()">Save Profile</button>
-<button onclick="pay()">Create profile + Pay</button>
+          <div class="field full">
+            <label for="photo_url">Photo URL</label>
+            <input id="photo_url" type="url" placeholder="https://example.com/photo.jpg" />
+          </div>
 
-<div id="msg"></div>
+          <div class="field full">
+            <label for="bio">Bio</label>
+            <textarea id="bio" placeholder="Write a short bio..."></textarea>
+          </div>
+        </div>
 
-<script>
-const sb = supabase.createClient("YOUR_SUPABASE_URL","YOUR_SUPABASE_ANON_KEY");
-let imageUrl=null;
-let profileId=null;
+        <div class="price-box">
+          Activation fee: <strong>KES 1,000</strong>
+        </div>
 
-async function auth(){
-  const email=emailInput.value;
-  const password=passwordInput.value;
+        <button id="submitBtn" type="submit">Create Profile & Pay</button>
+        <div id="status" class="status">Ready.</div>
+        <div class="hint">
+          After clicking the button, check your phone for the M-Pesa STK prompt. You’ll then be redirected to the payment status page automatically.
+        </div>
+      </form>
+    </div>
+  </div>
 
-  const {data,error}=await sb.auth.signInWithPassword({email,password});
-  if(data?.user) return data.user;
+  <script>
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const ACTIVATION_AMOUNT = 1000;
 
-  const res=await sb.auth.signUp({email,password});
-  return res.data.user;
-}
+    const form = document.getElementById("signupForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusEl = document.getElementById("status");
 
-async function uploadImage(){
-  const file=image.files[0];
-  const name=Date.now()+"-"+file.name;
-  await sb.storage.from("profile-images").upload(name,file,{upsert:true});
-  const {data}=sb.storage.from("profile-images").getPublicUrl(name);
-  imageUrl=data.publicUrl;
-  msg.innerText="Image uploaded";
-}
+    function setStatus(message, type = "") {
+      statusEl.textContent = message;
+      statusEl.className = "status" + (type ? " " + type : "");
+    }
 
-async function saveProfile(){
-  const user=await auth();
+    function normalizePhone(phone) {
+      let p = String(phone || "").trim().replace(/\s+/g, "");
+      if (p.startsWith("+254")) return p.slice(1);
+      if (p.startsWith("254")) return p;
+      if (p.startsWith("0")) return "254" + p.slice(1);
+      return p;
+    }
 
-  const {data}=await sb.from("profiles").insert([{
-    owner_user_id:user.id,
-    stage_name:name.value,
-    phone:phone.value,
-    location:location.value,
-    profile_image_url:imageUrl,
-    payment_status:"pending"
-  }]).select().single();
+    function validatePayload(payload) {
+      if (!payload.name) throw new Error("Full name is required.");
+      if (!payload.phone) throw new Error("Phone number is required.");
+      if (!/^254\d{9}$/.test(payload.phone)) {
+        throw new Error("Phone number must look like 07XXXXXXXX or 2547XXXXXXXX.");
+      }
+    }
 
-  profileId=data.id;
-  msg.innerText="Profile saved";
-}
+    async function savePendingProfile(payload) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+          "Prefer": "return=representation"
+        },
+        body: JSON.stringify([{
+          name: payload.name,
+          phone: payload.phone,
+          email: payload.email || "",
+          location: payload.location || "",
+          bio: payload.bio || "",
+          photo_url: payload.photo_url || "",
+          status: "pending",
+          payment_status: "pending"
+        }])
+      });
 
-async function pay(){
-  if(!profileId) await saveProfile();
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || JSON.stringify(data));
+      }
+      if (!Array.isArray(data) || !data[0]?.id) {
+        throw new Error("Profile could not be created.");
+      }
+      return data[0];
+    }
 
-  const res=await fetch("/.netlify/functions/mpesa-stk-push",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      profile_id:profileId,
-      phone:phone.value,
-      amount:amount.value
-    })
-  });
+    async function startStkPush(payload) {
+      const res = await fetch("/.netlify/functions/mpesa-stk-push", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
 
-  const data=await res.json();
-  msg.innerText=data.customerMessage || "STK sent";
-}
-</script>
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || data.message || "STK push failed.");
+      }
+      return data;
+    }
 
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+
+      try {
+        const payload = {
+          name: document.getElementById("name").value.trim(),
+          phone: normalizePhone(document.getElementById("phone").value),
+          email: document.getElementById("email").value.trim(),
+          location: document.getElementById("location").value.trim(),
+          bio: document.getElementById("bio").value.trim(),
+          photo_url: document.getElementById("photo_url").value.trim(),
+          amount: ACTIVATION_AMOUNT
+        };
+
+        validatePayload(payload);
+
+        setStatus("Saving your profile...", "");
+        const profile = await savePendingProfile(payload);
+
+        setStatus("Sending M-Pesa STK prompt to your phone...", "");
+        const stk = await startStkPush({
+          ...payload,
+          profile_id: profile.id
+        });
+
+        setStatus("STK sent. Redirecting to payment status...", "ok");
+
+        const nextUrl =
+          `/payment-status.html?checkoutRequestID=${encodeURIComponent(stk.checkoutRequestID)}&profile_id=${encodeURIComponent(profile.id)}`;
+
+        setTimeout(() => {
+          window.location.href = nextUrl;
+        }, 900);
+      } catch (err) {
+        console.error(err);
+        setStatus(err.message || "Something went wrong.", "err");
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
