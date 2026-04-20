@@ -17,10 +17,12 @@ function safeString(v) {
 
 function normalizePhone(phone) {
   if (!phone) return null;
+
   let p = String(phone).replace(/\D/g, "");
-  if (p.startsWith("0")) p = "254" + p.slice(1);
-  if (p.startsWith("7") && p.length === 9) p = "254" + p;
+  if (p.startsWith("0")) p = `254${p.slice(1)}`;
+  if (p.startsWith("7") && p.length === 9) p = `254${p}`;
   if (/^2547\d{8}$/.test(p)) return p;
+
   return null;
 }
 
@@ -28,6 +30,7 @@ function toNumber(value) {
   if (value == null) return null;
   const v = String(value).trim();
   if (v === "") return null;
+
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
 }
@@ -53,7 +56,6 @@ exports.handler = async (event) => {
   }
 
   try {
-    // ENV
     const {
       MPESA_CONSUMER_KEY,
       MPESA_CONSUMER_SECRET,
@@ -78,10 +80,12 @@ exports.handler = async (event) => {
       .map(([k]) => k);
 
     if (missing.length) {
-      return json(500, { error: "Missing env vars", missing });
+      return json(500, {
+        error: "Missing env vars",
+        missing,
+      });
     }
 
-    // INPUT
     const body = JSON.parse(event.body || "{}");
 
     const phone = normalizePhone(body.phone);
@@ -90,23 +94,33 @@ exports.handler = async (event) => {
     const plan = safeString(body.plan) || "vip";
     const location = safeString(body.location) || null;
     const slug = safeString(body.slug) || null;
-    const profile_id = toNumber(body.profile_id);
+
+    // Keep profile_id flexible because your flow has mixed bigint/uuid history.
+    // We store null when blank, otherwise pass through as provided.
+    const rawProfileId = body.profile_id;
+    const profile_id =
+      rawProfileId === undefined || rawProfileId === null || String(rawProfileId).trim() === ""
+        ? null
+        : rawProfileId;
 
     if (!phone) {
-      return json(400, { error: "Invalid phone format. Use 2547XXXXXXXX" });
+      return json(400, {
+        error: "Invalid phone format. Use 2547XXXXXXXX",
+      });
     }
 
     if (!amount || amount <= 0) {
-      return json(400, { error: "Invalid amount" });
+      return json(400, {
+        error: "Invalid amount",
+      });
     }
 
-    // BASE URL
     const baseURL =
       MPESA_ENVIRONMENT === "production"
         ? "https://api.safaricom.co.ke"
         : "https://sandbox.safaricom.co.ke";
 
-    // 🔑 1. ACCESS TOKEN
+    // 1. Get access token
     const auth = Buffer.from(
       `${MPESA_CONSUMER_KEY}:${MPESA_CONSUMER_SECRET}`
     ).toString("base64");
@@ -115,27 +129,38 @@ exports.handler = async (event) => {
       `${baseURL}/oauth/v1/generate?grant_type=client_credentials`,
       {
         method: "GET",
-        headers: { Authorization: `Basic ${auth}` },
+        headers: {
+          Authorization: `Basic ${auth}`,
+        },
       }
     );
 
-    const tokenData = await tokenRes.json();
+    const tokenText = await tokenRes.text();
+    let tokenData;
 
-    if (!tokenData.access_token) {
+    try {
+      tokenData = JSON.parse(tokenText);
+    } catch {
+      return json(500, {
+        error: "Failed to parse token response",
+        raw: tokenText,
+      });
+    }
+
+    if (!tokenRes.ok || !tokenData.access_token) {
       return json(500, {
         error: "Failed to get access token",
         tokenData,
       });
     }
 
-    // 🔐 2. STK PASSWORD
+    // 2. Build password
     const timestamp = timestampNow();
-
     const password = Buffer.from(
       `${MPESA_SHORTCODE}${MPESA_PASSKEY}${timestamp}`
     ).toString("base64");
 
-    // 📲 3. STK PUSH
+    // 3. Send STK push
     const stkPayload = {
       BusinessShortCode: MPESA_SHORTCODE,
       Password: password,
@@ -162,7 +187,17 @@ exports.handler = async (event) => {
       }
     );
 
-    const stkData = await stkRes.json();
+    const stkText = await stkRes.text();
+    let stkData;
+
+    try {
+      stkData = JSON.parse(stkText);
+    } catch {
+      return json(500, {
+        error: "Failed to parse STK response",
+        raw: stkText,
+      });
+    }
 
     if (!stkRes.ok || stkData.ResponseCode !== "0") {
       return json(500, {
@@ -171,9 +206,9 @@ exports.handler = async (event) => {
       });
     }
 
-    // 💾 4. SAVE PAYMENT (IMPORTANT FOR AUTO-ACTIVATION)
+    // 4. Save pending payment for callback auto-activation
     const paymentRow = {
-      profile_id: profile_id,
+      profile_id,
       phone,
       amount: Math.round(amount),
       name,
@@ -181,30 +216,35 @@ exports.handler = async (event) => {
       location,
       slug,
       status: "pending",
-      merchant_request_id: stkData.MerchantRequestID,
-      checkout_request_id: stkData.CheckoutRequestID,
-      response_code: stkData.ResponseCode,
-      response_description: stkData.ResponseDescription,
-      customer_message: stkData.CustomerMessage,
+      merchant_request_id: stkData.MerchantRequestID || null,
+      checkout_request_id: stkData.CheckoutRequestID || null,
+      response_code: stkData.ResponseCode || null,
+      response_description: stkData.ResponseDescription || null,
+      customer_message: stkData.CustomerMessage || null,
       response_payload: stkData,
       created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
-    const saveRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/stk_push_payments`,
-      {
-        method: "POST",
-        headers: {
-          apikey: SUPABASE_SERVICE_ROLE_KEY,
-          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-          "Content-Type": "application/json",
-          Prefer: "return=representation",
-        },
-        body: JSON.stringify(paymentRow),
-      }
-    );
+    const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/stk_push_payments`, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=representation",
+      },
+      body: JSON.stringify(paymentRow),
+    });
 
-    const saved = await saveRes.json();
+    const saveText = await saveRes.text();
+    let saved;
+
+    try {
+      saved = saveText ? JSON.parse(saveText) : null;
+    } catch {
+      saved = saveText;
+    }
 
     if (!saveRes.ok) {
       return json(500, {
@@ -214,17 +254,17 @@ exports.handler = async (event) => {
       });
     }
 
-    // ✅ SUCCESS
     return json(200, {
       success: true,
       message: "STK push sent",
       checkoutRequestID: stkData.CheckoutRequestID,
+      merchantRequestID: stkData.MerchantRequestID,
       customerMessage: stkData.CustomerMessage,
       payment: saved,
     });
-
   } catch (err) {
     console.error("STK ERROR:", err);
+
     return json(500, {
       error: "Server error",
       details: err.message,
