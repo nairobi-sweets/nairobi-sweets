@@ -1,2 +1,2 @@
-[functions."renewal-reminder-worker"]
-  schedule = "0 9,15 * * *"
+[functions."whatsapp-sender-worker"]
+  schedule = "*/5 * * * *"
