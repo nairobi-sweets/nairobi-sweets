@@ -1,16 +1,2 @@
-[build]
-  publish = "."
-  functions = "netlify/functions"
-
-[functions]
-  node_bundler = "esbuild"
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
+[functions."renewal-reminder-worker"]
+  schedule = "0 9,15 * * *"
