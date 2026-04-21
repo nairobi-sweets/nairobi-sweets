@@ -2,355 +2,272 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nairobi Sweets | Create Profile & Pay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Listing & Pay | Nairobi Sweets</title>
+  <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root {
-      --bg: #0b0b12;
-      --card: #141421;
-      --soft: #1c1c2b;
-      --text: #f5f5f7;
-      --muted: #b8b8c7;
-      --gold: #d4af37;
-      --pink: #ff4fa3;
-      --line: rgba(255,255,255,0.08);
-      --ok: #2ecc71;
-      --err: #ff5c5c;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
+    body{
+      min-height:100vh;
+      color:#f8fafc;
       background:
-        radial-gradient(circle at top right, rgba(255,79,163,0.12), transparent 25%),
-        radial-gradient(circle at top left, rgba(212,175,55,0.12), transparent 25%),
-        var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+        radial-gradient(circle at 10% 0%, rgba(236,72,153,.10), transparent 22%),
+        radial-gradient(circle at 90% 10%, rgba(250,204,21,.08), transparent 24%),
+        linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
     }
-
-    .wrap {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 32px 20px 56px;
+    .glass{
+      background:rgba(9,14,28,.74);
+      border:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      box-shadow:0 22px 60px rgba(0,0,0,.30);
     }
-
-    .brand {
-      text-align: center;
-      margin-bottom: 24px;
+    .input, .select, .textarea{
+      width:100%;
+      padding:14px 16px;
+      border-radius:18px;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.08);
+      color:white;
+      outline:none;
     }
-
-    .brand img {
-      max-width: 140px;
-      max-height: 140px;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 14px;
+    .textarea{ min-height:120px; resize:vertical; }
+    .input:focus, .select:focus, .textarea:focus{
+      border-color:rgba(236,72,153,.55);
+      box-shadow:0 0 0 3px rgba(236,72,153,.10);
     }
-
-    .brand h1 {
-      margin: 0;
-      font-size: 2rem;
-      color: var(--gold);
-      letter-spacing: 0.4px;
+    .btn{
+      border-radius:18px;
+      transition:.18s ease;
     }
-
-    .brand p {
-      margin: 10px auto 0;
-      color: var(--muted);
-      max-width: 580px;
-      line-height: 1.5;
+    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+    .btn-gold{
+      background:linear-gradient(135deg,#facc15,#f59e0b);
+      color:#111827;
+      font-weight:800;
     }
-
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 22px;
-      box-shadow: 0 18px 50px rgba(0,0,0,0.35);
-      backdrop-filter: blur(8px);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .field {
-      margin-bottom: 14px;
-    }
-
-    .field.full {
-      grid-column: 1 / -1;
-    }
-
-    label {
-      display: block;
-      font-size: 0.95rem;
-      margin-bottom: 8px;
-      color: #f2d98a;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 14px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: var(--soft);
-      color: var(--text);
-      outline: none;
-      font-size: 1rem;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    input::placeholder, textarea::placeholder {
-      color: #8f90a6;
-    }
-
-    .price-box {
-      margin: 18px 0 12px;
-      padding: 16px;
-      border: 1px solid rgba(212,175,55,0.25);
-      background: rgba(212,175,55,0.06);
-      border-radius: 14px;
-      color: var(--text);
-    }
-
-    .price-box strong {
-      color: var(--gold);
-      font-size: 1.1rem;
-    }
-
-    button {
-      width: 100%;
-      border: 0;
-      border-radius: 14px;
-      padding: 15px 18px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      color: #111;
-      background: linear-gradient(135deg, var(--gold), #f8d76a);
-      transition: transform 0.15s ease, opacity 0.15s ease;
-    }
-
-    button:hover { transform: translateY(-1px); }
-    button:disabled { opacity: 0.65; cursor: not-allowed; }
-
-    .status {
-      margin-top: 16px;
-      padding: 14px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--line);
-      color: var(--muted);
-      min-height: 52px;
-      line-height: 1.5;
-    }
-
-    .status.ok {
-      color: #dff8e8;
-      border-color: rgba(46,204,113,0.35);
-      background: rgba(46,204,113,0.08);
-    }
-
-    .status.err {
-      color: #ffe1e1;
-      border-color: rgba(255,92,92,0.35);
-      background: rgba(255,92,92,0.08);
-    }
-
-    .hint {
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 0.92rem;
-      line-height: 1.5;
-    }
-
-    @media (max-width: 700px) {
-      .grid { grid-template-columns: 1fr; }
+    .chip{
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.05);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:700;
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="brand">
-      <img src="/logo.png" alt="Nairobi Sweets logo" onerror="this.style.display='none'" />
-      <h1>Create Your Profile</h1>
-      <p>Complete your details, then confirm payment via M-Pesa to activate your Nairobi Sweets profile.</p>
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#080a12]/85 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+      <a href="/index.html" class="flex items-center gap-3">
+        <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets" class="w-11 h-11 rounded-full object-cover">
+        <div>
+          <div class="text-xs uppercase tracking-[0.22em] text-pink-200">Create your listing</div>
+          <div class="text-2xl font-extrabold text-yellow-300 leading-none">Nairobi Sweets</div>
+        </div>
+      </a>
+      <a href="/login.html" class="px-4 py-2 rounded-2xl bg-white/10 border border-white/10 text-sm">Login</a>
     </div>
+  </header>
 
-    <div class="card">
-      <form id="signupForm">
-        <div class="grid">
-          <div class="field">
-            <label for="name">Full Name *</label>
-            <input id="name" type="text" placeholder="Enter full name" required />
+  <main class="max-w-7xl mx-auto px-4 py-10">
+    <div class="grid lg:grid-cols-[1.15fr_.85fr] gap-6">
+      <section class="glass rounded-[30px] p-6 md:p-8">
+        <img src="/assets/logo/logo-hero.png" alt="Nairobi Sweets" class="w-48 max-w-[65%] mb-5">
+        <p class="text-xs uppercase tracking-[0.22em] text-pink-200 mb-3">Step 1 of 2</p>
+        <h1 class="text-4xl md:text-5xl font-black leading-[0.96] tracking-tight">Create your profile and start payment.</h1>
+        <p class="text-slate-300 mt-5 leading-7 max-w-2xl">
+          Fill in your listing details, choose your visibility plan, then complete M-Pesa payment to activate your profile flow.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mt-8">
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Stage name</label>
+            <input id="stage_name" class="input" placeholder="Your public display name">
           </div>
-
-          <div class="field">
-            <label for="phone">Phone Number *</label>
-            <input id="phone" type="tel" placeholder="07XXXXXXXX" required />
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Email</label>
+            <input id="email" type="email" class="input" placeholder="Your email">
           </div>
-
-          <div class="field">
-            <label for="email">Email</label>
-            <input id="email" type="email" placeholder="you@example.com" />
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Password</label>
+            <input id="password" type="password" class="input" placeholder="Create password">
           </div>
-
-          <div class="field">
-            <label for="location">Location</label>
-            <input id="location" type="text" placeholder="Nairobi" />
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Phone / WhatsApp</label>
+            <input id="phone" class="input" placeholder="07XXXXXXXX or 2547XXXXXXXX">
           </div>
-
-          <div class="field full">
-            <label for="photo_url">Photo URL</label>
-            <input id="photo_url" type="url" placeholder="https://example.com/photo.jpg" />
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Location</label>
+            <input id="location" class="input" placeholder="Westlands, Kilimani, CBD...">
           </div>
-
-          <div class="field full">
-            <label for="bio">Bio</label>
-            <textarea id="bio" placeholder="Write a short bio..."></textarea>
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Plan</label>
+            <select id="plan" class="select">
+              <option value="featured">Featured - KES 1000/week</option>
+              <option value="vip">VIP - KES 1500/week</option>
+              <option value="signature">Signature - KES 3000/week</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm text-slate-300 mb-2">Profile image URL</label>
+            <input id="image_url" class="input" placeholder="https://...">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm text-slate-300 mb-2">Bio</label>
+            <textarea id="bio" class="textarea" placeholder="Write a short premium bio for your listing"></textarea>
           </div>
         </div>
 
-        <div class="price-box">
-          Activation fee: <strong>KES 1,000</strong>
+        <button id="submitBtn" class="btn btn-gold w-full py-3 mt-6">Create Listing & Start M-Pesa</button>
+        <p id="msg" class="text-sm text-slate-300 mt-4"></p>
+      </section>
+
+      <aside class="glass rounded-[30px] p-6 md:p-8">
+        <div class="text-sm text-slate-300 mb-3">Payment summary</div>
+        <div class="space-y-3">
+          <div class="chip">Till Number: 568912</div>
+          <div class="chip">Featured: KES 1000/week</div>
+          <div class="chip">VIP: KES 1500/week</div>
+          <div class="chip">Signature: KES 3000/week</div>
         </div>
 
-        <button id="submitBtn" type="submit">Create Profile & Pay</button>
-        <div id="status" class="status">Ready.</div>
-        <div class="hint">
-          After clicking the button, check your phone for the M-Pesa STK prompt. You’ll then be redirected to the payment status page automatically.
+        <div class="mt-6 p-4 rounded-2xl bg-white/5 border border-white/10">
+          <div class="text-sm text-slate-300 mb-2">What happens next</div>
+          <ul class="space-y-2 text-sm text-slate-200">
+            <li>• Your account is created</li>
+            <li>• Your profile record is saved</li>
+            <li>• STK push is sent to your phone</li>
+            <li>• Admin can approve and activate your listing</li>
+          </ul>
         </div>
-      </form>
+      </aside>
     </div>
-  </div>
+  </main>
 
   <script>
-    const SUPABASE_URL = "YOUR_SUPABASE_URL";
-    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
-    const ACTIVATION_AMOUNT = 1000;
+    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const form = document.getElementById("signupForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const statusEl = document.getElementById("status");
+    const planPrices = {
+      featured: 1000,
+      vip: 1500,
+      signature: 3000
+    };
 
-    function setStatus(message, type = "") {
-      statusEl.textContent = message;
-      statusEl.className = "status" + (type ? " " + type : "");
+    function normalizePhone(phone){
+      let value = String(phone || '').replace(/[^\d]/g, '');
+      if(value.startsWith('0')) value = '254' + value.slice(1);
+      if(value.startsWith('7') && value.length === 9) value = '254' + value;
+      return value;
     }
 
-    function normalizePhone(phone) {
-      let p = String(phone || "").trim().replace(/\s+/g, "");
-      if (p.startsWith("+254")) return p.slice(1);
-      if (p.startsWith("254")) return p;
-      if (p.startsWith("0")) return "254" + p.slice(1);
-      return p;
-    }
-
-    function validatePayload(payload) {
-      if (!payload.name) throw new Error("Full name is required.");
-      if (!payload.phone) throw new Error("Phone number is required.");
-      if (!/^254\d{9}$/.test(payload.phone)) {
-        throw new Error("Phone number must look like 07XXXXXXXX or 2547XXXXXXXX.");
+    function setPlanFromQuery(){
+      const plan = new URLSearchParams(window.location.search).get('plan');
+      if(plan && ['featured','vip','signature'].includes(plan)){
+        document.getElementById('plan').value = plan;
       }
     }
 
-    async function savePendingProfile(payload) {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_ANON_KEY,
-          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-          "Prefer": "return=representation"
-        },
-        body: JSON.stringify([{
-          name: payload.name,
-          phone: payload.phone,
-          email: payload.email || "",
-          location: payload.location || "",
-          bio: payload.bio || "",
-          photo_url: payload.photo_url || "",
-          status: "pending",
-          payment_status: "pending"
-        }])
-      });
+    async function submitSignup(){
+      const stage_name = document.getElementById('stage_name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const phone = normalizePhone(document.getElementById('phone').value.trim());
+      const location = document.getElementById('location').value.trim();
+      const plan = document.getElementById('plan').value;
+      const image_url = document.getElementById('image_url').value.trim();
+      const bio = document.getElementById('bio').value.trim();
+      const msg = document.getElementById('msg');
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || JSON.stringify(data));
+      msg.textContent = '';
+
+      if(!stage_name || !email || !password || !phone || !location || !plan){
+        msg.textContent = 'Please fill all required fields.';
+        return;
       }
-      if (!Array.isArray(data) || !data[0]?.id) {
-        throw new Error("Profile could not be created.");
-      }
-      return data[0];
-    }
-
-    async function startStkPush(payload) {
-      const res = await fetch("/.netlify/functions/mpesa-stk-push", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error || data.message || "STK push failed.");
-      }
-      return data;
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      submitBtn.disabled = true;
 
       try {
-        const payload = {
-          name: document.getElementById("name").value.trim(),
-          phone: normalizePhone(document.getElementById("phone").value),
-          email: document.getElementById("email").value.trim(),
-          location: document.getElementById("location").value.trim(),
-          bio: document.getElementById("bio").value.trim(),
-          photo_url: document.getElementById("photo_url").value.trim(),
-          amount: ACTIVATION_AMOUNT
-        };
+        msg.textContent = 'Creating account...';
 
-        validatePayload(payload);
-
-        setStatus("Saving your profile...", "");
-        const profile = await savePendingProfile(payload);
-
-        setStatus("Sending M-Pesa STK prompt to your phone...", "");
-        const stk = await startStkPush({
-          ...payload,
-          profile_id: profile.id
+        const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
+          email,
+          password
         });
 
-        setStatus("STK sent. Redirecting to payment status...", "ok");
+        if(signUpError) throw signUpError;
 
-        const nextUrl =
-          `/payment-status.html?checkoutRequestID=${encodeURIComponent(stk.checkoutRequestID)}&profile_id=${encodeURIComponent(profile.id)}`;
+        const userId = signUpData.user?.id || null;
+
+        msg.textContent = 'Saving profile...';
+
+        const profilePayload = {
+          user_id: userId,
+          email,
+          stage_name,
+          name: stage_name,
+          phone,
+          whatsapp: phone,
+          location,
+          bio,
+          description: bio,
+          plan,
+          category: plan,
+          profile_image_url: image_url || null,
+          image_url: image_url || null,
+          payment_status: 'pending',
+          is_online: false,
+          is_verified: false,
+          is_featured: plan === 'featured',
+          is_vip: plan === 'vip',
+          is_vvip: plan === 'signature',
+          featured: plan === 'featured',
+          verified: false,
+          likes_count: 0,
+          views_count: 0,
+          price_per_week: planPrices[plan] || 0
+        };
+
+        const { data: inserted, error: profileError } = await supabaseClient
+          .from('profiles')
+          .insert([profilePayload])
+          .select()
+          .single();
+
+        if(profileError) throw profileError;
+
+        msg.textContent = 'Starting M-Pesa payment...';
+
+        const res = await fetch('/.netlify/functions/mpesa-stk-push', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            profile_id: inserted.id,
+            phone,
+            plan
+          })
+        });
+
+        const result = await res.json().catch(() => ({}));
+
+        if(!res.ok) throw new Error(result.error || 'Could not start STK push.');
+
+        msg.textContent = result.customer_message || 'STK push sent. Check your phone and enter your M-Pesa PIN.';
 
         setTimeout(() => {
-          window.location.href = nextUrl;
-        }, 900);
+          window.location.href = '/payment-status.html';
+        }, 2200);
       } catch (err) {
         console.error(err);
-        setStatus(err.message || "Something went wrong.", "err");
-        submitBtn.disabled = false;
+        msg.textContent = err.message || 'Could not complete signup right now.';
       }
-    });
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', submitSignup);
+    setPlanFromQuery();
   </script>
 </body>
 </html>
