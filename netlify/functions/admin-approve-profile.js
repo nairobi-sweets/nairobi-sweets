@@ -1,71 +1,127 @@
-const { json, requirePermission, safeString } = require("./_adminAuth");
+const { createClient } = require("@supabase/supabase-js");
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const PROFILES_TABLE = process.env.PROFILES_TABLE || "profiles";
+const ADMINS_TABLE = process.env.ADMINS_TABLE || "admin_users";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json",
+};
+
+function json(statusCode, body) {
+  return {
+    statusCode,
+    headers: corsHeaders,
+    body: JSON.stringify(body),
+  };
+}
+
+function safeLower(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function getBearerToken(event) {
+  const authHeader = event.headers.authorization || event.headers.Authorization || "";
+  if (!authHeader.startsWith("Bearer ")) return null;
+  return authHeader.slice(7).trim();
+}
+
+async function isAuthorizedAdmin(admin, token) {
+  const {
+    data: { user },
+    error,
+  } = await admin.auth.getUser(token);
+
+  if (error || !user) return { ok: false, reason: "Invalid or expired session" };
+
+  const userEmail = safeLower(user.email);
+  const userId = user.id;
+
+  const { data: adminRow } = await admin
+    .from(ADMINS_TABLE)
+    .select("id")
+    .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+
+  if (adminRow) return { ok: true, user };
+
+  const { data: profileRow } = await admin
+    .from(PROFILES_TABLE)
+    .select("id,is_admin,admin,is_active")
+    .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+    .limit(1)
+    .maybeSingle();
+
+  if (profileRow && (profileRow.is_admin === true || profileRow.admin === true)) {
+    if (profileRow.is_active === undefined || profileRow.is_active === true) {
+      return { ok: true, user };
+    }
+  }
+
+  const allowedEmails = String(process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || "")
+    .split(",")
+    .map(safeLower)
+    .filter(Boolean);
+
+  if (allowedEmails.includes(userEmail)) return { ok: true, user };
+
+  return { ok: false, reason: "Admin access required" };
+}
 
 exports.handler = async (event) => {
-  if (event.httpMethod === "OPTIONS") {
-    return json(200, { ok: true });
-  }
-
-  if (event.httpMethod !== "POST") {
-    return json(405, { ok: false, error: "Method not allowed" });
-  }
-
   try {
-    const auth = await requirePermission(event, "profiles.approve");
-    if (!auth.ok) return auth.response;
+    if (event.httpMethod === "OPTIONS") {
+      return { statusCode: 200, headers: corsHeaders, body: "" };
+    }
 
-    const { adminClient, adminRow, authUser } = auth;
+    if (event.httpMethod !== "POST") {
+      return json(405, { error: "Method not allowed" });
+    }
+
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      return json(500, { error: "Missing Supabase environment variables" });
+    }
+
+    const token = getBearerToken(event);
+    if (!token) return json(401, { error: "Missing bearer token" });
+
+    const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+
+    const authCheck = await isAuthorizedAdmin(admin, token);
+    if (!authCheck.ok) return json(403, { error: authCheck.reason });
 
     const body = JSON.parse(event.body || "{}");
-    const profileId = safeString(body.profileId);
-    const action = safeString(body.action).toLowerCase();
+    const profileId = body.profile_id;
+    const approvalStatus = String(body.approval_status || "approved").trim().toLowerCase();
 
     if (!profileId) {
-      return json(400, { ok: false, error: "profileId is required" });
+      return json(400, { error: "profile_id is required" });
     }
 
-    let patch = {};
-
-    if (action === "approve") {
-      patch = {
-        is_approved: true,
-        approved_at: new Date().toISOString(),
-        approved_by: authUser?.email || adminRow?.user_id || "admin",
-        status: "approved"
-      };
-    } else if (action === "unapprove") {
-      patch = {
-        is_approved: false,
-        status: "pending"
-      };
-    } else {
-      return json(400, {
-        ok: false,
-        error: "Invalid action. Allowed actions: approve, unapprove"
-      });
-    }
-
-    const { data, error } = await adminClient
-      .from("profiles")
-      .update(patch)
+    const { data, error } = await admin
+      .from(PROFILES_TABLE)
+      .update({
+        approval_status: approvalStatus,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", profileId)
       .select("*")
       .single();
 
     if (error) {
-      return json(500, { ok: false, error: error.message });
+      return json(500, { error: "Failed to update approval", details: error.message });
     }
 
-    return json(200, {
-      ok: true,
-      message: action === "approve"
-        ? "Profile approved successfully"
-        : "Profile moved back to pending successfully",
-      profile: data
-    });
-  } catch (error) {
-    return json(500, {
-      ok: false,
-      error: error.message || "Unexpected server error"
-    });
+    return json(200, { ok: true, profile: data });
+  } catch (err) {
+    return json(500, { error: "Server error", details: err.message || String(err) });
   }
 };
