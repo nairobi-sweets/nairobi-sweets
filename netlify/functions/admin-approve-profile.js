@@ -1,4 +1,4 @@
-const { safeString, json, requireAdmin } = require("./_adminAuth");
+const { safeString, json, requirePermission } = require("./_adminAuth");
 
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
@@ -10,7 +10,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    const auth = await requireAdmin(event);
+    const auth = await requirePermission(event, "profiles.approve");
     if (!auth.ok) return auth.response;
 
     const { adminClient, authUser, adminRow } = auth;
@@ -50,7 +50,6 @@ exports.handler = async (event) => {
     if ("is_approved" in existing) patch.is_approved = true;
     if ("approved_at" in existing) patch.approved_at = now;
     if ("updated_at" in existing) patch.updated_at = now;
-
     if ("approved_by" in existing) patch.approved_by = authUser.id;
     if ("last_admin_action_by" in existing) patch.last_admin_action_by = authUser.id;
     if ("last_admin_action_role" in existing) patch.last_admin_action_role = adminRow.role;
@@ -70,6 +69,10 @@ exports.handler = async (event) => {
       ok: true,
       message: "Profile approved successfully",
       profile: updated,
+      currentAdmin: {
+        role: adminRow.role,
+        permissions: adminRow.permissions
+      }
     });
   } catch (error) {
     return json(500, {
