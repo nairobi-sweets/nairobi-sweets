@@ -1,10 +1,78 @@
-const {
-  PROFILES_TABLE,
-  corsHeaders,
-  json,
-  requireAdmin,
-  writeAuditLog,
-} = require("./_adminAuth");
+const { createClient } = require("@supabase/supabase-js");
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const PROFILES_TABLE = process.env.PROFILES_TABLE || "profiles";
+const ADMINS_TABLE = process.env.ADMINS_TABLE || "admin_users";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json",
+};
+
+function json(statusCode, body) {
+  return {
+    statusCode,
+    headers: corsHeaders,
+    body: JSON.stringify(body),
+  };
+}
+
+function safeLower(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function getBearerToken(event) {
+  const authHeader = event.headers.authorization || event.headers.Authorization || "";
+  if (!authHeader.startsWith("Bearer ")) return null;
+  return authHeader.slice(7).trim();
+}
+
+async function isAuthorizedAdmin(admin, token) {
+  const {
+    data: { user },
+    error,
+  } = await admin.auth.getUser(token);
+
+  if (error || !user) return { ok: false, reason: "Invalid or expired session" };
+
+  const userEmail = safeLower(user.email);
+  const userId = user.id;
+
+  const { data: adminRow } = await admin
+    .from(ADMINS_TABLE)
+    .select("id")
+    .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+
+  if (adminRow) return { ok: true, user };
+
+  const { data: profileRow } = await admin
+    .from(PROFILES_TABLE)
+    .select("id,is_admin,admin,is_active")
+    .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+    .limit(1)
+    .maybeSingle();
+
+  if (profileRow && (profileRow.is_admin === true || profileRow.admin === true)) {
+    if (profileRow.is_active === undefined || profileRow.is_active === true) {
+      return { ok: true, user };
+    }
+  }
+
+  const allowedEmails = String(process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || "")
+    .split(",")
+    .map(safeLower)
+    .filter(Boolean);
+
+  if (allowedEmails.includes(userEmail)) return { ok: true, user };
+
+  return { ok: false, reason: "Admin access required" };
+}
 
 exports.handler = async (event) => {
   try {
@@ -16,12 +84,21 @@ exports.handler = async (event) => {
       return json(405, { error: "Method not allowed" });
     }
 
-    const auth = await requireAdmin(event);
-    if (!auth.ok) return auth.response;
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      return json(500, { error: "Missing Supabase environment variables" });
+    }
 
-    const { admin, user, source } = auth;
+    const token = getBearerToken(event);
+    if (!token) return json(401, { error: "Missing bearer token" });
+
+    const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+
+    const authCheck = await isAuthorizedAdmin(admin, token);
+    if (!authCheck.ok) return json(403, { error: authCheck.reason });
+
     const body = JSON.parse(event.body || "{}");
-
     const profileId = body.profile_id;
     const paymentStatus = String(body.payment_status || "").trim().toLowerCase();
 
@@ -30,74 +107,25 @@ exports.handler = async (event) => {
     }
 
     if (!["paid", "unpaid"].includes(paymentStatus)) {
-      return json(400, {
-        error: "payment_status must be 'paid' or 'unpaid'",
-      });
-    }
-
-    const { data: beforeRow, error: beforeError } = await admin
-      .from(PROFILES_TABLE)
-      .select("*")
-      .eq("id", profileId)
-      .maybeSingle();
-
-    if (beforeError) {
-      return json(500, {
-        error: "Failed to read current profile state",
-        details: beforeError.message,
-      });
-    }
-
-    if (!beforeRow) {
-      return json(404, { error: "Profile not found" });
-    }
-
-    const patch = {
-      payment_status: paymentStatus,
-      updated_at: new Date().toISOString(),
-    };
-
-    if (paymentStatus === "paid") {
-      patch.payment_verified = true;
+      return json(400, { error: "payment_status must be 'paid' or 'unpaid'" });
     }
 
     const { data, error } = await admin
       .from(PROFILES_TABLE)
-      .update(patch)
+      .update({
+        payment_status: paymentStatus,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", profileId)
       .select("*")
       .single();
 
     if (error) {
-      return json(500, {
-        error: "Failed to update payment status",
-        details: error.message,
-      });
+      return json(500, { error: "Failed to update payment status", details: error.message });
     }
 
-    await writeAuditLog(admin, {
-      admin_user_id: user.id,
-      admin_email: user.email || null,
-      action: "toggle_payment",
-      target_table: PROFILES_TABLE,
-      target_id: String(profileId),
-      target_label: data.stage_name || data.full_name || data.name || null,
-      before_data: beforeRow,
-      after_data: data,
-      meta: {
-        source,
-        payment_status: paymentStatus,
-      },
-    });
-
-    return json(200, {
-      ok: true,
-      profile: data,
-    });
+    return json(200, { ok: true, profile: data });
   } catch (err) {
-    return json(500, {
-      error: "Server error",
-      details: err.message || String(err),
-    });
+    return json(500, { error: "Server error", details: err.message || String(err) });
   }
 };
