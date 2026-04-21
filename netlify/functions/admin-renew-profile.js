@@ -1,4 +1,4 @@
-const { safeString, json, requireAdmin } = require("./_adminAuth");
+const { safeString, json, requirePermission } = require("./_adminAuth");
 
 function safeNumber(value, fallback = 7) {
   const num = Number(value);
@@ -38,7 +38,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    const auth = await requireAdmin(event);
+    const auth = await requirePermission(event, "profiles.renew");
     if (!auth.ok) return auth.response;
 
     const { adminClient, authUser, adminRow } = auth;
@@ -92,7 +92,6 @@ exports.handler = async (event) => {
     if ("listing_status" in existing) patch.listing_status = "active";
     if ("is_approved" in existing) patch.is_approved = true;
     if ("updated_at" in existing) patch.updated_at = new Date().toISOString();
-
     if ("renewed_at" in existing) patch.renewed_at = new Date().toISOString();
     if ("renewed_by" in existing) patch.renewed_by = authUser.id;
     if ("last_admin_action_by" in existing) patch.last_admin_action_by = authUser.id;
@@ -115,6 +114,10 @@ exports.handler = async (event) => {
       expiry_field: expiryField,
       expires_at: updated[expiryField],
       profile: updated,
+      currentAdmin: {
+        role: adminRow.role,
+        permissions: adminRow.permissions
+      }
     });
   } catch (error) {
     return json(500, {
