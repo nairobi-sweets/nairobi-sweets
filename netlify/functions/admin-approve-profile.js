@@ -1,37 +1,4 @@
-const { createClient } = require("@supabase/supabase-js");
-
-const json = (statusCode, body) => ({
-  statusCode,
-  headers: {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Admin-Token",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  },
-  body: JSON.stringify(body),
-});
-
-function safeString(value) {
-  return value == null ? "" : String(value).trim();
-}
-
-function getAdminToken(event) {
-  const authHeader =
-    event.headers.authorization ||
-    event.headers.Authorization ||
-    "";
-
-  const xAdminToken =
-    event.headers["x-admin-token"] ||
-    event.headers["X-Admin-Token"] ||
-    "";
-
-  if (authHeader.startsWith("Bearer ")) {
-    return authHeader.slice(7).trim();
-  }
-
-  return safeString(xAdminToken);
-}
+const { safeString, json, requireAdmin } = require("./_adminAuth");
 
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
@@ -43,19 +10,10 @@ exports.handler = async (event) => {
   }
 
   try {
-    const adminVaultToken = safeString(process.env.ADMIN_VAULT_TOKEN);
-    const suppliedToken = getAdminToken(event);
+    const auth = await requireAdmin(event);
+    if (!auth.ok) return auth.response;
 
-    if (!adminVaultToken || suppliedToken !== adminVaultToken) {
-      return json(401, { ok: false, error: "Unauthorized" });
-    }
-
-    const supabaseUrl = safeString(process.env.SUPABASE_URL);
-    const serviceRoleKey = safeString(process.env.SUPABASE_SERVICE_ROLE_KEY);
-
-    if (!supabaseUrl || !serviceRoleKey) {
-      return json(500, { ok: false, error: "Missing server environment variables" });
-    }
+    const { adminClient, authUser, adminRow } = auth;
 
     const body = JSON.parse(event.body || "{}");
     const profileId = safeString(body.profileId);
@@ -66,9 +24,7 @@ exports.handler = async (event) => {
       return json(400, { ok: false, error: "profileId is required" });
     }
 
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
-
-    const { data: existing, error: existingError } = await supabase
+    const { data: existing, error: existingError } = await adminClient
       .from(tableName)
       .select("*")
       .eq(idColumn, profileId)
@@ -95,7 +51,11 @@ exports.handler = async (event) => {
     if ("approved_at" in existing) patch.approved_at = now;
     if ("updated_at" in existing) patch.updated_at = now;
 
-    const { data: updated, error: updateError } = await supabase
+    if ("approved_by" in existing) patch.approved_by = authUser.id;
+    if ("last_admin_action_by" in existing) patch.last_admin_action_by = authUser.id;
+    if ("last_admin_action_role" in existing) patch.last_admin_action_role = adminRow.role;
+
+    const { data: updated, error: updateError } = await adminClient
       .from(tableName)
       .update(patch)
       .eq(idColumn, profileId)
