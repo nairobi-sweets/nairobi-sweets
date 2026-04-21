@@ -1,4 +1,4 @@
-const { safeString, json, requireAdmin } = require("./_adminAuth");
+const { safeString, json, requirePermission } = require("./_adminAuth");
 
 const PLAN_PRICES = {
   featured: 1000,
@@ -57,10 +57,10 @@ exports.handler = async (event) => {
   }
 
   try {
-    const auth = await requireAdmin(event);
+    const auth = await requirePermission(event, "dashboard.read");
     if (!auth.ok) return auth.response;
 
-    const { adminClient } = auth;
+    const { adminClient, adminRow } = auth;
     const body = JSON.parse(event.body || "{}");
     const tableName = safeString(body.tableName) || "profiles";
 
@@ -121,6 +121,10 @@ exports.handler = async (event) => {
           },
         },
       },
+      currentAdmin: {
+        role: adminRow.role,
+        permissions: adminRow.permissions
+      }
     });
   } catch (error) {
     return json(500, {
