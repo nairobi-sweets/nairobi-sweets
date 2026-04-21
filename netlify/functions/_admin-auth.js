@@ -1,6 +1,8 @@
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+const { createClient } = require("@supabase/supabase-js");
+
+function safeString(value) {
+  return value == null ? "" : String(value).trim();
+}
 
 function json(statusCode, body) {
   return {
@@ -15,60 +17,146 @@ function json(statusCode, body) {
   };
 }
 
-async function getUserFromJwt(event) {
-  const auth = event.headers.authorization || event.headers.Authorization || "";
-  if (!auth.startsWith("Bearer ")) {
-    throw Object.assign(new Error("Missing bearer token"), { statusCode: 401 });
-  }
+function getBearerToken(event) {
+  const authHeader =
+    event.headers.authorization ||
+    event.headers.Authorization ||
+    "";
 
-  const token = auth.slice("Bearer ".length).trim();
-
-  const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-    headers: {
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) {
-    throw Object.assign(new Error("Invalid session"), { statusCode: 401 });
-  }
-
-  return await res.json();
+  if (!authHeader.startsWith("Bearer ")) return "";
+  return authHeader.slice(7).trim();
 }
 
-async function assertAdmin(userId) {
-  const url =
-    `${SUPABASE_URL}/rest/v1/admin_users` +
-    `?select=user_id,role,is_active` +
-    `&user_id=eq.${encodeURIComponent(userId)}` +
-    `&is_active=eq.true&limit=1`;
+function getSupabaseClients() {
+  const supabaseUrl = safeString(process.env.SUPABASE_URL);
+  const serviceRoleKey = safeString(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-  const res = await fetch(url, {
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  const text = await res.text();
-  if (!res.ok) {
-    throw Object.assign(new Error(`Admin lookup failed: ${text}`), { statusCode: 500 });
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
   }
 
-  const rows = JSON.parse(text || "[]");
-  if (!rows.length) {
-    throw Object.assign(new Error("Forbidden"), { statusCode: 403 });
+  const adminClient = createClient(supabaseUrl, serviceRoleKey);
+  return { adminClient };
+}
+
+const ROLE_PERMISSIONS = {
+  viewer: ["profiles.read", "dashboard.read"],
+  admin: ["profiles.read", "dashboard.read", "profiles.approve", "profiles.renew"],
+  super_admin: [
+    "profiles.read",
+    "dashboard.read",
+    "profiles.approve",
+    "profiles.renew",
+    "profiles.delete",
+    "admins.manage"
+  ]
+};
+
+function normalizeRole(role) {
+  const clean = safeString(role).toLowerCase();
+  if (clean === "super_admin") return "super_admin";
+  if (clean === "admin") return "admin";
+  if (clean === "viewer") return "viewer";
+  return "";
+}
+
+function getPermissionsForRole(role) {
+  const normalized = normalizeRole(role);
+  return ROLE_PERMISSIONS[normalized] || [];
+}
+
+function hasPermission(role, permission) {
+  return getPermissionsForRole(role).includes(permission);
+}
+
+async function getAuthenticatedAdmin(event) {
+  const token = getBearerToken(event);
+  if (!token) {
+    return {
+      ok: false,
+      response: json(401, { ok: false, error: "Missing bearer token" }),
+    };
   }
 
-  return rows[0];
+  const { adminClient } = getSupabaseClients();
+
+  const { data: userData, error: userError } = await adminClient.auth.getUser(token);
+
+  if (userError || !userData?.user) {
+    return {
+      ok: false,
+      response: json(401, { ok: false, error: "Invalid or expired session" }),
+    };
+  }
+
+  const authUser = userData.user;
+
+  const { data: adminRow, error: adminError } = await adminClient
+    .from("admin_users")
+    .select("*")
+    .eq("user_id", authUser.id)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (adminError) {
+    return {
+      ok: false,
+      response: json(500, { ok: false, error: adminError.message }),
+    };
+  }
+
+  if (!adminRow) {
+    return {
+      ok: false,
+      response: json(403, { ok: false, error: "Admin access required" }),
+    };
+  }
+
+  const role = normalizeRole(adminRow.role);
+
+  if (!role) {
+    return {
+      ok: false,
+      response: json(403, { ok: false, error: "Invalid admin role" }),
+    };
+  }
+
+  return {
+    ok: true,
+    adminClient,
+    authUser,
+    adminRow: {
+      ...adminRow,
+      role,
+      permissions: getPermissionsForRole(role)
+    }
+  };
 }
 
-async function requireAdmin(event) {
-  const user = await getUserFromJwt(event);
-  const admin = await assertAdmin(user.id);
-  return { user, admin };
+async function requirePermission(event, permission) {
+  const auth = await getAuthenticatedAdmin(event);
+  if (!auth.ok) return auth;
+
+  if (!hasPermission(auth.adminRow.role, permission)) {
+    return {
+      ok: false,
+      response: json(403, {
+        ok: false,
+        error: `Permission denied: ${permission}`,
+        role: auth.adminRow.role
+      }),
+    };
+  }
+
+  return auth;
 }
 
-module.exports = { json, requireAdmin };
+module.exports = {
+  safeString,
+  json,
+  normalizeRole,
+  getPermissionsForRole,
+  hasPermission,
+  getAuthenticatedAdmin,
+  requirePermission,
+};
