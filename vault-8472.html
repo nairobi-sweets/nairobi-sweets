@@ -31,7 +31,7 @@
     }
 
     .wrap {
-      max-width: 1450px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
@@ -54,8 +54,7 @@
     .row,
     .topbar,
     .actions,
-    .tabs,
-    .log-toolbar {
+    .tabs {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
@@ -206,6 +205,10 @@
       border: 1px solid var(--line);
     }
 
+    .status-good { color: #86efac; }
+    .status-warn { color: #fde68a; }
+    .status-bad { color: #fca5a5; }
+
     .empty,
     .error-box {
       background: var(--panel);
@@ -231,81 +234,10 @@
       font-size: 13px;
     }
 
-    .section-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin: 0 0 10px;
-    }
-
-    .logs-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .log-card {
-      background: var(--panel-2);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-    }
-
-    .log-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-      align-items: center;
-    }
-
-    .log-action {
-      font-weight: 700;
-      font-size: 15px;
-    }
-
-    .log-time {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .log-meta {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(220px, 1fr));
-      gap: 8px 14px;
-      margin-top: 8px;
-    }
-
-    .log-meta div {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .log-json {
-      margin-top: 10px;
-      background: rgba(0,0,0,0.18);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 12px;
-      padding: 12px;
-      overflow: auto;
-      font-size: 12px;
-      white-space: pre-wrap;
-      color: #eaf0ff;
-    }
-
-    details summary {
-      cursor: pointer;
-      color: #fff;
-      font-weight: 600;
-      margin-top: 8px;
-    }
-
     @media (max-width: 980px) {
       .grid { grid-template-columns: 1fr; }
       .stats { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
-      .meta,
-      .log-meta { grid-template-columns: 1fr; }
+      .meta { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 560px) {
@@ -372,23 +304,8 @@
 
     <div id="results"></div>
 
-    <div class="panel">
-      <div class="log-toolbar">
-        <div class="section-title">Audit Logs</div>
-        <button id="refreshLogsBtn" class="btn-soft">Refresh Logs</button>
-        <select id="logActionFilter">
-          <option value="">All actions</option>
-          <option value="approve_profile">approve_profile</option>
-          <option value="toggle_payment">toggle_payment</option>
-          <option value="delete_profile">delete_profile</option>
-        </select>
-      </div>
-      <div id="logsStatus" class="substatus">Audit stream idle.</div>
-      <div id="auditLogs"></div>
-    </div>
-
     <div class="footer-note">
-      Nairobi Sweets vault controls approvals, payments, cleanup, and now the paper trail too.
+      Nairobi Sweets vault controls approvals, payment state, and cleanup from one screen.
     </div>
   </div>
 
@@ -406,14 +323,10 @@
       restoreBtn: document.getElementById("restoreBtn"),
       logoutBtn: document.getElementById("logoutBtn"),
       refreshBtn: document.getElementById("refreshBtn"),
-      refreshLogsBtn: document.getElementById("refreshLogsBtn"),
       search: document.getElementById("search"),
       status: document.getElementById("status"),
       adminMeta: document.getElementById("adminMeta"),
-      logsStatus: document.getElementById("logsStatus"),
-      logActionFilter: document.getElementById("logActionFilter"),
       results: document.getElementById("results"),
-      auditLogs: document.getElementById("auditLogs"),
       total: document.getElementById("totalCount"),
       pending: document.getElementById("pendingCount"),
       approved: document.getElementById("approvedCount"),
@@ -423,6 +336,7 @@
     };
 
     let currentFilter = "all";
+    let lastPayload = null;
 
     function setStatus(message, isError = false) {
       els.status.textContent = message || "";
@@ -434,11 +348,6 @@
       els.adminMeta.style.color = isError ? "#ffb3b3" : "rgba(255,255,255,0.72)";
     }
 
-    function setLogsStatus(message, isError = false) {
-      els.logsStatus.textContent = message || "";
-      els.logsStatus.style.color = isError ? "#ffb3b3" : "rgba(255,255,255,0.72)";
-    }
-
     function escapeHtml(value) {
       return String(value ?? "")
         .replaceAll("&", "&amp;")
@@ -448,8 +357,12 @@
         .replaceAll("'", "&#39;");
     }
 
+    function normalizeText(value) {
+      return String(value ?? "").trim();
+    }
+
     function lc(value) {
-      return String(value ?? "").trim().toLowerCase();
+      return normalizeText(value).toLowerCase();
     }
 
     function formatDate(value) {
@@ -463,14 +376,6 @@
       const num = Number(value);
       if (!Number.isFinite(num)) return "-";
       return "KES " + num.toLocaleString();
-    }
-
-    function prettyJson(value) {
-      try {
-        return JSON.stringify(value ?? null, null, 2);
-      } catch {
-        return String(value ?? "");
-      }
     }
 
     async function getAccessToken() {
@@ -517,16 +422,6 @@
       if (currentFilter !== "all") qs.set("status", currentFilter);
 
       return `/.netlify/functions/admin-list-profiles?${qs.toString()}`;
-    }
-
-    function buildLogsUrl() {
-      const qs = new URLSearchParams();
-      qs.set("limit", "50");
-
-      const action = els.logActionFilter.value.trim();
-      if (action) qs.set("action", action);
-
-      return `/.netlify/functions/admin-list-audit-logs?${qs.toString()}`;
     }
 
     function renderSummary(summary = {}) {
@@ -623,67 +518,6 @@
       `;
     }
 
-    function renderAuditLogs(logs = []) {
-      if (!Array.isArray(logs) || !logs.length) {
-        els.auditLogs.innerHTML = `
-          <div class="empty" style="margin-top:14px;">
-            <strong>No audit logs yet</strong>
-            <div class="muted">When admins touch records, the footprints will show up here.</div>
-          </div>
-        `;
-        return;
-      }
-
-      els.auditLogs.innerHTML = `
-        <div class="logs-grid">
-          ${logs.map((log) => {
-            const action = log.action || "unknown_action";
-            const adminEmail = log.admin_email || "-";
-            const targetLabel = log.target_label || "-";
-            const targetId = log.target_id || "-";
-            const createdAt = formatDate(log.created_at);
-            const source = log.meta?.source || "-";
-
-            return `
-              <div class="log-card">
-                <div class="log-head">
-                  <div class="log-action">${escapeHtml(action)}</div>
-                  <div class="log-time">${escapeHtml(createdAt)}</div>
-                </div>
-
-                <div class="chipbar">
-                  <span class="chip">Admin: ${escapeHtml(adminEmail)}</span>
-                  <span class="chip">Target: ${escapeHtml(targetLabel)}</span>
-                  <span class="chip">ID: ${escapeHtml(targetId)}</span>
-                  <span class="chip">Source: ${escapeHtml(source)}</span>
-                </div>
-
-                <div class="log-meta">
-                  <div><strong>Table:</strong> ${escapeHtml(log.target_table || "-")}</div>
-                  <div><strong>Action:</strong> ${escapeHtml(action)}</div>
-                </div>
-
-                <details>
-                  <summary>Before</summary>
-                  <pre class="log-json">${escapeHtml(prettyJson(log.before_data))}</pre>
-                </details>
-
-                <details>
-                  <summary>After</summary>
-                  <pre class="log-json">${escapeHtml(prettyJson(log.after_data))}</pre>
-                </details>
-
-                <details>
-                  <summary>Meta</summary>
-                  <pre class="log-json">${escapeHtml(prettyJson(log.meta))}</pre>
-                </details>
-              </div>
-            `;
-          }).join("")}
-        </div>
-      `;
-    }
-
     async function loginAdmin() {
       try {
         const email = els.email.value.trim();
@@ -700,7 +534,7 @@
         if (!data?.session) throw new Error("Login returned no session.");
 
         setStatus("Login successful.");
-        await Promise.all([loadProfiles(), loadAuditLogs()]);
+        await loadProfiles();
       } catch (err) {
         console.error("login error:", err);
         setStatus(err.message || "Login failed.", true);
@@ -716,12 +550,11 @@
         if (!data?.session) {
           setStatus("No saved session found.", true);
           setAdminMeta("Waiting for valid admin session...", true);
-          setLogsStatus("Logs unavailable until admin session is active.", true);
           return;
         }
 
         setStatus("Session restored.");
-        await Promise.all([loadProfiles(), loadAuditLogs()]);
+        await loadProfiles();
       } catch (err) {
         console.error("restore session error:", err);
         setStatus(err.message || "Could not restore session.", true);
@@ -731,12 +564,11 @@
     async function logoutAdmin() {
       try {
         await sb.auth.signOut();
+        lastPayload = null;
         renderSummary({});
         els.results.innerHTML = "";
-        els.auditLogs.innerHTML = "";
         setStatus("Logged out.");
         setAdminMeta("Waiting for valid admin session...");
-        setLogsStatus("Audit stream idle.");
       } catch (err) {
         console.error("logout error:", err);
         setStatus(err.message || "Logout failed.", true);
@@ -748,6 +580,7 @@
         setStatus("Loading profiles...");
         const payload = await apiFetch(buildListUrl(), { method: "GET" });
 
+        lastPayload = payload;
         renderSummary(payload.summary || {});
         renderProfiles(payload.profiles || []);
 
@@ -761,24 +594,6 @@
         renderError(err.message || "Failed to load profiles.");
         setAdminMeta("Admin session missing or not authorized.", true);
         setStatus(err.message || "Load failed.", true);
-      }
-    }
-
-    async function loadAuditLogs() {
-      try {
-        setLogsStatus("Loading audit logs...");
-        const payload = await apiFetch(buildLogsUrl(), { method: "GET" });
-        renderAuditLogs(payload.logs || []);
-        setLogsStatus(`Loaded ${(payload.logs || []).length} audit logs.`);
-      } catch (err) {
-        console.error("loadAuditLogs error:", err);
-        els.auditLogs.innerHTML = `
-          <div class="error-box" style="margin-top:14px;">
-            <strong>Audit log load failed</strong>
-            <div class="muted">${escapeHtml(err.message || "Unknown error")}</div>
-          </div>
-        `;
-        setLogsStatus(err.message || "Failed to load audit logs.", true);
       }
     }
 
@@ -796,7 +611,7 @@
         });
 
         setStatus("Profile approved.");
-        await Promise.all([loadProfiles(), loadAuditLogs()]);
+        await loadProfiles();
       } catch (err) {
         console.error("approveProfile error:", err);
         setStatus(err.message || "Approval failed.", true);
@@ -819,7 +634,7 @@
         });
 
         setStatus(`Payment marked ${nextStatus}.`);
-        await Promise.all([loadProfiles(), loadAuditLogs()]);
+        await loadProfiles();
       } catch (err) {
         console.error("togglePayment error:", err);
         setStatus(err.message || "Payment update failed.", true);
@@ -843,7 +658,7 @@
         });
 
         setStatus("Profile deleted.");
-        await Promise.all([loadProfiles(), loadAuditLogs()]);
+        await loadProfiles();
       } catch (err) {
         console.error("deleteProfile error:", err);
         setStatus(err.message || "Delete failed.", true);
@@ -866,8 +681,6 @@
       searchTimer = setTimeout(() => loadProfiles(), 300);
     });
 
-    els.logActionFilter.addEventListener("change", loadAuditLogs);
-
     els.tabs.forEach((btn) => {
       btn.addEventListener("click", () => setFilter(btn.dataset.filter));
     });
@@ -875,8 +688,7 @@
     els.loginBtn.addEventListener("click", loginAdmin);
     els.restoreBtn.addEventListener("click", restoreSession);
     els.logoutBtn.addEventListener("click", logoutAdmin);
-    els.refreshBtn.addEventListener("click", () => Promise.all([loadProfiles(), loadAuditLogs()]));
-    els.refreshLogsBtn.addEventListener("click", loadAuditLogs);
+    els.refreshBtn.addEventListener("click", loadProfiles);
 
     sb.auth.onAuthStateChange((_event, session) => {
       if (session) {
