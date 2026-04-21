@@ -10,7 +10,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    const auth = await requirePermission(event, "admins.manage");
+    const auth = await requirePermission(event, "profiles.read");
     if (!auth.ok) return auth.response;
 
     const { adminClient, adminRow } = auth;
