@@ -1,0 +1,11 @@
+module.exports = {
+  safeString,
+  json,
+  normalizeRole,
+  getPermissionsForRole,
+  hasPermission,
+  getAuthenticatedAdmin,
+  requirePermission,
+  assertValidRole,
+  canAssignRole,
+};
