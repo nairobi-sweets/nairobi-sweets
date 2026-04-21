@@ -2,361 +2,1298 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vault Admin | Nairobi Sweets</title>
-  <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nairobi Sweets | Vault Admin</title>
+
   <style>
-    body{
-      min-height:100vh;
-      color:#f8fafc;
+    :root {
+      --bg: #050816;
+      --bg-2: #0a1024;
+      --panel: rgba(10, 14, 32, 0.92);
+      --panel-2: rgba(15, 20, 44, 0.95);
+      --line: rgba(255, 255, 255, 0.08);
+      --line-strong: rgba(255, 214, 92, 0.22);
+      --text: #f5f7ff;
+      --muted: #9ea8c2;
+      --gold: #ffd54f;
+      --gold-2: #ffb300;
+      --pink: #ff8bd7;
+      --green: #7ef0a7;
+      --red: #ff7b92;
+      --blue: #8cb4ff;
+      --shadow: 0 20px 70px rgba(0, 0, 0, 0.42);
+      --radius-xl: 26px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --input: rgba(9, 14, 33, 0.95);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
       background:
-        radial-gradient(circle at 10% 0%, rgba(236,72,153,.10), transparent 22%),
-        radial-gradient(circle at 90% 10%, rgba(250,204,21,.08), transparent 24%),
-        linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
-      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        radial-gradient(circle at 0% 10%, rgba(165, 49, 201, 0.14), transparent 28%),
+        radial-gradient(circle at 100% 0%, rgba(255, 208, 0, 0.10), transparent 26%),
+        linear-gradient(180deg, #030611 0%, #050816 55%, #040713 100%);
     }
-    .glass{
-      background:rgba(9,14,28,.74);
-      border:1px solid rgba(255,255,255,.08);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      box-shadow:0 22px 60px rgba(0,0,0,.30);
+
+    a {
+      color: inherit;
+      text-decoration: none;
     }
-    .input, .select{
-      width:100%;
-      padding:14px 16px;
-      border-radius:18px;
-      background:rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.08);
-      color:white;
-      outline:none;
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+      background: rgba(4, 8, 18, 0.74);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .btn{
-      border-radius:16px;
-      transition:.18s ease;
+
+    .topbar-inner {
+      width: min(1380px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
-    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
-    .btn-gold{
-      background:linear-gradient(135deg,#facc15,#f59e0b);
-      color:#111827;
-      font-weight:800;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .btn-dark{
-      background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.08);
-      color:white;
+
+    .brand img {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: rgba(255,255,255,0.03);
     }
-    .btn-pink{
-      background:linear-gradient(135deg,#ec4899,#db2777);
-      color:white;
-      font-weight:700;
+
+    .brand small {
+      display: block;
+      color: #f6d8ff;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 11px;
+      margin-bottom: 2px;
     }
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      border-radius:999px;
-      padding:7px 11px;
-      font-size:11px;
-      font-weight:800;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.05);
+
+    .brand strong {
+      display: block;
+      color: var(--gold);
+      font-size: 18px;
+      font-weight: 800;
     }
-    .table-wrap{
-      overflow:auto;
-      border-radius:24px;
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
     }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      min-width:1100px;
+
+    .btn {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: 0.2s ease;
     }
-    th, td{
-      padding:14px 12px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      text-align:left;
-      vertical-align:top;
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
     }
-    th{
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      color:#cbd5e1;
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      color: #231700;
+      background: linear-gradient(180deg, #ffe08a 0%, #ffd54f 50%, #ffbf00 100%);
+      box-shadow: 0 16px 32px rgba(255, 191, 0, 0.18);
+    }
+
+    .btn-secondary {
+      color: #fff;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn-danger {
+      color: #fff;
+      background: rgba(255, 123, 146, 0.14);
+      border: 1px solid rgba(255, 123, 146, 0.28);
+    }
+
+    .page {
+      width: min(1380px, calc(100% - 28px));
+      margin: 24px auto 40px;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 20px;
+    }
+
+    .sidebar,
+    .content-panel,
+    .login-card,
+    .stat-card,
+    .filter-card,
+    .table-card {
+      background: linear-gradient(180deg, rgba(7, 12, 29, 0.94), rgba(5, 9, 23, 0.96));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      padding: 20px;
+      height: fit-content;
+      position: sticky;
+      top: 88px;
+    }
+
+    .sidebar h2,
+    .content-header h1 {
+      margin: 0;
+      letter-spacing: -0.03em;
+    }
+
+    .sidebar p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .quick-stats {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .quick-stat {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .quick-stat .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .quick-stat .value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .main {
+      min-width: 0;
+      display: grid;
+      gap: 18px;
+    }
+
+    .content-panel {
+      padding: 24px;
+    }
+
+    .content-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .content-header p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.7;
+    }
+
+    .status-box {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.6;
+      border: 1px solid transparent;
+    }
+
+    .status-box.show {
+      display: block;
+    }
+
+    .status-info {
+      background: rgba(140, 180, 255, 0.12);
+      border-color: rgba(140, 180, 255, 0.24);
+      color: #dce7ff;
+    }
+
+    .status-success {
+      background: rgba(126, 240, 167, 0.12);
+      border-color: rgba(126, 240, 167, 0.24);
+      color: #dcffe9;
+    }
+
+    .status-error {
+      background: rgba(255, 123, 146, 0.12);
+      border-color: rgba(255, 123, 146, 0.24);
+      color: #ffe0e6;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat-card {
+      padding: 18px;
+    }
+
+    .stat-card .label {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .filter-card {
+      padding: 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: #e8ecf9;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--input);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px 15px;
+      font-size: 15px;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    input::placeholder {
+      color: #8d97b0;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: rgba(255, 213, 79, 0.48);
+      box-shadow: 0 0 0 4px rgba(255, 213, 79, 0.08);
+    }
+
+    .table-card {
+      overflow: hidden;
+    }
+
+    .table-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .table-head h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1220px;
+    }
+
+    th,
+    td {
+      padding: 16px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: rgba(9, 13, 31, 0.98);
+      z-index: 2;
+      color: #f8f8fb;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .profile-cell {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-width: 230px;
+    }
+
+    .avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      object-fit: cover;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+
+    .avatar-fallback {
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: #1d1300;
+      background: linear-gradient(180deg, #ffe08a, #ffd54f);
+      flex-shrink: 0;
+    }
+
+    .profile-main {
+      min-width: 0;
+    }
+
+    .profile-name {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .profile-meta {
+      color: var(--muted);
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .chip.plan-featured {
+      background: rgba(255, 213, 79, 0.12);
+      color: #ffe08d;
+      border: 1px solid rgba(255, 213, 79, 0.18);
+    }
+
+    .chip.plan-vip {
+      background: rgba(255, 139, 215, 0.12);
+      color: #ffc8ef;
+      border: 1px solid rgba(255, 139, 215, 0.18);
+    }
+
+    .chip.plan-signature {
+      background: rgba(140, 180, 255, 0.12);
+      color: #d6e5ff;
+      border: 1px solid rgba(140, 180, 255, 0.18);
+    }
+
+    .chip.pending {
+      background: rgba(255, 213, 79, 0.12);
+      color: #ffe08d;
+      border: 1px solid rgba(255, 213, 79, 0.18);
+    }
+
+    .chip.success,
+    .chip.approved,
+    .chip.paid,
+    .chip.active {
+      background: rgba(126, 240, 167, 0.12);
+      color: #d7ffe5;
+      border: 1px solid rgba(126, 240, 167, 0.18);
+    }
+
+    .chip.failed,
+    .chip.declined,
+    .chip.rejected,
+    .chip.unpaid {
+      background: rgba(255, 123, 146, 0.12);
+      color: #ffe1e7;
+      border: 1px solid rgba(255, 123, 146, 0.18);
+    }
+
+    .chip.muted {
+      background: rgba(255,255,255,0.06);
+      color: #dce2f5;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .bio {
+      max-width: 260px;
+      color: var(--muted);
+      line-height: 1.6;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .row-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-width: 180px;
+    }
+
+    .mini-btn {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #fff;
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .mini-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .mini-btn.approve {
+      background: rgba(126, 240, 167, 0.14);
+      border-color: rgba(126, 240, 167, 0.22);
+      color: #d7ffe5;
+    }
+
+    .mini-btn.reject {
+      background: rgba(255, 123, 146, 0.14);
+      border-color: rgba(255, 123, 146, 0.22);
+      color: #ffe1e7;
+    }
+
+    .mini-btn.paid {
+      background: rgba(140, 180, 255, 0.14);
+      border-color: rgba(140, 180, 255, 0.22);
+      color: #dde9ff;
+    }
+
+    .empty {
+      padding: 34px 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .login-shell {
+      min-height: calc(100vh - 88px);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      width: min(460px, 100%);
+      padding: 28px;
+    }
+
+    .login-card h2 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      letter-spacing: -0.03em;
+    }
+
+    .login-card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .login-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .tiny {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1180px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner,
+      .page {
+        width: min(100% - 18px, 100%);
+      }
+
+      .content-panel,
+      .filter-card,
+      .stat-card,
+      .sidebar,
+      .login-card {
+        padding: 18px;
+      }
+
+      .stats-grid,
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-cell {
+        min-width: 200px;
+      }
     }
   </style>
 </head>
 <body>
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#080a12]/85 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-      <a href="/index.html" class="flex items-center gap-3">
-        <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets" class="w-11 h-11 rounded-full object-cover">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="/index.html" class="brand">
+        <img src="/assets/logo/logo-navbar.png" alt="Nairobi Sweets logo" onerror="this.src='/assets/logo/logo-badge.png'">
         <div>
-          <div class="text-xs uppercase tracking-[0.22em] text-pink-200">Enterprise admin</div>
-          <div class="text-2xl font-extrabold text-yellow-300 leading-none">Vault</div>
+          <small>Secure Admin</small>
+          <strong>Nairobi Sweets Vault</strong>
         </div>
       </a>
-      <div class="flex gap-2">
-        <a href="/index.html" class="btn btn-dark px-4 py-2 text-sm">Home</a>
-        <button id="logoutBtn" class="btn btn-gold px-4 py-2 text-sm">Logout</button>
+
+      <div class="top-actions">
+        <button id="refreshTopBtn" class="btn btn-secondary hidden" type="button">Refresh</button>
+        <button id="logoutTopBtn" class="btn btn-danger hidden" type="button">Logout</button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-10">
-    <section class="grid md:grid-cols-4 gap-4 mb-6">
-      <div class="glass rounded-[26px] p-5">
-        <div class="text-xs text-slate-400">Profiles</div>
-        <div id="statProfiles" class="text-3xl font-black text-yellow-300 mt-2">0</div>
-      </div>
-      <div class="glass rounded-[26px] p-5">
-        <div class="text-xs text-slate-400">Pending payments</div>
-        <div id="statPending" class="text-3xl font-black text-pink-300 mt-2">0</div>
-      </div>
-      <div class="glass rounded-[26px] p-5">
-        <div class="text-xs text-slate-400">Active online</div>
-        <div id="statOnline" class="text-3xl font-black text-green-300 mt-2">0</div>
-      </div>
-      <div class="glass rounded-[26px] p-5">
-        <div class="text-xs text-slate-400">Signature</div>
-        <div id="statSignature" class="text-3xl font-black text-yellow-200 mt-2">0</div>
-      </div>
-    </section>
+  <section id="loginView" class="login-shell">
+    <div class="login-card">
+      <h2>Vault login</h2>
+      <p>
+        Sign in with your admin account to manage listings, payment status,
+        approval flow, and uploaded profile photos.
+      </p>
 
-    <section class="glass rounded-[30px] p-6 mb-6">
-      <div class="grid md:grid-cols-[1fr_220px_220px_180px] gap-4">
-        <input id="searchInput" class="input" placeholder="Search by name, email, location, payment status">
-        <select id="planFilter" class="select">
-          <option value="">All plans</option>
-          <option value="featured">Featured</option>
-          <option value="vip">VIP</option>
-          <option value="signature">Signature</option>
-        </select>
-        <select id="paymentFilter" class="select">
-          <option value="">All payments</option>
-          <option value="pending">Pending</option>
-          <option value="paid">Paid</option>
-          <option value="approved">Approved</option>
-        </select>
-        <button id="refreshBtn" class="btn btn-dark px-4 py-3">Refresh</button>
-      </div>
-      <p id="msg" class="text-sm text-slate-300 mt-4"></p>
-    </section>
+      <div id="loginStatus" class="status-box"></div>
 
-    <section class="glass rounded-[30px] p-4 md:p-6">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Profile</th>
-              <th>Plan</th>
-              <th>Status</th>
-              <th>Contact</th>
-              <th>Badges</th>
-              <th>Admin Actions</th>
-            </tr>
-          </thead>
-          <tbody id="rows"></tbody>
-        </table>
+      <form id="loginForm" class="login-grid">
+        <div class="field">
+          <label for="adminEmail">Admin email</label>
+          <input id="adminEmail" type="email" placeholder="admin@example.com" required />
+        </div>
+
+        <div class="field">
+          <label for="adminPassword">Password</label>
+          <input id="adminPassword" type="password" placeholder="Enter your password" required />
+        </div>
+
+        <button id="loginBtn" class="btn btn-primary" type="submit">Login to Vault</button>
+      </form>
+
+      <div class="tiny">
+        This page expects a valid Supabase Auth admin user. Only authenticated admins should reach the vault.
+      </div>
+    </div>
+  </section>
+
+  <main id="appView" class="page hidden">
+    <aside class="sidebar">
+      <h2>Admin cockpit</h2>
+      <p>
+        Review every listing, see uploaded photos clearly, track payment state,
+        and approve profiles without the dashboard turning into spaghetti soup.
+      </p>
+
+      <div class="quick-stats">
+        <div class="quick-stat">
+          <div class="label">Total profiles</div>
+          <div class="value" id="sidebarTotal">0</div>
+        </div>
+        <div class="quick-stat">
+          <div class="label">Pending approval</div>
+          <div class="value" id="sidebarPending">0</div>
+        </div>
+        <div class="quick-stat">
+          <div class="label">Paid profiles</div>
+          <div class="value" id="sidebarPaid">0</div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="main">
+      <div class="content-panel">
+        <div class="content-header">
+          <div>
+            <h1>Vault Admin</h1>
+            <p>
+              Manage models, verify image uploads, update approval status, and mark payment state.
+            </p>
+          </div>
+
+          <div class="top-actions">
+            <button id="refreshBtn" class="btn btn-secondary" type="button">Refresh data</button>
+            <button id="logoutBtn" class="btn btn-danger" type="button">Logout</button>
+          </div>
+        </div>
+
+        <div id="appStatus" class="status-box"></div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="label">All profiles</div>
+            <div id="statTotal" class="value">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Pending approval</div>
+            <div id="statPending" class="value">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Approved</div>
+            <div id="statApproved" class="value">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Paid / Active</div>
+            <div id="statPaid" class="value">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-card">
+        <div class="filters-grid">
+          <div class="field">
+            <label for="searchInput">Search</label>
+            <input id="searchInput" type="text" placeholder="Search name, email, phone, location..." />
+          </div>
+
+          <div class="field">
+            <label for="approvalFilter">Approval</label>
+            <select id="approvalFilter">
+              <option value="">All</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="active">Active</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="paymentFilter">Payment</label>
+            <select id="paymentFilter">
+              <option value="">All</option>
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+              <option value="success">Success</option>
+              <option value="failed">Failed</option>
+              <option value="unpaid">Unpaid</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="planFilter">Plan</label>
+            <select id="planFilter">
+              <option value="">All</option>
+              <option value="featured">Featured</option>
+              <option value="vip">VIP</option>
+              <option value="signature">Signature</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <button id="clearFiltersBtn" class="btn btn-secondary" type="button">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-head">
+          <h3>Profiles</h3>
+          <div class="tiny" id="tableCountText">0 records</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Profile</th>
+                <th>Plan</th>
+                <th>Payment</th>
+                <th>Approval</th>
+                <th>Bio</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="profilesTableBody">
+              <tr>
+                <td colspan="7" class="empty">Loading profiles...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
-    const OWNER_EMAIL = 'nairobisweets05@gmail.com';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const loginView = document.getElementById("loginView");
+    const appView = document.getElementById("appView");
+
+    const loginForm = document.getElementById("loginForm");
+    const loginBtn = document.getElementById("loginBtn");
+    const loginStatus = document.getElementById("loginStatus");
+
+    const appStatus = document.getElementById("appStatus");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const refreshTopBtn = document.getElementById("refreshTopBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const logoutTopBtn = document.getElementById("logoutTopBtn");
+
+    const searchInput = document.getElementById("searchInput");
+    const approvalFilter = document.getElementById("approvalFilter");
+    const paymentFilter = document.getElementById("paymentFilter");
+    const planFilter = document.getElementById("planFilter");
+    const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+
+    const profilesTableBody = document.getElementById("profilesTableBody");
+    const tableCountText = document.getElementById("tableCountText");
+
+    const statTotal = document.getElementById("statTotal");
+    const statPending = document.getElementById("statPending");
+    const statApproved = document.getElementById("statApproved");
+    const statPaid = document.getElementById("statPaid");
+
+    const sidebarTotal = document.getElementById("sidebarTotal");
+    const sidebarPending = document.getElementById("sidebarPending");
+    const sidebarPaid = document.getElementById("sidebarPaid");
 
     let allProfiles = [];
 
-    function esc(v){
-      return String(v ?? '')
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'",'&#039;');
+    function setBoxStatus(el, message, type = "info") {
+      el.className = "status-box show";
+      if (type === "success") el.classList.add("status-success");
+      else if (type === "error") el.classList.add("status-error");
+      else el.classList.add("status-info");
+      el.textContent = message;
     }
 
-    async function requireOwner(){
-      const { data } = await supabaseClient.auth.getSession();
-      const email = data.session?.user?.email || '';
-      if(!data.session || email.toLowerCase() !== OWNER_EMAIL.toLowerCase()){
-        window.location.href = '/login.html';
-        return false;
+    function clearBoxStatus(el) {
+      el.className = "status-box";
+      el.textContent = "";
+    }
+
+    function showApp() {
+      loginView.classList.add("hidden");
+      appView.classList.remove("hidden");
+      refreshTopBtn.classList.remove("hidden");
+      logoutTopBtn.classList.remove("hidden");
+    }
+
+    function showLogin() {
+      appView.classList.add("hidden");
+      loginView.classList.remove("hidden");
+      refreshTopBtn.classList.add("hidden");
+      logoutTopBtn.classList.add("hidden");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatDate(value) {
+      if (!value) return "—";
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return "—";
+      return d.toLocaleString();
+    }
+
+    function normalizeText(value) {
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function normalizePlan(value) {
+      const v = normalizeText(value);
+      if (v === "featured") return "featured";
+      if (v === "vip") return "vip";
+      if (v === "signature" || v === "vvip") return "signature";
+      return v || "unknown";
+    }
+
+    function prettyPlan(value) {
+      const v = normalizePlan(value);
+      if (v === "featured") return "Featured";
+      if (v === "vip") return "VIP";
+      if (v === "signature") return "Signature";
+      if (!v || v === "unknown") return "Unknown";
+      return v.charAt(0).toUpperCase() + v.slice(1);
+    }
+
+    function normalizeApproval(value) {
+      const v = normalizeText(value);
+      if (["approved", "active"].includes(v)) return v;
+      if (["rejected", "declined"].includes(v)) return "rejected";
+      if (["pending", ""].includes(v)) return "pending";
+      return v;
+    }
+
+    function normalizePayment(value) {
+      const v = normalizeText(value);
+      if (["paid", "success", "completed", "active"].includes(v)) return v === "completed" ? "paid" : v;
+      if (["failed", "cancelled", "declined"].includes(v)) return "failed";
+      if (["unpaid"].includes(v)) return "unpaid";
+      return v || "pending";
+    }
+
+    function badge(text, className) {
+      return `<span class="chip ${className}">${escapeHtml(text)}</span>`;
+    }
+
+    function getInitials(name) {
+      const parts = String(name || "").trim().split(/\s+/).filter(Boolean).slice(0, 2);
+      if (!parts.length) return "NS";
+      return parts.map(p => p[0].toUpperCase()).join("");
+    }
+
+    function renderAvatar(profile) {
+      const imageUrl = profile.image_url || profile.image || profile.photo_url || "";
+      if (imageUrl) {
+        return `<img class="avatar" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(profile.stage_name || "Profile")}" onerror="this.outerHTML='<div class=&quot;avatar-fallback&quot;>${escapeHtml(getInitials(profile.stage_name))}</div>'">`;
       }
-      return true;
+      return `<div class="avatar-fallback">${escapeHtml(getInitials(profile.stage_name))}</div>`;
     }
 
-    function renderStats(list){
-      document.getElementById('statProfiles').textContent = list.length;
-      document.getElementById('statPending').textContent = list.filter(p => (p.payment_status || '').toLowerCase() === 'pending').length;
-      document.getElementById('statOnline').textContent = list.filter(p => p.is_online).length;
-      document.getElementById('statSignature').textContent = list.filter(p => p.is_vvip || p.plan === 'signature' || p.category === 'signature').length;
+    function getPlanBadge(plan) {
+      const v = normalizePlan(plan);
+      if (v === "featured") return badge("Featured", "plan-featured");
+      if (v === "vip") return badge("VIP", "plan-vip");
+      if (v === "signature") return badge("Signature", "plan-signature");
+      return badge(prettyPlan(plan), "muted");
     }
 
-    function getBadges(p){
-      const badges = [];
-      if(p.is_vvip || p.plan === 'signature' || p.category === 'signature') badges.push('<span class="chip">👑 Signature</span>');
-      if(p.is_vip || p.plan === 'vip' || p.category === 'vip') badges.push('<span class="chip">VIP</span>');
-      if(p.is_featured || p.plan === 'featured' || p.category === 'featured') badges.push('<span class="chip">Featured</span>');
-      if(p.is_verified) badges.push('<span class="chip">Verified</span>');
-      if(p.is_online) badges.push('<span class="chip">Online</span>');
-      return badges.join(' ');
+    function getPaymentBadge(paymentStatus) {
+      const v = normalizePayment(paymentStatus);
+      if (["paid", "success", "active"].includes(v)) return badge(v.toUpperCase(), "paid");
+      if (["failed", "unpaid"].includes(v)) return badge(v.toUpperCase(), v);
+      return badge("PENDING", "pending");
     }
 
-    function renderRows(list){
-      const tbody = document.getElementById('rows');
-      if(!list.length){
-        tbody.innerHTML = '<tr><td colspan="6" class="text-slate-400">No profiles found.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = list.map(p => `
-        <tr>
-          <td>
-            <div class="flex gap-3">
-              <img src="${esc(p.profile_image_url || p.image_url || '/assets/logo/logo-badge.png')}" alt="" class="w-14 h-14 rounded-2xl object-cover border border-white/10">
-              <div>
-                <div class="font-bold text-white">${esc(p.stage_name || p.name || 'Unnamed')}</div>
-                <div class="text-sm text-slate-400">${esc(p.email || '')}</div>
-                <div class="text-sm text-slate-400">${esc(p.location || '')}</div>
-              </div>
-            </div>
-          </td>
-          <td>
-            <div class="font-semibold">${esc(p.plan || p.category || '-')}</div>
-            <div class="text-sm text-slate-400">KES ${Number(p.price_per_week || 0)}</div>
-          </td>
-          <td>
-            <div class="font-semibold">${esc(p.payment_status || 'pending')}</div>
-            <div class="text-sm text-slate-400">${p.is_online ? 'Live' : 'Offline'}</div>
-          </td>
-          <td>
-            <div class="text-sm">${esc(p.phone || '')}</div>
-            <div class="text-sm text-slate-400">${esc(p.whatsapp || '')}</div>
-          </td>
-          <td>${getBadges(p)}</td>
-          <td>
-            <div class="flex flex-wrap gap-2">
-              <button class="btn btn-gold px-3 py-2 text-xs" onclick="approvePayment('${p.id}')">Approve</button>
-              <button class="btn btn-dark px-3 py-2 text-xs" onclick="setPlan('${p.id}','featured')">Featured</button>
-              <button class="btn btn-dark px-3 py-2 text-xs" onclick="setPlan('${p.id}','vip')">VIP</button>
-              <button class="btn btn-dark px-3 py-2 text-xs" onclick="setPlan('${p.id}','signature')">Signature</button>
-              <button class="btn btn-pink px-3 py-2 text-xs" onclick="toggleOnline('${p.id}', ${p.is_online ? 'false' : 'true'})">${p.is_online ? 'Take Offline' : 'Go Live'}</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
+    function getApprovalBadge(approvalStatus) {
+      const v = normalizeApproval(approvalStatus);
+      if (["approved", "active"].includes(v)) return badge(v.toUpperCase(), "approved");
+      if (v === "rejected") return badge("REJECTED", "rejected");
+      return badge("PENDING", "pending");
     }
 
-    function applyFilters(){
-      const search = document.getElementById('searchInput').value.trim().toLowerCase();
-      const planFilter = document.getElementById('planFilter').value;
-      const paymentFilter = document.getElementById('paymentFilter').value;
+    function getSearchBlob(profile) {
+      return [
+        profile.stage_name,
+        profile.email,
+        profile.phone,
+        profile.location,
+        profile.plan,
+        profile.bio,
+        profile.payment_status,
+        profile.approval_status
+      ].join(" ").toLowerCase();
+    }
 
-      const filtered = allProfiles.filter(p => {
-        const hay = [
-          p.stage_name, p.name, p.email, p.location, p.payment_status, p.plan, p.category
-        ].join(' ').toLowerCase();
+    function updateStats(rows) {
+      const total = rows.length;
+      const pending = rows.filter(r => normalizeApproval(r.approval_status) === "pending").length;
+      const approved = rows.filter(r => ["approved", "active"].includes(normalizeApproval(r.approval_status))).length;
+      const paid = rows.filter(r => ["paid", "success", "active"].includes(normalizePayment(r.payment_status))).length;
 
-        if(search && !hay.includes(search)) return false;
-        if(planFilter && (p.plan || p.category) !== planFilter) return false;
-        if(paymentFilter && (p.payment_status || '').toLowerCase() !== paymentFilter) return false;
+      statTotal.textContent = total;
+      statPending.textContent = pending;
+      statApproved.textContent = approved;
+      statPaid.textContent = paid;
+
+      sidebarTotal.textContent = total;
+      sidebarPending.textContent = pending;
+      sidebarPaid.textContent = paid;
+    }
+
+    function getFilteredProfiles() {
+      const search = normalizeText(searchInput.value);
+      const approval = normalizeText(approvalFilter.value);
+      const payment = normalizeText(paymentFilter.value);
+      const plan = normalizeText(planFilter.value);
+
+      return allProfiles.filter(profile => {
+        if (search && !getSearchBlob(profile).includes(search)) return false;
+        if (approval && normalizeApproval(profile.approval_status) !== approval) return false;
+        if (payment && normalizePayment(profile.payment_status) !== payment) return false;
+        if (plan && normalizePlan(profile.plan) !== plan) return false;
         return true;
       });
-
-      renderStats(filtered);
-      renderRows(filtered);
     }
 
-    async function loadProfiles(){
-      const msg = document.getElementById('msg');
-      msg.textContent = 'Loading profiles...';
+    function renderTable() {
+      const rows = getFilteredProfiles();
+      updateStats(allProfiles);
+      tableCountText.textContent = `${rows.length} record${rows.length === 1 ? "" : "s"}`;
 
-      const { data, error } = await supabaseClient
-        .from('profiles')
-        .select('*')
-        .order('id', { ascending: false });
-
-      if(error){
-        msg.textContent = error.message;
+      if (!rows.length) {
+        profilesTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="empty">No matching profiles found.</td>
+          </tr>
+        `;
         return;
       }
 
-      allProfiles = data || [];
-      applyFilters();
-      msg.textContent = `${allProfiles.length} profiles loaded.`;
+      profilesTableBody.innerHTML = rows.map(profile => {
+        const created = profile.created_at || profile.createdAt || profile.inserted_at || null;
+
+        return `
+          <tr>
+            <td>
+              <div class="profile-cell">
+                ${renderAvatar(profile)}
+                <div class="profile-main">
+                  <div class="profile-name">${escapeHtml(profile.stage_name || "Unnamed")}</div>
+                  <div class="profile-meta">
+                    ${escapeHtml(profile.email || "No email")}<br>
+                    ${escapeHtml(profile.phone || "No phone")}<br>
+                    ${escapeHtml(profile.location || "No location")}
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <td>${getPlanBadge(profile.plan)}</td>
+            <td>${getPaymentBadge(profile.payment_status)}</td>
+            <td>${getApprovalBadge(profile.approval_status)}</td>
+
+            <td>
+              <div class="bio">${escapeHtml(profile.bio || "—")}</div>
+            </td>
+
+            <td>${escapeHtml(formatDate(created))}</td>
+
+            <td>
+              <div class="row-actions">
+                <button class="mini-btn approve" data-action="approve" data-id="${profile.id}">Approve</button>
+                <button class="mini-btn reject" data-action="reject" data-id="${profile.id}">Reject</button>
+                <button class="mini-btn paid" data-action="paid" data-id="${profile.id}">Mark Paid</button>
+                <button class="mini-btn" data-action="pending" data-id="${profile.id}">Set Pending</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
     }
 
-    async function setPlan(id, plan){
-      const patch = {
-        plan,
-        category: plan,
-        is_featured: plan === 'featured',
-        is_vip: plan === 'vip',
-        is_vvip: plan === 'signature',
-        price_per_week: plan === 'featured' ? 1000 : plan === 'vip' ? 1500 : 3000
-      };
+    async function loadProfiles() {
+      setBoxStatus(appStatus, "Loading profiles...", "info");
 
-      const { error } = await supabaseClient.from('profiles').update(patch).eq('id', id);
-      document.getElementById('msg').textContent = error ? error.message : 'Plan updated.';
-      await loadProfiles();
-    }
+      const { data, error } = await sb
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    async function toggleOnline(id, state){
-      const { error } = await supabaseClient
-        .from('profiles')
-        .update({ is_online: state === true || state === 'true' })
-        .eq('id', id);
+      if (error) {
+        throw new Error(error.message || "Failed to load profiles.");
+      }
 
-      document.getElementById('msg').textContent = error ? error.message : 'Online status updated.';
-      await loadProfiles();
-    }
+      allProfiles = Array.isArray(data) ? data : [];
+      renderTable();
 
-    async function approvePayment(id){
-      const msg = document.getElementById('msg');
-      msg.textContent = 'Approving payment...';
-
-      try{
-        const res = await fetch('/.netlify/functions/admin-approve-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ profile_id: id })
-        });
-
-        const data = await res.json().catch(() => ({}));
-
-        if(!res.ok) throw new Error(data.error || 'Approval failed.');
-
-        msg.textContent = data.message || 'Payment approved.';
-        await loadProfiles();
-      }catch(err){
-        msg.textContent = err.message || 'Approval failed.';
+      if (!allProfiles.length) {
+        setBoxStatus(appStatus, "No profiles found yet.", "info");
+      } else {
+        setBoxStatus(appStatus, "Profiles loaded successfully.", "success");
       }
     }
 
-    async function logout(){
-      await supabaseClient.auth.signOut();
-      window.location.href = '/login.html';
+    async function updateProfileStatus(id, patch, successMessage) {
+      setBoxStatus(appStatus, "Updating profile...", "info");
+
+      const { error } = await sb
+        .from("profiles")
+        .update(patch)
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(error.message || "Failed to update profile.");
+      }
+
+      const row = allProfiles.find(item => String(item.id) === String(id));
+      if (row) Object.assign(row, patch);
+
+      renderTable();
+      setBoxStatus(appStatus, successMessage, "success");
     }
 
-    window.setPlan = setPlan;
-    window.toggleOnline = toggleOnline;
-    window.approvePayment = approvePayment;
+    async function handleRowAction(action, id) {
+      if (!id) return;
 
-    document.getElementById('searchInput').addEventListener('input', applyFilters);
-    document.getElementById('planFilter').addEventListener('change', applyFilters);
-    document.getElementById('paymentFilter').addEventListener('change', applyFilters);
-    document.getElementById('refreshBtn').addEventListener('click', loadProfiles);
-    document.getElementById('logoutBtn').addEventListener('click', logout);
+      if (action === "approve") {
+        await updateProfileStatus(
+          id,
+          { approval_status: "approved" },
+          "Profile approved."
+        );
+        return;
+      }
 
-    (async () => {
-      const ok = await requireOwner();
-      if(ok) loadProfiles();
-    })();
+      if (action === "reject") {
+        await updateProfileStatus(
+          id,
+          { approval_status: "rejected" },
+          "Profile rejected."
+        );
+        return;
+      }
+
+      if (action === "paid") {
+        await updateProfileStatus(
+          id,
+          { payment_status: "paid" },
+          "Payment marked as paid."
+        );
+        return;
+      }
+
+      if (action === "pending") {
+        await updateProfileStatus(
+          id,
+          { payment_status: "pending", approval_status: "pending" },
+          "Profile reset to pending."
+        );
+      }
+    }
+
+    async function loginAdmin(email, password) {
+      const { error } = await sb.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        throw new Error(error.message || "Login failed.");
+      }
+    }
+
+    async function logoutAdmin() {
+      await sb.auth.signOut();
+      showLogin();
+      allProfiles = [];
+      profilesTableBody.innerHTML = `
+        <tr>
+          <td colspan="7" class="empty">Logged out.</td>
+        </tr>
+      `;
+      clearBoxStatus(appStatus);
+      setBoxStatus(loginStatus, "Logged out successfully.", "success");
+    }
+
+    async function checkSessionAndBoot() {
+      const { data, error } = await sb.auth.getSession();
+      if (error) {
+        showLogin();
+        return;
+      }
+
+      const session = data?.session;
+      if (!session?.user) {
+        showLogin();
+        return;
+      }
+
+      showApp();
+      try {
+        await loadProfiles();
+      } catch (err) {
+        console.error(err);
+        setBoxStatus(appStatus, err.message || "Failed to start vault.", "error");
+      }
+    }
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearBoxStatus(loginStatus);
+
+      const email = document.getElementById("adminEmail").value.trim();
+      const password = document.getElementById("adminPassword").value;
+
+      if (!email || !password) {
+        setBoxStatus(loginStatus, "Enter your admin email and password.", "error");
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Logging in...";
+
+      try {
+        await loginAdmin(email, password);
+        setBoxStatus(loginStatus, "Login successful.", "success");
+        showApp();
+        await loadProfiles();
+      } catch (err) {
+        console.error(err);
+        setBoxStatus(loginStatus, err.message || "Unable to login.", "error");
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login to Vault";
+      }
+    });
+
+    [refreshBtn, refreshTopBtn].forEach(btn => {
+      btn.addEventListener("click", async () => {
+        try {
+          await loadProfiles();
+        } catch (err) {
+          console.error(err);
+          setBoxStatus(appStatus, err.message || "Failed to refresh.", "error");
+        }
+      });
+    });
+
+    [logoutBtn, logoutTopBtn].forEach(btn => {
+      btn.addEventListener("click", async () => {
+        try {
+          await logoutAdmin();
+        } catch (err) {
+          console.error(err);
+          setBoxStatus(appStatus, "Logout failed.", "error");
+        }
+      });
+    });
+
+    [searchInput, approvalFilter, paymentFilter, planFilter].forEach(el => {
+      el.addEventListener("input", renderTable);
+      el.addEventListener("change", renderTable);
+    });
+
+    clearFiltersBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      approvalFilter.value = "";
+      paymentFilter.value = "";
+      planFilter.value = "";
+      renderTable();
+    });
+
+    profilesTableBody.addEventListener("click", async (e) => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+
+      const action = btn.getAttribute("data-action");
+      const id = btn.getAttribute("data-id");
+
+      try {
+        await handleRowAction(action, id);
+      } catch (err) {
+        console.error(err);
+        setBoxStatus(appStatus, err.message || "Update failed.", "error");
+      }
+    });
+
+    sb.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        showApp();
+      } else {
+        showLogin();
+      }
+    });
+
+    checkSessionAndBoot();
   </script>
 </body>
 </html>
