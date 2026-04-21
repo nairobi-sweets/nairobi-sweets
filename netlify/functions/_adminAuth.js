@@ -4,6 +4,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const PROFILES_TABLE = process.env.PROFILES_TABLE || "profiles";
 const ADMINS_TABLE = process.env.ADMINS_TABLE || "admin_users";
+const AUDIT_TABLE = process.env.ADMIN_AUDIT_TABLE || "admin_audit_logs";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -166,9 +167,36 @@ async function requireAdmin(event) {
   };
 }
 
+async function writeAuditLog(admin, payload = {}) {
+  try {
+    const insertPayload = {
+      admin_user_id: payload.admin_user_id || null,
+      admin_email: payload.admin_email || null,
+      action: payload.action || "unknown_action",
+      target_table: payload.target_table || "profiles",
+      target_id: payload.target_id || null,
+      target_label: payload.target_label || null,
+      before_data: payload.before_data ?? null,
+      after_data: payload.after_data ?? null,
+      meta: payload.meta ?? null,
+    };
+
+    const { error } = await admin
+      .from(AUDIT_TABLE)
+      .insert(insertPayload);
+
+    if (error) {
+      console.error("audit log insert failed:", error.message);
+    }
+  } catch (err) {
+    console.error("audit log write error:", err.message || String(err));
+  }
+}
+
 module.exports = {
   PROFILES_TABLE,
   ADMINS_TABLE,
+  AUDIT_TABLE,
   corsHeaders,
   json,
   safeLower,
@@ -176,4 +204,5 @@ module.exports = {
   createAdminClient,
   isAuthorizedAdmin,
   requireAdmin,
+  writeAuditLog,
 };
