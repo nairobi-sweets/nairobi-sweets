@@ -1,500 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nairobi Sweets Admin Vault</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nairobi Sweets Admin Vault</title>
 
-  <style>
-    :root{
-      --bg:#0b0f2c;
-      --panel:#11163a;
-      --panel-2:#18204f;
-      --text:#ffffff;
-      --muted:rgba(255,255,255,.7);
-      --gold:#ffd84b;
-      --green:#28c76f;
-      --red:#ff4d4f;
-      --line:rgba(255,255,255,.08);
-    }
+<style>
+:root{
+  --bg:#0b0f2c;
+  --panel:#11163a;
+  --panel-2:#18204f;
+  --text:#ffffff;
+  --muted:rgba(255,255,255,0.7);
+  --gold:#ffd84b;
+  --green:#28c76f;
+  --red:#ff4d4f;
+  --line:rgba(255,255,255,0.08);
+}
 
-    * { box-sizing:border-box; }
+*{box-sizing:border-box;}
 
-    body {
-      margin:0;
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 20px;
-    }
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding:20px;
+}
 
-    h1 {
-      margin: 0 0 16px;
-      font-size: 42px;
-    }
+h1{
+  margin:0 0 20px;
+  font-size:42px;
+}
 
-    .panel {
-      background: var(--panel);
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 18px;
-      border: 1px solid var(--line);
-    }
+.panel{
+  background:var(--panel);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:18px;
+  border:1px solid var(--line);
+}
 
-    .topbar, .row, .actions, .tabs {
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+}
 
-    input, button, select {
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: none;
-      font: inherit;
-    }
+input{
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  min-width:220px;
+}
 
-    input, select {
-      background: #fff;
-      color: #111;
-      min-width: 220px;
-    }
+button{
+  padding:12px 16px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    button {
-      cursor: pointer;
-      font-weight: bold;
-    }
+.btn-gold{background:var(--gold);}
+.btn-red{background:var(--red); color:#fff;}
+.btn-dark{background:#222; color:#fff;}
 
-    .btn-gold { background: var(--gold); color:#000; }
-    .btn-green { background: var(--green); color:#fff; }
-    .btn-red { background: var(--red); color:#fff; }
-    .btn-dark { background: #222; color:#fff; }
-    .btn-soft { background: var(--panel-2); color:#fff; }
+.tabs button{
+  background:#222;
+  color:#fff;
+}
 
-    .tabs button {
-      background:#222;
-      color:#fff;
-    }
+.tabs .active{
+  background:var(--gold);
+  color:#000;
+}
 
-    .tabs .active {
-      background: var(--gold);
-      color:#000;
-    }
+.stats{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
 
-    .card {
-      background: var(--panel);
-      border:1px solid var(--line);
-      padding: 16px;
-      border-radius: 12px;
-      margin-bottom: 14px;
-    }
+.stat{
+  background:var(--panel-2);
+  padding:12px;
+  border-radius:10px;
+  min-width:120px;
+}
 
-    .title-row {
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-      align-items:flex-start;
-    }
+.card{
+  background:var(--panel-2);
+  padding:14px;
+  border-radius:12px;
+  margin-top:14px;
+}
 
-    .name {
-      font-size: 20px;
-      font-weight: 700;
-    }
+.title-row{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+}
 
-    .status {
-      font-size: 12px;
-      opacity: .85;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-    }
+.name{font-size:18px; font-weight:bold;}
+.meta{font-size:13px; color:var(--muted); margin-top:4px;}
 
-    .meta {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .searchbar {
-      width: 100%;
-      max-width: 420px;
-    }
-
-    .muted {
-      color: var(--muted);
-    }
-
-    .stats {
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-
-    .stat {
-      background: var(--panel-2);
-      border-radius: 10px;
-      padding: 12px 14px;
-      min-width: 120px;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .stat-value {
-      font-size: 26px;
-      font-weight: 700;
-    }
-
-    .notice {
-      margin-top:10px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    @media (max-width: 700px) {
-      h1 { font-size: 32px; }
-      input, select { min-width: unset; width:100%; }
-      .topbar > * { width:100%; }
-      .actions button { width:100%; }
-    }
-  </style>
+.status{
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.1);
+}
+</style>
 </head>
+
 <body>
 
-  <h1>Admin Vault</h1>
+<h1>Admin Vault</h1>
 
-  <div class="panel" id="authPanel">
-    <div class="topbar">
-      <input id="email" type="email" placeholder="Admin email" />
-      <input id="password" type="password" placeholder="Admin password" />
-      <button class="btn-gold" onclick="adminLogin()">Login</button>
-      <button class="btn-dark" onclick="restoreSession()">Restore Session</button>
-      <button class="btn-red" onclick="adminLogout()">Logout</button>
-    </div>
-    <div class="notice" id="authStatus">Not logged in.</div>
+<div class="panel">
+  <div class="row">
+    <input id="email" placeholder="Admin email"/>
+    <input id="password" type="password" placeholder="Password"/>
+    <button id="loginBtn" class="btn-gold">Login</button>
+    <button id="restoreBtn" class="btn-dark">Restore Session</button>
+    <button id="logoutBtn" class="btn-red">Logout</button>
+  </div>
+  <div id="status" style="margin-top:10px;"></div>
+</div>
+
+<div class="panel">
+  <div class="row">
+    <button id="refreshBtn" class="btn-gold">Refresh</button>
+    <input id="search" placeholder="Search by name, phone, plan..." />
   </div>
 
-  <div class="panel">
-    <div class="topbar">
-      <button class="btn-gold" onclick="load()">Refresh</button>
-      <input id="search" class="searchbar" placeholder="Search by name, phone, plan, status..." oninput="render()" />
-    </div>
-
-    <div class="tabs" style="margin-top:14px;">
-      <button onclick="setFilter('all')" id="tab-all" class="active">All</button>
-      <button onclick="setFilter('pending')" id="tab-pending">Pending</button>
-      <button onclick="setFilter('approved')" id="tab-approved">Approved</button>
-      <button onclick="setFilter('paid')" id="tab-paid">Paid</button>
-      <button onclick="setFilter('unpaid')" id="tab-unpaid">Unpaid</button>
-    </div>
-
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-label">Total</div>
-        <div class="stat-value" id="statTotal">0</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Pending</div>
-        <div class="stat-value" id="statPending">0</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Approved</div>
-        <div class="stat-value" id="statApproved">0</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Paid</div>
-        <div class="stat-value" id="statPaid">0</div>
-      </div>
-    </div>
-
-    <div class="notice" id="roleInfo">No active admin session.</div>
+  <div class="tabs row" style="margin-top:10px;">
+    <button onclick="setFilter('all')" class="active">All</button>
+    <button onclick="setFilter('pending')">Pending</button>
+    <button onclick="setFilter('approved')">Approved</button>
+    <button onclick="setFilter('paid')">Paid</button>
+    <button onclick="setFilter('unpaid')">Unpaid</button>
   </div>
 
-  <div id="list"></div>
+  <div class="stats">
+    <div class="stat">Total<br><b id="totalCount">0</b></div>
+    <div class="stat">Pending<br><b id="pendingCount">0</b></div>
+    <div class="stat">Approved<br><b id="approvedCount">0</b></div>
+    <div class="stat">Paid<br><b id="paidCount">0</b></div>
+    <div class="stat">Unpaid<br><b id="unpaidCount">0</b></div>
+  </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+<div id="results"></div>
 
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-    let profiles = [];
-    let filter = "all";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    function setAuthStatus(message) {
-      document.getElementById("authStatus").textContent = message;
-    }
+let currentFilter = "all";
 
-    function setRoleInfo(message) {
-      document.getElementById("roleInfo").textContent = message;
-    }
+const el = (id)=>document.getElementById(id);
 
-    async function getAccessToken() {
-      const { data, error } = await sb.auth.getSession();
-      if (error) {
-        console.error("getSession error:", error);
-        return "";
-      }
-      return data?.session?.access_token || "";
-    }
+function setStatus(msg, err=false){
+  el("status").textContent = msg;
+  el("status").style.color = err ? "#ff9b9b" : "#d9e7ff";
+}
 
-    async function restoreSession() {
-      const token = await getAccessToken();
-      if (!token) {
-        setAuthStatus("No active session found.");
-        setRoleInfo("No active admin session.");
-        return;
-      }
+async function getToken(){
+  const {data} = await sb.auth.getSession();
+  return data?.session?.access_token;
+}
 
-      setAuthStatus("Session restored.");
-      await load();
-    }
+async function login(){
+  const email = el("email").value;
+  const password = el("password").value;
 
-    async function adminLogin() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+  const {error} = await sb.auth.signInWithPassword({email,password});
+  if(error) return setStatus(error.message,true);
 
-      if (!email || !password) {
-        alert("Enter admin email and password.");
-        return;
-      }
+  setStatus("Login successful");
+  load();
+}
 
-      setAuthStatus("Logging in...");
+async function load(){
+  try{
+    setStatus("Loading...");
+    const token = await getToken();
+    if(!token) throw new Error("Not logged in");
 
-      const { error } = await sb.auth.signInWithPassword({ email, password });
+    let url = "/.netlify/functions/admin-list-profiles?limit=200";
 
-      if (error) {
-        console.error(error);
-        setAuthStatus("Login failed.");
-        alert(error.message);
-        return;
-      }
+    const search = el("search").value.trim();
+    if(search) url += `&search=${encodeURIComponent(search)}`;
+    if(currentFilter!=="all") url += `&status=${currentFilter}`;
 
-      setAuthStatus("Login successful.");
-      await load();
-    }
+    const res = await fetch(url,{
+      headers:{Authorization:`Bearer ${token}`}
+    });
 
-    async function adminLogout() {
-      await sb.auth.signOut();
-      profiles = [];
-      render();
-      document.getElementById("email").value = "";
-      document.getElementById("password").value = "";
-      setAuthStatus("Logged out.");
-      setRoleInfo("No active admin session.");
-      updateStats([]);
-    }
+    const data = await res.json();
 
-    function setFilter(f) {
-      filter = f;
-      document.querySelectorAll(".tabs button").forEach(btn => btn.classList.remove("active"));
-      document.getElementById("tab-" + f).classList.add("active");
-      render();
-    }
+    if(!res.ok) throw new Error(data.message||data.error);
 
-    function updateStats(rows) {
-      const total = rows.length;
-      const pending = rows.filter(p => !p.is_approved).length;
-      const approved = rows.filter(p => !!p.is_approved).length;
-      const paid = rows.filter(p => String(p.payment_status || "").toLowerCase() === "paid").length;
+    render(data.profiles);
+    stats(data.summary);
 
-      document.getElementById("statTotal").textContent = total;
-      document.getElementById("statPending").textContent = pending;
-      document.getElementById("statApproved").textContent = approved;
-      document.getElementById("statPaid").textContent = paid;
-    }
+    setStatus("Loaded "+data.summary.total+" profiles");
+  }catch(e){
+    setStatus(e.message,true);
+    el("results").innerHTML = `<div class="card">${e.message}</div>`;
+  }
+}
 
-    async function load() {
-      const token = await getAccessToken();
+function stats(s){
+  el("totalCount").textContent = s.total;
+  el("pendingCount").textContent = s.pending;
+  el("approvedCount").textContent = s.approved;
+  el("paidCount").textContent = s.paid;
+  el("unpaidCount").textContent = s.unpaid;
+}
 
-      if (!token) {
-        alert("Please log in first.");
-        return;
-      }
+function render(list){
+  el("results").innerHTML = list.map(p=>{
+    return `
+    <div class="card">
+      <div class="title-row">
+        <div class="name">${p.stage_name||p.name||"Unnamed"}</div>
+        <div class="status">${p.approval_status} / ${p.payment_status}</div>
+      </div>
+      <div class="meta">Phone: ${p.phone||"-"}</div>
+      <div class="meta">Plan: ${p.plan||"-"}</div>
+    </div>
+    `;
+  }).join("");
+}
 
-      list.innerHTML = `
-        <div class="panel">
-          Loading profiles...
-        </div>
-      `;
+function setFilter(f){
+  currentFilter=f;
+  load();
+}
 
-      try {
-        const res = await fetch("/.netlify/functions/admin-list-profiles", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+document.getElementById("loginBtn").onclick=login;
+document.getElementById("restoreBtn").onclick=load;
+document.getElementById("logoutBtn").onclick=()=>sb.auth.signOut();
+document.getElementById("refreshBtn").onclick=load;
 
-        const raw = await res.text();
-        let json;
+el("search").addEventListener("input", ()=>{
+  clearTimeout(window.t);
+  window.t=setTimeout(load,300);
+});
+</script>
 
-        try {
-          json = JSON.parse(raw);
-        } catch {
-          json = { ok: false, error: raw || "Invalid JSON response" };
-        }
-
-        console.log("admin-list-profiles:", res.status, json);
-
-        if (!res.ok || !json.ok) {
-          list.innerHTML = `
-            <div class="panel">
-              <b>Load failed</b>
-              <div class="notice">HTTP ${res.status}</div>
-              <div class="notice">${escapeHtml(json.error || "Unknown error")}</div>
-            </div>
-          `;
-          if (res.status === 403 || res.status === 401) {
-            setRoleInfo("Logged in, but not authorized as an active admin.");
-          }
-          return;
-        }
-
-        profiles = Array.isArray(json.profiles) ? json.profiles : [];
-        updateStats(profiles);
-
-        const role = json.currentAdmin?.role || "unknown";
-        const perms = Array.isArray(json.currentAdmin?.permissions)
-          ? json.currentAdmin.permissions.join(", ")
-          : "none";
-
-        setRoleInfo(`Role: ${role} | Permissions: ${perms}`);
-        render();
-      } catch (err) {
-        console.error(err);
-        list.innerHTML = `
-          <div class="panel">
-            <b>Network error</b>
-            <div class="notice">${escapeHtml(err.message || "Request failed")}</div>
-          </div>
-        `;
-      }
-    }
-
-    function render() {
-      const q = document.getElementById("search").value.toLowerCase().trim();
-
-      let filtered = profiles.filter(p => {
-        const approved = !!p.is_approved;
-        const paid = String(p.payment_status || "").toLowerCase() === "paid";
-
-        if (filter === "pending" && approved) return false;
-        if (filter === "approved" && !approved) return false;
-        if (filter === "paid" && !paid) return false;
-        if (filter === "unpaid" && paid) return false;
-
-        const text = JSON.stringify(p).toLowerCase();
-        return text.includes(q);
-      });
-
-      if (!filtered.length) {
-        list.innerHTML = `
-          <div class="panel">
-            No profiles found.
-          </div>
-        `;
-        return;
-      }
-
-      list.innerHTML = filtered.map(p => `
-        <div class="card">
-          <div class="title-row">
-            <div class="name">${escapeHtml(p.stage_name || p.full_name || "Unnamed")}</div>
-            <div class="status">${p.is_approved ? "APPROVED" : "PENDING"}</div>
-          </div>
-
-          <div class="meta">
-            <div><b>Phone:</b> ${escapeHtml(p.phone || "")}</div>
-            <div><b>Plan:</b> ${escapeHtml(p.membership_plan || "")}</div>
-            <div><b>Payment:</b> ${escapeHtml(p.payment_status || "")}</div>
-            <div><b>Status:</b> ${escapeHtml(p.status || "")}</div>
-            <div><b>Location:</b> ${escapeHtml(p.location || "")}</div>
-            <div><b>Created:</b> ${escapeHtml(formatDate(p.created_at))}</div>
-          </div>
-
-          <div class="actions" style="margin-top:14px;">
-            <button class="btn-green" onclick="approve('${String(p.id).replaceAll("'", "\\'")}')">Approve</button>
-            <button class="btn-red" onclick="unapprove('${String(p.id).replaceAll("'", "\\'")}')">Unapprove</button>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    async function approve(id) {
-      await update(id, "approve");
-    }
-
-    async function unapprove(id) {
-      await update(id, "unapprove");
-    }
-
-    async function update(id, action) {
-      const token = await getAccessToken();
-
-      if (!token) {
-        alert("Please log in first.");
-        return;
-      }
-
-      try {
-        const res = await fetch("/.netlify/functions/admin-approve-profile", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({ profileId: id, action })
-        });
-
-        const raw = await res.text();
-        let json;
-
-        try {
-          json = JSON.parse(raw);
-        } catch {
-          json = { ok: false, error: raw || "Invalid JSON response" };
-        }
-
-        console.log("admin-approve-profile:", res.status, json);
-
-        if (!res.ok || !json.ok) {
-          alert(json.error || "Update failed");
-          return;
-        }
-
-        await load();
-      } catch (err) {
-        console.error(err);
-        alert(err.message || "Network error");
-      }
-    }
-
-    function formatDate(value) {
-      if (!value) return "";
-      const d = new Date(value);
-      if (Number.isNaN(d.getTime())) return String(value);
-      return d.toLocaleString();
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    restoreSession();
-  </script>
 </body>
 </html>
