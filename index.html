@@ -7,7 +7,7 @@
   <meta name="description" content="Nairobi Sweets is a private VIP directory with premium profiles, featured listings, fast contact, and luxury discovery filters." />
   <link rel="canonical" href="https://nairobi-sweets.com/" />
   <meta name="robots" content="index,follow" />
-  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
 
   <meta property="og:title" content="Nairobi Sweets | Private VIP Directory">
   <meta property="og:description" content="Luxury profile discovery, premium listings, featured visibility, and direct contact in one polished private directory.">
@@ -256,6 +256,19 @@
       transition:all .35s ease;
     }
 
+    .navbar-logo{
+      height:42px;
+      width:auto;
+      object-fit:contain;
+      border-radius:10px;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+      transition: all .3s ease;
+    }
+
+    .navbar-logo:hover{
+      transform: scale(1.05);
+    }
+
     .subtle-label{
       color:#f9a8d4;
       font-size:12px;
@@ -373,6 +386,89 @@
     }
 
     .section-hidden{display:none !important}
+
+    .brand-mini-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(0,0,0,.42);
+      border:1px solid rgba(255,215,120,.18);
+      backdrop-filter:blur(8px);
+    }
+
+    .brand-mini-badge img{
+      width:14px;
+      height:14px;
+      object-fit:contain;
+      border-radius:999px;
+    }
+
+    .card-brand-stamp{
+      position:absolute;
+      top:14px;
+      right:14px;
+      width:34px;
+      height:34px;
+      border-radius:999px;
+      object-fit:cover;
+      border:1px solid rgba(255,215,120,.35);
+      background:rgba(0,0,0,.38);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.04),
+        0 8px 18px rgba(0,0,0,.28),
+        0 0 18px rgba(255,185,0,.10);
+    }
+
+    .card-title-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .plan-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:7px 11px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+    }
+
+    .plan-pill img{
+      width:13px;
+      height:13px;
+      object-fit:contain;
+      border-radius:999px;
+    }
+
+    .plan-pill.signature{
+      background:linear-gradient(135deg, #facc15, #f59e0b);
+      color:#111827;
+    }
+
+    .plan-pill.vip{
+      background:linear-gradient(135deg, rgba(250,204,21,.22), rgba(245,158,11,.16));
+      color:#fde68a;
+      border:1px solid rgba(250,204,21,.22);
+    }
+
+    .plan-pill.featured{
+      background:linear-gradient(135deg, rgba(236,72,153,.22), rgba(219,39,119,.16));
+      color:#f9a8d4;
+      border:1px solid rgba(236,72,153,.22);
+    }
+
+    .profile-card-footer{
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid rgba(255,255,255,.07);
+    }
   </style>
 </head>
 <body class="grid-lines">
@@ -383,9 +479,7 @@
   <header class="sticky top-0 z-40">
     <div class="page-shell mx-auto px-4 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       <div class="flex items-center gap-3 min-w-0">
-        <div class="logo-shell">
-          <img src="/logo.png" alt="Nairobi Sweets Logo" class="site-logo" id="siteLogo">
-        </div>
+        <img src="/assets/logo/logo-navbar.png" alt="Nairobi Sweets" class="navbar-logo" id="siteLogo">
         <div class="min-w-0">
           <p class="text-xs md:text-sm text-pink-100 truncate">Private luxury profile directory</p>
           <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-yellow-300 truncate">Nairobi Sweets</h1>
@@ -899,25 +993,40 @@
       const phoneNumber = getPhoneNumber(profile);
       const imgSrc = `${imageUrl}${imageUrl.includes('?') ? '&' : '?'}v=${getImageVersion(profile)}`;
 
+      const planPill = vvip
+        ? `<span class="plan-pill signature"><img src="/assets/logo/logo-badge.png" alt="">Signature</span>`
+        : vip
+          ? `<span class="plan-pill vip"><img src="/assets/logo/logo-badge.png" alt="">VIP</span>`
+          : isFeatured
+            ? `<span class="plan-pill featured"><img src="/assets/logo/logo-badge.png" alt="">Featured</span>`
+            : '';
+
       return `<article class="glass card-hover ${vvip ? 'vvip-glow' : ((vip || isFeatured) ? 'vip-glow' : 'soft-glow')} rounded-[24px] overflow-hidden fade-in">
         <div class="relative">
           <img src="${esc(imgSrc)}" alt="${esc(altText)}" class="card-image" style="object-position:${esc(imagePosition)};object-fit:${esc(imageFit)};" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
+
+          <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets" class="card-brand-stamp">
+
           <div class="absolute top-3 left-3 flex gap-2 flex-wrap">
-            ${vvip ? '<span class="badge badge-gold">👑 Signature</span>' : ''}
-            ${vip ? '<span class="badge badge-gold">VIP</span>' : ''}
-            ${isFeatured ? '<span class="badge badge-pink">Featured</span>' : ''}
+            ${vvip ? '<span class="badge badge-gold flex items-center gap-2"><img src="/assets/logo/logo-badge.png" style="width:14px;height:14px;border-radius:999px;">Signature</span>' : ''}
+            ${vip ? '<span class="badge badge-dark flex items-center gap-2"><img src="/assets/logo/logo-badge.png" style="width:14px;height:14px;border-radius:999px;">VIP</span>' : ''}
+            ${isFeatured ? '<span class="badge badge-pink flex items-center gap-2"><img src="/assets/logo/logo-badge.png" style="width:14px;height:14px;border-radius:999px;">Featured</span>' : ''}
             ${verified ? '<span class="badge badge-green">Verified</span>' : ''}
             ${online ? '<span class="badge badge-dark">Online</span>' : ''}
           </div>
+
           <div class="absolute bottom-3 right-3 rounded-full bg-black/55 border border-white/10 px-3 py-1.5 text-xs font-bold text-yellow-200">
             Rank ${rank}
           </div>
         </div>
 
         <div class="p-4">
-          <div class="min-w-0">
-            <h3 class="profile-name truncate">${esc(name)}</h3>
-            <p class="profile-category mt-1">${esc(displayCategory || 'General')}</p>
+          <div class="card-title-row">
+            <div class="min-w-0">
+              <h3 class="profile-name truncate">${esc(name)}</h3>
+              <p class="profile-category mt-1">${esc(displayCategory || 'General')}</p>
+            </div>
+            ${planPill}
           </div>
 
           <div class="flex flex-wrap gap-2 mt-3">
@@ -935,15 +1044,22 @@
             ${online ? '<span class="stat-chip bg-green-500/20 text-green-300 border border-green-400/20">🟢 Online</span>' : ''}
           </div>
 
-          <div class="grid grid-cols-2 gap-2 mt-4">
-            <a href="${whatsappNumber ? `https://wa.me/${whatsappNumber}` : '#'}" target="_blank" rel="noopener noreferrer" data-track="whatsapp" data-profile-id="${esc(profile.id)}" data-plan="${esc(profile.plan || profile.category || '')}" class="btn text-center px-3 py-3 rounded-2xl bg-green-500 hover:bg-green-400 text-white font-semibold text-sm ${!whatsappNumber ? 'opacity-50 pointer-events-none' : ''}">💬 WhatsApp</a>
-            <a href="${phoneNumber ? `tel:${phoneNumber}` : '#'}" class="btn call-btn text-center px-3 py-3 rounded-2xl text-sm ${!phoneNumber ? 'opacity-50 pointer-events-none' : ''}">📞 Call</a>
-          </div>
+          <div class="profile-card-footer">
+            <div class="brand-mini-badge mb-3">
+              <img src="/assets/logo/logo-badge.png" alt="">
+              <span class="text-[11px] font-bold tracking-[0.14em] uppercase text-yellow-200">Nairobi Sweets</span>
+            </div>
 
-          <div class="grid grid-cols-3 gap-2 mt-3">
-            <button onclick="openUpgradeModal('${profile.id}', 'featured', 1000)" class="btn btn-dark text-xs px-2 py-2 rounded-xl">Featured</button>
-            <button onclick="openUpgradeModal('${profile.id}', 'vip', 1500)" class="btn btn-dark text-xs px-2 py-2 rounded-xl">VIP</button>
-            <button onclick="openUpgradeModal('${profile.id}', 'signature', 3000)" class="btn btn-gold text-xs px-2 py-2 rounded-xl">👑 Signature</button>
+            <div class="grid grid-cols-2 gap-2">
+              <a href="${whatsappNumber ? `https://wa.me/${whatsappNumber}` : '#'}" target="_blank" rel="noopener noreferrer" data-track="whatsapp" data-profile-id="${esc(profile.id)}" data-plan="${esc(profile.plan || profile.category || '')}" class="btn text-center px-3 py-3 rounded-2xl bg-green-500 hover:bg-green-400 text-white font-semibold text-sm ${!whatsappNumber ? 'opacity-50 pointer-events-none' : ''}">💬 WhatsApp</a>
+              <a href="${phoneNumber ? `tel:${phoneNumber}` : '#'}" class="btn call-btn text-center px-3 py-3 rounded-2xl text-sm ${!phoneNumber ? 'opacity-50 pointer-events-none' : ''}">📞 Call</a>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 mt-3">
+              <button onclick="openUpgradeModal('${profile.id}', 'featured', 1000)" class="btn btn-dark text-xs px-2 py-2 rounded-xl">Featured</button>
+              <button onclick="openUpgradeModal('${profile.id}', 'vip', 1500)" class="btn btn-dark text-xs px-2 py-2 rounded-xl">VIP</button>
+              <button onclick="openUpgradeModal('${profile.id}', 'signature', 3000)" class="btn btn-gold text-xs px-2 py-2 rounded-xl">👑 Signature</button>
+            </div>
           </div>
         </div>
       </article>`;
