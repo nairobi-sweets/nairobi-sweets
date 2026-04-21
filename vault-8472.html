@@ -3,810 +3,662 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nairobi Sweets | Vault Admin</title>
+  <title>Nairobi Sweets | Enterprise Admin Vault</title>
 
   <style>
-    :root {
-      --bg: #050816;
-      --bg-2: #0a1024;
-      --panel: rgba(10, 14, 32, 0.92);
-      --panel-2: rgba(15, 20, 44, 0.95);
-      --line: rgba(255, 255, 255, 0.08);
-      --line-strong: rgba(255, 214, 92, 0.22);
-      --text: #f5f7ff;
-      --muted: #9ea8c2;
-      --gold: #ffd54f;
-      --gold-2: #ffb300;
-      --pink: #ff8bd7;
-      --green: #7ef0a7;
-      --red: #ff7b92;
-      --blue: #8cb4ff;
-      --shadow: 0 20px 70px rgba(0, 0, 0, 0.42);
-      --radius-xl: 26px;
-      --radius-lg: 18px;
-      --radius-md: 14px;
-      --input: rgba(9, 14, 33, 0.95);
+    :root{
+      --bg:#050816;
+      --bg-2:#081127;
+      --panel:#071022;
+      --panel-2:#0b1731;
+      --line:rgba(255,255,255,.08);
+      --line-2:rgba(255,191,0,.14);
+      --text:#f4f7ff;
+      --muted:#97a3bd;
+      --gold:#ffbf00;
+      --gold-2:#ffd84b;
+      --pink:#f3a2d4;
+      --green:#70f0a2;
+      --red:#ff7d7d;
+      --blue:#86b7ff;
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --radius:24px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
-      min-height: 100vh;
-      font-family: Inter, Arial, Helvetica, sans-serif;
-      color: var(--text);
+      padding: 0;
       background:
-        radial-gradient(circle at 0% 10%, rgba(165, 49, 201, 0.14), transparent 28%),
-        radial-gradient(circle at 100% 0%, rgba(255, 208, 0, 0.10), transparent 26%),
-        linear-gradient(180deg, #030611 0%, #050816 55%, #040713 100%);
+        radial-gradient(circle at top left, rgba(116, 0, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(255, 191, 0, 0.12), transparent 25%),
+        linear-gradient(180deg, #04070f 0%, #071022 40%, #030814 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100%;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
+    a { color: inherit; text-decoration: none; }
+
+    .wrap {
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
     }
 
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 50;
-      backdrop-filter: blur(12px);
-      background: rgba(4, 8, 18, 0.74);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      z-index: 10;
+      backdrop-filter: blur(16px);
+      background: rgba(5, 8, 22, 0.72);
+      border-bottom: 1px solid var(--line);
     }
 
     .topbar-inner {
-      width: min(1380px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 16px 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      min-height: 90px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .brand img {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: rgba(255,255,255,0.03);
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 0 24px rgba(255, 191, 0, 0.18);
+      background: rgba(255,255,255,.03);
     }
 
-    .brand small {
-      display: block;
-      color: #f6d8ff;
-      letter-spacing: 0.18em;
+    .brand-copy {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.02;
+    }
+
+    .brand-copy small {
+      color: rgba(255,255,255,.82);
+      font-size: 12px;
+      letter-spacing: .35em;
       text-transform: uppercase;
-      font-size: 11px;
-      margin-bottom: 2px;
     }
 
-    .brand strong {
-      display: block;
-      color: var(--gold);
+    .brand-copy strong {
       font-size: 18px;
+      color: var(--gold-2);
       font-weight: 800;
     }
 
     .top-actions {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
       align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .btn {
-      appearance: none;
-      border: none;
-      cursor: pointer;
-      border-radius: 999px;
-      padding: 12px 18px;
-      font-weight: 700;
-      font-size: 14px;
-      transition: 0.2s ease;
-    }
-
-    .btn:hover:not(:disabled) {
-      transform: translateY(-1px);
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .btn-primary {
-      color: #231700;
-      background: linear-gradient(180deg, #ffe08a 0%, #ffd54f 50%, #ffbf00 100%);
-      box-shadow: 0 16px 32px rgba(255, 191, 0, 0.18);
-    }
-
-    .btn-secondary {
-      color: #fff;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .btn-danger {
-      color: #fff;
-      background: rgba(255, 123, 146, 0.14);
-      border: 1px solid rgba(255, 123, 146, 0.28);
-    }
-
-    .page {
-      width: min(1380px, calc(100% - 28px));
-      margin: 24px auto 40px;
-      display: grid;
-      grid-template-columns: 320px minmax(0, 1fr);
-      gap: 20px;
-    }
-
-    .sidebar,
-    .content-panel,
-    .login-card,
-    .stat-card,
-    .filter-card,
-    .table-card {
-      background: linear-gradient(180deg, rgba(7, 12, 29, 0.94), rgba(5, 9, 23, 0.96));
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow);
-    }
-
-    .sidebar {
-      padding: 20px;
-      height: fit-content;
-      position: sticky;
-      top: 88px;
-    }
-
-    .sidebar h2,
-    .content-header h1 {
-      margin: 0;
-      letter-spacing: -0.03em;
-    }
-
-    .sidebar p {
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 14px;
-    }
-
-    .quick-stats {
-      display: grid;
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .quick-stat {
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 18px;
-      padding: 14px;
-      background: rgba(255,255,255,0.03);
-    }
-
-    .quick-stat .label {
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
-    }
-
-    .quick-stat .value {
-      font-size: 24px;
-      font-weight: 800;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
       color: var(--text);
+      padding: 12px 18px;
+      border-radius: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s ease;
     }
 
-    .main {
-      min-width: 0;
-      display: grid;
-      gap: 18px;
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
     }
 
-    .content-panel {
-      padding: 24px;
+    .btn-gold {
+      background: linear-gradient(180deg, var(--gold-2), var(--gold));
+      color: #141414;
+      border: none;
+      box-shadow: 0 14px 30px rgba(255, 191, 0, .18);
     }
 
-    .content-header {
+    .mini-btn:disabled,
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .hero {
+      padding: 28px 0 18px;
+    }
+
+    .hero-panel {
+      background:
+        linear-gradient(180deg, rgba(5,10,25,.92), rgba(4,9,22,.94)),
+        radial-gradient(circle at top right, rgba(255,191,0,.10), transparent 28%);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      padding: 26px;
+    }
+
+    .hero-row {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 16px;
+      gap: 18px;
       flex-wrap: wrap;
-      margin-bottom: 18px;
     }
 
-    .content-header p {
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1;
+      letter-spacing: -.03em;
+    }
+
+    .hero p {
       margin: 10px 0 0;
       color: var(--muted);
       max-width: 760px;
-      line-height: 1.7;
-    }
-
-    .status-box {
-      display: none;
-      padding: 14px 16px;
-      border-radius: 16px;
-      margin-bottom: 18px;
-      font-size: 14px;
       line-height: 1.6;
-      border: 1px solid transparent;
     }
 
-    .status-box.show {
-      display: block;
+    .status-pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(112, 240, 162, .20);
+      background: rgba(112, 240, 162, .08);
+      color: var(--green);
+      font-weight: 800;
+      white-space: nowrap;
     }
 
-    .status-info {
-      background: rgba(140, 180, 255, 0.12);
-      border-color: rgba(140, 180, 255, 0.24);
-      color: #dce7ff;
-    }
-
-    .status-success {
-      background: rgba(126, 240, 167, 0.12);
-      border-color: rgba(126, 240, 167, 0.24);
-      color: #dcffe9;
-    }
-
-    .status-error {
-      background: rgba(255, 123, 146, 0.12);
-      border-color: rgba(255, 123, 146, 0.24);
-      color: #ffe0e6;
+    .grid {
+      display: grid;
+      gap: 16px;
     }
 
     .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      margin-top: 20px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(5,11,28,.95), rgba(4,9,22,.95));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
     }
 
     .stat-card {
-      padding: 18px;
-    }
-
-    .stat-card .label {
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .stat-card .value {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .filters-grid {
-      display: grid;
-      grid-template-columns: 1.35fr 1fr 1fr 1fr auto;
-      gap: 12px;
-      align-items: end;
-    }
-
-    .filter-card {
-      padding: 18px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .field label {
-      font-size: 13px;
-      color: #e8ecf9;
-    }
-
-    input,
-    select {
-      width: 100%;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: var(--input);
-      color: var(--text);
-      border-radius: 16px;
-      padding: 14px 15px;
-      font-size: 15px;
-      outline: none;
-      transition: 0.2s ease;
-    }
-
-    input::placeholder {
-      color: #8d97b0;
-    }
-
-    input:focus,
-    select:focus {
-      border-color: rgba(255, 213, 79, 0.48);
-      box-shadow: 0 0 0 4px rgba(255, 213, 79, 0.08);
-    }
-
-    .table-card {
+      padding: 18px 18px 16px;
+      min-height: 118px;
+      position: relative;
       overflow: hidden;
     }
 
-    .table-head {
-      padding: 18px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(255,191,0,.10), transparent 65%);
+      pointer-events: none;
     }
 
-    .table-head h3 {
-      margin: 0;
+    .label {
+      color: #cbd4eb;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .value {
+      font-size: clamp(28px, 3vw, 40px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -.03em;
+      margin-bottom: 8px;
+    }
+
+    .subtext {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .gold { color: var(--gold-2); }
+    .pink { color: var(--pink); }
+    .green { color: var(--green); }
+    .blue { color: var(--blue); }
+    .red { color: var(--red); }
+
+    .toolbar {
+      margin-top: 18px;
+      padding: 22px;
+    }
+
+    .toolbar-grid {
+      display: grid;
+      grid-template-columns: 1.5fr .7fr .7fr .6fr;
+      gap: 14px;
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      background: #030816;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      padding: 16px 18px;
+      outline: none;
+      font-size: 16px;
+      min-height: 56px;
+    }
+
+    .input:focus,
+    .select:focus {
+      border-color: rgba(255,191,0,.38);
+      box-shadow: 0 0 0 4px rgba(255,191,0,.08);
+    }
+
+    .toolbar-meta {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .analytics-grid {
+      grid-template-columns: 1.15fr .85fr;
+      margin-top: 18px;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      letter-spacing: .01em;
+    }
+
+    .panel p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .revenue-list,
+    .plan-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .revenue-row,
+    .plan-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.05);
+    }
+
+    .revenue-row strong,
+    .plan-row strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .amount {
       font-size: 20px;
+      font-weight: 900;
+      color: var(--gold-2);
+      white-space: nowrap;
+    }
+
+    .bar {
+      height: 10px;
+      background: rgba(255,255,255,.05);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 9px;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--gold), var(--gold-2));
+      width: 0%;
+    }
+
+    .table-panel {
+      margin-top: 18px;
+      padding: 18px;
     }
 
     .table-wrap {
       overflow: auto;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.02);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 1220px;
+      min-width: 1080px;
     }
 
-    th,
-    td {
-      padding: 16px 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+    thead th {
       text-align: left;
-      vertical-align: top;
-      font-size: 14px;
-    }
-
-    th {
-      position: sticky;
-      top: 0;
-      background: rgba(9, 13, 31, 0.98);
-      z-index: 2;
-      color: #f8f8fb;
       font-size: 12px;
-      letter-spacing: 0.08em;
+      color: #d7dff2;
+      letter-spacing: .16em;
       text-transform: uppercase;
+      padding: 16px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      white-space: nowrap;
     }
 
-    tr:hover td {
-      background: rgba(255,255,255,0.02);
+    tbody td {
+      padding: 18px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      vertical-align: top;
+    }
+
+    tbody tr:hover {
+      background: rgba(255,255,255,.03);
     }
 
     .profile-cell {
       display: flex;
-      align-items: flex-start;
       gap: 12px;
-      min-width: 230px;
+      align-items: center;
+      min-width: 220px;
     }
 
     .avatar {
-      width: 68px;
-      height: 68px;
-      border-radius: 18px;
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
       object-fit: cover;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(135deg, #131b33, #0b1124);
+      border: 1px solid rgba(255,255,255,.08);
       flex-shrink: 0;
     }
 
     .avatar-fallback {
-      width: 68px;
-      height: 68px;
-      border-radius: 18px;
       display: grid;
       place-items: center;
-      font-weight: 800;
-      color: #1d1300;
-      background: linear-gradient(180deg, #ffe08a, #ffd54f);
-      flex-shrink: 0;
+      font-weight: 900;
+      color: var(--gold-2);
+      font-size: 16px;
     }
 
-    .profile-main {
-      min-width: 0;
-    }
-
-    .profile-name {
-      font-size: 15px;
+    .name {
       font-weight: 800;
       margin-bottom: 4px;
-      word-break: break-word;
     }
 
-    .profile-meta {
+    .meta {
       color: var(--muted);
-      line-height: 1.6;
-      word-break: break-word;
+      font-size: 13px;
+      line-height: 1.45;
     }
 
-    .chip {
+    .badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 12px;
+      padding: 8px 10px;
       border-radius: 999px;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
+      border: 1px solid transparent;
       white-space: nowrap;
     }
 
-    .chip.plan-featured {
-      background: rgba(255, 213, 79, 0.12);
-      color: #ffe08d;
-      border: 1px solid rgba(255, 213, 79, 0.18);
+    .badge.approved {
+      color: #0f2518;
+      background: rgba(112,240,162,.95);
     }
 
-    .chip.plan-vip {
-      background: rgba(255, 139, 215, 0.12);
-      color: #ffc8ef;
-      border: 1px solid rgba(255, 139, 215, 0.18);
+    .badge.pending {
+      color: #352500;
+      background: rgba(255,216,75,.95);
     }
 
-    .chip.plan-signature {
-      background: rgba(140, 180, 255, 0.12);
-      color: #d6e5ff;
-      border: 1px solid rgba(140, 180, 255, 0.18);
+    .badge.unpaid,
+    .badge.failed {
+      color: #3a1111;
+      background: rgba(255,125,125,.95);
     }
 
-    .chip.pending {
-      background: rgba(255, 213, 79, 0.12);
-      color: #ffe08d;
-      border: 1px solid rgba(255, 213, 79, 0.18);
+    .badge.signature {
+      color: #2b1e00;
+      background: linear-gradient(180deg, #ffe480, #ffbf00);
     }
 
-    .chip.success,
-    .chip.approved,
-    .chip.paid,
-    .chip.active {
-      background: rgba(126, 240, 167, 0.12);
-      color: #d7ffe5;
-      border: 1px solid rgba(126, 240, 167, 0.18);
+    .badge.featured {
+      color: #1b1836;
+      background: rgba(170,160,255,.92);
     }
 
-    .chip.failed,
-    .chip.declined,
-    .chip.rejected,
-    .chip.unpaid {
-      background: rgba(255, 123, 146, 0.12);
-      color: #ffe1e7;
-      border: 1px solid rgba(255, 123, 146, 0.18);
+    .badge.vip {
+      color: #29152d;
+      background: rgba(243,162,212,.95);
     }
 
-    .chip.muted {
-      background: rgba(255,255,255,0.06);
-      color: #dce2f5;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .bio {
-      max-width: 260px;
-      color: var(--muted);
-      line-height: 1.6;
-      white-space: normal;
-      word-break: break-word;
-    }
-
-    .row-actions {
-      display: flex;
-      flex-wrap: wrap;
+    .cell-stack {
+      display: grid;
       gap: 8px;
-      min-width: 180px;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .mini-btn {
-      appearance: none;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: #fff;
-      border-radius: 999px;
-      padding: 9px 12px;
-      font-size: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
       font-weight: 700;
       cursor: pointer;
-      transition: 0.2s ease;
     }
 
     .mini-btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .mini-btn.approve {
-      background: rgba(126, 240, 167, 0.14);
-      border-color: rgba(126, 240, 167, 0.22);
-      color: #d7ffe5;
-    }
-
-    .mini-btn.reject {
-      background: rgba(255, 123, 146, 0.14);
-      border-color: rgba(255, 123, 146, 0.22);
-      color: #ffe1e7;
-    }
-
-    .mini-btn.paid {
-      background: rgba(140, 180, 255, 0.14);
-      border-color: rgba(140, 180, 255, 0.22);
-      color: #dde9ff;
+      border-color: rgba(255,191,0,.24);
+      background: rgba(255,191,0,.06);
     }
 
     .empty {
-      padding: 34px 20px;
+      padding: 42px 18px;
+      text-align: center;
       color: var(--muted);
+    }
+
+    .footer-note {
+      margin: 16px 0 40px;
+      color: var(--muted);
+      font-size: 13px;
       text-align: center;
     }
 
-    .login-shell {
-      min-height: calc(100vh - 88px);
-      display: grid;
-      place-items: center;
-      padding: 24px;
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .analytics-grid { grid-template-columns: 1fr; }
+      .toolbar-grid { grid-template-columns: 1fr 1fr; }
     }
 
-    .login-card {
-      width: min(460px, 100%);
-      padding: 28px;
-    }
-
-    .login-card h2 {
-      margin: 0 0 10px;
-      font-size: 32px;
-      letter-spacing: -0.03em;
-    }
-
-    .login-card p {
-      margin: 0 0 18px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .login-grid {
-      display: grid;
-      gap: 14px;
-    }
-
-    .tiny {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-      margin-top: 12px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @media (max-width: 1180px) {
-      .stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .filters-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 980px) {
-      .page {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        position: static;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .topbar-inner,
-      .page {
-        width: min(100% - 18px, 100%);
-      }
-
-      .content-panel,
-      .filter-card,
-      .stat-card,
-      .sidebar,
-      .login-card {
-        padding: 18px;
-      }
-
-      .stats-grid,
-      .filters-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .profile-cell {
-        min-width: 200px;
-      }
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 20px, 1220px); }
+      .topbar-inner { min-height: 78px; }
+      .hero-panel { padding: 18px; border-radius: 24px; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toolbar-grid { grid-template-columns: 1fr; }
+      .panel, .toolbar, .table-panel { padding: 16px; }
+      .btn, .btn-gold { width: 100%; }
+      .top-actions { width: 100%; }
+      .top-actions > * { flex: 1; }
     }
   </style>
 </head>
 <body>
   <header class="topbar">
-    <div class="topbar-inner">
-      <a href="/index.html" class="brand">
-        <img src="/assets/logo/logo-navbar.png" alt="Nairobi Sweets logo" onerror="this.src='/assets/logo/logo-badge.png'">
-        <div>
-          <small>Secure Admin</small>
-          <strong>Nairobi Sweets Vault</strong>
+    <div class="wrap topbar-inner">
+      <div class="brand">
+        <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets logo" onerror="this.style.display='none'">
+        <div class="brand-copy">
+          <small>Enterprise Admin</small>
+          <strong>Vault Revenue Dashboard</strong>
         </div>
-      </a>
+      </div>
 
       <div class="top-actions">
-        <button id="refreshTopBtn" class="btn btn-secondary hidden" type="button">Refresh</button>
-        <button id="logoutTopBtn" class="btn btn-danger hidden" type="button">Logout</button>
+        <a class="btn" href="/">Home</a>
+        <button class="btn btn-gold" id="logoutBtn">Logout</button>
       </div>
     </div>
   </header>
 
-  <section id="loginView" class="login-shell">
-    <div class="login-card">
-      <h2>Vault login</h2>
-      <p>
-        Sign in with your admin account to manage listings, payment status,
-        approval flow, and uploaded profile photos.
-      </p>
-
-      <div id="loginStatus" class="status-box"></div>
-
-      <form id="loginForm" class="login-grid">
-        <div class="field">
-          <label for="adminEmail">Admin email</label>
-          <input id="adminEmail" type="email" placeholder="admin@example.com" required />
-        </div>
-
-        <div class="field">
-          <label for="adminPassword">Password</label>
-          <input id="adminPassword" type="password" placeholder="Enter your password" required />
-        </div>
-
-        <button id="loginBtn" class="btn btn-primary" type="submit">Login to Vault</button>
-      </form>
-
-      <div class="tiny">
-        This page expects a valid Supabase Auth admin user. Only authenticated admins should reach the vault.
-      </div>
-    </div>
-  </section>
-
-  <main id="appView" class="page hidden">
-    <aside class="sidebar">
-      <h2>Admin cockpit</h2>
-      <p>
-        Review every listing, see uploaded photos clearly, track payment state,
-        and approve profiles without the dashboard turning into spaghetti soup.
-      </p>
-
-      <div class="quick-stats">
-        <div class="quick-stat">
-          <div class="label">Total profiles</div>
-          <div class="value" id="sidebarTotal">0</div>
-        </div>
-        <div class="quick-stat">
-          <div class="label">Pending approval</div>
-          <div class="value" id="sidebarPending">0</div>
-        </div>
-        <div class="quick-stat">
-          <div class="label">Paid profiles</div>
-          <div class="value" id="sidebarPaid">0</div>
-        </div>
-      </div>
-    </aside>
-
-    <section class="main">
-      <div class="content-panel">
-        <div class="content-header">
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-panel">
+        <div class="hero-row">
           <div>
-            <h1>Vault Admin</h1>
+            <h1>Revenue cockpit</h1>
             <p>
-              Manage models, verify image uploads, update approval status, and mark payment state.
+              Track active listings, pending payments, plan mix, and estimated revenue
+              across Nairobi Sweets from one clean command deck.
             </p>
           </div>
-
-          <div class="top-actions">
-            <button id="refreshBtn" class="btn btn-secondary" type="button">Refresh data</button>
-            <button id="logoutBtn" class="btn btn-danger" type="button">Logout</button>
-          </div>
+          <div class="status-pill" id="systemStatus">System ready</div>
         </div>
 
-        <div id="appStatus" class="status-box"></div>
+        <div class="grid stats-grid">
+          <div class="card stat-card">
+            <div class="label">Profiles</div>
+            <div class="value gold" id="profilesCount">0</div>
+            <div class="subtext">All loaded records</div>
+          </div>
 
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="label">All profiles</div>
-            <div id="statTotal" class="value">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="label">Pending approval</div>
-            <div id="statPending" class="value">0</div>
-          </div>
-          <div class="stat-card">
+          <div class="card stat-card">
             <div class="label">Approved</div>
-            <div id="statApproved" class="value">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="label">Paid / Active</div>
-            <div id="statPaid" class="value">0</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="filter-card">
-        <div class="filters-grid">
-          <div class="field">
-            <label for="searchInput">Search</label>
-            <input id="searchInput" type="text" placeholder="Search name, email, phone, location..." />
+            <div class="value green" id="approvedCount">0</div>
+            <div class="subtext">Paid, active, completed</div>
           </div>
 
-          <div class="field">
-            <label for="approvalFilter">Approval</label>
-            <select id="approvalFilter">
-              <option value="">All</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-              <option value="active">Active</option>
-            </select>
+          <div class="card stat-card">
+            <div class="label">Pending payments</div>
+            <div class="value pink" id="pendingCount">0</div>
+            <div class="subtext">Awaiting confirmation</div>
           </div>
 
-          <div class="field">
-            <label for="paymentFilter">Payment</label>
-            <select id="paymentFilter">
-              <option value="">All</option>
-              <option value="pending">Pending</option>
-              <option value="paid">Paid</option>
-              <option value="success">Success</option>
-              <option value="failed">Failed</option>
-              <option value="unpaid">Unpaid</option>
-            </select>
+          <div class="card stat-card">
+            <div class="label">Signature</div>
+            <div class="value gold" id="signatureCount">0</div>
+            <div class="subtext">High-ticket listings</div>
           </div>
 
-          <div class="field">
-            <label for="planFilter">Plan</label>
-            <select id="planFilter">
-              <option value="">All</option>
-              <option value="featured">Featured</option>
-              <option value="vip">VIP</option>
-              <option value="signature">Signature</option>
-            </select>
+          <div class="card stat-card">
+            <div class="label">Weekly revenue</div>
+            <div class="value blue" id="weeklyRevenue">KES 0</div>
+            <div class="subtext">From approved paid profiles</div>
           </div>
 
-          <div class="field">
-            <button id="clearFiltersBtn" class="btn btn-secondary" type="button">Clear</button>
+          <div class="card stat-card">
+            <div class="label">Monthly run rate</div>
+            <div class="value gold" id="monthlyRevenue">KES 0</div>
+            <div class="subtext">Weekly revenue × 4</div>
           </div>
         </div>
       </div>
 
-      <div class="table-card">
-        <div class="table-head">
-          <h3>Profiles</h3>
-          <div class="tiny" id="tableCountText">0 records</div>
+      <div class="card toolbar">
+        <div class="toolbar-grid">
+          <input
+            id="searchInput"
+            class="input"
+            type="text"
+            placeholder="Search by name, email, location, phone, payment status"
+          />
+
+          <select id="planFilter" class="select">
+            <option value="">All plans</option>
+            <option value="featured">Featured</option>
+            <option value="vip">VIP</option>
+            <option value="signature">Signature / VVIP</option>
+          </select>
+
+          <select id="statusFilter" class="select">
+            <option value="">All statuses</option>
+            <option value="approved">Approved</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed / Unpaid</option>
+          </select>
+
+          <button class="btn" id="refreshBtn">Refresh</button>
         </div>
 
+        <div class="toolbar-meta" id="resultsMeta">Loading profiles...</div>
+      </div>
+
+      <div class="grid analytics-grid">
+        <section class="card panel">
+          <h2>Revenue by plan</h2>
+          <p>
+            Weekly pricing model currently uses Featured = KES 1,000, VIP = KES 1,500,
+            Signature/VVIP = KES 3,000.
+          </p>
+          <div class="revenue-list" id="revenueByPlan"></div>
+        </section>
+
+        <section class="card panel">
+          <h2>Plan distribution</h2>
+          <p>
+            See which plan is carrying the business and where to push upgrades.
+          </p>
+          <div class="plan-list" id="planDistribution"></div>
+        </section>
+      </div>
+
+      <section class="card table-panel">
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Profile</th>
                 <th>Plan</th>
-                <th>Payment</th>
-                <th>Approval</th>
-                <th>Bio</th>
-                <th>Created</th>
-                <th>Actions</th>
+                <th>Status</th>
+                <th>Contact</th>
+                <th>Revenue</th>
+                <th>Badges</th>
+                <th>Admin Actions</th>
               </tr>
             </thead>
             <tbody id="profilesTableBody">
@@ -816,6 +668,77 @@
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section class="card panel" id="adminManagementPanel" style="display:none; margin-top:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+          <div>
+            <h2 style="margin:0 0 10px;">Admin management</h2>
+            <p style="margin:0; color:var(--muted); max-width:720px;">
+              Super admin only. Add staff access, reactivate admins, change roles, and deactivate access without touching Supabase manually.
+            </p>
+          </div>
+          <div class="status-pill" id="adminManagementStatus">Super admin controls</div>
+        </div>
+
+        <div class="card toolbar" style="margin-top:18px; padding:18px;">
+          <div class="toolbar-grid" style="grid-template-columns:1.1fr 1fr .8fr .7fr;">
+            <input
+              id="adminUserIdInput"
+              class="input"
+              type="text"
+              placeholder="Supabase Auth user UUID"
+            />
+            <input
+              id="adminEmailInput"
+              class="input"
+              type="email"
+              placeholder="staff@yoursite.com"
+            />
+            <select id="adminRoleInput" class="select">
+              <option value="viewer">Viewer</option>
+              <option value="admin" selected>Admin</option>
+              <option value="super_admin">Super Admin</option>
+            </select>
+            <button class="btn btn-gold" id="saveAdminUserBtn">Save Admin</button>
+          </div>
+
+          <div class="toolbar-meta" id="adminFormMeta">
+            Create or reactivate an admin by Supabase Auth user ID.
+          </div>
+        </div>
+
+        <div class="card table-panel" style="margin-top:18px; padding:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+            <h3 style="margin:0; font-size:16px;">Admin users</h3>
+            <button class="btn" id="refreshAdminUsersBtn">Refresh Admins</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>User ID</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Updated</th>
+                  <th>Controls</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTableBody">
+                <tr>
+                  <td colspan="7" class="empty">Admin users will appear here.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer-note">
+        Nairobi Sweets Enterprise Vault • Revenue dashboard mode
       </div>
     </section>
   </main>
@@ -825,70 +748,63 @@
     const SUPABASE_URL = "YOUR_SUPABASE_URL";
     const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
+    const PLAN_PRICES = {
+      featured: 1000,
+      vip: 1500,
+      signature: 3000
+    };
+
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const loginView = document.getElementById("loginView");
-    const appView = document.getElementById("appView");
+    let rawProfiles = [];
+    let filteredProfiles = [];
+    let currentAdmin = null;
+    let adminUsers = [];
 
-    const loginForm = document.getElementById("loginForm");
-    const loginBtn = document.getElementById("loginBtn");
-    const loginStatus = document.getElementById("loginStatus");
+    const els = {
+      profilesCount: document.getElementById("profilesCount"),
+      approvedCount: document.getElementById("approvedCount"),
+      pendingCount: document.getElementById("pendingCount"),
+      signatureCount: document.getElementById("signatureCount"),
+      weeklyRevenue: document.getElementById("weeklyRevenue"),
+      monthlyRevenue: document.getElementById("monthlyRevenue"),
+      revenueByPlan: document.getElementById("revenueByPlan"),
+      planDistribution: document.getElementById("planDistribution"),
+      profilesTableBody: document.getElementById("profilesTableBody"),
+      resultsMeta: document.getElementById("resultsMeta"),
+      systemStatus: document.getElementById("systemStatus"),
+      searchInput: document.getElementById("searchInput"),
+      planFilter: document.getElementById("planFilter"),
+      statusFilter: document.getElementById("statusFilter"),
+      refreshBtn: document.getElementById("refreshBtn"),
+      logoutBtn: document.getElementById("logoutBtn"),
 
-    const appStatus = document.getElementById("appStatus");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const refreshTopBtn = document.getElementById("refreshTopBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const logoutTopBtn = document.getElementById("logoutTopBtn");
+      adminManagementPanel: document.getElementById("adminManagementPanel"),
+      adminManagementStatus: document.getElementById("adminManagementStatus"),
+      adminUserIdInput: document.getElementById("adminUserIdInput"),
+      adminEmailInput: document.getElementById("adminEmailInput"),
+      adminRoleInput: document.getElementById("adminRoleInput"),
+      saveAdminUserBtn: document.getElementById("saveAdminUserBtn"),
+      refreshAdminUsersBtn: document.getElementById("refreshAdminUsersBtn"),
+      adminUsersTableBody: document.getElementById("adminUsersTableBody"),
+      adminFormMeta: document.getElementById("adminFormMeta")
+    };
 
-    const searchInput = document.getElementById("searchInput");
-    const approvalFilter = document.getElementById("approvalFilter");
-    const paymentFilter = document.getElementById("paymentFilter");
-    const planFilter = document.getElementById("planFilter");
-    const clearFiltersBtn = document.getElementById("clearFiltersBtn");
-
-    const profilesTableBody = document.getElementById("profilesTableBody");
-    const tableCountText = document.getElementById("tableCountText");
-
-    const statTotal = document.getElementById("statTotal");
-    const statPending = document.getElementById("statPending");
-    const statApproved = document.getElementById("statApproved");
-    const statPaid = document.getElementById("statPaid");
-
-    const sidebarTotal = document.getElementById("sidebarTotal");
-    const sidebarPending = document.getElementById("sidebarPending");
-    const sidebarPaid = document.getElementById("sidebarPaid");
-
-    let allProfiles = [];
-
-    function setBoxStatus(el, message, type = "info") {
-      el.className = "status-box show";
-      if (type === "success") el.classList.add("status-success");
-      else if (type === "error") el.classList.add("status-error");
-      else el.classList.add("status-info");
-      el.textContent = message;
+    function safeText(value) {
+      return value == null ? "" : String(value).trim();
     }
 
-    function clearBoxStatus(el) {
-      el.className = "status-box";
-      el.textContent = "";
+    function safeLower(value) {
+      return safeText(value).toLowerCase();
     }
 
-    function showApp() {
-      loginView.classList.add("hidden");
-      appView.classList.remove("hidden");
-      refreshTopBtn.classList.remove("hidden");
-      logoutTopBtn.classList.remove("hidden");
-    }
-
-    function showLogin() {
-      appView.classList.add("hidden");
-      loginView.classList.remove("hidden");
-      refreshTopBtn.classList.add("hidden");
-      logoutTopBtn.classList.add("hidden");
+    function formatKES(value) {
+      const num = Number(value || 0);
+      return "KES " + num.toLocaleString();
     }
 
     function escapeHtml(value) {
-      return String(value ?? "")
+      return safeText(value)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -896,183 +812,430 @@
         .replace(/'/g, "&#039;");
     }
 
-    function formatDate(value) {
+    function initialsFromName(name) {
+      const clean = safeText(name);
+      if (!clean) return "NS";
+      return clean
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part => part.charAt(0).toUpperCase())
+        .join("");
+    }
+
+    function normalizePlan(profile) {
+      const raw = safeLower(
+        profile.plan ||
+        profile.pricing_plan ||
+        profile.package ||
+        profile.package_name ||
+        profile.tier ||
+        profile.membership_plan
+      );
+
+      if (!raw) return "featured";
+      if (raw.includes("signature") || raw.includes("vvip") || raw.includes("premium")) return "signature";
+      if (raw.includes("vip")) return "vip";
+      if (raw.includes("featured")) return "featured";
+
+      return "featured";
+    }
+
+    function getPlanLabel(plan) {
+      if (plan === "signature") return "Signature";
+      if (plan === "vip") return "VIP";
+      return "Featured";
+    }
+
+    function getPlanPrice(plan) {
+      return PLAN_PRICES[plan] || 0;
+    }
+
+    function normalizeStatus(profile) {
+      const raw = safeLower(
+        profile.payment_status ||
+        profile.status ||
+        profile.payment ||
+        profile.paymentState ||
+        profile.approval_status
+      );
+
+      if ([
+        "paid",
+        "success",
+        "successful",
+        "approved",
+        "completed",
+        "active",
+        "confirmed"
+      ].includes(raw)) return "approved";
+
+      if ([
+        "pending",
+        "processing",
+        "awaiting",
+        "initiated",
+        "queued"
+      ].includes(raw)) return "pending";
+
+      if ([
+        "failed",
+        "cancelled",
+        "canceled",
+        "declined",
+        "unpaid",
+        "expired"
+      ].includes(raw)) return "failed";
+
+      return raw || "pending";
+    }
+
+    function getStatusBadge(status) {
+      if (status === "approved") return '<span class="badge approved">Approved</span>';
+      if (status === "pending") return '<span class="badge pending">Pending</span>';
+      return '<span class="badge failed">Unpaid</span>';
+    }
+
+    function getPlanBadge(plan) {
+      if (plan === "signature") return '<span class="badge signature">Signature</span>';
+      if (plan === "vip") return '<span class="badge vip">VIP</span>';
+      return '<span class="badge featured">Featured</span>';
+    }
+
+    function profileName(profile) {
+      return (
+        safeText(profile.stage_name) ||
+        safeText(profile.full_name) ||
+        safeText(profile.name) ||
+        "Unnamed Profile"
+      );
+    }
+
+    function profileEmail(profile) {
+      return safeText(profile.email || profile.contact_email || profile.user_email);
+    }
+
+    function profilePhone(profile) {
+      return safeText(profile.phone || profile.phone_number || profile.whatsapp || profile.mobile);
+    }
+
+    function profileLocation(profile) {
+      return safeText(profile.location || profile.city || profile.area || profile.town);
+    }
+
+    function profileImage(profile) {
+      return safeText(
+        profile.avatar_url ||
+        profile.photo_url ||
+        profile.image_url ||
+        profile.profile_image ||
+        profile.headshot_url
+      );
+    }
+
+    function buildSearchText(profile) {
+      return [
+        profileName(profile),
+        profileEmail(profile),
+        profilePhone(profile),
+        profileLocation(profile),
+        normalizeStatus(profile),
+        normalizePlan(profile)
+      ].join(" ").toLowerCase();
+    }
+
+    function isApproved(profile) {
+      return normalizeStatus(profile) === "approved";
+    }
+
+    function isPending(profile) {
+      return normalizeStatus(profile) === "pending";
+    }
+
+    function getApprovedRevenue(profile) {
+      return isApproved(profile) ? getPlanPrice(normalizePlan(profile)) : 0;
+    }
+
+    function getProfileId(profile) {
+      return profile?.id || profile?.profile_id || profile?.uuid || null;
+    }
+
+    function findProfileById(profileId) {
+      return rawProfiles.find(p => String(getProfileId(p)) === String(profileId)) || null;
+    }
+
+    function setSystemStatus(message, isError = false) {
+      els.systemStatus.textContent = message;
+      els.systemStatus.style.color = isError ? "#ff9b9b" : "";
+    }
+
+    function formatDateTime(value) {
       if (!value) return "—";
       const d = new Date(value);
       if (Number.isNaN(d.getTime())) return "—";
       return d.toLocaleString();
     }
 
-    function normalizeText(value) {
-      return String(value || "").trim().toLowerCase();
+    function shortenId(value) {
+      const v = safeText(value);
+      if (!v) return "—";
+      if (v.length <= 16) return v;
+      return `${v.slice(0, 8)}...${v.slice(-6)}`;
     }
 
-    function normalizePlan(value) {
-      const v = normalizeText(value);
-      if (v === "featured") return "featured";
-      if (v === "vip") return "vip";
-      if (v === "signature" || v === "vvip") return "signature";
-      return v || "unknown";
+    function adminHasPermission(permission) {
+      return Boolean(currentAdmin?.permissions?.includes(permission));
     }
 
-    function prettyPlan(value) {
-      const v = normalizePlan(value);
-      if (v === "featured") return "Featured";
-      if (v === "vip") return "VIP";
-      if (v === "signature") return "Signature";
-      if (!v || v === "unknown") return "Unknown";
-      return v.charAt(0).toUpperCase() + v.slice(1);
-    }
+    async function getAccessTokenOrThrow() {
+      const { data, error } = await sb.auth.getSession();
 
-    function normalizeApproval(value) {
-      const v = normalizeText(value);
-      if (["approved", "active"].includes(v)) return v;
-      if (["rejected", "declined"].includes(v)) return "rejected";
-      if (["pending", ""].includes(v)) return "pending";
-      return v;
-    }
-
-    function normalizePayment(value) {
-      const v = normalizeText(value);
-      if (["paid", "success", "completed", "active"].includes(v)) return v === "completed" ? "paid" : v;
-      if (["failed", "cancelled", "declined"].includes(v)) return "failed";
-      if (["unpaid"].includes(v)) return "unpaid";
-      return v || "pending";
-    }
-
-    function badge(text, className) {
-      return `<span class="chip ${className}">${escapeHtml(text)}</span>`;
-    }
-
-    function getInitials(name) {
-      const parts = String(name || "").trim().split(/\s+/).filter(Boolean).slice(0, 2);
-      if (!parts.length) return "NS";
-      return parts.map(p => p[0].toUpperCase()).join("");
-    }
-
-    function renderAvatar(profile) {
-      const imageUrl = profile.image_url || profile.image || profile.photo_url || "";
-      if (imageUrl) {
-        return `<img class="avatar" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(profile.stage_name || "Profile")}" onerror="this.outerHTML='<div class=&quot;avatar-fallback&quot;>${escapeHtml(getInitials(profile.stage_name))}</div>'">`;
+      if (error) {
+        throw new Error(error.message || "Could not read session");
       }
-      return `<div class="avatar-fallback">${escapeHtml(getInitials(profile.stage_name))}</div>`;
+
+      const token = data?.session?.access_token;
+      if (!token) {
+        throw new Error("No active admin session. Please log in again.");
+      }
+
+      return token;
     }
 
-    function getPlanBadge(plan) {
-      const v = normalizePlan(plan);
-      if (v === "featured") return badge("Featured", "plan-featured");
-      if (v === "vip") return badge("VIP", "plan-vip");
-      if (v === "signature") return badge("Signature", "plan-signature");
-      return badge(prettyPlan(plan), "muted");
-    }
+    async function callAdminFunction(functionName, payload) {
+      const accessToken = await getAccessTokenOrThrow();
 
-    function getPaymentBadge(paymentStatus) {
-      const v = normalizePayment(paymentStatus);
-      if (["paid", "success", "active"].includes(v)) return badge(v.toUpperCase(), "paid");
-      if (["failed", "unpaid"].includes(v)) return badge(v.toUpperCase(), v);
-      return badge("PENDING", "pending");
-    }
-
-    function getApprovalBadge(approvalStatus) {
-      const v = normalizeApproval(approvalStatus);
-      if (["approved", "active"].includes(v)) return badge(v.toUpperCase(), "approved");
-      if (v === "rejected") return badge("REJECTED", "rejected");
-      return badge("PENDING", "pending");
-    }
-
-    function getSearchBlob(profile) {
-      return [
-        profile.stage_name,
-        profile.email,
-        profile.phone,
-        profile.location,
-        profile.plan,
-        profile.bio,
-        profile.payment_status,
-        profile.approval_status
-      ].join(" ").toLowerCase();
-    }
-
-    function updateStats(rows) {
-      const total = rows.length;
-      const pending = rows.filter(r => normalizeApproval(r.approval_status) === "pending").length;
-      const approved = rows.filter(r => ["approved", "active"].includes(normalizeApproval(r.approval_status))).length;
-      const paid = rows.filter(r => ["paid", "success", "active"].includes(normalizePayment(r.payment_status))).length;
-
-      statTotal.textContent = total;
-      statPending.textContent = pending;
-      statApproved.textContent = approved;
-      statPaid.textContent = paid;
-
-      sidebarTotal.textContent = total;
-      sidebarPending.textContent = pending;
-      sidebarPaid.textContent = paid;
-    }
-
-    function getFilteredProfiles() {
-      const search = normalizeText(searchInput.value);
-      const approval = normalizeText(approvalFilter.value);
-      const payment = normalizeText(paymentFilter.value);
-      const plan = normalizeText(planFilter.value);
-
-      return allProfiles.filter(profile => {
-        if (search && !getSearchBlob(profile).includes(search)) return false;
-        if (approval && normalizeApproval(profile.approval_status) !== approval) return false;
-        if (payment && normalizePayment(profile.payment_status) !== payment) return false;
-        if (plan && normalizePlan(profile.plan) !== plan) return false;
-        return true;
+      const res = await fetch(`/.netlify/functions/${functionName}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(payload || {})
       });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || `Request failed with status ${res.status}`);
+      }
+
+      return data;
     }
 
-    function renderTable() {
-      const rows = getFilteredProfiles();
-      updateStats(allProfiles);
-      tableCountText.textContent = `${rows.length} record${rows.length === 1 ? "" : "s"}`;
+    async function loadCurrentAdmin() {
+      const accessToken = await getAccessTokenOrThrow();
 
-      if (!rows.length) {
-        profilesTableBody.innerHTML = `
+      const res = await fetch("/.netlify/functions/admin-me", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`
+        }
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || "Could not load admin profile");
+      }
+
+      currentAdmin = data.admin || null;
+      return currentAdmin;
+    }
+
+    function renderAdminIdentity() {
+      if (!currentAdmin) return;
+      els.systemStatus.textContent = `Dashboard live • ${currentAdmin.role}`;
+    }
+
+    function showAdminManagementPanel() {
+      if (!els.adminManagementPanel) return;
+
+      const canManageAdmins = adminHasPermission("admins.manage");
+      els.adminManagementPanel.style.display = canManageAdmins ? "block" : "none";
+
+      if (canManageAdmins) {
+        els.adminManagementStatus.textContent = `Super admin controls • ${currentAdmin?.email || currentAdmin?.role || "active"}`;
+      }
+    }
+
+    function renderRevenueByPlanFromStats(stats) {
+      const revenueByPlan = stats.revenueByPlan || {};
+
+      const featured = revenueByPlan.featured || { count: 0, weeklyRevenue: 0 };
+      const vip = revenueByPlan.vip || { count: 0, weeklyRevenue: 0 };
+      const signature = revenueByPlan.signature || { count: 0, weeklyRevenue: 0 };
+
+      els.revenueByPlan.innerHTML = [
+        {
+          label: "Featured",
+          count: featured.count,
+          price: 1000,
+          revenue: featured.weeklyRevenue
+        },
+        {
+          label: "VIP",
+          count: vip.count,
+          price: 1500,
+          revenue: vip.weeklyRevenue
+        },
+        {
+          label: "Signature",
+          count: signature.count,
+          price: 3000,
+          revenue: signature.weeklyRevenue
+        }
+      ].map(item => `
+        <div class="revenue-row">
+          <div>
+            <strong>${item.label}</strong>
+            <div class="mini">${item.count} approved ${item.count === 1 ? "profile" : "profiles"} × ${formatKES(item.price)}/week</div>
+          </div>
+          <div class="amount">${formatKES(item.revenue)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderPlanDistribution(data) {
+      const plans = ["featured", "vip", "signature"];
+      const total = data.length || 1;
+
+      const rows = plans.map(plan => {
+        const count = data.filter(p => normalizePlan(p) === plan).length;
+        const percent = Math.round((count / total) * 100);
+
+        return { plan, count, percent };
+      });
+
+      els.planDistribution.innerHTML = rows.map(row => `
+        <div class="plan-row">
+          <div>
+            <strong>${getPlanLabel(row.plan)}</strong>
+            <div class="mini">${row.count} total ${row.count === 1 ? "listing" : "listings"}</div>
+            <div class="bar"><span style="width:${row.percent}%"></span></div>
+          </div>
+          <div class="amount">${row.percent}%</div>
+        </div>
+      `).join("");
+    }
+
+    async function loadDashboardStats() {
+      try {
+        const result = await callAdminFunction("admin-dashboard-stats", {
+          tableName: "profiles"
+        });
+
+        const stats = result.stats || {};
+
+        els.profilesCount.textContent = Number(stats.totalProfiles || 0).toLocaleString();
+        els.approvedCount.textContent = Number(stats.approvedCount || 0).toLocaleString();
+        els.pendingCount.textContent = Number(stats.pendingCount || 0).toLocaleString();
+        els.signatureCount.textContent = Number(stats.signatureCount || 0).toLocaleString();
+        els.weeklyRevenue.textContent = formatKES(stats.weeklyRevenue || 0);
+        els.monthlyRevenue.textContent = formatKES(stats.monthlyRevenue || 0);
+
+        renderRevenueByPlanFromStats(stats);
+        renderPlanDistribution(rawProfiles);
+      } catch (err) {
+        console.error("loadDashboardStats error:", err);
+      }
+    }
+
+    function renderTable(data) {
+      if (!data.length) {
+        els.profilesTableBody.innerHTML = `
           <tr>
-            <td colspan="7" class="empty">No matching profiles found.</td>
+            <td colspan="7" class="empty">No profiles found for this filter set.</td>
           </tr>
         `;
         return;
       }
 
-      profilesTableBody.innerHTML = rows.map(profile => {
-        const created = profile.created_at || profile.createdAt || profile.inserted_at || null;
+      els.profilesTableBody.innerHTML = data.map(profile => {
+        const name = escapeHtml(profileName(profile));
+        const email = escapeHtml(profileEmail(profile) || "No email");
+        const phone = escapeHtml(profilePhone(profile) || "No phone");
+        const location = escapeHtml(profileLocation(profile) || "No location");
+        const plan = normalizePlan(profile);
+        const status = normalizeStatus(profile);
+        const image = profileImage(profile);
+        const revenue = getApprovedRevenue(profile);
+        const initials = initialsFromName(profileName(profile));
+        const joined = safeText(profile.created_at || profile.inserted_at || profile.date_created);
+
+        const avatarHtml = image
+          ? `<img class="avatar" src="${escapeHtml(image)}" alt="${name}" onerror="this.outerHTML='<div class=&quot;avatar avatar-fallback&quot;>${escapeHtml(initials)}</div>'">`
+          : `<div class="avatar avatar-fallback">${escapeHtml(initials)}</div>`;
+
+        const canApprove = adminHasPermission("profiles.approve");
+        const canRenew = adminHasPermission("profiles.renew");
+        const actionButtons = [
+          `<button class="mini-btn" onclick="openProfile('${escapeHtml(String(getProfileId(profile) || ""))}')">Open</button>`
+        ];
+
+        if (canApprove) {
+          actionButtons.push(
+            `<button class="mini-btn" onclick="approveProfile('${escapeHtml(String(getProfileId(profile) || ""))}')">Approve</button>`
+          );
+        }
+
+        if (canRenew) {
+          actionButtons.push(
+            `<button class="mini-btn" onclick="renewProfile('${escapeHtml(String(getProfileId(profile) || ""))}', 7)">Renew</button>`
+          );
+        }
 
         return `
           <tr>
             <td>
               <div class="profile-cell">
-                ${renderAvatar(profile)}
-                <div class="profile-main">
-                  <div class="profile-name">${escapeHtml(profile.stage_name || "Unnamed")}</div>
-                  <div class="profile-meta">
-                    ${escapeHtml(profile.email || "No email")}<br>
-                    ${escapeHtml(profile.phone || "No phone")}<br>
-                    ${escapeHtml(profile.location || "No location")}
-                  </div>
+                ${avatarHtml}
+                <div>
+                  <div class="name">${name}</div>
+                  <div class="meta">${location}</div>
+                  <div class="meta">${joined ? "Created: " + escapeHtml(new Date(joined).toLocaleDateString()) : ""}</div>
                 </div>
               </div>
             </td>
 
-            <td>${getPlanBadge(profile.plan)}</td>
-            <td>${getPaymentBadge(profile.payment_status)}</td>
-            <td>${getApprovalBadge(profile.approval_status)}</td>
-
             <td>
-              <div class="bio">${escapeHtml(profile.bio || "—")}</div>
+              <div class="cell-stack">
+                ${getPlanBadge(plan)}
+                <div class="meta">${formatKES(getPlanPrice(plan))}/week</div>
+              </div>
             </td>
 
-            <td>${escapeHtml(formatDate(created))}</td>
+            <td>
+              <div class="cell-stack">
+                ${getStatusBadge(status)}
+                <div class="meta">${escapeHtml(safeText(profile.payment_status || profile.status || status))}</div>
+              </div>
+            </td>
 
             <td>
-              <div class="row-actions">
-                <button class="mini-btn approve" data-action="approve" data-id="${profile.id}">Approve</button>
-                <button class="mini-btn reject" data-action="reject" data-id="${profile.id}">Reject</button>
-                <button class="mini-btn paid" data-action="paid" data-id="${profile.id}">Mark Paid</button>
-                <button class="mini-btn" data-action="pending" data-id="${profile.id}">Set Pending</button>
+              <div class="cell-stack">
+                <div class="meta">${email}</div>
+                <div class="meta">${phone}</div>
+              </div>
+            </td>
+
+            <td>
+              <div class="cell-stack">
+                <div class="name">${formatKES(revenue)}</div>
+                <div class="meta">${revenue ? "Counted in revenue" : "Not counted yet"}</div>
+              </div>
+            </td>
+
+            <td>
+              <div class="cell-stack">
+                ${getPlanBadge(plan)}
+                ${status === "approved" ? '<span class="badge approved">Live</span>' : ""}
+                ${plan === "signature" ? '<span class="badge signature">High value</span>' : ""}
+              </div>
+            </td>
+
+            <td>
+              <div class="action-group">
+                ${actionButtons.join("")}
               </div>
             </td>
           </tr>
@@ -1080,220 +1243,412 @@
       }).join("");
     }
 
-    async function loadProfiles() {
-      setBoxStatus(appStatus, "Loading profiles...", "info");
+    function renderAdminUsersTable() {
+      if (!els.adminUsersTableBody) return;
 
-      const { data, error } = await sb
-        .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        throw new Error(error.message || "Failed to load profiles.");
-      }
-
-      allProfiles = Array.isArray(data) ? data : [];
-      renderTable();
-
-      if (!allProfiles.length) {
-        setBoxStatus(appStatus, "No profiles found yet.", "info");
-      } else {
-        setBoxStatus(appStatus, "Profiles loaded successfully.", "success");
-      }
-    }
-
-    async function updateProfileStatus(id, patch, successMessage) {
-      setBoxStatus(appStatus, "Updating profile...", "info");
-
-      const { error } = await sb
-        .from("profiles")
-        .update(patch)
-        .eq("id", id);
-
-      if (error) {
-        throw new Error(error.message || "Failed to update profile.");
-      }
-
-      const row = allProfiles.find(item => String(item.id) === String(id));
-      if (row) Object.assign(row, patch);
-
-      renderTable();
-      setBoxStatus(appStatus, successMessage, "success");
-    }
-
-    async function handleRowAction(action, id) {
-      if (!id) return;
-
-      if (action === "approve") {
-        await updateProfileStatus(
-          id,
-          { approval_status: "approved" },
-          "Profile approved."
-        );
+      if (!adminUsers.length) {
+        els.adminUsersTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="empty">No admin users found.</td>
+          </tr>
+        `;
         return;
       }
 
-      if (action === "reject") {
-        await updateProfileStatus(
-          id,
-          { approval_status: "rejected" },
-          "Profile rejected."
-        );
-        return;
-      }
+      els.adminUsersTableBody.innerHTML = adminUsers.map(user => {
+        const email = escapeHtml(user.email || "—");
+        const userId = escapeHtml(user.user_id || "");
+        const role = safeText(user.role || "viewer");
+        const isActive = Boolean(user.is_active);
+        const createdAt = formatDateTime(user.created_at);
+        const updatedAt = formatDateTime(user.updated_at);
+        const isSelf = String(user.user_id) === String(currentAdmin?.user_id);
+        const activeBadge = isActive
+          ? `<span class="badge approved">Active</span>`
+          : `<span class="badge failed">Inactive</span>`;
 
-      if (action === "paid") {
-        await updateProfileStatus(
-          id,
-          { payment_status: "paid" },
-          "Payment marked as paid."
-        );
-        return;
-      }
+        const roleOptions = ["viewer", "admin", "super_admin"].map(option => `
+          <option value="${option}" ${option === role ? "selected" : ""}>
+            ${option === "super_admin" ? "Super Admin" : option.charAt(0).toUpperCase() + option.slice(1)}
+          </option>
+        `).join("");
 
-      if (action === "pending") {
-        await updateProfileStatus(
-          id,
-          { payment_status: "pending", approval_status: "pending" },
-          "Profile reset to pending."
-        );
-      }
+        return `
+          <tr>
+            <td>
+              <div class="cell-stack">
+                <div class="name">${email}</div>
+                <div class="meta">${isSelf ? "You" : "Staff member"}</div>
+              </div>
+            </td>
+
+            <td>
+              <div class="cell-stack">
+                <div class="meta" title="${userId}">${escapeHtml(shortenId(user.user_id))}</div>
+              </div>
+            </td>
+
+            <td>
+              <div class="cell-stack">
+                <select
+                  class="select"
+                  style="min-height:44px; padding:10px 12px;"
+                  onchange="updateAdminRole('${escapeHtml(user.user_id)}', this.value)"
+                >
+                  ${roleOptions}
+                </select>
+              </div>
+            </td>
+
+            <td>${activeBadge}</td>
+
+            <td><div class="meta">${escapeHtml(createdAt)}</div></td>
+            <td><div class="meta">${escapeHtml(updatedAt)}</div></td>
+
+            <td>
+              <div class="action-group">
+                <button
+                  class="mini-btn"
+                  onclick="seedAdminForm('${escapeHtml(user.user_id)}', '${escapeHtml(user.email || "")}', '${escapeHtml(role)}')"
+                >
+                  Edit
+                </button>
+                <button
+                  class="mini-btn"
+                  onclick="deactivateAdminUser('${escapeHtml(user.user_id)}')"
+                  ${isSelf ? "disabled" : ""}
+                >
+                  Deactivate
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
     }
 
-    async function loginAdmin(email, password) {
-      const { error } = await sb.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        throw new Error(error.message || "Login failed.");
-      }
-    }
-
-    async function logoutAdmin() {
-      await sb.auth.signOut();
-      showLogin();
-      allProfiles = [];
-      profilesTableBody.innerHTML = `
-        <tr>
-          <td colspan="7" class="empty">Logged out.</td>
-        </tr>
-      `;
-      clearBoxStatus(appStatus);
-      setBoxStatus(loginStatus, "Logged out successfully.", "success");
-    }
-
-    async function checkSessionAndBoot() {
-      const { data, error } = await sb.auth.getSession();
-      if (error) {
-        showLogin();
-        return;
-      }
-
-      const session = data?.session;
-      if (!session?.user) {
-        showLogin();
-        return;
-      }
-
-      showApp();
+    async function loadProfiles(page = 1) {
       try {
-        await loadProfiles();
+        setSystemStatus("Syncing dashboard...");
+        els.resultsMeta.textContent = "Loading profiles...";
+
+        const payload = {
+          tableName: "profiles",
+          page,
+          limit: 500,
+          search: els.searchInput.value || "",
+          planFilter: els.planFilter.value || "",
+          statusFilter: els.statusFilter.value || "",
+          sortBy: "created_at",
+          sortDirection: "desc"
+        };
+
+        const result = await callAdminFunction("admin-list-profiles", payload);
+
+        rawProfiles = Array.isArray(result.profiles) ? result.profiles : [];
+        filteredProfiles = rawProfiles;
+
+        await loadDashboardStats();
+        renderTable(rawProfiles);
+
+        const total = result.pagination?.total || rawProfiles.length;
+        els.resultsMeta.textContent =
+          `${rawProfiles.length.toLocaleString()} shown • ${total.toLocaleString()} total`;
+
+        renderAdminIdentity();
       } catch (err) {
         console.error(err);
-        setBoxStatus(appStatus, err.message || "Failed to start vault.", "error");
+        setSystemStatus("Load error", true);
+        els.resultsMeta.textContent = "Could not load profiles. Check admin auth and Netlify functions.";
+        els.profilesTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="empty">Failed to load profiles. Open DevTools console and inspect the error.</td>
+          </tr>
+        `;
       }
     }
 
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearBoxStatus(loginStatus);
+    async function loadAdminUsers() {
+      if (!adminHasPermission("admins.manage")) return;
 
-      const email = document.getElementById("adminEmail").value.trim();
-      const password = document.getElementById("adminPassword").value;
+      try {
+        els.adminUsersTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="empty">Loading admin users...</td>
+          </tr>
+        `;
 
-      if (!email || !password) {
-        setBoxStatus(loginStatus, "Enter your admin email and password.", "error");
+        const result = await callAdminFunction("admin-list-admin-users", {});
+        adminUsers = Array.isArray(result.adminUsers) ? result.adminUsers : [];
+        renderAdminUsersTable();
+        els.adminFormMeta.textContent = `${adminUsers.length.toLocaleString()} admin user(s) loaded`;
+      } catch (err) {
+        console.error("loadAdminUsers error:", err);
+        els.adminUsersTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="empty">Failed to load admin users.</td>
+          </tr>
+        `;
+        els.adminFormMeta.textContent = err.message || "Could not load admin users";
+      }
+    }
+
+    async function saveAdminUser() {
+      if (!adminHasPermission("admins.manage")) {
+        alert("You do not have permission to manage admin users.");
         return;
       }
 
-      loginBtn.disabled = true;
-      loginBtn.textContent = "Logging in...";
+      const userId = safeText(els.adminUserIdInput.value);
+      const email = safeText(els.adminEmailInput.value).toLowerCase();
+      const role = safeText(els.adminRoleInput.value);
+
+      if (!userId) {
+        alert("Enter the Supabase Auth user UUID.");
+        return;
+      }
 
       try {
-        await loginAdmin(email, password);
-        setBoxStatus(loginStatus, "Login successful.", "success");
-        showApp();
-        await loadProfiles();
+        els.adminFormMeta.textContent = "Saving admin user...";
+        els.saveAdminUserBtn.disabled = true;
+
+        await callAdminFunction("admin-upsert-admin-user", {
+          userId,
+          email,
+          role,
+          isActive: true
+        });
+
+        els.adminUserIdInput.value = "";
+        els.adminEmailInput.value = "";
+        els.adminRoleInput.value = "admin";
+
+        await loadAdminUsers();
+        els.adminFormMeta.textContent = "Admin user saved successfully";
       } catch (err) {
-        console.error(err);
-        setBoxStatus(loginStatus, err.message || "Unable to login.", "error");
+        console.error("saveAdminUser error:", err);
+        els.adminFormMeta.textContent = err.message || "Failed to save admin user";
+        alert(err.message || "Failed to save admin user.");
       } finally {
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Login to Vault";
+        els.saveAdminUserBtn.disabled = false;
       }
-    });
+    }
 
-    [refreshBtn, refreshTopBtn].forEach(btn => {
-      btn.addEventListener("click", async () => {
-        try {
-          await loadProfiles();
-        } catch (err) {
-          console.error(err);
-          setBoxStatus(appStatus, err.message || "Failed to refresh.", "error");
-        }
-      });
-    });
-
-    [logoutBtn, logoutTopBtn].forEach(btn => {
-      btn.addEventListener("click", async () => {
-        try {
-          await logoutAdmin();
-        } catch (err) {
-          console.error(err);
-          setBoxStatus(appStatus, "Logout failed.", "error");
-        }
-      });
-    });
-
-    [searchInput, approvalFilter, paymentFilter, planFilter].forEach(el => {
-      el.addEventListener("input", renderTable);
-      el.addEventListener("change", renderTable);
-    });
-
-    clearFiltersBtn.addEventListener("click", () => {
-      searchInput.value = "";
-      approvalFilter.value = "";
-      paymentFilter.value = "";
-      planFilter.value = "";
-      renderTable();
-    });
-
-    profilesTableBody.addEventListener("click", async (e) => {
-      const btn = e.target.closest("[data-action]");
-      if (!btn) return;
-
-      const action = btn.getAttribute("data-action");
-      const id = btn.getAttribute("data-id");
+    async function updateAdminRole(userId, nextRole) {
+      if (!adminHasPermission("admins.manage")) {
+        alert("You do not have permission to manage admin users.");
+        return;
+      }
 
       try {
-        await handleRowAction(action, id);
+        await callAdminFunction("admin-update-admin-role", {
+          userId,
+          role: nextRole
+        });
+
+        await loadAdminUsers();
       } catch (err) {
-        console.error(err);
-        setBoxStatus(appStatus, err.message || "Update failed.", "error");
+        console.error("updateAdminRole error:", err);
+        alert(err.message || "Failed to update admin role.");
       }
-    });
+    }
 
-    sb.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        showApp();
-      } else {
-        showLogin();
+    async function deactivateAdminUser(userId) {
+      if (!adminHasPermission("admins.manage")) {
+        alert("You do not have permission to manage admin users.");
+        return;
       }
-    });
 
-    checkSessionAndBoot();
+      const target = adminUsers.find(user => String(user.user_id) === String(userId));
+      const label = target?.email || target?.user_id || "this admin";
+
+      const ok = window.confirm(`Deactivate ${label}?`);
+      if (!ok) return;
+
+      try {
+        await callAdminFunction("admin-deactivate-admin-user", {
+          userId
+        });
+
+        await loadAdminUsers();
+      } catch (err) {
+        console.error("deactivateAdminUser error:", err);
+        alert(err.message || "Failed to deactivate admin user.");
+      }
+    }
+
+    function seedAdminForm(userId, email, role) {
+      if (!adminHasPermission("admins.manage")) return;
+
+      els.adminUserIdInput.value = safeText(userId);
+      els.adminEmailInput.value = safeText(email);
+      els.adminRoleInput.value = safeText(role) || "admin";
+      els.adminFormMeta.textContent = "Editing selected admin. Click Save Admin to apply changes.";
+      window.scrollTo({ top: els.adminManagementPanel.offsetTop - 80, behavior: "smooth" });
+    }
+
+    function openProfile(profileId) {
+      const profile = findProfileById(profileId);
+      if (!profile) {
+        alert("Profile not found.");
+        return;
+      }
+
+      const pretty = [
+        `Name: ${profileName(profile)}`,
+        `Plan: ${getPlanLabel(normalizePlan(profile))}`,
+        `Status: ${normalizeStatus(profile)}`,
+        `Email: ${profileEmail(profile) || "N/A"}`,
+        `Phone: ${profilePhone(profile) || "N/A"}`,
+        `Location: ${profileLocation(profile) || "N/A"}`
+      ].join("\n");
+
+      alert(pretty);
+    }
+
+    async function approveProfile(profileId) {
+      if (!adminHasPermission("profiles.approve")) {
+        alert("You do not have permission to approve profiles.");
+        return;
+      }
+
+      const profile = findProfileById(profileId);
+
+      if (!profile) {
+        alert("Profile not found.");
+        return;
+      }
+
+      const realId = getProfileId(profile);
+      if (!realId) {
+        alert("This profile has no usable ID.");
+        return;
+      }
+
+      const ok = window.confirm(`Approve ${profileName(profile)}?`);
+      if (!ok) return;
+
+      try {
+        setSystemStatus("Approving profile...");
+        await callAdminFunction("admin-approve-profile", {
+          profileId: realId,
+          tableName: "profiles",
+          idColumn: "id"
+        });
+
+        await loadProfiles(1);
+        setSystemStatus("Profile approved");
+      } catch (err) {
+        console.error("approveProfile error:", err);
+        setSystemStatus("Approve failed", true);
+        alert(err.message || "Approve failed.");
+      }
+    }
+
+    async function renewProfile(profileId, daysToAdd = 7) {
+      if (!adminHasPermission("profiles.renew")) {
+        alert("You do not have permission to renew profiles.");
+        return;
+      }
+
+      const profile = findProfileById(profileId);
+
+      if (!profile) {
+        alert("Profile not found.");
+        return;
+      }
+
+      const realId = getProfileId(profile);
+      if (!realId) {
+        alert("This profile has no usable ID.");
+        return;
+      }
+
+      const ok = window.confirm(`Renew ${profileName(profile)} for ${daysToAdd} days?`);
+      if (!ok) return;
+
+      try {
+        setSystemStatus("Renewing profile...");
+        await callAdminFunction("admin-renew-profile", {
+          profileId: realId,
+          daysToAdd,
+          tableName: "profiles",
+          idColumn: "id"
+        });
+
+        await loadProfiles(1);
+        setSystemStatus("Profile renewed");
+      } catch (err) {
+        console.error("renewProfile error:", err);
+        setSystemStatus("Renew failed", true);
+        alert(err.message || "Renew failed.");
+      }
+    }
+
+    async function requireVaultSession() {
+      const { data, error } = await sb.auth.getSession();
+
+      if (error || !data?.session) {
+        window.location.href = "/login.html";
+        return false;
+      }
+
+      return true;
+    }
+
+    function attachEvents() {
+      let searchDebounce;
+
+      els.searchInput.addEventListener("input", () => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => loadProfiles(1), 250);
+      });
+
+      els.planFilter.addEventListener("change", () => loadProfiles(1));
+      els.statusFilter.addEventListener("change", () => loadProfiles(1));
+      els.refreshBtn.addEventListener("click", () => loadProfiles(1));
+
+      if (els.saveAdminUserBtn) {
+        els.saveAdminUserBtn.addEventListener("click", saveAdminUser);
+      }
+
+      if (els.refreshAdminUsersBtn) {
+        els.refreshAdminUsersBtn.addEventListener("click", loadAdminUsers);
+      }
+
+      els.logoutBtn.addEventListener("click", async () => {
+        try {
+          await sb.auth.signOut();
+        } catch (e) {
+          console.warn("Logout warning:", e);
+        }
+        window.location.href = "/login.html";
+      });
+    }
+
+    async function bootVault() {
+      const ok = await requireVaultSession();
+      if (!ok) return;
+
+      await loadCurrentAdmin();
+      renderAdminIdentity();
+      showAdminManagementPanel();
+      attachEvents();
+
+      await Promise.all([
+        loadProfiles(1),
+        loadAdminUsers()
+      ]);
+    }
+
+    window.openProfile = openProfile;
+    window.approveProfile = approveProfile;
+    window.renewProfile = renewProfile;
+    window.updateAdminRole = updateAdminRole;
+    window.deactivateAdminUser = deactivateAdminUser;
+    window.seedAdminForm = seedAdminForm;
+
+    bootVault();
   </script>
 </body>
 </html>
