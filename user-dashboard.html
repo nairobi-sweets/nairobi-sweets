@@ -1,34 +1,267 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Dashboard | Nairobi Sweets</title>
+  <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body{
+      min-height:100vh;
+      color:#f8fafc;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(236,72,153,.10), transparent 22%),
+        radial-gradient(circle at 90% 10%, rgba(250,204,21,.08), transparent 24%),
+        linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    }
+    .glass{
+      background:rgba(9,14,28,.74);
+      border:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      box-shadow:0 22px 60px rgba(0,0,0,.30);
+    }
+    .input, .textarea{
+      width:100%;
+      padding:14px 16px;
+      border-radius:18px;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.08);
+      color:white;
+      outline:none;
+    }
+    .textarea{ min-height:110px; resize:vertical; }
+    .input:focus, .textarea:focus{
+      border-color:rgba(236,72,153,.55);
+      box-shadow:0 0 0 3px rgba(236,72,153,.10);
+    }
+    .btn{
+      border-radius:18px;
+      transition:.18s ease;
+    }
+    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+    .btn-gold{
+      background:linear-gradient(135deg,#facc15,#f59e0b);
+      color:#111827;
+      font-weight:800;
+    }
+    .btn-dark{
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.08);
+      color:white;
+    }
+    .chip{
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.05);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:700;
+    }
+  </style>
+</head>
 <body>
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#080a12]/85 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+      <a href="/index.html" class="flex items-center gap-3">
+        <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets" class="w-11 h-11 rounded-full object-cover">
+        <div>
+          <div class="text-xs uppercase tracking-[0.22em] text-pink-200">Member area</div>
+          <div class="text-2xl font-extrabold text-yellow-300 leading-none">Dashboard</div>
+        </div>
+      </a>
+      <div class="flex gap-2">
+        <a href="/index.html" class="btn btn-dark px-4 py-2 text-sm">Home</a>
+        <button id="logoutBtn" class="btn btn-gold px-4 py-2 text-sm">Logout</button>
+      </div>
+    </div>
+  </header>
 
-<h2>Dashboard</h2>
-<button onclick="renew()">Renew</button>
+  <main class="max-w-7xl mx-auto px-4 py-10">
+    <div class="grid lg:grid-cols-[.9fr_1.1fr] gap-6">
+      <section class="glass rounded-[30px] p-6 md:p-8">
+        <div class="flex items-center gap-4">
+          <img id="previewImage" src="/assets/logo/logo-badge.png" alt="Preview" class="w-24 h-24 rounded-3xl object-cover border border-white/10">
+          <div>
+            <div class="text-sm text-slate-300">Account</div>
+            <h1 id="welcomeName" class="text-3xl font-black text-yellow-300 mt-1">Loading...</h1>
+            <div id="accountEmail" class="text-slate-400 text-sm mt-1"></div>
+          </div>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const sb = supabase.createClient("YOUR_SUPABASE_URL","YOUR_SUPABASE_ANON_KEY");
+        <div class="grid grid-cols-2 gap-3 mt-6">
+          <div class="glass rounded-2xl p-4">
+            <div class="text-xs text-slate-400">Plan</div>
+            <div id="planText" class="text-lg font-bold mt-1">-</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="text-xs text-slate-400">Payment status</div>
+            <div id="paymentStatus" class="text-lg font-bold mt-1">-</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="text-xs text-slate-400">Online</div>
+            <div id="onlineStatus" class="text-lg font-bold mt-1">-</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="text-xs text-slate-400">Verified</div>
+            <div id="verifiedStatus" class="text-lg font-bold mt-1">-</div>
+          </div>
+        </div>
+      </section>
 
-async function renew(){
-  const {data}=await sb.auth.getUser();
+      <section class="glass rounded-[30px] p-6 md:p-8">
+        <div class="flex items-center justify-between gap-3 mb-5">
+          <div>
+            <div class="text-xs uppercase tracking-[0.22em] text-pink-200">Your profile</div>
+            <h2 class="text-3xl font-black text-white">Edit Listing</h2>
+          </div>
+          <span class="chip">Luxury profile</span>
+        </div>
 
-  const profile=await sb.from("profiles")
-    .select("*")
-    .eq("owner_user_id",data.user.id)
-    .single();
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Stage name</label>
+            <input id="stage_name" class="input">
+          </div>
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Location</label>
+            <input id="location" class="input">
+          </div>
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Phone</label>
+            <input id="phone" class="input">
+          </div>
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">WhatsApp</label>
+            <input id="whatsapp" class="input">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm text-slate-300 mb-2">Image URL</label>
+            <input id="image_url" class="input">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm text-slate-300 mb-2">Bio</label>
+            <textarea id="bio" class="textarea"></textarea>
+          </div>
+        </div>
 
-  await fetch("/.netlify/functions/mpesa-stk-push",{
-    method:"POST",
-    body:JSON.stringify({
-      profile_id:profile.data.id,
-      phone:profile.data.phone,
-      amount:1500
-    })
-  });
+        <button id="saveBtn" class="btn btn-gold w-full py-3 mt-6">Save Changes</button>
+        <p id="msg" class="text-sm text-slate-300 mt-4"></p>
+      </section>
+    </div>
+  </main>
 
-  alert("STK sent");
-}
-</script>
+  <script>
+    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    let currentUser = null;
+    let currentProfile = null;
+
+    async function requireAuth(){
+      const { data } = await supabaseClient.auth.getSession();
+      if(!data.session){
+        window.location.href = '/login.html';
+        return null;
+      }
+      return data.session.user;
+    }
+
+    async function loadProfile(){
+      currentUser = await requireAuth();
+      if(!currentUser) return;
+
+      document.getElementById('accountEmail').textContent = currentUser.email || '';
+
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .or(`user_id.eq.${currentUser.id},email.eq.${currentUser.email}`)
+        .order('id', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if(error){
+        document.getElementById('msg').textContent = error.message;
+        return;
+      }
+
+      currentProfile = data;
+
+      if(!currentProfile){
+        document.getElementById('welcomeName').textContent = 'No profile yet';
+        document.getElementById('msg').textContent = 'No profile record found. Create one from the signup page.';
+        return;
+      }
+
+      document.getElementById('welcomeName').textContent = currentProfile.stage_name || 'Member';
+      document.getElementById('stage_name').value = currentProfile.stage_name || '';
+      document.getElementById('location').value = currentProfile.location || '';
+      document.getElementById('phone').value = currentProfile.phone || '';
+      document.getElementById('whatsapp').value = currentProfile.whatsapp || '';
+      document.getElementById('image_url').value = currentProfile.profile_image_url || currentProfile.image_url || '';
+      document.getElementById('bio').value = currentProfile.bio || '';
+
+      const image = currentProfile.profile_image_url || currentProfile.image_url || '/assets/logo/logo-badge.png';
+      document.getElementById('previewImage').src = image;
+
+      document.getElementById('planText').textContent = currentProfile.plan || currentProfile.category || '-';
+      document.getElementById('paymentStatus').textContent = currentProfile.payment_status || 'pending';
+      document.getElementById('onlineStatus').textContent = currentProfile.is_online ? 'Live' : 'Offline';
+      document.getElementById('verifiedStatus').textContent = currentProfile.is_verified ? 'Verified' : 'Pending';
+    }
+
+    async function saveProfile(){
+      const msg = document.getElementById('msg');
+      msg.textContent = '';
+
+      if(!currentProfile){
+        msg.textContent = 'No profile found to update.';
+        return;
+      }
+
+      const patch = {
+        stage_name: document.getElementById('stage_name').value.trim(),
+        name: document.getElementById('stage_name').value.trim(),
+        location: document.getElementById('location').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        whatsapp: document.getElementById('whatsapp').value.trim(),
+        profile_image_url: document.getElementById('image_url').value.trim(),
+        image_url: document.getElementById('image_url').value.trim(),
+        bio: document.getElementById('bio').value.trim(),
+        description: document.getElementById('bio').value.trim()
+      };
+
+      const { error } = await supabaseClient
+        .from('profiles')
+        .update(patch)
+        .eq('id', currentProfile.id);
+
+      if(error){
+        msg.textContent = error.message;
+        return;
+      }
+
+      msg.textContent = 'Profile updated successfully.';
+      await loadProfile();
+    }
+
+    async function logout(){
+      await supabaseClient.auth.signOut();
+      window.location.href = '/login.html';
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', saveProfile);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('image_url').addEventListener('input', (e) => {
+      document.getElementById('previewImage').src = e.target.value.trim() || '/assets/logo/logo-badge.png';
+    });
+
+    loadProfile();
+  </script>
 </body>
 </html>
