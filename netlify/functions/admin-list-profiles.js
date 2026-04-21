@@ -1,23 +1,4 @@
-const { createClient } = require("@supabase/supabase-js");
-
-function json(statusCode, body) {
-  return {
-    statusCode,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Access-Control-Allow-Methods": "GET, OPTIONS",
-    },
-    body: JSON.stringify(body),
-  };
-}
-
-function getBearerToken(headers = {}) {
-  const auth = headers.authorization || headers.Authorization || "";
-  if (!auth.startsWith("Bearer ")) return "";
-  return auth.slice(7).trim();
-}
+const { json, requirePermission } = require("./_adminAuth");
 
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
@@ -29,23 +10,12 @@ exports.handler = async (event) => {
   }
 
   try {
-    const ADMIN_TOKEN = (process.env.ADMIN_APPROVAL_TOKEN || "").trim();
-    const suppliedToken = getBearerToken(event.headers);
+    const auth = await requirePermission(event, "admins.manage");
+    if (!auth.ok) return auth.response;
 
-    if (!ADMIN_TOKEN || suppliedToken !== ADMIN_TOKEN) {
-      return json(401, { ok: false, error: "Unauthorized" });
-    }
+    const { adminClient, adminRow } = auth;
 
-    const SUPABASE_URL = (process.env.SUPABASE_URL || "").trim();
-    const SUPABASE_SERVICE_ROLE_KEY = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
-
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      return json(500, { ok: false, error: "Missing Supabase env vars" });
-    }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from("profiles")
       .select("*")
       .order("created_at", { ascending: false });
@@ -54,8 +24,18 @@ exports.handler = async (event) => {
       return json(500, { ok: false, error: error.message });
     }
 
-    return json(200, { ok: true, profiles: data || [] });
-  } catch (err) {
-    return json(500, { ok: false, error: err.message || "Server error" });
+    return json(200, {
+      ok: true,
+      profiles: Array.isArray(data) ? data : [],
+      currentAdmin: {
+        role: adminRow.role,
+        permissions: adminRow.permissions
+      }
+    });
+  } catch (error) {
+    return json(500, {
+      ok: false,
+      error: error.message || "Unexpected server error"
+    });
   }
 };
