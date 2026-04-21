@@ -3,168 +3,748 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Join Nairobi Sweets</title>
-  <meta name="description" content="Choose your Nairobi Sweets listing plan and join the premium directory." />
+  <title>Join Nairobi Sweets | Premium Listing Plans</title>
+  <meta name="description" content="Choose your Nairobi Sweets listing plan and join the premium private VIP directory." />
   <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root{
-      --bg-1:#060812;
-      --bg-2:#0b1020;
-      --gold-1:#facc15;
-      --gold-2:#f59e0b;
-      --pink-1:#ec4899;
-      --pink-2:#db2777;
+      --bg:#f3f3f4;
+      --nav:#3a3a42;
+      --panel:#05081a;
+      --panel-2:#09112a;
+      --line:rgba(255,255,255,.08);
+      --text:#f5f7ff;
+      --muted:#9ea7bf;
+      --gold:#ffbf00;
+      --gold-2:#ffd84b;
+      --pink:#f13d92;
+      --pink-2:#ffc0de;
+      --green:#69f2a8;
+      --shadow:0 24px 70px rgba(0,0,0,.25);
+      --radius:28px;
     }
-    body{
-      min-height:100vh;
-      color:#f8fafc;
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: #111;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .topbar {
+      background: linear-gradient(180deg, #3b3b44 0%, #33333c 100%);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .wrap {
+      width: min(1450px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      min-height: 86px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand img {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      border-radius: 14px;
+      box-shadow: 0 0 28px rgba(255, 191, 0, .22);
+      background: rgba(255,255,255,.03);
+    }
+
+    .brand-copy {
+      line-height: 1.02;
+    }
+
+    .brand-copy small {
+      display: block;
+      color: rgba(255,255,255,.9);
+      font-size: 12px;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .brand-copy strong {
+      display: block;
+      color: var(--gold-2);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill-btn {
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: .2s ease;
+      white-space: nowrap;
+    }
+
+    .pill-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.1);
+    }
+
+    .pill-btn.gold {
+      background: linear-gradient(180deg, #ffcf32, #ffbf00);
+      color: #171717;
+      border: none;
+    }
+
+    .pill-btn.pink {
+      background: linear-gradient(180deg, #ff4ba3, #e6257f);
+      color: #fff;
+      border: none;
+    }
+
+    .signature-rail {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(180deg, #ffdf43, #ffbf00);
+      color: #171717;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: 18px 12px;
+      border-radius: 18px 0 0 18px;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      box-shadow: 0 18px 40px rgba(0,0,0,.18);
+      z-index: 20;
+    }
+
+    .page-shell {
+      padding: 40px 0 54px;
+    }
+
+    .hero-shell {
       background:
-        radial-gradient(circle at 10% 0%, rgba(236,72,153,.10), transparent 22%),
-        radial-gradient(circle at 90% 10%, rgba(250,204,21,.08), transparent 24%),
-        linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
-      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        radial-gradient(circle at top left, rgba(255, 76, 160, .10), transparent 28%),
+        radial-gradient(circle at top right, rgba(255, 191, 0, .08), transparent 20%),
+        linear-gradient(180deg, #05081f 0%, #020616 100%);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(12, 18, 45, .5);
+      overflow: hidden;
+      position: relative;
     }
-    .glass{
-      background:rgba(9,14,28,.74);
-      border:1px solid rgba(255,255,255,.08);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      box-shadow:0 22px 60px rgba(0,0,0,.30);
+
+    .hero-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 12% 16%, rgba(255, 120, 170, .10), transparent 18%),
+        radial-gradient(circle at 85% 30%, rgba(255, 191, 0, .06), transparent 16%);
+      pointer-events: none;
     }
-    .btn{
-      transition:transform .18s ease, filter .18s ease;
-      border-radius:18px;
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .52fr;
+      gap: 28px;
+      padding: 42px;
+      position: relative;
+      z-index: 1;
+      align-items: center;
     }
-    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
-    .btn-gold{
-      background:linear-gradient(135deg,var(--gold-1),var(--gold-2));
-      color:#111827;
-      font-weight:800;
+
+    .hero-logo-box {
+      width: 230px;
+      margin-bottom: 18px;
+      box-shadow: 0 0 55px rgba(241, 61, 146, .12);
     }
-    .btn-dark{
-      background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.08);
-      color:#fff;
+
+    .hero-logo-box img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+      background: rgba(255,255,255,.03);
     }
-    .plan-card{
-      background:linear-gradient(180deg, rgba(13,18,32,.92), rgba(9,13,24,.96));
-      border:1px solid rgba(255,255,255,.08);
-      box-shadow:0 24px 70px rgba(0,0,0,.32);
-      transition:.25s ease;
+
+    .eyebrow {
+      color: var(--pink-2);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
     }
-    .plan-card:hover{
-      transform:translateY(-8px);
-      border-color:rgba(250,204,21,.22);
-      box-shadow:0 30px 80px rgba(0,0,0,.42);
+
+    .hero-title {
+      margin: 0;
+      color: #f4f4f6;
+      font-size: clamp(48px, 6vw, 78px);
+      line-height: .95;
+      letter-spacing: -.06em;
+      font-weight: 950;
+      max-width: 760px;
     }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      border-radius:999px;
-      padding:8px 14px;
-      font-size:12px;
-      font-weight:800;
+
+    .hero-copy {
+      margin: 24px 0 0;
+      max-width: 760px;
+      color: rgba(255,255,255,.82);
+      font-size: 17px;
+      line-height: 1.75;
     }
-    .badge-gold{
-      background:linear-gradient(135deg,var(--gold-1),var(--gold-2));
-      color:#111827;
+
+    .hero-badges {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
     }
-    .badge-pink{
-      background:linear-gradient(135deg,var(--pink-1),var(--pink-2));
-      color:#fff;
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 10px 15px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .badge-gold {
+      background: linear-gradient(180deg, #ffcf32, #ffbf00);
+      color: #171717;
+    }
+
+    .badge-pink {
+      background: linear-gradient(180deg, #ff4ba3, #e6257f);
+      color: #fff;
+    }
+
+    .hero-actions {
+      margin-top: 26px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .cta {
+      padding: 14px 24px;
+      border-radius: 18px;
+      font-weight: 800;
+      font-size: 15px;
+      transition: .2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cta.primary {
+      background: linear-gradient(180deg, #ffcf32, #ffbf00);
+      color: #171717;
+      box-shadow: 0 14px 30px rgba(255,191,0,.16);
+    }
+
+    .cta.secondary {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      color: #e9edff;
+    }
+
+    .cta:hover {
+      transform: translateY(-1px);
+    }
+
+    .info-card {
+      width: 100%;
+      border-radius: 28px;
+      padding: 26px 22px;
+      background: linear-gradient(180deg, rgba(3,9,29,.94), rgba(5,12,34,.96));
+      border: 1px solid rgba(255,255,255,.06);
+      box-shadow: 0 24px 80px rgba(0,0,0,.3);
+    }
+
+    .info-card h3 {
+      margin: 0 0 14px;
+      color: rgba(255,255,255,.95);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .info-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+
+    .info-list li {
+      color: #d7ddef;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.05);
+      border-radius: 18px;
+      padding: 14px 14px;
+      line-height: 1.55;
+    }
+
+    .plans-section {
+      margin-top: 34px;
+    }
+
+    .section-card {
+      background: #fff;
+      border-radius: 30px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.08);
+      padding: 28px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 34px;
+      letter-spacing: -.04em;
+      color: #171a24;
+    }
+
+    .section-copy {
+      margin: 8px 0 0;
+      color: #66718a;
+      line-height: 1.7;
+      max-width: 760px;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .plan-card {
+      position: relative;
+      background: linear-gradient(180deg, #0a1025 0%, #11182f 100%);
+      color: #fff;
+      border-radius: 26px;
+      overflow: hidden;
+      box-shadow: 0 18px 42px rgba(0,0,0,.14);
+      border: 1px solid rgba(255,255,255,.05);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .plan-card.featured-card {
+      border-color: rgba(255,255,255,.08);
+    }
+
+    .plan-card.vip-card {
+      border-color: rgba(255,191,0,.25);
+      box-shadow: 0 22px 58px rgba(255,191,0,.12);
+    }
+
+    .plan-card.signature-card {
+      border-color: rgba(241,61,146,.22);
+      box-shadow: 0 22px 58px rgba(241,61,146,.12);
+    }
+
+    .plan-kicker {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      margin-bottom: 10px;
+    }
+
+    .featured-card .plan-kicker { color: #d8deef; }
+    .vip-card .plan-kicker { color: #ffd84b; }
+    .signature-card .plan-kicker { color: #ffc0de; }
+
+    .plan-name {
+      font-size: 32px;
+      font-weight: 950;
+      letter-spacing: -.04em;
+      margin: 0 0 6px;
+    }
+
+    .plan-price {
+      font-size: 46px;
+      font-weight: 950;
+      letter-spacing: -.05em;
+      line-height: .95;
+      margin: 0;
+    }
+
+    .plan-period {
+      color: #98a2bd;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .plan-copy {
+      color: #d9deee;
+      font-size: 15px;
+      line-height: 1.75;
+      margin: 18px 0 18px;
+    }
+
+    .plan-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      color: #e7ebf7;
+      font-size: 14px;
+    }
+
+    .plan-list li {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.05);
+    }
+
+    .plan-footer {
+      margin-top: auto;
+      padding-top: 22px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .plan-btn {
+      width: 100%;
+      text-align: center;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-weight: 900;
+      font-size: 15px;
+      transition: .2s ease;
+    }
+
+    .plan-btn.primary {
+      background: linear-gradient(180deg, #ffcf32, #ffbf00);
+      color: #171717;
+    }
+
+    .plan-btn.secondary {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      color: #fff;
+    }
+
+    .plan-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .plan-note {
+      color: #98a2bd;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .faq-section {
+      margin-top: 26px;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .faq-card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.08);
+      padding: 22px;
+    }
+
+    .faq-card h3 {
+      margin: 0 0 10px;
+      color: #161b26;
+      font-size: 18px;
+      letter-spacing: -.02em;
+    }
+
+    .faq-card p {
+      margin: 0;
+      color: #66718a;
+      line-height: 1.75;
+    }
+
+    .footer {
+      padding: 34px 0 42px;
+      color: #6b7388;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 1200px) {
+      .hero-grid,
+      .plans-grid,
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .topbar-inner {
+        padding: 10px 0;
+        align-items: flex-start;
+      }
+
+      .hero-title {
+        font-size: clamp(42px, 10vw, 64px);
+      }
+
+      .signature-rail {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .wrap {
+        width: min(100% - 18px, 1450px);
+      }
+
+      .hero-grid {
+        padding: 24px 20px 24px;
+      }
+
+      .section-card,
+      .faq-card {
+        padding: 20px;
+      }
+
+      .hero-logo-box {
+        width: 180px;
+      }
     }
   </style>
 </head>
 <body>
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#080a12]/85 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-      <a href="/index.html" class="flex items-center gap-3 min-w-0">
-        <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets" class="w-11 h-11 rounded-full object-cover">
-        <div>
-          <div class="text-xs uppercase tracking-[0.22em] text-pink-200">Private VIP Directory</div>
-          <div class="text-2xl font-extrabold text-yellow-300 leading-none">Nairobi Sweets</div>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a href="/index.html" class="brand">
+        <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets logo" onerror="this.style.display='none'">
+        <div class="brand-copy">
+          <small>Private VIP Directory</small>
+          <strong>Nairobi Sweets</strong>
         </div>
       </a>
-      <div class="flex gap-2">
-        <a href="/login.html" class="btn btn-dark px-4 py-2 text-sm">Login</a>
-        <a href="/public-signup-payment-page.html" class="btn btn-gold px-4 py-2 text-sm">Create Listing</a>
-      </div>
+
+      <nav class="nav-actions">
+        <a class="pill-btn gold" href="/index.html#profiles">Signature</a>
+        <a class="pill-btn" href="/index.html#profiles">Directory</a>
+        <a class="pill-btn" href="/login.html">Login</a>
+        <a class="pill-btn pink" href="/public-signup-payment-page.html">Create Listing</a>
+      </nav>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-10">
-    <section class="glass rounded-[30px] p-6 md:p-10 mb-8">
-      <div class="grid lg:grid-cols-2 gap-8 items-center">
-        <div>
-          <img src="/assets/logo/logo-hero.png" alt="Nairobi Sweets" class="w-56 max-w-[70%] mb-5">
-          <p class="text-xs uppercase tracking-[0.2em] text-pink-200 mb-3">Join the directory</p>
-          <h1 class="text-4xl md:text-6xl font-black leading-[0.96] tracking-tight">
-            Pick your visibility level and get listed.
-          </h1>
-          <p class="text-slate-300 mt-5 max-w-2xl leading-7">
-            Nairobi Sweets gives you premium profile placement, direct contact actions, and a polished luxury presentation built to convert attention into real contact.
-          </p>
-          <div class="flex flex-wrap gap-3 mt-6">
-            <span class="badge badge-gold">Premium discovery</span>
-            <span class="badge badge-pink">Direct contact</span>
+  <div class="signature-rail">👑 Signature</div>
+
+  <main class="page-shell">
+    <div class="wrap">
+      <section class="hero-shell">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-logo-box">
+              <img src="/assets/logo/logo-hero.png" alt="Nairobi Sweets brand" onerror="this.src='/assets/logo/logo-badge.png'">
+            </div>
+
+            <div class="eyebrow">Join the directory</div>
+
+            <h1 class="hero-title">
+              Pick your visibility level and get listed with premium presence.
+            </h1>
+
+            <p class="hero-copy">
+              Nairobi Sweets gives you luxury profile presentation, direct contact actions, stronger visibility, and a polished directory presence built to turn attention into real contact.
+            </p>
+
+            <div class="hero-badges">
+              <span class="badge badge-gold">Premium discovery</span>
+              <span class="badge badge-pink">Direct contact</span>
+            </div>
+
+            <div class="hero-actions">
+              <a href="#plans" class="cta primary">Choose a Plan</a>
+              <a href="/public-signup-payment-page.html" class="cta secondary">Create Listing</a>
+            </div>
+          </div>
+
+          <aside class="info-card">
+            <h3>What you get</h3>
+            <ul class="info-list">
+              <li>Premium public profile placement inside the directory</li>
+              <li>WhatsApp and call contact actions for direct reach</li>
+              <li>Featured, VIP, or Signature visibility upgrades</li>
+              <li>Dashboard access for profile edits and updates</li>
+              <li>M-Pesa payment flow for activation and renewals</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="plans-section" id="plans">
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Choose your plan</h2>
+              <p class="section-copy">
+                Start with Featured, step into VIP, or take crown placement with Signature. Every plan gives you polished visibility, direct contact, and dashboard access.
+              </p>
+            </div>
+          </div>
+
+          <div class="plans-grid">
+            <article class="plan-card featured-card">
+              <div class="plan-kicker">Featured</div>
+              <h3 class="plan-name">Featured</h3>
+              <p class="plan-price">KES 1000</p>
+              <div class="plan-period">per week</div>
+
+              <p class="plan-copy">
+                Solid visibility, clean profile placement, and a premium listing presence for a strong, elegant entry point.
+              </p>
+
+              <ul class="plan-list">
+                <li>Featured listing placement</li>
+                <li>Direct contact buttons</li>
+                <li>Dashboard access</li>
+              </ul>
+
+              <div class="plan-footer">
+                <a href="/public-signup-payment-page.html?plan=featured" class="plan-btn secondary">Choose Featured</a>
+                <div class="plan-note">Best for getting started</div>
+              </div>
+            </article>
+
+            <article class="plan-card vip-card">
+              <div class="plan-kicker">VIP</div>
+              <h3 class="plan-name">VIP</h3>
+              <p class="plan-price">KES 1500</p>
+              <div class="plan-period">per week</div>
+
+              <p class="plan-copy">
+                Stronger visibility, richer positioning, and a more premium directory presence designed for faster discovery.
+              </p>
+
+              <ul class="plan-list">
+                <li>VIP tier placement</li>
+                <li>Higher discovery visibility</li>
+                <li>Dashboard access</li>
+              </ul>
+
+              <div class="plan-footer">
+                <a href="/public-signup-payment-page.html?plan=vip" class="plan-btn primary">Choose VIP</a>
+                <div class="plan-note">Best value for visibility</div>
+              </div>
+            </article>
+
+            <article class="plan-card signature-card">
+              <div class="plan-kicker">Signature</div>
+              <h3 class="plan-name">Signature</h3>
+              <p class="plan-price">KES 3000</p>
+              <div class="plan-period">per week</div>
+
+              <p class="plan-copy">
+                Crown placement for maximum directory attention, premium rank priority, and the strongest luxury visibility.
+              </p>
+
+              <ul class="plan-list">
+                <li>Signature section placement</li>
+                <li>Premium rank priority</li>
+                <li>Dashboard access</li>
+              </ul>
+
+              <div class="plan-footer">
+                <a href="/public-signup-payment-page.html?plan=signature" class="plan-btn secondary">Choose Signature</a>
+                <div class="plan-note">Top-tier premium placement</div>
+              </div>
+            </article>
           </div>
         </div>
+      </section>
 
-        <div class="glass rounded-[26px] p-5">
-          <div class="text-sm text-slate-300 mb-2">What you get</div>
-          <ul class="space-y-3 text-slate-200">
-            <li>• Premium public profile</li>
-            <li>• WhatsApp and call contact actions</li>
-            <li>• Featured visibility upgrades</li>
-            <li>• Profile editing from your dashboard</li>
-            <li>• M-Pesa payment flow for activation</li>
-          </ul>
+      <section class="faq-section">
+        <div class="faq-grid">
+          <article class="faq-card">
+            <h3>How does activation work?</h3>
+            <p>
+              Choose a plan, complete your profile, and pay through the M-Pesa signup flow. Once approved, your listing becomes visible in the directory.
+            </p>
+          </article>
+
+          <article class="faq-card">
+            <h3>Can I upgrade later?</h3>
+            <p>
+              Yes. You can move from Featured to VIP or Signature later if you want stronger visibility and higher placement.
+            </p>
+          </article>
+
+          <article class="faq-card">
+            <h3>Do I get dashboard access?</h3>
+            <p>
+              Yes. Every paid plan includes dashboard access so you can manage your profile details and stay current.
+            </p>
+          </article>
         </div>
+      </section>
+
+      <div class="footer">
+        Nairobi Sweets • Private VIP Directory
       </div>
-    </section>
-
-    <section class="grid md:grid-cols-3 gap-5">
-      <article class="plan-card rounded-[28px] p-6">
-        <div class="text-pink-300 uppercase text-xs tracking-[0.22em] font-bold">Featured</div>
-        <h2 class="text-3xl font-black mt-2">KES 1000</h2>
-        <p class="text-slate-400 text-sm mt-1">per week</p>
-        <p class="text-slate-300 mt-4 leading-7">Solid visibility, clean profile placement, and premium directory presentation.</p>
-        <ul class="mt-5 space-y-2 text-slate-200 text-sm">
-          <li>• Featured listing</li>
-          <li>• Direct contact buttons</li>
-          <li>• Dashboard access</li>
-        </ul>
-        <a href="/public-signup-payment-page.html?plan=featured" class="btn btn-dark block text-center px-4 py-3 mt-6">Choose Featured</a>
-      </article>
-
-      <article class="plan-card rounded-[28px] p-6 border border-yellow-300/30">
-        <div class="text-yellow-300 uppercase text-xs tracking-[0.22em] font-bold">VIP</div>
-        <h2 class="text-3xl font-black mt-2">KES 1500</h2>
-        <p class="text-slate-400 text-sm mt-1">per week</p>
-        <p class="text-slate-300 mt-4 leading-7">Stronger visibility, VIP positioning, and a richer premium presence inside the directory.</p>
-        <ul class="mt-5 space-y-2 text-slate-200 text-sm">
-          <li>• VIP tier placement</li>
-          <li>• Faster discovery</li>
-          <li>• Dashboard access</li>
-        </ul>
-        <a href="/public-signup-payment-page.html?plan=vip" class="btn btn-gold block text-center px-4 py-3 mt-6">Choose VIP</a>
-      </article>
-
-      <article class="plan-card rounded-[28px] p-6">
-        <div class="text-yellow-200 uppercase text-xs tracking-[0.22em] font-bold">Signature</div>
-        <h2 class="text-3xl font-black mt-2">KES 3000</h2>
-        <p class="text-slate-400 text-sm mt-1">per week</p>
-        <p class="text-slate-300 mt-4 leading-7">Top-tier crown placement for the strongest visibility and premium directory attention.</p>
-        <ul class="mt-5 space-y-2 text-slate-200 text-sm">
-          <li>• Signature section placement</li>
-          <li>• Premium rank priority</li>
-          <li>• Dashboard access</li>
-        </ul>
-        <a href="/public-signup-payment-page.html?plan=signature" class="btn btn-dark block text-center px-4 py-3 mt-6">Choose Signature</a>
-      </article>
-    </section>
+    </div>
   </main>
 </body>
 </html>
