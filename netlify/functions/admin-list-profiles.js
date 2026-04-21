@@ -28,8 +28,9 @@ exports.handler = async (event) => {
       ok: true,
       profiles: Array.isArray(data) ? data : [],
       currentAdmin: {
+        id: adminRow.id || null,
         role: adminRow.role,
-        permissions: adminRow.permissions
+        permissions: adminRow.permissions || []
       }
     });
   } catch (error) {
