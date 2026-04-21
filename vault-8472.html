@@ -1,261 +1,704 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Nairobi Sweets Admin Vault</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nairobi Sweets Admin Vault</title>
+  <style>
+    :root {
+      --bg: #070b24;
+      --panel: #10163a;
+      --panel-2: #18204f;
+      --line: rgba(255,255,255,0.08);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.72);
+      --gold: #ffd84b;
+      --green: #22c55e;
+      --red: #ff4d4f;
+      --blue: #60a5fa;
+      --chip: rgba(255,255,255,0.09);
+      --shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
 
-<style>
-:root{
-  --bg:#0b0f2c;
-  --panel:#11163a;
-  --panel-2:#18204f;
-  --text:#ffffff;
-  --muted:rgba(255,255,255,0.7);
-  --gold:#ffd84b;
-  --green:#28c76f;
-  --red:#ff4d4f;
-  --line:rgba(255,255,255,0.08);
-}
+    * { box-sizing: border-box; }
 
-*{box-sizing:border-box;}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #05081f 0%, #0b0f2c 100%);
+      color: var(--text);
+      padding: 20px;
+    }
 
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  padding:20px;
-}
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
 
-h1{
-  margin:0 0 20px;
-  font-size:42px;
-}
+    h1 {
+      margin: 0 0 18px;
+      font-size: 46px;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
 
-.panel{
-  background:var(--panel);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:18px;
-  border:1px solid var(--line);
-}
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
 
-.row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  align-items:center;
-}
+    .row,
+    .topbar,
+    .actions,
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
 
-input{
-  padding:12px;
-  border-radius:10px;
-  border:none;
-  min-width:220px;
-}
+    input, button, select {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: none;
+      font: inherit;
+    }
 
-button{
-  padding:12px 16px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
-}
+    input, select {
+      background: #fff;
+      color: #111;
+      min-width: 220px;
+    }
 
-.btn-gold{background:var(--gold);}
-.btn-red{background:var(--red); color:#fff;}
-.btn-dark{background:#222; color:#fff;}
+    button {
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-.tabs button{
-  background:#222;
-  color:#fff;
-}
+    .btn-gold { background: var(--gold); color: #111; }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-red { background: var(--red); color: #fff; }
+    .btn-blue { background: #2563eb; color: #fff; }
+    .btn-soft { background: var(--panel-2); color: #fff; border: 1px solid var(--line); }
+    .btn-dark { background: #222; color: #fff; }
 
-.tabs .active{
-  background:var(--gold);
-  color:#000;
-}
+    .tabs button {
+      background: #222;
+      color: #fff;
+    }
 
-.stats{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:12px;
-}
+    .tabs .active {
+      background: var(--gold);
+      color: #000;
+    }
 
-.stat{
-  background:var(--panel-2);
-  padding:12px;
-  border-radius:10px;
-  min-width:120px;
-}
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
 
-.card{
-  background:var(--panel-2);
-  padding:14px;
-  border-radius:12px;
-  margin-top:14px;
-}
+    .stat {
+      background: var(--panel-2);
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
 
-.title-row{
-  display:flex;
-  justify-content:space-between;
-  flex-wrap:wrap;
-}
+    .stat .label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
 
-.name{font-size:18px; font-weight:bold;}
-.meta{font-size:13px; color:var(--muted); margin-top:4px;}
+    .stat .value {
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 1;
+    }
 
-.status{
-  font-size:12px;
-  padding:4px 10px;
-  border-radius:999px;
-  background:rgba(255,255,255,0.1);
-}
-</style>
+    .substatus {
+      margin-top: 10px;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      align-items: flex-start;
+    }
+
+    .name {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .status {
+      font-size: 12px;
+      opacity: .85;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(180px, 1fr));
+      gap: 8px 14px;
+      margin: 12px 0;
+    }
+
+    .meta div {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .meta strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .chipbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .chip {
+      background: var(--chip);
+      color: #fff;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid var(--line);
+    }
+
+    .status-good { color: #86efac; }
+    .status-warn { color: #fde68a; }
+    .status-bad { color: #fca5a5; }
+
+    .empty,
+    .error-box {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .error-box strong,
+    .empty strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+      .meta { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      h1 { font-size: 36px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      input, select { min-width: 100%; width: 100%; }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <h1>Admin Vault</h1>
 
-<h1>Admin Vault</h1>
+    <div class="panel">
+      <div class="topbar">
+        <input id="email" type="email" placeholder="Admin email" />
+        <input id="password" type="password" placeholder="Password" />
+        <button id="loginBtn" class="btn-gold">Login</button>
+        <button id="restoreBtn" class="btn-dark">Restore Session</button>
+        <button id="logoutBtn" class="btn-red">Logout</button>
+      </div>
+      <div id="status" class="substatus">Not logged in.</div>
+    </div>
 
-<div class="panel">
-  <div class="row">
-    <input id="email" placeholder="Admin email"/>
-    <input id="password" type="password" placeholder="Password"/>
-    <button id="loginBtn" class="btn-gold">Login</button>
-    <button id="restoreBtn" class="btn-dark">Restore Session</button>
-    <button id="logoutBtn" class="btn-red">Logout</button>
+    <div class="panel">
+      <div class="actions">
+        <button id="refreshBtn" class="btn-gold">Refresh</button>
+        <input id="search" type="text" placeholder="Search by name, phone, email, plan, status..." />
+      </div>
+
+      <div class="tabs" style="margin-top: 14px;">
+        <button class="active" data-filter="all">All</button>
+        <button data-filter="pending">Pending</button>
+        <button data-filter="approved">Approved</button>
+        <button data-filter="paid">Paid</button>
+        <button data-filter="unpaid">Unpaid</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="label">Total</div>
+          <div class="value" id="totalCount">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Pending</div>
+          <div class="value" id="pendingCount">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Approved</div>
+          <div class="value" id="approvedCount">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Paid</div>
+          <div class="value" id="paidCount">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Unpaid</div>
+          <div class="value" id="unpaidCount">0</div>
+        </div>
+      </div>
+
+      <div id="adminMeta" class="substatus">Waiting for admin session...</div>
+    </div>
+
+    <div id="results"></div>
+
+    <div class="footer-note">
+      Nairobi Sweets vault controls approvals, payment state, and cleanup from one screen.
+    </div>
   </div>
-  <div id="status" style="margin-top:10px;"></div>
-</div>
 
-<div class="panel">
-  <div class="row">
-    <button id="refreshBtn" class="btn-gold">Refresh</button>
-    <input id="search" placeholder="Search by name, phone, plan..." />
-  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-  <div class="tabs row" style="margin-top:10px;">
-    <button onclick="setFilter('all')" class="active">All</button>
-    <button onclick="setFilter('pending')">Pending</button>
-    <button onclick="setFilter('approved')">Approved</button>
-    <button onclick="setFilter('paid')">Paid</button>
-    <button onclick="setFilter('unpaid')">Unpaid</button>
-  </div>
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  <div class="stats">
-    <div class="stat">Total<br><b id="totalCount">0</b></div>
-    <div class="stat">Pending<br><b id="pendingCount">0</b></div>
-    <div class="stat">Approved<br><b id="approvedCount">0</b></div>
-    <div class="stat">Paid<br><b id="paidCount">0</b></div>
-    <div class="stat">Unpaid<br><b id="unpaidCount">0</b></div>
-  </div>
-</div>
+    const els = {
+      email: document.getElementById("email"),
+      password: document.getElementById("password"),
+      loginBtn: document.getElementById("loginBtn"),
+      restoreBtn: document.getElementById("restoreBtn"),
+      logoutBtn: document.getElementById("logoutBtn"),
+      refreshBtn: document.getElementById("refreshBtn"),
+      search: document.getElementById("search"),
+      status: document.getElementById("status"),
+      adminMeta: document.getElementById("adminMeta"),
+      results: document.getElementById("results"),
+      total: document.getElementById("totalCount"),
+      pending: document.getElementById("pendingCount"),
+      approved: document.getElementById("approvedCount"),
+      paid: document.getElementById("paidCount"),
+      unpaid: document.getElementById("unpaidCount"),
+      tabs: Array.from(document.querySelectorAll(".tabs button"))
+    };
 
-<div id="results"></div>
+    let currentFilter = "all";
+    let lastPayload = null;
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+    function setStatus(message, isError = false) {
+      els.status.textContent = message || "";
+      els.status.style.color = isError ? "#ff9b9b" : "#d9e7ff";
+    }
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    function setAdminMeta(message, isError = false) {
+      els.adminMeta.textContent = message || "";
+      els.adminMeta.style.color = isError ? "#ffb3b3" : "rgba(255,255,255,0.72)";
+    }
 
-let currentFilter = "all";
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
 
-const el = (id)=>document.getElementById(id);
+    function normalizeText(value) {
+      return String(value ?? "").trim();
+    }
 
-function setStatus(msg, err=false){
-  el("status").textContent = msg;
-  el("status").style.color = err ? "#ff9b9b" : "#d9e7ff";
-}
+    function lc(value) {
+      return normalizeText(value).toLowerCase();
+    }
 
-async function getToken(){
-  const {data} = await sb.auth.getSession();
-  return data?.session?.access_token;
-}
+    function formatDate(value) {
+      if (!value) return "-";
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return String(value);
+      return d.toLocaleString();
+    }
 
-async function login(){
-  const email = el("email").value;
-  const password = el("password").value;
+    function shortMoney(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "-";
+      return "KES " + num.toLocaleString();
+    }
 
-  const {error} = await sb.auth.signInWithPassword({email,password});
-  if(error) return setStatus(error.message,true);
+    async function getAccessToken() {
+      const { data, error } = await sb.auth.getSession();
+      if (error) throw error;
+      return data?.session?.access_token || null;
+    }
 
-  setStatus("Login successful");
-  load();
-}
+    async function requireAccessToken() {
+      const token = await getAccessToken();
+      if (!token) {
+        throw new Error("No active admin session. Please log in first.");
+      }
+      return token;
+    }
 
-async function load(){
-  try{
-    setStatus("Loading...");
-    const token = await getToken();
-    if(!token) throw new Error("Not logged in");
+    async function apiFetch(path, options = {}) {
+      const token = await requireAccessToken();
+      const res = await fetch(path, {
+        ...options,
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
 
-    let url = "/.netlify/functions/admin-list-profiles?limit=200";
+      const payload = await res.json().catch(() => ({}));
 
-    const search = el("search").value.trim();
-    if(search) url += `&search=${encodeURIComponent(search)}`;
-    if(currentFilter!=="all") url += `&status=${currentFilter}`;
+      if (!res.ok) {
+        throw new Error(payload?.message || payload?.error || `HTTP ${res.status}`);
+      }
 
-    const res = await fetch(url,{
-      headers:{Authorization:`Bearer ${token}`}
+      return payload;
+    }
+
+    function buildListUrl() {
+      const qs = new URLSearchParams();
+      const search = els.search.value.trim();
+
+      qs.set("limit", "200");
+
+      if (search) qs.set("search", search);
+      if (currentFilter !== "all") qs.set("status", currentFilter);
+
+      return `/.netlify/functions/admin-list-profiles?${qs.toString()}`;
+    }
+
+    function renderSummary(summary = {}) {
+      els.total.textContent = String(summary.total ?? 0);
+      els.pending.textContent = String(summary.pending ?? 0);
+      els.approved.textContent = String(summary.approved ?? 0);
+      els.paid.textContent = String(summary.paid ?? 0);
+      els.unpaid.textContent = String(summary.unpaid ?? 0);
+    }
+
+    function renderEmpty(message = "No profiles found.") {
+      els.results.innerHTML = `
+        <div class="empty">
+          <strong>No profiles here yet</strong>
+          <div class="muted">${escapeHtml(message)}</div>
+        </div>
+      `;
+    }
+
+    function renderError(message) {
+      els.results.innerHTML = `
+        <div class="error-box">
+          <strong>Load failed</strong>
+          <div class="muted">${escapeHtml(message || "Unknown error")}</div>
+        </div>
+      `;
+    }
+
+    function renderProfiles(rows = []) {
+      if (!Array.isArray(rows) || !rows.length) {
+        renderEmpty("Try another filter or search term.");
+        return;
+      }
+
+      els.results.innerHTML = `
+        <div class="grid">
+          ${rows.map((p) => {
+            const id = p.id || "";
+            const name = p.stage_name || p.full_name || p.name || "Unnamed profile";
+            const approval = p.approval_status || "pending";
+            const payment = p.payment_status || "unpaid";
+            const phone = p.phone || "-";
+            const email = p.email || "-";
+            const plan = p.plan || "-";
+            const createdAt = formatDate(p.created_at);
+            const updatedAt = formatDate(p.updated_at);
+            const amount = p.amount || p.price || p.plan_price || null;
+            const city = p.city || "-";
+            const category = p.category || p.service_type || "-";
+            const image = p.photo_url || p.image_url || p.avatar_url || "";
+
+            return `
+              <div class="card">
+                <div class="title-row">
+                  <div>
+                    <div class="name">${escapeHtml(name)}</div>
+                    <div class="chipbar">
+                      <span class="chip">Approval: ${escapeHtml(approval)}</span>
+                      <span class="chip">Payment: ${escapeHtml(payment)}</span>
+                      ${plan ? `<span class="chip">Plan: ${escapeHtml(plan)}</span>` : ""}
+                    </div>
+                  </div>
+                  <div class="status">${escapeHtml(approval)} / ${escapeHtml(payment)}</div>
+                </div>
+
+                ${image ? `
+                  <div style="margin: 12px 0;">
+                    <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" style="width:100%; max-height:240px; object-fit:cover; border-radius:14px; border:1px solid rgba(255,255,255,0.08);" />
+                  </div>
+                ` : ""}
+
+                <div class="meta">
+                  <div><strong>Phone:</strong> ${escapeHtml(phone)}</div>
+                  <div><strong>Email:</strong> ${escapeHtml(email)}</div>
+                  <div><strong>Plan:</strong> ${escapeHtml(plan)}</div>
+                  <div><strong>Amount:</strong> ${escapeHtml(shortMoney(amount))}</div>
+                  <div><strong>Category:</strong> ${escapeHtml(category)}</div>
+                  <div><strong>City:</strong> ${escapeHtml(city)}</div>
+                  <div><strong>Created:</strong> ${escapeHtml(createdAt)}</div>
+                  <div><strong>Updated:</strong> ${escapeHtml(updatedAt)}</div>
+                </div>
+
+                <div class="card-actions">
+                  <button class="btn-green" onclick="approveProfile('${escapeHtml(id)}')">Approve</button>
+                  <button class="btn-blue" onclick="togglePayment('${escapeHtml(id)}', '${escapeHtml(payment)}')">
+                    ${lc(payment) === "paid" ? "Mark Unpaid" : "Mark Paid"}
+                  </button>
+                  <button class="btn-red" onclick="deleteProfile('${escapeHtml(id)}', '${escapeHtml(name)}')">Delete</button>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    async function loginAdmin() {
+      try {
+        const email = els.email.value.trim();
+        const password = els.password.value;
+
+        if (!email || !password) {
+          setStatus("Enter admin email and password.", true);
+          return;
+        }
+
+        setStatus("Signing in...");
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        if (!data?.session) throw new Error("Login returned no session.");
+
+        setStatus("Login successful.");
+        await loadProfiles();
+      } catch (err) {
+        console.error("login error:", err);
+        setStatus(err.message || "Login failed.", true);
+      }
+    }
+
+    async function restoreSession() {
+      try {
+        setStatus("Restoring session...");
+        const { data, error } = await sb.auth.getSession();
+        if (error) throw error;
+
+        if (!data?.session) {
+          setStatus("No saved session found.", true);
+          setAdminMeta("Waiting for valid admin session...", true);
+          return;
+        }
+
+        setStatus("Session restored.");
+        await loadProfiles();
+      } catch (err) {
+        console.error("restore session error:", err);
+        setStatus(err.message || "Could not restore session.", true);
+      }
+    }
+
+    async function logoutAdmin() {
+      try {
+        await sb.auth.signOut();
+        lastPayload = null;
+        renderSummary({});
+        els.results.innerHTML = "";
+        setStatus("Logged out.");
+        setAdminMeta("Waiting for valid admin session...");
+      } catch (err) {
+        console.error("logout error:", err);
+        setStatus(err.message || "Logout failed.", true);
+      }
+    }
+
+    async function loadProfiles() {
+      try {
+        setStatus("Loading profiles...");
+        const payload = await apiFetch(buildListUrl(), { method: "GET" });
+
+        lastPayload = payload;
+        renderSummary(payload.summary || {});
+        renderProfiles(payload.profiles || []);
+
+        const adminEmail = payload?.admin?.email || "admin";
+        const source = payload?.admin?.source || "unknown";
+        setAdminMeta(`Logged in as ${adminEmail}. Admin source: ${source}.`);
+        setStatus(`Loaded ${payload?.summary?.total ?? 0} profiles.`);
+      } catch (err) {
+        console.error("loadProfiles error:", err);
+        renderSummary({});
+        renderError(err.message || "Failed to load profiles.");
+        setAdminMeta("Admin session missing or not authorized.", true);
+        setStatus(err.message || "Load failed.", true);
+      }
+    }
+
+    async function approveProfile(profileId) {
+      try {
+        if (!profileId) throw new Error("Missing profile id.");
+        setStatus("Approving profile...");
+
+        await apiFetch("/.netlify/functions/admin-approve-profile", {
+          method: "POST",
+          body: JSON.stringify({
+            profile_id: profileId,
+            approval_status: "approved"
+          })
+        });
+
+        setStatus("Profile approved.");
+        await loadProfiles();
+      } catch (err) {
+        console.error("approveProfile error:", err);
+        setStatus(err.message || "Approval failed.", true);
+      }
+    }
+
+    async function togglePayment(profileId, currentPaymentStatus) {
+      try {
+        if (!profileId) throw new Error("Missing profile id.");
+
+        const nextStatus = lc(currentPaymentStatus) === "paid" ? "unpaid" : "paid";
+        setStatus(`Updating payment to ${nextStatus}...`);
+
+        await apiFetch("/.netlify/functions/admin-toggle-payment", {
+          method: "POST",
+          body: JSON.stringify({
+            profile_id: profileId,
+            payment_status: nextStatus
+          })
+        });
+
+        setStatus(`Payment marked ${nextStatus}.`);
+        await loadProfiles();
+      } catch (err) {
+        console.error("togglePayment error:", err);
+        setStatus(err.message || "Payment update failed.", true);
+      }
+    }
+
+    async function deleteProfile(profileId, profileName) {
+      try {
+        if (!profileId) throw new Error("Missing profile id.");
+
+        const ok = window.confirm(`Delete "${profileName || "this profile"}"? This cannot be undone.`);
+        if (!ok) return;
+
+        setStatus("Deleting profile...");
+
+        await apiFetch("/.netlify/functions/admin-delete-profile", {
+          method: "POST",
+          body: JSON.stringify({
+            profile_id: profileId
+          })
+        });
+
+        setStatus("Profile deleted.");
+        await loadProfiles();
+      } catch (err) {
+        console.error("deleteProfile error:", err);
+        setStatus(err.message || "Delete failed.", true);
+      }
+    }
+
+    function setFilter(filterValue) {
+      currentFilter = filterValue;
+
+      els.tabs.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.filter === filterValue);
+      });
+
+      loadProfiles();
+    }
+
+    let searchTimer = null;
+    els.search.addEventListener("input", () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => loadProfiles(), 300);
     });
 
-    const data = await res.json();
+    els.tabs.forEach((btn) => {
+      btn.addEventListener("click", () => setFilter(btn.dataset.filter));
+    });
 
-    if(!res.ok) throw new Error(data.message||data.error);
+    els.loginBtn.addEventListener("click", loginAdmin);
+    els.restoreBtn.addEventListener("click", restoreSession);
+    els.logoutBtn.addEventListener("click", logoutAdmin);
+    els.refreshBtn.addEventListener("click", loadProfiles);
 
-    render(data.profiles);
-    stats(data.summary);
+    sb.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setStatus("Authenticated.");
+      }
+    });
 
-    setStatus("Loaded "+data.summary.total+" profiles");
-  }catch(e){
-    setStatus(e.message,true);
-    el("results").innerHTML = `<div class="card">${e.message}</div>`;
-  }
-}
-
-function stats(s){
-  el("totalCount").textContent = s.total;
-  el("pendingCount").textContent = s.pending;
-  el("approvedCount").textContent = s.approved;
-  el("paidCount").textContent = s.paid;
-  el("unpaidCount").textContent = s.unpaid;
-}
-
-function render(list){
-  el("results").innerHTML = list.map(p=>{
-    return `
-    <div class="card">
-      <div class="title-row">
-        <div class="name">${p.stage_name||p.name||"Unnamed"}</div>
-        <div class="status">${p.approval_status} / ${p.payment_status}</div>
-      </div>
-      <div class="meta">Phone: ${p.phone||"-"}</div>
-      <div class="meta">Plan: ${p.plan||"-"}</div>
-    </div>
-    `;
-  }).join("");
-}
-
-function setFilter(f){
-  currentFilter=f;
-  load();
-}
-
-document.getElementById("loginBtn").onclick=login;
-document.getElementById("restoreBtn").onclick=load;
-document.getElementById("logoutBtn").onclick=()=>sb.auth.signOut();
-document.getElementById("refreshBtn").onclick=load;
-
-el("search").addEventListener("input", ()=>{
-  clearTimeout(window.t);
-  window.t=setTimeout(load,300);
-});
-</script>
-
+    window.approveProfile = approveProfile;
+    window.togglePayment = togglePayment;
+    window.deleteProfile = deleteProfile;
+  </script>
 </body>
 </html>
