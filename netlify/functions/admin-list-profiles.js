@@ -1,4 +1,4 @@
-const { safeString, json, requireAdmin } = require("./_adminAuth");
+const { safeString, json, requirePermission } = require("./_adminAuth");
 
 function safeNumber(value, fallback) {
   const num = Number(value);
@@ -15,10 +15,10 @@ exports.handler = async (event) => {
   }
 
   try {
-    const auth = await requireAdmin(event);
+    const auth = await requirePermission(event, "profiles.read");
     if (!auth.ok) return auth.response;
 
-    const { adminClient } = auth;
+    const { adminClient, adminRow } = auth;
 
     const body = JSON.parse(event.body || "{}");
 
@@ -32,7 +32,7 @@ exports.handler = async (event) => {
     const planFilter = safeString(body.planFilter).toLowerCase();
     const statusFilter = safeString(body.statusFilter).toLowerCase();
     const sortBy = safeString(body.sortBy) || "created_at";
-    const sortDirection = safeString(body.sortDirection).toLowerCase() === "asc" ? true : false;
+    const sortDirection = safeString(body.sortDirection).toLowerCase() === "asc";
 
     let query = adminClient
       .from(tableName)
@@ -105,6 +105,10 @@ exports.handler = async (event) => {
         total: count || 0,
         totalPages: Math.max(Math.ceil((count || 0) / limit), 1),
       },
+      currentAdmin: {
+        role: adminRow.role,
+        permissions: adminRow.permissions
+      }
     });
   } catch (error) {
     return json(500, {
