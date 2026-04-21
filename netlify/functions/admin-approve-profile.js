@@ -10,10 +10,10 @@ exports.handler = async (event) => {
   }
 
   try {
-    const auth = await requirePermission(event, "admins.manage");
+    const auth = await requirePermission(event, "profiles.approve");
     if (!auth.ok) return auth.response;
 
-    const { adminClient, adminRow } = auth;
+    const { adminClient, adminRow, authUser } = auth;
 
     const body = JSON.parse(event.body || "{}");
     const profileId = String(body.profileId || "").trim();
@@ -23,13 +23,13 @@ exports.handler = async (event) => {
       return json(400, { ok: false, error: "profileId is required" });
     }
 
-    let patch = {};
+    let patch;
 
     if (action === "approve") {
       patch = {
         is_approved: true,
         approved_at: new Date().toISOString(),
-        approved_by: adminRow.email || adminRow.id || "admin",
+        approved_by: authUser.email || adminRow.user_id || "admin",
         status: "approved"
       };
     } else if (action === "unapprove") {
