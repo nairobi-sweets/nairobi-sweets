@@ -2,272 +2,857 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Create Listing & Pay | Nairobi Sweets</title>
-  <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Nairobi Sweets | Create Listing & Pay</title>
+
   <style>
-    body{
-      min-height:100vh;
-      color:#f8fafc;
+    :root {
+      --bg: #050816;
+      --bg-2: #090d22;
+      --panel: rgba(8, 14, 36, 0.86);
+      --panel-2: rgba(16, 22, 48, 0.9);
+      --line: rgba(255, 255, 255, 0.08);
+      --line-strong: rgba(255, 214, 92, 0.24);
+      --text: #f4f6fb;
+      --muted: #aeb6ca;
+      --gold: #ffd54f;
+      --gold-2: #ffb300;
+      --accent: #ff8bd7;
+      --success: #7ef0a7;
+      --danger: #ff7b92;
+      --shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+      --radius-xl: 28px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --input-bg: rgba(12, 17, 38, 0.92);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
       background:
-        radial-gradient(circle at 10% 0%, rgba(236,72,153,.10), transparent 22%),
-        radial-gradient(circle at 90% 10%, rgba(250,204,21,.08), transparent 24%),
-        linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
-      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        radial-gradient(circle at 10% 20%, rgba(160, 40, 200, 0.18), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(255, 193, 7, 0.12), transparent 24%),
+        linear-gradient(180deg, #030611 0%, #050816 45%, #040713 100%);
+      min-height: 100vh;
     }
-    .glass{
-      background:rgba(9,14,28,.74);
-      border:1px solid rgba(255,255,255,.08);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      box-shadow:0 22px 60px rgba(0,0,0,.30);
+
+    a {
+      color: inherit;
+      text-decoration: none;
     }
-    .input, .select, .textarea{
-      width:100%;
-      padding:14px 16px;
-      border-radius:18px;
-      background:rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.08);
-      color:white;
-      outline:none;
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(12px);
+      background: rgba(4, 7, 18, 0.7);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
-    .textarea{ min-height:120px; resize:vertical; }
-    .input:focus, .select:focus, .textarea:focus{
-      border-color:rgba(236,72,153,.55);
-      box-shadow:0 0 0 3px rgba(236,72,153,.10);
+
+    .topbar-inner {
+      width: min(1280px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
     }
-    .btn{
-      border-radius:18px;
-      transition:.18s ease;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
-    .btn-gold{
-      background:linear-gradient(135deg,#facc15,#f59e0b);
-      color:#111827;
-      font-weight:800;
+
+    .brand img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.03);
     }
-    .chip{
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.05);
-      border-radius:999px;
-      padding:8px 12px;
-      font-size:12px;
-      font-weight:700;
+
+    .brand-text small {
+      display: block;
+      color: #ffe7a5;
+      letter-spacing: 0.2em;
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .brand-text strong {
+      display: block;
+      font-size: 18px;
+      color: var(--gold);
+      font-weight: 800;
+    }
+
+    .login-btn {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      transition: 0.25s ease;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 213, 79, 0.35);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+    }
+
+    .page {
+      width: min(1280px, calc(100% - 32px));
+      margin: 40px auto 60px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(6, 12, 30, 0.95), rgba(4, 9, 24, 0.95));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .main-card {
+      padding: 30px;
+    }
+
+    .side-card {
+      padding: 30px;
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+
+    .hero-thumb {
+      width: 190px;
+      max-width: 100%;
+      border-radius: 18px;
+      display: block;
+      background: rgba(255,255,255,0.03);
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      color: #f6d9ff;
+      letter-spacing: 0.25em;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin: 8px 0 14px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      max-width: 760px;
+    }
+
+    .subtext {
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+      max-width: 760px;
+    }
+
+    .status-box {
+      display: none;
+      margin: 0 0 18px;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      border: 1px solid transparent;
+    }
+
+    .status-box.show {
+      display: block;
+    }
+
+    .status-info {
+      background: rgba(104, 145, 255, 0.1);
+      border-color: rgba(104, 145, 255, 0.25);
+      color: #d9e5ff;
+    }
+
+    .status-success {
+      background: rgba(80, 214, 130, 0.12);
+      border-color: rgba(80, 214, 130, 0.26);
+      color: #d9ffe7;
+    }
+
+    .status-error {
+      background: rgba(255, 98, 131, 0.12);
+      border-color: rgba(255, 98, 131, 0.26);
+      color: #ffdbe2;
+    }
+
+    form {
+      margin-top: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #f4f0ff;
+      font-size: 14px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--input-bg);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 15px 16px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.12s ease;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #9098af;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(255, 213, 79, 0.5);
+      box-shadow: 0 0 0 4px rgba(255, 213, 79, 0.08);
+    }
+
+    input[type="file"] {
+      padding: 12px 14px;
+      cursor: pointer;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .image-preview-wrap {
+      display: none;
+      align-items: center;
+      gap: 14px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px dashed rgba(255, 213, 79, 0.22);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .image-preview-wrap.show {
+      display: flex;
+    }
+
+    .image-preview {
+      width: 96px;
+      height: 96px;
+      object-fit: cover;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      flex-shrink: 0;
+    }
+
+    .image-preview-meta {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .plan-pills {
+      display: grid;
+      gap: 12px;
+      margin: 12px 0 22px;
+    }
+
+    .plan-pill,
+    .summary-pill {
+      background: linear-gradient(180deg, rgba(24, 29, 56, 0.9), rgba(17, 22, 42, 0.95));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      padding: 16px 16px;
+      color: #f7f7fb;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .summary-box {
+      margin-top: 22px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .summary-box h3,
+    .side-card h2 {
+      margin: 0 0 16px;
+      font-size: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    .summary-box ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .actions {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 15px 24px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.22s ease, opacity 0.22s ease;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      color: #1f1400;
+      background: linear-gradient(180deg, #ffe08a 0%, #ffd54f 48%, #ffbf00 100%);
+      box-shadow: 0 16px 36px rgba(255, 191, 0, 0.22);
+    }
+
+    .btn-secondary {
+      color: #fff;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .tiny {
+      font-size: 12px;
+      color: #8f97ae;
+    }
+
+    .footer-space {
+      height: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .side-card {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner,
+      .page {
+        width: min(100% - 20px, 100%);
+      }
+
+      .main-card,
+      .side-card {
+        padding: 20px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
     }
   </style>
 </head>
 <body>
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#080a12]/85 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-      <a href="/index.html" class="flex items-center gap-3">
-        <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets" class="w-11 h-11 rounded-full object-cover">
-        <div>
-          <div class="text-xs uppercase tracking-[0.22em] text-pink-200">Create your listing</div>
-          <div class="text-2xl font-extrabold text-yellow-300 leading-none">Nairobi Sweets</div>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="/index.html" class="brand">
+        <img src="/assets/logo/logo-navbar.png" alt="Nairobi Sweets Logo" onerror="this.src='/assets/logo/logo-badge.png'">
+        <div class="brand-text">
+          <small>Create Your Listing</small>
+          <strong>Nairobi Sweets</strong>
         </div>
       </a>
-      <a href="/login.html" class="px-4 py-2 rounded-2xl bg-white/10 border border-white/10 text-sm">Login</a>
+
+      <a href="/login.html" class="login-btn">Login</a>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-10">
-    <div class="grid lg:grid-cols-[1.15fr_.85fr] gap-6">
-      <section class="glass rounded-[30px] p-6 md:p-8">
-        <img src="/assets/logo/logo-hero.png" alt="Nairobi Sweets" class="w-48 max-w-[65%] mb-5">
-        <p class="text-xs uppercase tracking-[0.22em] text-pink-200 mb-3">Step 1 of 2</p>
-        <h1 class="text-4xl md:text-5xl font-black leading-[0.96] tracking-tight">Create your profile and start payment.</h1>
-        <p class="text-slate-300 mt-5 leading-7 max-w-2xl">
-          Fill in your listing details, choose your visibility plan, then complete M-Pesa payment to activate your profile flow.
-        </p>
+  <main class="page">
+    <section class="card main-card">
+      <img
+        class="hero-thumb"
+        src="/assets/logo/logo-hero.png"
+        alt="Nairobi Sweets"
+        onerror="this.src='/assets/logo/logo-badge.png'"
+      />
 
-        <div class="grid md:grid-cols-2 gap-4 mt-8">
-          <div>
-            <label class="block text-sm text-slate-300 mb-2">Stage name</label>
-            <input id="stage_name" class="input" placeholder="Your public display name">
+      <div class="eyebrow">Step 1 of 2</div>
+      <h1>Create your profile and start payment.</h1>
+      <p class="subtext">
+        Fill in your listing details, choose your visibility plan, upload your photo,
+        then complete M-Pesa payment to activate your profile flow.
+      </p>
+
+      <div id="statusBox" class="status-box status-info"></div>
+
+      <form id="signupForm">
+        <div class="grid">
+          <div class="field">
+            <label for="stage_name">Stage name</label>
+            <input id="stage_name" type="text" placeholder="Your public display name" required />
           </div>
-          <div>
-            <label class="block text-sm text-slate-300 mb-2">Email</label>
-            <input id="email" type="email" class="input" placeholder="Your email">
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com" required />
           </div>
-          <div>
-            <label class="block text-sm text-slate-300 mb-2">Password</label>
-            <input id="password" type="password" class="input" placeholder="Create password">
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password" placeholder="Create a secure password" required />
           </div>
-          <div>
-            <label class="block text-sm text-slate-300 mb-2">Phone / WhatsApp</label>
-            <input id="phone" class="input" placeholder="07XXXXXXXX or 2547XXXXXXXX">
+
+          <div class="field">
+            <label for="phone">Phone / WhatsApp</label>
+            <input id="phone" type="tel" placeholder="07XXXXXXXX or 2547XXXXXXXX" required />
           </div>
-          <div>
-            <label class="block text-sm text-slate-300 mb-2">Location</label>
-            <input id="location" class="input" placeholder="Westlands, Kilimani, CBD...">
+
+          <div class="field">
+            <label for="location">Location</label>
+            <input id="location" type="text" placeholder="Westlands, Kilimani, CBD..." />
           </div>
-          <div>
-            <label class="block text-sm text-slate-300 mb-2">Plan</label>
-            <select id="plan" class="select">
+
+          <div class="field">
+            <label for="plan">Plan</label>
+            <select id="plan" required>
               <option value="featured">Featured - KES 1000/week</option>
               <option value="vip">VIP - KES 1500/week</option>
               <option value="signature">Signature - KES 3000/week</option>
             </select>
           </div>
-          <div class="md:col-span-2">
-            <label class="block text-sm text-slate-300 mb-2">Profile image URL</label>
-            <input id="image_url" class="input" placeholder="https://...">
+
+          <div class="field full">
+            <label for="profile_photo">Profile photo</label>
+            <input id="profile_photo" type="file" accept="image/*" />
+            <div id="imagePreviewWrap" class="image-preview-wrap">
+              <img id="imagePreview" class="image-preview" alt="Preview" />
+              <div class="image-preview-meta">
+                <div><strong>Preview ready</strong></div>
+                <div id="imagePreviewText">Your uploaded image will appear here.</div>
+              </div>
+            </div>
           </div>
-          <div class="md:col-span-2">
-            <label class="block text-sm text-slate-300 mb-2">Bio</label>
-            <textarea id="bio" class="textarea" placeholder="Write a short premium bio for your listing"></textarea>
+
+          <div class="field full" style="display:none;">
+            <label for="image_url">Profile image URL</label>
+            <input id="image_url" type="url" readonly />
+          </div>
+
+          <div class="field full">
+            <label for="bio">Bio</label>
+            <textarea id="bio" placeholder="Write a short premium bio for your listing"></textarea>
           </div>
         </div>
 
-        <button id="submitBtn" class="btn btn-gold w-full py-3 mt-6">Create Listing & Start M-Pesa</button>
-        <p id="msg" class="text-sm text-slate-300 mt-4"></p>
-      </section>
-
-      <aside class="glass rounded-[30px] p-6 md:p-8">
-        <div class="text-sm text-slate-300 mb-3">Payment summary</div>
-        <div class="space-y-3">
-          <div class="chip">Till Number: 568912</div>
-          <div class="chip">Featured: KES 1000/week</div>
-          <div class="chip">VIP: KES 1500/week</div>
-          <div class="chip">Signature: KES 3000/week</div>
+        <div class="actions">
+          <button id="submitBtn" class="btn btn-primary" type="submit">
+            Create profile & start payment
+          </button>
+          <button id="resetBtn" class="btn btn-secondary" type="button">
+            Reset
+          </button>
+          <span class="tiny">Photo upload supported. JPG, PNG, WEBP are best.</span>
         </div>
+      </form>
+    </section>
 
-        <div class="mt-6 p-4 rounded-2xl bg-white/5 border border-white/10">
-          <div class="text-sm text-slate-300 mb-2">What happens next</div>
-          <ul class="space-y-2 text-sm text-slate-200">
-            <li>• Your account is created</li>
-            <li>• Your profile record is saved</li>
-            <li>• STK push is sent to your phone</li>
-            <li>• Admin can approve and activate your listing</li>
-          </ul>
-        </div>
-      </aside>
-    </div>
+    <aside class="card side-card">
+      <h2>Payment summary</h2>
+
+      <div class="plan-pills">
+        <div class="summary-pill">Till Number: <span id="tillNumber">568912</span></div>
+        <div class="summary-pill" id="summaryFeatured">Featured: KES 1000/week</div>
+        <div class="summary-pill" id="summaryVip">VIP: KES 1500/week</div>
+        <div class="summary-pill" id="summarySignature">Signature: KES 3000/week</div>
+      </div>
+
+      <div class="summary-box">
+        <h3>What happens next</h3>
+        <ul>
+          <li>Your account is created</li>
+          <li>Your profile record is saved</li>
+          <li>Your uploaded image is stored</li>
+          <li>STK push is sent to your phone</li>
+          <li>Admin can approve and activate your listing</li>
+        </ul>
+      </div>
+
+      <div class="summary-box" style="margin-top:16px;">
+        <h3>Selected plan</h3>
+        <div class="summary-pill" id="selectedPlanDisplay">Featured - KES 1000/week</div>
+        <p class="note" style="margin:12px 0 0;">
+          Your selected plan is also passed into the payment request so the amount stays in sync.
+        </p>
+      </div>
+    </aside>
   </main>
 
-  <script>
-    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  <div class="footer-space"></div>
 
-    const planPrices = {
-      featured: 1000,
-      vip: 1500,
-      signature: 3000
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const MPESA_ENDPOINT = "/.netlify/functions/mpesa-stk-push";
+    const STORAGE_BUCKET = "profile-images";
+
+    const PLAN_CONFIG = {
+      featured: { label: "Featured", amount: 1000 },
+      vip: { label: "VIP", amount: 1500 },
+      signature: { label: "Signature", amount: 3000 }
     };
 
-    function normalizePhone(phone){
-      let value = String(phone || '').replace(/[^\d]/g, '');
-      if(value.startsWith('0')) value = '254' + value.slice(1);
-      if(value.startsWith('7') && value.length === 9) value = '254' + value;
-      return value;
-    }
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    function setPlanFromQuery(){
-      const plan = new URLSearchParams(window.location.search).get('plan');
-      if(plan && ['featured','vip','signature'].includes(plan)){
-        document.getElementById('plan').value = plan;
+    const form = document.getElementById("signupForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const statusBox = document.getElementById("statusBox");
+    const planSelect = document.getElementById("plan");
+    const selectedPlanDisplay = document.getElementById("selectedPlanDisplay");
+    const profilePhotoInput = document.getElementById("profile_photo");
+    const imagePreviewWrap = document.getElementById("imagePreviewWrap");
+    const imagePreview = document.getElementById("imagePreview");
+    const imagePreviewText = document.getElementById("imagePreviewText");
+    const imageUrlInput = document.getElementById("image_url");
+
+    function setStatus(message, type = "info") {
+      statusBox.className = "status-box show";
+      if (type === "success") {
+        statusBox.classList.add("status-success");
+      } else if (type === "error") {
+        statusBox.classList.add("status-error");
+      } else {
+        statusBox.classList.add("status-info");
       }
+      statusBox.textContent = message;
     }
 
-    async function submitSignup(){
-      const stage_name = document.getElementById('stage_name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const phone = normalizePhone(document.getElementById('phone').value.trim());
-      const location = document.getElementById('location').value.trim();
-      const plan = document.getElementById('plan').value;
-      const image_url = document.getElementById('image_url').value.trim();
-      const bio = document.getElementById('bio').value.trim();
-      const msg = document.getElementById('msg');
+    function clearStatus() {
+      statusBox.className = "status-box";
+      statusBox.textContent = "";
+    }
 
-      msg.textContent = '';
+    function slugify(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
 
-      if(!stage_name || !email || !password || !phone || !location || !plan){
-        msg.textContent = 'Please fill all required fields.';
+    function normalizePhone(phone) {
+      const digits = String(phone || "").replace(/\D/g, "");
+      if (!digits) return "";
+      if (digits.startsWith("254")) return digits;
+      if (digits.startsWith("0")) return "254" + digits.slice(1);
+      if (digits.startsWith("7") || digits.startsWith("1")) return "254" + digits;
+      return digits;
+    }
+
+    function getPlanFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const plan = (params.get("plan") || "").toLowerCase().trim();
+      if (PLAN_CONFIG[plan]) return plan;
+      return "featured";
+    }
+
+    function updatePlanUI() {
+      const planKey = planSelect.value;
+      const plan = PLAN_CONFIG[planKey];
+      selectedPlanDisplay.textContent = `${plan.label} - KES ${plan.amount}/week`;
+    }
+
+    async function uploadProfilePhoto(file, stageName) {
+      if (!file) return "";
+
+      const fileExt = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const safeStage = slugify(stageName || "profile");
+      const fileName = `${Date.now()}-${safeStage}.${fileExt}`;
+      const filePath = `public/${fileName}`;
+
+      const { error: uploadError } = await sb.storage
+        .from(STORAGE_BUCKET)
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false
+        });
+
+      if (uploadError) {
+        throw new Error(uploadError.message || "Failed to upload image.");
+      }
+
+      const { data } = sb.storage
+        .from(STORAGE_BUCKET)
+        .getPublicUrl(filePath);
+
+      return data?.publicUrl || "";
+    }
+
+    async function createAuthUser(email, password) {
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password
+      });
+
+      if (error) {
+        throw new Error(error.message || "Failed to create account.");
+      }
+
+      return data?.user || null;
+    }
+
+    async function saveProfileRecord(payload) {
+      const { data, error } = await sb
+        .from("profiles")
+        .insert([payload])
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(error.message || "Failed to save profile.");
+      }
+
+      return data;
+    }
+
+    async function startPayment(paymentPayload) {
+      const response = await fetch(MPESA_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(paymentPayload)
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result.error || result.message || "Failed to start payment.");
+      }
+
+      return result;
+    }
+
+    function buildProfilePayload(userId, values) {
+      return {
+        user_id: userId || null,
+        stage_name: values.stageName,
+        email: values.email,
+        phone: values.phone,
+        location: values.location,
+        plan: values.planKey,
+        bio: values.bio,
+        image_url: values.imageUrl,
+        payment_status: "pending",
+        approval_status: "pending"
+      };
+    }
+
+    function buildPaymentPayload(profileRecord, values) {
+      return {
+        phone: values.phone,
+        amount: values.planAmount,
+        stage_name: values.stageName,
+        email: values.email,
+        plan: values.planKey,
+        profile_id: profileRecord?.id || null,
+        profile_ref: profileRecord?.id || null,
+        accountReference: values.stageName,
+        transactionDesc: `${values.planLabel} listing payment`
+      };
+    }
+
+    function resetForm() {
+      form.reset();
+      imageUrlInput.value = "";
+      imagePreview.src = "";
+      imagePreviewWrap.classList.remove("show");
+      clearStatus();
+      planSelect.value = getPlanFromQuery();
+      updatePlanUI();
+    }
+
+    profilePhotoInput.addEventListener("change", function () {
+      const file = profilePhotoInput.files?.[0];
+      if (!file) {
+        imagePreview.src = "";
+        imagePreviewWrap.classList.remove("show");
         return;
       }
 
+      imagePreview.src = URL.createObjectURL(file);
+      imagePreviewText.textContent = `${file.name} • ${Math.round(file.size / 1024)} KB`;
+      imagePreviewWrap.classList.add("show");
+    });
+
+    planSelect.addEventListener("change", updatePlanUI);
+
+    resetBtn.addEventListener("click", resetForm);
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      clearStatus();
+
+      const stageName = document.getElementById("stage_name").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      const phone = normalizePhone(document.getElementById("phone").value);
+      const location = document.getElementById("location").value.trim();
+      const bio = document.getElementById("bio").value.trim();
+      const planKey = planSelect.value;
+      const plan = PLAN_CONFIG[planKey];
+      const photoFile = profilePhotoInput.files?.[0] || null;
+
+      if (!stageName || !email || !password || !phone || !plan) {
+        setStatus("Please fill in stage name, email, password, phone, and plan.", "error");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Processing...";
+
       try {
-        msg.textContent = 'Creating account...';
+        setStatus("Creating account...", "info");
+        const authUser = await createAuthUser(email, password);
 
-        const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
-          email,
-          password
-        });
+        let imageUrl = "";
+        if (photoFile) {
+          setStatus("Uploading profile photo...", "info");
+          imageUrl = await uploadProfilePhoto(photoFile, stageName);
+          imageUrlInput.value = imageUrl;
+        }
 
-        if(signUpError) throw signUpError;
-
-        const userId = signUpData.user?.id || null;
-
-        msg.textContent = 'Saving profile...';
-
-        const profilePayload = {
-          user_id: userId,
-          email,
-          stage_name,
-          name: stage_name,
-          phone,
-          whatsapp: phone,
-          location,
-          bio,
-          description: bio,
-          plan,
-          category: plan,
-          profile_image_url: image_url || null,
-          image_url: image_url || null,
-          payment_status: 'pending',
-          is_online: false,
-          is_verified: false,
-          is_featured: plan === 'featured',
-          is_vip: plan === 'vip',
-          is_vvip: plan === 'signature',
-          featured: plan === 'featured',
-          verified: false,
-          likes_count: 0,
-          views_count: 0,
-          price_per_week: planPrices[plan] || 0
-        };
-
-        const { data: inserted, error: profileError } = await supabaseClient
-          .from('profiles')
-          .insert([profilePayload])
-          .select()
-          .single();
-
-        if(profileError) throw profileError;
-
-        msg.textContent = 'Starting M-Pesa payment...';
-
-        const res = await fetch('/.netlify/functions/mpesa-stk-push', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            profile_id: inserted.id,
+        setStatus("Saving profile...", "info");
+        const profileRecord = await saveProfileRecord(
+          buildProfilePayload(authUser?.id, {
+            stageName,
+            email,
             phone,
-            plan
+            location,
+            bio,
+            planKey,
+            imageUrl
           })
+        );
+
+        setStatus("Starting M-Pesa payment...", "info");
+        const paymentResult = await startPayment(
+          buildPaymentPayload(profileRecord, {
+            stageName,
+            email,
+            phone,
+            planKey,
+            planLabel: plan.label,
+            planAmount: plan.amount
+          })
+        );
+
+        setStatus(
+          paymentResult?.CustomerMessage ||
+          paymentResult?.message ||
+          "Profile created. Check your phone for the M-Pesa prompt.",
+          "success"
+        );
+
+        const params = new URLSearchParams({
+          plan: planKey,
+          profile_id: profileRecord?.id || "",
+          phone: phone
         });
-
-        const result = await res.json().catch(() => ({}));
-
-        if(!res.ok) throw new Error(result.error || 'Could not start STK push.');
-
-        msg.textContent = result.customer_message || 'STK push sent. Check your phone and enter your M-Pesa PIN.';
 
         setTimeout(() => {
-          window.location.href = '/payment-status.html';
-        }, 2200);
-      } catch (err) {
-        console.error(err);
-        msg.textContent = err.message || 'Could not complete signup right now.';
+          window.location.href = `/payment-status.html?${params.toString()}`;
+        }, 1600);
+      } catch (error) {
+        console.error(error);
+        setStatus(error.message || "Something went wrong. Please try again.", "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create profile & start payment";
       }
-    }
+    });
 
-    document.getElementById('submitBtn').addEventListener('click', submitSignup);
-    setPlanFromQuery();
+    (function init() {
+      const initialPlan = getPlanFromQuery();
+      planSelect.value = initialPlan;
+      updatePlanUI();
+    })();
   </script>
 </body>
 </html>
