@@ -1,4 +1,23 @@
-const { safeString, json, requirePermission } = require("./_adminAuth");
+const { createClient } = require("@supabase/supabase-js");
+
+function json(statusCode, body) {
+  return {
+    statusCode,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+    },
+    body: JSON.stringify(body),
+  };
+}
+
+function getBearerToken(headers = {}) {
+  const auth = headers.authorization || headers.Authorization || "";
+  if (!auth.startsWith("Bearer ")) return "";
+  return auth.slice(7).trim();
+}
 
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
@@ -10,74 +29,70 @@ exports.handler = async (event) => {
   }
 
   try {
-    const auth = await requirePermission(event, "profiles.approve");
-    if (!auth.ok) return auth.response;
+    const ADMIN_TOKEN = (process.env.ADMIN_APPROVAL_TOKEN || "").trim();
+    const suppliedToken = getBearerToken(event.headers);
 
-    const { adminClient, authUser, adminRow } = auth;
+    if (!ADMIN_TOKEN || suppliedToken !== ADMIN_TOKEN) {
+      return json(401, { ok: false, error: "Unauthorized" });
+    }
+
+    const SUPABASE_URL = (process.env.SUPABASE_URL || "").trim();
+    const SUPABASE_SERVICE_ROLE_KEY = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      return json(500, { ok: false, error: "Missing Supabase env vars" });
+    }
 
     const body = JSON.parse(event.body || "{}");
-    const profileId = safeString(body.profileId);
-    const tableName = safeString(body.tableName) || "profiles";
-    const idColumn = safeString(body.idColumn) || "id";
+    const profileId = String(body.profileId || "").trim();
+    const action = String(body.action || "approve").trim().toLowerCase();
 
     if (!profileId) {
       return json(400, { ok: false, error: "profileId is required" });
     }
 
-    const { data: existing, error: existingError } = await adminClient
-      .from(tableName)
-      .select("*")
-      .eq(idColumn, profileId)
-      .maybeSingle();
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    if (existingError) {
-      return json(500, { ok: false, error: existingError.message });
+    let patch;
+
+    if (action === "approve") {
+      patch = {
+        is_approved: true,
+        approved_at: new Date().toISOString(),
+        approved_by: "vault-admin",
+        status: "approved",
+      };
+    } else if (action === "reject") {
+      patch = {
+        is_approved: false,
+        status: "rejected",
+      };
+    } else if (action === "unapprove") {
+      patch = {
+        is_approved: false,
+        status: "pending",
+      };
+    } else {
+      return json(400, { ok: false, error: "Invalid action" });
     }
 
-    if (!existing) {
-      return json(404, { ok: false, error: "Profile not found" });
-    }
-
-    const patch = {};
-    const now = new Date().toISOString();
-
-    if ("payment_status" in existing) patch.payment_status = "approved";
-    else if ("status" in existing) patch.status = "approved";
-    else patch.payment_status = "approved";
-
-    if ("approval_status" in existing) patch.approval_status = "approved";
-    if ("listing_status" in existing) patch.listing_status = "active";
-    if ("is_approved" in existing) patch.is_approved = true;
-    if ("approved_at" in existing) patch.approved_at = now;
-    if ("updated_at" in existing) patch.updated_at = now;
-    if ("approved_by" in existing) patch.approved_by = authUser.id;
-    if ("last_admin_action_by" in existing) patch.last_admin_action_by = authUser.id;
-    if ("last_admin_action_role" in existing) patch.last_admin_action_role = adminRow.role;
-
-    const { data: updated, error: updateError } = await adminClient
-      .from(tableName)
+    const { data, error } = await supabase
+      .from("profiles")
       .update(patch)
-      .eq(idColumn, profileId)
+      .eq("id", profileId)
       .select("*")
-      .maybeSingle();
+      .single();
 
-    if (updateError) {
-      return json(500, { ok: false, error: updateError.message });
+    if (error) {
+      return json(500, { ok: false, error: error.message });
     }
 
     return json(200, {
       ok: true,
-      message: "Profile approved successfully",
-      profile: updated,
-      currentAdmin: {
-        role: adminRow.role,
-        permissions: adminRow.permissions
-      }
+      message: `Profile ${action}d successfully`,
+      profile: data,
     });
-  } catch (error) {
-    return json(500, {
-      ok: false,
-      error: error.message || "Unexpected server error",
-    });
+  } catch (err) {
+    return json(500, { ok: false, error: err.message || "Server error" });
   }
 };
