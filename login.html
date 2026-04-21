@@ -1,24 +1,112 @@
 <!DOCTYPE html>
-<html>
-<body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Nairobi Sweets</title>
+  <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body{
+      min-height:100vh;
+      color:#f8fafc;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(236,72,153,.10), transparent 22%),
+        radial-gradient(circle at 90% 10%, rgba(250,204,21,.08), transparent 24%),
+        linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    }
+    .glass{
+      background:rgba(9,14,28,.74);
+      border:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      box-shadow:0 22px 60px rgba(0,0,0,.30);
+    }
+    .input{
+      width:100%;
+      padding:14px 16px;
+      border-radius:18px;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.08);
+      color:white;
+      outline:none;
+    }
+    .input:focus{
+      border-color:rgba(236,72,153,.55);
+      box-shadow:0 0 0 3px rgba(236,72,153,.10);
+    }
+    .btn{
+      border-radius:18px;
+      transition:.18s ease;
+    }
+    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+    .btn-gold{
+      background:linear-gradient(135deg,#facc15,#f59e0b);
+      color:#111827;
+      font-weight:800;
+    }
+    .btn-dark{
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.08);
+      color:white;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center px-4 py-10">
+  <div class="glass rounded-[30px] w-full max-w-md p-6 md:p-8">
+    <div class="text-center mb-6">
+      <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets" class="w-16 h-16 rounded-full object-cover mx-auto mb-4">
+      <p class="text-xs uppercase tracking-[0.22em] text-pink-200 mb-2">Welcome back</p>
+      <h1 class="text-3xl font-black text-yellow-300">Login</h1>
+      <p class="text-slate-400 text-sm mt-2">Access your Nairobi Sweets dashboard.</p>
+    </div>
 
-<input id="email" placeholder="email">
-<input id="password" type="password">
+    <div class="space-y-3">
+      <input id="email" type="email" placeholder="Email" class="input">
+      <input id="password" type="password" placeholder="Password" class="input">
+      <button id="loginBtn" class="btn btn-gold w-full py-3">Login</button>
+      <a href="/join.html" class="btn btn-dark w-full py-3 block text-center">Create an account</a>
+      <p id="msg" class="text-sm text-slate-300 text-center"></p>
+    </div>
+  </div>
 
-<button onclick="login()">Login</button>
+  <script>
+    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+    const OWNER_EMAIL = 'nairobisweets05@gmail.com';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const sb = supabase.createClient("YOUR_SUPABASE_URL","YOUR_SUPABASE_ANON_KEY");
+    async function login(){
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const msg = document.getElementById('msg');
+      msg.textContent = '';
 
-async function login(){
-  await sb.auth.signInWithPassword({
-    email:email.value,
-    password:password.value
-  });
-  window.location="/user-dashboard.html";
-}
-</script>
+      if(!email || !password){
+        msg.textContent = 'Enter your email and password.';
+        return;
+      }
 
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if(error){
+        msg.textContent = error.message;
+        return;
+      }
+
+      if(email.toLowerCase() === OWNER_EMAIL.toLowerCase()){
+        window.location.href = '/vault-8472.html';
+      } else {
+        window.location.href = '/user-dashboard.html';
+      }
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', login);
+    document.getElementById('password').addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') login();
+    });
+  </script>
 </body>
 </html>
