@@ -1,4 +1,4 @@
-const { json, requirePermission } = require("./_adminAuth");
+const { json, requirePermission, safeString } = require("./_adminAuth");
 
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
@@ -16,20 +16,20 @@ exports.handler = async (event) => {
     const { adminClient, adminRow, authUser } = auth;
 
     const body = JSON.parse(event.body || "{}");
-    const profileId = String(body.profileId || "").trim();
-    const action = String(body.action || "").trim().toLowerCase();
+    const profileId = safeString(body.profileId);
+    const action = safeString(body.action).toLowerCase();
 
     if (!profileId) {
       return json(400, { ok: false, error: "profileId is required" });
     }
 
-    let patch;
+    let patch = {};
 
     if (action === "approve") {
       patch = {
         is_approved: true,
         approved_at: new Date().toISOString(),
-        approved_by: authUser.email || adminRow.user_id || "admin",
+        approved_by: authUser?.email || adminRow?.user_id || "admin",
         status: "approved"
       };
     } else if (action === "unapprove") {
@@ -37,13 +37,11 @@ exports.handler = async (event) => {
         is_approved: false,
         status: "pending"
       };
-    } else if (action === "reject") {
-      patch = {
-        is_approved: false,
-        status: "rejected"
-      };
     } else {
-      return json(400, { ok: false, error: "Invalid action" });
+      return json(400, {
+        ok: false,
+        error: "Invalid action. Allowed actions: approve, unapprove"
+      });
     }
 
     const { data, error } = await adminClient
@@ -59,7 +57,9 @@ exports.handler = async (event) => {
 
     return json(200, {
       ok: true,
-      message: `Profile ${action}d successfully`,
+      message: action === "approve"
+        ? "Profile approved successfully"
+        : "Profile moved back to pending successfully",
       profile: data
     });
   } catch (error) {
