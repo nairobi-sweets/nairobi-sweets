@@ -1,229 +1,179 @@
 const { createClient } = require("@supabase/supabase-js");
 
-function safeString(value) {
-  return value == null ? "" : String(value).trim();
-}
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const PROFILES_TABLE = process.env.PROFILES_TABLE || "profiles";
+const ADMINS_TABLE = process.env.ADMINS_TABLE || "admin_users";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Content-Type": "application/json",
+};
 
 function json(statusCode, body) {
   return {
     statusCode,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    },
+    headers: corsHeaders,
     body: JSON.stringify(body),
   };
 }
 
+function safeLower(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
 function getBearerToken(event) {
   const authHeader =
-    event.headers.authorization ||
-    event.headers.Authorization ||
+    event.headers?.authorization ||
+    event.headers?.Authorization ||
     "";
 
-  if (!authHeader.startsWith("Bearer ")) return "";
+  if (!authHeader.startsWith("Bearer ")) return null;
   return authHeader.slice(7).trim();
 }
 
-function getSupabaseClients() {
-  const supabaseUrl = safeString(process.env.SUPABASE_URL);
-  const serviceRoleKey = safeString(process.env.SUPABASE_SERVICE_ROLE_KEY);
-
-  if (!supabaseUrl || !serviceRoleKey) {
+function createAdminClient() {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
   }
 
-  const adminClient = createClient(supabaseUrl, serviceRoleKey);
-  return { adminClient };
+  return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
 }
 
-const ROLE_PERMISSIONS = {
-  viewer: ["profiles.read", "dashboard.read"],
-  admin: ["profiles.read", "dashboard.read", "profiles.approve", "profiles.renew"],
-  super_admin: [
-    "profiles.read",
-    "dashboard.read",
-    "profiles.approve",
-    "profiles.renew",
-    "profiles.delete",
-    "admins.manage"
-  ]
-};
+async function isAuthorizedAdmin(admin, token) {
+  const {
+    data: { user },
+    error: authError,
+  } = await admin.auth.getUser(token);
 
-function normalizeRole(role) {
-  const clean = safeString(role).toLowerCase();
-  if (clean === "super_admin") return "super_admin";
-  if (clean === "admin") return "admin";
-  if (clean === "viewer") return "viewer";
-  return "";
+  if (authError || !user) {
+    return {
+      ok: false,
+      statusCode: 401,
+      error: "Invalid or expired session",
+    };
+  }
+
+  const userId = user.id;
+  const userEmail = safeLower(user.email);
+
+  const { data: adminRow, error: adminRowError } = await admin
+    .from(ADMINS_TABLE)
+    .select("id,email,user_id,is_active")
+    .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+
+  if (!adminRowError && adminRow) {
+    return {
+      ok: true,
+      user,
+      source: "admin_users",
+    };
+  }
+
+  const { data: profileRow, error: profileError } = await admin
+    .from(PROFILES_TABLE)
+    .select("id,email,user_id,is_admin,admin,is_active")
+    .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+    .limit(1)
+    .maybeSingle();
+
+  if (!profileError && profileRow) {
+    const flaggedAdmin =
+      profileRow.is_admin === true || profileRow.admin === true;
+
+    const activeOk =
+      profileRow.is_active === undefined || profileRow.is_active === true;
+
+    if (flaggedAdmin && activeOk) {
+      return {
+        ok: true,
+        user,
+        source: "profiles",
+      };
+    }
+  }
+
+  const allowedEmails = String(
+    process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || ""
+  )
+    .split(",")
+    .map(safeLower)
+    .filter(Boolean);
+
+  if (allowedEmails.includes(userEmail)) {
+    return {
+      ok: true,
+      user,
+      source: "env",
+    };
+  }
+
+  return {
+    ok: false,
+    statusCode: 403,
+    error: "Admin access required",
+    message: "Logged in, but not authorized as an active admin.",
+    email: userEmail,
+  };
 }
 
-function getPermissionsForRole(role) {
-  const normalized = normalizeRole(role);
-  return ROLE_PERMISSIONS[normalized] || [];
-}
-
-function hasPermission(role, permission) {
-  return getPermissionsForRole(role).includes(permission);
-}
-
-async function getAuthenticatedAdmin(event) {
+async function requireAdmin(event) {
   const token = getBearerToken(event);
-
   if (!token) {
     return {
       ok: false,
-      response: json(401, { ok: false, error: "Missing bearer token" }),
+      response: json(401, { error: "Missing bearer token" }),
     };
   }
 
-  const { adminClient } = getSupabaseClients();
-
-  const { data: userData, error: userError } = await adminClient.auth.getUser(token);
-
-  if (userError || !userData?.user) {
+  let admin;
+  try {
+    admin = createAdminClient();
+  } catch (err) {
     return {
       ok: false,
-      response: json(401, { ok: false, error: "Invalid or expired session" }),
+      response: json(500, { error: err.message || "Server configuration error" }),
     };
   }
 
-  const authUser = userData.user;
-
-  let { data: adminRow, error: adminError } = await adminClient
-    .from("admin_users")
-    .select("*")
-    .eq("user_id", authUser.id)
-    .eq("is_active", true)
-    .maybeSingle();
-
-  if (adminError) {
+  const authCheck = await isAuthorizedAdmin(admin, token);
+  if (!authCheck.ok) {
     return {
       ok: false,
-      response: json(500, { ok: false, error: adminError.message }),
-    };
-  }
-
-  if (!adminRow && authUser.email) {
-    const fallback = await adminClient
-      .from("admin_users")
-      .select("*")
-      .eq("email", authUser.email)
-      .eq("is_active", true)
-      .maybeSingle();
-
-    if (fallback.error) {
-      return {
-        ok: false,
-        response: json(500, { ok: false, error: fallback.error.message }),
-      };
-    }
-
-    adminRow = fallback.data || null;
-
-    if (adminRow && adminRow.user_id !== authUser.id) {
-      const repair = await adminClient
-        .from("admin_users")
-        .update({ user_id: authUser.id })
-        .eq("id", adminRow.id)
-        .select("*")
-        .single();
-
-      if (!repair.error && repair.data) {
-        adminRow = repair.data;
-      }
-    }
-  }
-
-  if (!adminRow) {
-    return {
-      ok: false,
-      response: json(403, {
-        ok: false,
-        error: "Admin access required",
-        debug: {
-          auth_user_id: authUser.id,
-          auth_email: authUser.email || null
-        }
-      }),
-    };
-  }
-
-  const role = normalizeRole(adminRow.role);
-
-  if (!role) {
-    return {
-      ok: false,
-      response: json(403, {
-        ok: false,
-        error: "Invalid admin role",
-        debug: {
-          auth_user_id: authUser.id,
-          auth_email: authUser.email || null,
-          admin_role: adminRow.role || null
-        }
+      response: json(authCheck.statusCode || 403, {
+        error: authCheck.error || "Admin access required",
+        message: authCheck.message,
+        email: authCheck.email,
       }),
     };
   }
 
   return {
     ok: true,
-    adminClient,
-    authUser,
-    adminRow: {
-      ...adminRow,
-      role,
-      permissions: getPermissionsForRole(role)
-    }
+    admin,
+    user: authCheck.user,
+    source: authCheck.source,
   };
 }
 
-async function requirePermission(event, permission) {
-  const auth = await getAuthenticatedAdmin(event);
-  if (!auth.ok) return auth;
-
-  if (!hasPermission(auth.adminRow.role, permission)) {
-    return {
-      ok: false,
-      response: json(403, {
-        ok: false,
-        error: `Permission denied: ${permission}`,
-        role: auth.adminRow.role
-      }),
-    };
-  }
-
-  return auth;
-}
-
-function assertValidRole(role) {
-  const normalized = normalizeRole(role);
-  if (!normalized) {
-    throw new Error("Invalid role. Allowed roles: viewer, admin, super_admin");
-  }
-  return normalized;
-}
-
-function canAssignRole(actorRole, targetRole) {
-  const actor = normalizeRole(actorRole);
-  const target = normalizeRole(targetRole);
-
-  if (!actor || !target) return false;
-  if (actor !== "super_admin") return false;
-
-  return ["viewer", "admin", "super_admin"].includes(target);
-}
-
 module.exports = {
-  safeString,
+  PROFILES_TABLE,
+  ADMINS_TABLE,
+  corsHeaders,
   json,
-  normalizeRole,
-  getPermissionsForRole,
-  hasPermission,
-  getAuthenticatedAdmin,
-  requirePermission,
-  assertValidRole,
-  canAssignRole,
+  safeLower,
+  getBearerToken,
+  createAdminClient,
+  isAuthorizedAdmin,
+  requireAdmin,
 };
