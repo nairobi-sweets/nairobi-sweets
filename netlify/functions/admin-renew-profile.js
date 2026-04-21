@@ -1,41 +1,8 @@
-const { createClient } = require("@supabase/supabase-js");
-
-const json = (statusCode, body) => ({
-  statusCode,
-  headers: {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Admin-Token",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  },
-  body: JSON.stringify(body),
-});
-
-function safeString(value) {
-  return value == null ? "" : String(value).trim();
-}
+const { safeString, json, requireAdmin } = require("./_adminAuth");
 
 function safeNumber(value, fallback = 7) {
   const num = Number(value);
   return Number.isFinite(num) ? num : fallback;
-}
-
-function getAdminToken(event) {
-  const authHeader =
-    event.headers.authorization ||
-    event.headers.Authorization ||
-    "";
-
-  const xAdminToken =
-    event.headers["x-admin-token"] ||
-    event.headers["X-Admin-Token"] ||
-    "";
-
-  if (authHeader.startsWith("Bearer ")) {
-    return authHeader.slice(7).trim();
-  }
-
-  return safeString(xAdminToken);
 }
 
 function addDays(baseDate, days) {
@@ -71,19 +38,10 @@ exports.handler = async (event) => {
   }
 
   try {
-    const adminVaultToken = safeString(process.env.ADMIN_VAULT_TOKEN);
-    const suppliedToken = getAdminToken(event);
+    const auth = await requireAdmin(event);
+    if (!auth.ok) return auth.response;
 
-    if (!adminVaultToken || suppliedToken !== adminVaultToken) {
-      return json(401, { ok: false, error: "Unauthorized" });
-    }
-
-    const supabaseUrl = safeString(process.env.SUPABASE_URL);
-    const serviceRoleKey = safeString(process.env.SUPABASE_SERVICE_ROLE_KEY);
-
-    if (!supabaseUrl || !serviceRoleKey) {
-      return json(500, { ok: false, error: "Missing server environment variables" });
-    }
+    const { adminClient, authUser, adminRow } = auth;
 
     const body = JSON.parse(event.body || "{}");
     const profileId = safeString(body.profileId);
@@ -95,9 +53,7 @@ exports.handler = async (event) => {
       return json(400, { ok: false, error: "profileId is required" });
     }
 
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
-
-    const { data: existing, error: existingError } = await supabase
+    const { data: existing, error: existingError } = await adminClient
       .from(tableName)
       .select("*")
       .eq(idColumn, profileId)
@@ -115,8 +71,7 @@ exports.handler = async (event) => {
     if (!expiryField) {
       return json(400, {
         ok: false,
-        error:
-          "No expiry column found. Add one of: expires_at, expiry_date, expires_on, plan_expires_at.",
+        error: "No expiry column found. Add expires_at or similar.",
       });
     }
 
@@ -138,7 +93,12 @@ exports.handler = async (event) => {
     if ("is_approved" in existing) patch.is_approved = true;
     if ("updated_at" in existing) patch.updated_at = new Date().toISOString();
 
-    const { data: updated, error: updateError } = await supabase
+    if ("renewed_at" in existing) patch.renewed_at = new Date().toISOString();
+    if ("renewed_by" in existing) patch.renewed_by = authUser.id;
+    if ("last_admin_action_by" in existing) patch.last_admin_action_by = authUser.id;
+    if ("last_admin_action_role" in existing) patch.last_admin_action_role = adminRow.role;
+
+    const { data: updated, error: updateError } = await adminClient
       .from(tableName)
       .update(patch)
       .eq(idColumn, profileId)
@@ -152,8 +112,8 @@ exports.handler = async (event) => {
     return json(200, {
       ok: true,
       message: "Profile renewed successfully",
-      expires_at: updated[expiryField],
       expiry_field: expiryField,
+      expires_at: updated[expiryField],
       profile: updated,
     });
   } catch (error) {
