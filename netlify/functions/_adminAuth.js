@@ -1,105 +1,208 @@
-const {
-  PROFILES_TABLE,
-  corsHeaders,
-  json,
-  requireAdmin,
-  writeAuditLog,
-} = require("./_adminAuth");
+const { createClient } = require("@supabase/supabase-js");
 
-exports.handler = async (event) => {
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const PROFILES_TABLE = process.env.PROFILES_TABLE || "profiles";
+const ADMINS_TABLE = process.env.ADMINS_TABLE || "admin_users";
+const AUDIT_TABLE = process.env.ADMIN_AUDIT_TABLE || "admin_audit_logs";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Content-Type": "application/json",
+};
+
+function sendJson(statusCode, body) {
+  return {
+    statusCode,
+    headers: corsHeaders,
+    body: JSON.stringify(body),
+  };
+}
+
+function safeLower(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function getBearerToken(event) {
+  const authHeader =
+    event.headers?.authorization ||
+    event.headers?.Authorization ||
+    "";
+
+  if (!authHeader.startsWith("Bearer ")) return null;
+  return authHeader.slice(7).trim();
+}
+
+function createAdminClient() {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+  }
+
+  return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}
+
+async function isAuthorizedAdmin(admin, token) {
+  const {
+    data: { user },
+    error: authError,
+  } = await admin.auth.getUser(token);
+
+  if (authError || !user) {
+    return {
+      ok: false,
+      statusCode: 401,
+      error: "Invalid or expired session",
+    };
+  }
+
+  const userId = user.id;
+  const userEmail = safeLower(user.email);
+
+  const { data: adminRow, error: adminRowError } = await admin
+    .from(ADMINS_TABLE)
+    .select("id,email,user_id,is_active")
+    .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+
+  if (!adminRowError && adminRow) {
+    return {
+      ok: true,
+      user,
+      source: "admin_users",
+    };
+  }
+
+  const { data: profileRow, error: profileError } = await admin
+    .from(PROFILES_TABLE)
+    .select("id,email,user_id,is_admin,admin,is_active")
+    .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+    .limit(1)
+    .maybeSingle();
+
+  if (!profileError && profileRow) {
+    const flaggedAdmin =
+      profileRow.is_admin === true || profileRow.admin === true;
+
+    const activeOk =
+      profileRow.is_active === undefined || profileRow.is_active === true;
+
+    if (flaggedAdmin && activeOk) {
+      return {
+        ok: true,
+        user,
+        source: "profiles",
+      };
+    }
+  }
+
+  const allowedEmails = String(
+    process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || ""
+  )
+    .split(",")
+    .map(safeLower)
+    .filter(Boolean);
+
+  if (allowedEmails.includes(userEmail)) {
+    return {
+      ok: true,
+      user,
+      source: "env",
+    };
+  }
+
+  return {
+    ok: false,
+    statusCode: 403,
+    error: "Admin access required",
+    message: "Logged in, but not authorized as an active admin.",
+    email: userEmail,
+  };
+}
+
+async function requireAdmin(event) {
+  const token = getBearerToken(event);
+  if (!token) {
+    return {
+      ok: false,
+      response: sendJson(401, { error: "Missing bearer token" }),
+    };
+  }
+
+  let admin;
   try {
-    if (event.httpMethod === "OPTIONS") {
-      return { statusCode: 200, headers: corsHeaders, body: "" };
-    }
+    admin = createAdminClient();
+  } catch (err) {
+    return {
+      ok: false,
+      response: sendJson(500, { error: err.message || "Server configuration error" }),
+    };
+  }
 
-    if (event.httpMethod !== "POST") {
-      return json(405, { error: "Method not allowed" });
-    }
+  const authCheck = await isAuthorizedAdmin(admin, token);
+  if (!authCheck.ok) {
+    return {
+      ok: false,
+      response: sendJson(authCheck.statusCode || 403, {
+        error: authCheck.error || "Admin access required",
+        message: authCheck.message,
+        email: authCheck.email,
+      }),
+    };
+  }
 
-    const auth = await requireAdmin(event);
-    if (!auth.ok) return auth.response;
+  return {
+    ok: true,
+    admin,
+    user: authCheck.user,
+    source: authCheck.source,
+  };
+}
 
-    const { admin, user, source } = auth;
-    const body = JSON.parse(event.body || "{}");
-
-    const profileId = body.profile_id;
-    const approvalStatus = String(body.approval_status || "approved")
-      .trim()
-      .toLowerCase();
-
-    if (!profileId) {
-      return json(400, { error: "profile_id is required" });
-    }
-
-    if (!["pending", "approved", "rejected"].includes(approvalStatus)) {
-      return json(400, {
-        error: "approval_status must be 'pending', 'approved', or 'rejected'",
-      });
-    }
-
-    const { data: beforeRow, error: beforeError } = await admin
-      .from(PROFILES_TABLE)
-      .select("*")
-      .eq("id", profileId)
-      .maybeSingle();
-
-    if (beforeError) {
-      return json(500, {
-        error: "Failed to read current profile state",
-        details: beforeError.message,
-      });
-    }
-
-    if (!beforeRow) {
-      return json(404, { error: "Profile not found" });
-    }
-
-    const patch = {
-      approval_status: approvalStatus,
-      updated_at: new Date().toISOString(),
+async function writeAuditLog(admin, payload = {}) {
+  try {
+    const insertPayload = {
+      admin_user_id: payload.admin_user_id || null,
+      admin_email: payload.admin_email || null,
+      action: payload.action || "unknown_action",
+      target_table: payload.target_table || "profiles",
+      target_id: payload.target_id || null,
+      target_label: payload.target_label || null,
+      before_data: payload.before_data ?? null,
+      after_data: payload.after_data ?? null,
+      meta: payload.meta ?? null,
     };
 
-    if (approvalStatus === "approved") {
-      patch.status = "active";
-    }
-
-    const { data, error } = await admin
-      .from(PROFILES_TABLE)
-      .update(patch)
-      .eq("id", profileId)
-      .select("*")
-      .single();
+    const { error } = await admin
+      .from(AUDIT_TABLE)
+      .insert(insertPayload);
 
     if (error) {
-      return json(500, {
-        error: "Failed to update approval",
-        details: error.message,
-      });
+      console.error("audit log insert failed:", error.message);
     }
-
-    await writeAuditLog(admin, {
-      admin_user_id: user.id,
-      admin_email: user.email || null,
-      action: "approve_profile",
-      target_table: PROFILES_TABLE,
-      target_id: String(profileId),
-      target_label: data.stage_name || data.full_name || data.name || null,
-      before_data: beforeRow,
-      after_data: data,
-      meta: {
-        source,
-        approval_status: approvalStatus,
-      },
-    });
-
-    return json(200, {
-      ok: true,
-      profile: data,
-    });
   } catch (err) {
-    return json(500, {
-      error: "Server error",
-      details: err.message || String(err),
-    });
+    console.error("audit log write error:", err.message || String(err));
   }
+}
+
+module.exports = {
+  PROFILES_TABLE,
+  ADMINS_TABLE,
+  AUDIT_TABLE,
+  corsHeaders,
+  sendJson,
+  safeLower,
+  getBearerToken,
+  createAdminClient,
+  isAuthorizedAdmin,
+  requireAdmin,
+  writeAuditLog,
 };
