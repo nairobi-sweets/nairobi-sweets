@@ -1,212 +1,75 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-  const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+document.addEventListener("DOMContentLoaded", () => {
 
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-  const PLAN_PRICES = {
-    featured: 1000,
-    vip: 1500,
-    signature: 3000
-  };
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const els = {
-    signupForm: document.getElementById("signupForm"),
-    submitBtn: document.getElementById("submitBtn"),
-    statusBox: document.getElementById("statusBox"),
-    summaryPlan: document.getElementById("summaryPlan"),
-    summaryPrice: document.getElementById("summaryPrice"),
-    summaryPhone: document.getElementById("summaryPhone"),
-    mpesaPhone: document.getElementById("mpesa_phone"),
-    planButtons: Array.from(document.querySelectorAll(".plan-option"))
-  };
-
-  let selectedPlan = "featured";
-
-  function safeText(value) {
-    return value == null ? "" : String(value).trim();
-  }
-
-  function formatKES(value) {
-    return `KES ${Number(value || 0).toLocaleString()}`;
-  }
-
-  function normalizePhone(phone) {
-    let raw = safeText(phone).replace(/\s+/g, "").replace(/-/g, "");
-    if (!raw) return "";
-
-    if (raw.startsWith("+")) raw = raw.slice(1);
-    if (raw.startsWith("0")) raw = "254" + raw.slice(1);
-    if (raw.startsWith("7") && raw.length === 9) raw = "254" + raw;
-    return raw;
-  }
-
-  function setStatus(message, type = "") {
-    els.statusBox.textContent = message;
-    els.statusBox.className = "status-box";
-    if (type === "success") els.statusBox.classList.add("success");
-    if (type === "error") els.statusBox.classList.add("error");
-  }
-
-  function updateSummary() {
-    const phone = safeText(els.mpesaPhone.value);
-    els.summaryPlan.textContent =
-      selectedPlan === "signature" ? "Signature" :
-      selectedPlan === "vip" ? "VIP" : "Featured";
-    els.summaryPrice.textContent = formatKES(PLAN_PRICES[selectedPlan]);
-    els.summaryPhone.textContent = phone || "Not entered yet";
-  }
-
-  function selectPlan(plan) {
-    selectedPlan = plan;
-
-    els.planButtons.forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.plan === plan);
-    });
-
-    updateSummary();
-  }
-
-  function prefillPlanFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    const plan = safeText(params.get("plan")).toLowerCase();
-
-    if (PLAN_PRICES[plan]) {
-      selectPlan(plan);
-    } else {
-      selectPlan("featured");
-    }
-  }
-
-  function collectPayload() {
-    const form = new FormData(els.signupForm);
-
-    return {
-      name: safeText(form.get("name")),
-      full_name: safeText(form.get("name")),
-      stage_name: safeText(form.get("stage_name")),
-      phone: safeText(form.get("phone")),
-      email: safeText(form.get("email")),
-      location: safeText(form.get("location")),
-      age: safeText(form.get("age")),
-      photo_url: safeText(form.get("photo_url")),
-      avatar_url: safeText(form.get("photo_url")),
-      image_url: safeText(form.get("photo_url")),
-      bio: safeText(form.get("bio")),
-      description: safeText(form.get("bio")),
-      whatsapp: safeText(form.get("whatsapp")),
-      mpesa_phone: normalizePhone(form.get("mpesa_phone")),
-      pricing_plan: selectedPlan,
-      plan: selectedPlan,
-      payment_status: "pending"
-    };
-  }
-
-  function validatePayload(payload) {
-    if (!payload.name) return "Full name is required.";
-    if (!payload.stage_name) return "Stage name is required.";
-    if (!payload.phone) return "Phone number is required.";
-    if (!payload.location) return "Location is required.";
-    if (!payload.bio) return "Bio is required.";
-    if (!payload.mpesa_phone) return "M-Pesa phone number is required.";
-    return "";
-  }
-
-  async function saveProfile(payload) {
-    const { data, error } = await sb
-      .from("profiles")
-      .insert([payload])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
-
-  async function triggerSTKPush(profile, payload) {
-    const response = await fetch("/.netlify/functions/mpesa-stk-push", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        profile_id: profile?.id || profile?.profile_id || null,
-        name: payload.name,
-        stage_name: payload.stage_name,
-        phone: payload.phone,
-        email: payload.email,
-        amount: PLAN_PRICES[selectedPlan],
-        pricing_plan: selectedPlan,
-        plan: selectedPlan,
-        mpesa_phone: payload.mpesa_phone
-      })
-    });
-
-    const result = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(result.error || "STK Push request failed.");
-    }
-
-    return result;
-  }
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    const payload = collectPayload();
-    const validationError = validatePayload(payload);
-
-    if (validationError) {
-      setStatus(validationError, "error");
-      return;
-    }
-
+  async function saveProfile() {
     try {
-      els.submitBtn.disabled = true;
-      els.submitBtn.textContent = "Processing...";
-      setStatus("Saving your profile and preparing payment...");
 
-      const savedProfile = await saveProfile(payload);
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const plan = document.getElementById("plan").value;
 
-      setStatus("Profile saved. Triggering M-Pesa STK Push now...");
+      if (!name || !phone) {
+        alert("Fill all fields");
+        return;
+      }
 
-      const stkResult = await triggerSTKPush(savedProfile, payload);
+      const { data, error } = await sb.from("profiles").insert([{
+        stage_name: name,
+        phone: phone,
+        plan: plan,
+        approval_status: "pending",
+        payment_status: "unpaid"
+      }]).select().single();
 
-      setStatus(
-        stkResult.message ||
-        "STK Push sent. Check your phone and complete the M-Pesa prompt.",
-        "success"
-      );
+      if (error) {
+        console.error(error);
+        alert("Error saving profile");
+        return;
+      }
 
-      const query = new URLSearchParams({
-        plan: selectedPlan,
-        phone: payload.mpesa_phone,
-        profile: String(savedProfile?.id || "")
+      // 🔥 CALL STK PUSH
+      const res = await fetch("/.netlify/functions/mpesa-stk-push", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone,
+          amount: getAmount(plan),
+          profile_id: data.id
+        })
       });
 
-      setTimeout(() => {
-        window.location.href = `/payment-status.html?${query.toString()}`;
-      }, 1800);
+      const result = await res.json();
 
-    } catch (error) {
-      console.error("Signup payment flow error:", error);
-      setStatus(error.message || "Something went wrong while starting payment.", "error");
-    } finally {
-      els.submitBtn.disabled = false;
-      els.submitBtn.textContent = "Create Listing & Pay";
+      if (!result.checkoutRequestID) {
+        alert("Payment failed to start");
+        return;
+      }
+
+      // 🚀 REDIRECT TO TRACKING
+      window.location.href =
+        `/payment-status.html?checkoutRequestID=${result.checkoutRequestID}`;
+
+    } catch (err) {
+      console.error("CRASH:", err);
+      alert("Something broke. Check console.");
     }
   }
 
-  els.planButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      selectPlan(btn.dataset.plan);
-    });
-  });
+  function getAmount(plan) {
+    if (plan === "featured") return 1000;
+    if (plan === "vip") return 1500;
+    if (plan === "signature") return 3000;
+    return 0;
+  }
 
-  els.mpesaPhone.addEventListener("input", updateSummary);
-  els.signupForm.addEventListener("submit", handleSubmit);
+  window.saveProfile = saveProfile;
 
-  prefillPlanFromURL();
-  updateSummary();
+});
 </script>
