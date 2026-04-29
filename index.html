@@ -8,24 +8,22 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #070707;
+  background: #050505;
   color: #fff;
 }
 
 header {
-  padding: 18px 20px;
+  padding: 18px 22px;
   background: #000;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255,216,75,.25);
+  border-bottom: 1px solid rgba(255, 216, 75, .25);
 }
 
 .logo {
@@ -37,18 +35,18 @@ header {
 nav a {
   color: #fff;
   text-decoration: none;
-  margin-left: 14px;
-  font-weight: bold;
+  margin-left: 16px;
+  font-weight: 800;
 }
 
 .hero {
   text-align: center;
-  padding: 55px 20px 35px;
-  background: radial-gradient(circle at top, #2b2100, #070707 60%);
+  padding: 60px 20px 45px;
+  background: radial-gradient(circle at top, #2b2100, #050505 62%);
 }
 
 .hero h1 {
-  font-size: 42px;
+  font-size: 44px;
   margin: 0;
   color: #ffd84b;
 }
@@ -60,10 +58,10 @@ nav a {
 
 .join-btn {
   display: inline-block;
-  margin-top: 16px;
+  margin-top: 18px;
   background: #ffd84b;
   color: #000;
-  padding: 13px 22px;
+  padding: 14px 24px;
   border-radius: 999px;
   text-decoration: none;
   font-weight: 900;
@@ -72,13 +70,13 @@ nav a {
 .container {
   max-width: 1200px;
   margin: auto;
-  padding: 25px 16px 60px;
+  padding: 35px 16px 70px;
 }
 
 .section-title {
-  font-size: 26px;
-  margin-bottom: 20px;
+  font-size: 27px;
   color: #ffd84b;
+  margin-bottom: 22px;
 }
 
 .grid {
@@ -89,7 +87,7 @@ nav a {
 
 .card {
   background: #111;
-  border: 1px solid rgba(255,216,75,.18);
+  border: 1px solid rgba(255, 216, 75, .18);
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 20px 45px rgba(0,0,0,.45);
@@ -104,7 +102,7 @@ nav a {
 }
 
 .card-body {
-  padding: 17px;
+  padding: 18px;
 }
 
 .name {
@@ -123,25 +121,25 @@ nav a {
 .badge {
   display: inline-block;
   margin: 10px 0;
-  padding: 6px 10px;
+  padding: 6px 11px;
   border-radius: 999px;
-  background: rgba(255,216,75,.15);
+  background: rgba(255, 216, 75, .14);
   color: #ffd84b;
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 900;
 }
 
 .bio {
   color: #e5e5e5;
   font-size: 14px;
   line-height: 1.45;
-  min-height: 40px;
+  min-height: 38px;
 }
 
 .actions {
   display: flex;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 15px;
 }
 
 .actions a {
@@ -165,30 +163,25 @@ nav a {
 
 .loading,
 .empty {
+  grid-column: 1 / -1;
   text-align: center;
   color: #ccc;
-  padding: 30px;
+  padding: 35px;
 }
 
 footer {
   text-align: center;
-  padding: 25px;
+  padding: 26px;
   color: #888;
   border-top: 1px solid rgba(255,255,255,.08);
 }
 
 @media(max-width: 600px) {
-  .hero h1 {
-    font-size: 32px;
-  }
-
-  .card img {
-    height: 300px;
-  }
-
+  .hero h1 { font-size: 32px; }
+  .card img { height: 300px; }
   nav a {
     font-size: 14px;
-    margin-left: 8px;
+    margin-left: 10px;
   }
 }
 </style>
@@ -226,7 +219,6 @@ const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 const profilesBox = document.getElementById("profiles");
 
 function cleanPhone(value) {
@@ -250,6 +242,7 @@ function profileImage(p) {
     p.image_url ||
     p.profile_photo ||
     p.avatar_url ||
+    p.image ||
     "assets/logo/logo-badge.png"
   );
 }
@@ -268,12 +261,17 @@ async function loadProfiles() {
   const { data, error } = await sb
     .from("profiles")
     .select("*")
-    .or("status.eq.approved,is_approved.eq.true,approved.eq.true")
+    .eq("status", "approved")
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error(error);
-    profilesBox.innerHTML = `<div class="empty">Could not load profiles.</div>`;
+    console.error("Supabase error:", error);
+    profilesBox.innerHTML = `
+      <div class="empty">
+        Could not load profiles.<br>
+        ${error.message || ""}
+      </div>
+    `;
     return;
   }
 
@@ -287,39 +285,33 @@ async function loadProfiles() {
     const img = profileImage(p);
     const phone = cleanPhone(p.phone);
     const whatsapp = cleanPhone(p.whatsapp || p.phone);
+    const location = p.location || p.area || "Nairobi";
+    const bio = p.bio || p.description || "";
 
     return `
       <article class="card">
-        <img 
-          src="${img}" 
-          alt="${name}" 
+        <img
+          src="${img}"
+          alt="${name}"
           loading="lazy"
           onerror="this.src='assets/logo/logo-badge.png'"
         />
 
         <div class="card-body">
           <h3 class="name">${name}</h3>
-
-          <p class="meta">${p.location || "Nairobi"}</p>
-
+          <p class="meta">${location}</p>
           <span class="badge">${profilePlan(p)}</span>
-
-          <p class="bio">${p.bio || p.description || ""}</p>
+          <p class="bio">${bio}</p>
 
           <div class="actions">
             ${whatsapp ? `
-              <a 
-                class="whatsapp" 
-                href="https://wa.me/${whatsapp}" 
-                target="_blank">
+              <a class="whatsapp" href="https://wa.me/${whatsapp}" target="_blank">
                 WhatsApp
               </a>
             ` : ""}
 
             ${phone ? `
-              <a 
-                class="call" 
-                href="tel:+${phone}">
+              <a class="call" href="tel:+${phone}">
                 Call
               </a>
             ` : ""}
