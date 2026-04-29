@@ -24,6 +24,9 @@ header {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(255, 216, 75, .25);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .logo {
@@ -41,7 +44,7 @@ nav a {
 
 .hero {
   text-align: center;
-  padding: 60px 20px 45px;
+  padding: 65px 20px 55px;
   background: radial-gradient(circle at top, #2b2100, #050505 62%);
 }
 
@@ -95,7 +98,7 @@ nav a {
 
 .card img {
   width: 100%;
-  height: 330px;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
   background: #222;
   display: block;
@@ -127,13 +130,14 @@ nav a {
   color: #ffd84b;
   font-size: 13px;
   font-weight: 900;
+  text-transform: uppercase;
 }
 
 .bio {
   color: #e5e5e5;
   font-size: 14px;
   line-height: 1.45;
-  min-height: 38px;
+  min-height: 42px;
 }
 
 .actions {
@@ -178,7 +182,6 @@ footer {
 
 @media(max-width: 600px) {
   .hero h1 { font-size: 32px; }
-  .card img { height: 300px; }
   nav a {
     font-size: 14px;
     margin-left: 10px;
@@ -236,15 +239,27 @@ function cleanPhone(value) {
   return phone;
 }
 
+function escapeHTML(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function profileImage(p) {
-  return (
+  const img =
     p.photo_url ||
     p.image_url ||
     p.profile_photo ||
     p.avatar_url ||
     p.image ||
-    "assets/logo/logo-badge.png"
-  );
+    "";
+
+  if (img && String(img).startsWith("http")) return img;
+
+  return "assets/logo/logo-badge.png";
 }
 
 function profileName(p) {
@@ -252,7 +267,7 @@ function profileName(p) {
 }
 
 function profilePlan(p) {
-  return p.plan || p.package || p.tier || "Featured";
+  return p.plan || p.package || p.tier || "vip";
 }
 
 async function loadProfiles() {
@@ -269,7 +284,7 @@ async function loadProfiles() {
     profilesBox.innerHTML = `
       <div class="empty">
         Could not load profiles.<br>
-        ${error.message || ""}
+        ${escapeHTML(error.message)}
       </div>
     `;
     return;
@@ -281,12 +296,13 @@ async function loadProfiles() {
   }
 
   profilesBox.innerHTML = data.map(p => {
-    const name = profileName(p);
-    const img = profileImage(p);
+    const name = escapeHTML(profileName(p));
+    const img = escapeHTML(profileImage(p));
     const phone = cleanPhone(p.phone);
     const whatsapp = cleanPhone(p.whatsapp || p.phone);
-    const location = p.location || p.area || "Nairobi";
-    const bio = p.bio || p.description || "";
+    const location = escapeHTML(p.location || p.area || "Nairobi");
+    const bio = escapeHTML(p.bio || p.description || "");
+    const plan = escapeHTML(profilePlan(p));
 
     return `
       <article class="card">
@@ -300,12 +316,12 @@ async function loadProfiles() {
         <div class="card-body">
           <h3 class="name">${name}</h3>
           <p class="meta">${location}</p>
-          <span class="badge">${profilePlan(p)}</span>
+          <span class="badge">${plan}</span>
           <p class="bio">${bio}</p>
 
           <div class="actions">
             ${whatsapp ? `
-              <a class="whatsapp" href="https://wa.me/${whatsapp}" target="_blank">
+              <a class="whatsapp" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">
                 WhatsApp
               </a>
             ` : ""}
