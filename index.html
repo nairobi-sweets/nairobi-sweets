@@ -3,522 +3,326 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nairobi Sweets | Private VIP Directory</title>
+<title>Nairobi Sweets</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-:root{
-  --bg:#f3f3f4;
-  --nav:#3a3a42;
-  --panel:#05081a;
-  --panel-2:#09112a;
-  --line:rgba(255,255,255,.08);
-  --text:#f5f7ff;
-  --muted:#9ea7bf;
-  --gold:#ffbf00;
-  --gold-2:#ffd84b;
-  --pink:#f13d92;
-  --pink-2:#ffc0de;
-  --green:#69f2a8;
-  --shadow:0 24px 70px rgba(0,0,0,.25);
-  --radius:28px;
+* {
+  box-sizing: border-box;
 }
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:#111}
-a{text-decoration:none;color:inherit}
-.topbar{background:linear-gradient(180deg,#3b3b44 0%,#33333c 100%);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:30}
-.wrap{width:min(1450px,calc(100% - 36px));margin:0 auto}
-.topbar-inner{min-height:86px;display:flex;align-items:center;justify-content:space-between;gap:18px}
-.brand{display:flex;align-items:center;gap:14px}
-.brand img{width:46px;height:46px;object-fit:contain;border-radius:14px;box-shadow:0 0 28px rgba(255,191,0,.22);background:rgba(255,255,255,.03)}
-.brand-copy small{display:block;color:rgba(255,255,255,.9);font-size:12px;letter-spacing:.28em;text-transform:uppercase;margin-bottom:4px}
-.brand-copy strong{display:block;color:var(--gold-2);font-size:24px;font-weight:900;letter-spacing:-.03em}
-.nav-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.pill-btn{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.06);color:#fff;padding:10px 16px;border-radius:999px;font-weight:700;transition:.2s ease;white-space:nowrap}
-.pill-btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.1)}
-.pill-btn.gold{background:linear-gradient(180deg,#ffcf32,#ffbf00);color:#171717;border:none}
-.pill-btn.pink{background:linear-gradient(180deg,#ff4ba3,#e6257f);color:#fff;border:none}
-.page-shell{padding:40px 0 54px}
-.hero-shell{background:radial-gradient(circle at top left,rgba(255,76,160,.10),transparent 28%),radial-gradient(circle at top right,rgba(255,191,0,.08),transparent 20%),linear-gradient(180deg,#05081f 0%,#020616 100%);border-radius:30px;box-shadow:var(--shadow);border:1px solid rgba(12,18,45,.5);overflow:hidden;position:relative;min-height:760px}
-.hero-grid{display:grid;grid-template-columns:1.2fr .42fr;gap:28px;padding:48px 42px 42px;position:relative;z-index:1}
-.hero-left{padding-right:20px}
-.hero-logo-box{width:240px;margin-bottom:18px;box-shadow:0 0 55px rgba(241,61,146,.12)}
-.hero-logo-box img{width:100%;display:block;object-fit:cover;background:rgba(255,255,255,.03)}
-.eyebrow{color:var(--pink-2);font-size:13px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;margin-bottom:18px}
-.hero-title{margin:0;color:#f4f4f6;font-size:clamp(60px,7vw,92px);line-height:.95;letter-spacing:-.06em;font-weight:950;max-width:820px}
-.hero-copy{margin:28px 0 0;max-width:860px;color:rgba(255,255,255,.82);font-size:17px;line-height:1.75}
-.hero-actions{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap}
-.cta{padding:14px 24px;border-radius:18px;font-weight:800;font-size:15px;transition:.2s ease;display:inline-flex;align-items:center;justify-content:center}
-.cta.primary{background:linear-gradient(180deg,#ffcf32,#ffbf00);color:#171717;box-shadow:0 14px 30px rgba(255,191,0,.16)}
-.cta.secondary{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#e9edff}
-.cta:hover{transform:translateY(-1px)}
-.hero-stats{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap}
-.mini-stat{min-width:140px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
-.mini-stat .label{color:var(--muted);font-size:12px;margin-bottom:8px}
-.mini-stat .value{color:#fff;font-size:24px;font-weight:900;letter-spacing:-.04em}
-.hero-right{display:flex;align-items:center;justify-content:center}
-.status-card{width:100%;max-width:350px;border-radius:28px;padding:28px 22px 20px;background:linear-gradient(180deg,rgba(3,9,29,.94),rgba(5,12,34,.96));border:1px solid rgba(255,255,255,.06);box-shadow:0 24px 80px rgba(0,0,0,.3)}
-.status-card h3{margin:0 0 10px;color:rgba(255,255,255,.9);font-size:15px;font-weight:500}
-.status-main{color:#ffd2e7;font-weight:900;font-size:18px;margin-bottom:8px}
-.status-sub{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:22px}
-.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.status-metric,.status-account{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);border-radius:20px;padding:16px 14px}
-.status-metric .label,.status-account .label{font-size:12px;color:var(--muted);margin-bottom:8px}
-.status-metric .value{color:var(--gold-2);font-size:20px;font-weight:900;letter-spacing:-.03em}
-.status-account .value{color:#fff;font-size:16px;font-weight:800}
-.signature-rail{position:fixed;right:0;top:50%;transform:translateY(-50%);background:linear-gradient(180deg,#ffdf43,#ffbf00);color:#171717;font-weight:900;letter-spacing:.18em;text-transform:uppercase;padding:18px 12px;border-radius:18px 0 0 18px;writing-mode:vertical-rl;text-orientation:mixed;box-shadow:0 18px 40px rgba(0,0,0,.18);z-index:20}
-.section{margin-top:34px}
-.section-card{background:#fff;border-radius:30px;box-shadow:0 18px 50px rgba(0,0,0,.08);padding:28px}
-.section-header{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
-.section-title{margin:0;font-size:30px;letter-spacing:-.04em;color:#171a24}
-.section-copy{margin:8px 0 0;color:#66718a;line-height:1.7;max-width:760px}
-.filter-row{display:flex;gap:12px;flex-wrap:wrap}
-.filter-btn{border:1px solid rgba(18,26,53,.08);background:#f4f6fb;color:#25304d;border-radius:999px;padding:11px 16px;font-weight:800;cursor:pointer;transition:.2s ease}
-.filter-btn.active{background:linear-gradient(180deg,#ffcf32,#ffbf00);color:#171717;border-color:transparent}
-.cards-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
-.profile-card{background:linear-gradient(180deg,#0a1025 0%,#11182f 100%);color:#fff;border-radius:24px;overflow:hidden;box-shadow:0 18px 42px rgba(0,0,0,.14);border:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;min-height:100%;transition:.25s ease}
-.profile-card:hover{transform:translateY(-4px);box-shadow:0 28px 70px rgba(0,0,0,.22)}
-.profile-photo-wrap{position:relative;aspect-ratio:4/4.8;background:linear-gradient(135deg,#11182f,#0a1025);overflow:hidden}
-.profile-photo{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-  background:linear-gradient(135deg,#121b35,#0b1227);
-  filter:blur(14px);
-  transform:scale(1.04);
-  opacity:.65;
-  transition:filter .55s ease, transform .55s ease, opacity .55s ease;
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #070707;
+  color: #fff;
 }
-.profile-photo.loaded{
-  filter:blur(0);
-  transform:scale(1);
-  opacity:1;
+
+header {
+  padding: 18px 20px;
+  background: #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,216,75,.25);
 }
-.profile-photo-wrap:after{
-  content:"";
-  position:absolute;
-  inset:auto 0 0;
-  height:42%;
-  background:linear-gradient(180deg,transparent,rgba(0,0,0,.62));
-  pointer-events:none;
+
+.logo {
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffd84b;
 }
-.profile-badges{position:absolute;top:14px;left:14px;display:flex;gap:8px;flex-wrap:wrap;z-index:2}
-.card-badge{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;padding:8px 10px;border-radius:999px;backdrop-filter:blur(10px)}
-.card-badge.plan-signature{background:rgba(255,191,0,.96);color:#181818}
-.card-badge.plan-vip{background:rgba(241,61,146,.92);color:#fff}
-.card-badge.plan-featured{background:rgba(255,255,255,.92);color:#1a1f2e}
-.card-badge.live{background:rgba(105,242,168,.9);color:#113221}
-.profile-body{padding:18px;display:flex;flex-direction:column;gap:10px;flex:1}
-.profile-name{margin:0;font-size:24px;font-weight:900;letter-spacing:-.04em;line-height:1.02}
-.profile-location{color:#adb7d5;font-size:14px}
-.profile-bio{color:#d9deee;font-size:14px;line-height:1.65;min-height:64px}
-.profile-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
-.meta-chip{background:rgba(255,255,255,.06);color:#e4e8f5;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:700}
-.profile-footer{display:flex;gap:10px;margin-top:auto;padding-top:8px}
-.profile-link{flex:1;text-align:center;border-radius:14px;padding:12px 14px;font-weight:800;font-size:14px;transition:.2s ease}
-.profile-link.primary{background:linear-gradient(180deg,#ffcf32,#ffbf00);color:#171717}
-.profile-link.secondary{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.08)}
-.profile-link:hover{transform:translateY(-1px)}
-.empty-state{padding:42px 18px;text-align:center;color:#6d7691;font-weight:700}
-.footer{padding:34px 0 42px;color:#6b7388;font-size:14px;text-align:center}
-@media(max-width:1280px){.cards-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hero-grid{grid-template-columns:1fr}.hero-right{justify-content:flex-start}.status-card{max-width:420px}}
-@media(max-width:900px){.cards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-title{font-size:clamp(46px,10vw,72px)}.topbar-inner{padding:10px 0;align-items:flex-start}.signature-rail{display:none}}
-@media(max-width:640px){.wrap{width:min(100% - 18px,1450px)}.cards-grid{grid-template-columns:1fr}.hero-grid{padding:24px 20px 24px}.section-card{padding:20px}.hero-logo-box{width:180px}.status-grid{grid-template-columns:1fr 1fr}}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 14px;
+  font-weight: bold;
+}
+
+.hero {
+  text-align: center;
+  padding: 55px 20px 35px;
+  background: radial-gradient(circle at top, #2b2100, #070707 60%);
+}
+
+.hero h1 {
+  font-size: 42px;
+  margin: 0;
+  color: #ffd84b;
+}
+
+.hero p {
+  color: #ddd;
+  font-size: 17px;
+}
+
+.join-btn {
+  display: inline-block;
+  margin-top: 16px;
+  background: #ffd84b;
+  color: #000;
+  padding: 13px 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 25px 16px 60px;
+}
+
+.section-title {
+  font-size: 26px;
+  margin-bottom: 20px;
+  color: #ffd84b;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.card {
+  background: #111;
+  border: 1px solid rgba(255,216,75,.18);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 45px rgba(0,0,0,.45);
+}
+
+.card img {
+  width: 100%;
+  height: 330px;
+  object-fit: cover;
+  background: #222;
+  display: block;
+}
+
+.card-body {
+  padding: 17px;
+}
+
+.name {
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffd84b;
+  margin: 0 0 6px;
+}
+
+.meta {
+  color: #ccc;
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.badge {
+  display: inline-block;
+  margin: 10px 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,216,75,.15);
+  color: #ffd84b;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.bio {
+  color: #e5e5e5;
+  font-size: 14px;
+  line-height: 1.45;
+  min-height: 40px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.actions a {
+  flex: 1;
+  text-align: center;
+  padding: 12px 8px;
+  border-radius: 14px;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.whatsapp {
+  background: #25D366;
+  color: #fff;
+}
+
+.call {
+  background: #ffd84b;
+  color: #000;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  color: #ccc;
+  padding: 30px;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #888;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+@media(max-width: 600px) {
+  .hero h1 {
+    font-size: 32px;
+  }
+
+  .card img {
+    height: 300px;
+  }
+
+  nav a {
+    font-size: 14px;
+    margin-left: 8px;
+  }
+}
 </style>
 </head>
 
 <body>
-<header class="topbar">
-  <div class="wrap topbar-inner">
-    <a href="/" class="brand">
-      <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets logo" onerror="this.style.display='none'">
-      <div class="brand-copy">
-        <small>Private VIP Directory</small>
-        <strong>Nairobi Sweets</strong>
-      </div>
-    </a>
 
-    <nav class="nav-actions">
-      <a class="pill-btn gold" href="#profiles">Signature</a>
-      <a class="pill-btn" href="#profiles">Directory</a>
-      <a class="pill-btn" href="/login.html">Login</a>
-      <a class="pill-btn pink" href="/join.html">Join VIP</a>
-    </nav>
-  </div>
+<header>
+  <div class="logo">Nairobi Sweets</div>
+  <nav>
+    <a href="join.html">Join</a>
+    <a href="login.html">Login</a>
+  </nav>
 </header>
 
-<div class="signature-rail">👑 Signature</div>
+<section class="hero">
+  <h1>Premium Nairobi Profiles</h1>
+  <p>Browse approved profiles and contact directly.</p>
+  <a class="join-btn" href="public-signup-payment-page.html">Create Profile</a>
+</section>
 
-<main class="page-shell">
-  <div class="wrap">
-    <section class="hero-shell">
-      <div class="hero-grid">
-        <div class="hero-left">
-          <div class="hero-logo-box">
-            <img src="/assets/logo/logo-hero.png" alt="Nairobi Sweets brand" onerror="this.src='/assets/logo/logo-badge.png'">
-          </div>
-
-          <div class="eyebrow">Private Luxury Directory</div>
-
-          <h1 class="hero-title">
-            Discover premium profiles with elegant privacy, direct contact, and elevated visibility.
-          </h1>
-
-          <p class="hero-copy">
-            Nairobi Sweets is built for refined discovery. Signature placement, featured visibility, and a polished premium browsing experience in one destination.
-          </p>
-
-          <div class="hero-actions">
-            <a href="#profiles" class="cta primary">Explore Signature</a>
-            <a href="#profiles" class="cta secondary">Browse Directory</a>
-          </div>
-
-          <div class="hero-stats">
-            <div class="mini-stat">
-              <div class="label">Profiles</div>
-              <div class="value" id="heroProfileCount">0</div>
-            </div>
-            <div class="mini-stat">
-              <div class="label">Top picks</div>
-              <div class="value" id="heroTopCount">0</div>
-            </div>
-            <div class="mini-stat">
-              <div class="label">Account</div>
-              <div class="value" id="heroAccountType">Guest</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero-right">
-          <aside class="status-card">
-            <h3>Directory Status</h3>
-            <div class="status-main" id="directoryStatus">Loading profiles...</div>
-            <div class="status-sub" id="directorySubtext">Fetching profiles from Supabase.</div>
-
-            <div class="status-grid">
-              <div class="status-metric">
-                <div class="label">Profiles</div>
-                <div class="value" id="profileCount">0</div>
-              </div>
-              <div class="status-metric">
-                <div class="label">Top picks</div>
-                <div class="value" id="topPickCount">0</div>
-              </div>
-            </div>
-
-            <div class="status-account">
-              <div class="label">Account</div>
-              <div class="value" id="accountStatus">Guest</div>
-            </div>
-          </aside>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="profiles">
-      <div class="section-card">
-        <div class="section-header">
-          <div>
-            <h2 class="section-title">Directory profiles</h2>
-            <p class="section-copy">
-              Approved listings only. Signature, VIP, and Featured profiles are surfaced from your Supabase directory in real time.
-            </p>
-          </div>
-
-          <div class="filter-row">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="signature">Signature</button>
-            <button class="filter-btn" data-filter="vip">VIP</button>
-            <button class="filter-btn" data-filter="featured">Featured</button>
-          </div>
-        </div>
-
-        <div class="cards-grid" id="profilesGrid">
-          <div class="empty-state">Loading profiles...</div>
-        </div>
-      </div>
-    </section>
-
-    <div class="footer">
-      Nairobi Sweets • Private VIP Directory
-    </div>
+<main class="container">
+  <h2 class="section-title">Featured Profiles</h2>
+  <div id="profiles" class="grid">
+    <div class="loading">Loading profiles...</div>
   </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+<footer>
+  © Nairobi Sweets
+</footer>
 
-const PROFILE_IMAGE_BUCKET = "profile-images";
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let allProfiles = [];
-let currentFilter = "all";
+const profilesBox = document.getElementById("profiles");
 
-const els = {
-  directoryStatus: document.getElementById("directoryStatus"),
-  directorySubtext: document.getElementById("directorySubtext"),
-  profileCount: document.getElementById("profileCount"),
-  topPickCount: document.getElementById("topPickCount"),
-  accountStatus: document.getElementById("accountStatus"),
-  heroProfileCount: document.getElementById("heroProfileCount"),
-  heroTopCount: document.getElementById("heroTopCount"),
-  heroAccountType: document.getElementById("heroAccountType"),
-  profilesGrid: document.getElementById("profilesGrid"),
-  filterButtons: Array.from(document.querySelectorAll(".filter-btn"))
-};
+function cleanPhone(value) {
+  if (!value) return "";
+  let phone = String(value).replace(/\D/g, "");
 
-function safeText(value) {
-  return value == null ? "" : String(value).trim();
+  if (phone.startsWith("0")) {
+    phone = "254" + phone.slice(1);
+  }
+
+  if (phone.startsWith("7") || phone.startsWith("1")) {
+    phone = "254" + phone;
+  }
+
+  return phone;
 }
 
-function safeLower(value) {
-  return safeText(value).toLowerCase();
-}
-
-function escapeHtml(value) {
-  return safeText(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function normalizeStatus(profile) {
-  const raw = safeLower(
-    profile.payment_status ||
-    profile.status ||
-    profile.approval_status ||
-    profile.profile_status ||
-    profile.is_active
-  );
-
-  if (raw === "true") return "approved";
-
-  if ([
-    "approved",
-    "paid",
-    "success",
-    "successful",
-    "completed",
-    "active",
-    "confirmed",
-    "live"
-  ].includes(raw)) return "approved";
-
-  if ([
-    "pending",
-    "processing",
-    "awaiting",
-    "initiated",
-    "queued"
-  ].includes(raw)) return "pending";
-
-  if ([
-    "failed",
-    "cancelled",
-    "canceled",
-    "declined",
-    "unpaid",
-    "expired"
-  ].includes(raw)) return "failed";
-
-  return raw || "pending";
-}
-
-function normalizePlan(profile) {
-  const raw = safeLower(
-    profile.plan ||
-    profile.pricing_plan ||
-    profile.package ||
-    profile.package_name ||
-    profile.tier ||
-    profile.membership_plan
-  );
-
-  if (!raw) return "featured";
-  if (raw.includes("signature") || raw.includes("vvip") || raw.includes("premium")) return "signature";
-  if (raw.includes("vip")) return "vip";
-  if (raw.includes("featured")) return "featured";
-  return "featured";
-}
-
-function getPlanLabel(plan) {
-  if (plan === "signature") return "Signature";
-  if (plan === "vip") return "VIP";
-  return "Featured";
-}
-
-function profileName(profile) {
+function profileImage(p) {
   return (
-    safeText(profile.stage_name) ||
-    safeText(profile.full_name) ||
-    safeText(profile.name) ||
-    "Private Profile"
+    p.photo_url ||
+    p.image_url ||
+    p.profile_photo ||
+    p.avatar_url ||
+    "assets/logo/logo-badge.png"
   );
 }
 
-function profileLocation(profile) {
-  return (
-    safeText(profile.location) ||
-    safeText(profile.city) ||
-    safeText(profile.area) ||
-    "Nairobi"
-  );
+function profileName(p) {
+  return p.stage_name || p.name || p.full_name || "Nairobi Sweet";
 }
 
-function profileBio(profile) {
-  return (
-    safeText(profile.bio) ||
-    safeText(profile.description) ||
-    safeText(profile.about_me) ||
-    "Refined private listing with direct contact and premium visibility."
-  );
+function profilePlan(p) {
+  return p.plan || p.package || p.tier || "Featured";
 }
 
-function profileImage(profile) {
-  const raw =
-    safeText(profile.image_url) ||
-    safeText(profile.photo_url) ||
-    safeText(profile.avatar_url) ||
-    safeText(profile.profile_photo_url) ||
-    safeText(profile.profile_image_url) ||
-    safeText(profile.photo) ||
-    safeText(profile.image) ||
-    safeText(profile.profile_image) ||
-    safeText(profile.headshot_url) ||
-    safeText(profile.file_url) ||
-    safeText(profile.public_url) ||
-    safeText(profile.image_path) ||
-    safeText(profile.photo_path) ||
-    safeText(profile.avatar_path);
+async function loadProfiles() {
+  profilesBox.innerHTML = `<div class="loading">Loading profiles...</div>`;
 
-  if (!raw) return "/assets/logo/logo-hero.png";
+  const { data, error } = await sb
+    .from("profiles")
+    .select("*")
+    .or("status.eq.approved,is_approved.eq.true,approved.eq.true")
+    .order("created_at", { ascending: false });
 
-  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
-  if (raw.startsWith("data:image/")) return raw;
-
-  const cleanPath = raw
-    .replace(/^\/+/, "")
-    .replace(/^storage\/v1\/object\/public\//, "")
-    .replace(/^profile-images\//, "")
-    .replace(/^profile-photos\//, "");
-
-  return `${SUPABASE_URL}/storage/v1/object/public/${PROFILE_IMAGE_BUCKET}/${cleanPath}`;
-}
-
-function profilePhone(profile) {
-  return (
-    safeText(profile.phone) ||
-    safeText(profile.phone_number) ||
-    safeText(profile.whatsapp) ||
-    safeText(profile.mobile)
-  );
-}
-
-function profileEmail(profile) {
-  return (
-    safeText(profile.email) ||
-    safeText(profile.contact_email) ||
-    safeText(profile.user_email)
-  );
-}
-
-function isTopPick(profile) {
-  return normalizePlan(profile) === "signature";
-}
-
-function isApproved(profile) {
-  return normalizeStatus(profile) === "approved";
-}
-
-function filteredProfiles() {
-  if (currentFilter === "all") return allProfiles;
-  return allProfiles.filter(profile => normalizePlan(profile) === currentFilter);
-}
-
-function planBadgeClass(plan) {
-  if (plan === "signature") return "plan-signature";
-  if (plan === "vip") return "plan-vip";
-  return "plan-featured";
-}
-
-function renderStats() {
-  const total = allProfiles.length;
-  const top = allProfiles.filter(isTopPick).length;
-
-  els.profileCount.textContent = total;
-  els.heroProfileCount.textContent = total;
-  els.topPickCount.textContent = top;
-  els.heroTopCount.textContent = top;
-  els.accountStatus.textContent = "Guest";
-  els.heroAccountType.textContent = "Guest";
-}
-
-function renderProfiles() {
-  const rows = filteredProfiles();
-
-  if (!rows.length) {
-    els.profilesGrid.innerHTML = `
-      <div class="empty-state">
-        No approved profiles found for this section.
-      </div>
-    `;
+  if (error) {
+    console.error(error);
+    profilesBox.innerHTML = `<div class="empty">Could not load profiles.</div>`;
     return;
   }
 
-  els.profilesGrid.innerHTML = rows.map(profile => {
-    const name = escapeHtml(profileName(profile));
-    const location = escapeHtml(profileLocation(profile));
-    const bio = escapeHtml(profileBio(profile));
-    const image = profileImage(profile);
-    const phone = profilePhone(profile);
-    const email = profileEmail(profile);
-    const plan = normalizePlan(profile);
-    const planLabel = getPlanLabel(plan);
+  if (!data || data.length === 0) {
+    profilesBox.innerHTML = `<div class="empty">No approved profiles yet.</div>`;
+    return;
+  }
 
-    const imageHtml = `
-      <img
-        class="profile-photo"
-        src="${escapeHtml(image || '/assets/logo/logo-hero.png')}"
-        alt="${name}"
-        loading="lazy"
-        decoding="async"
-        onload="this.classList.add('loaded')"
-        onerror="this.onerror=null;this.src='/assets/logo/logo-hero.png';this.classList.add('loaded');"
-      >
-    `;
-
-    const chips = [];
-    if (location) chips.push(`<span class="meta-chip">${location}</span>`);
-    if (phone) chips.push(`<span class="meta-chip">Direct contact</span>`);
-    if (email) chips.push(`<span class="meta-chip">Email available</span>`);
+  profilesBox.innerHTML = data.map(p => {
+    const name = profileName(p);
+    const img = profileImage(p);
+    const phone = cleanPhone(p.phone);
+    const whatsapp = cleanPhone(p.whatsapp || p.phone);
 
     return `
-      <article class="profile-card">
-        <div class="profile-photo-wrap">
-          ${imageHtml}
-          <div class="profile-badges">
-            <span class="card-badge ${planBadgeClass(plan)}">${planLabel}</span>
-            <span class="card-badge live">Live</span>
-          </div>
-        </div>
+      <article class="card">
+        <img 
+          src="${img}" 
+          alt="${name}" 
+          loading="lazy"
+          onerror="this.src='assets/logo/logo-badge.png'"
+        />
 
-        <div class="profile-body">
-          <h3 class="profile-name">${name}</h3>
-          <div class="profile-location">${location}</div>
-          <div class="profile-bio">${bio}</div>
+        <div class="card-body">
+          <h3 class="name">${name}</h3>
 
-          <div class="profile-meta">
-            ${chips.join("")}
-          </div>
+          <p class="meta">${p.location || "Nairobi"}</p>
 
-          <div class="profile-footer">
-            <a class="profile-link primary" href="/login.html">View Profile</a>
-            <a class="profile-link secondary" href="/join.html">Get Featured</a>
+          <span class="badge">${profilePlan(p)}</span>
+
+          <p class="bio">${p.bio || p.description || ""}</p>
+
+          <div class="actions">
+            ${whatsapp ? `
+              <a 
+                class="whatsapp" 
+                href="https://wa.me/${whatsapp}" 
+                target="_blank">
+                WhatsApp
+              </a>
+            ` : ""}
+
+            ${phone ? `
+              <a 
+                class="call" 
+                href="tel:+${phone}">
+                Call
+              </a>
+            ` : ""}
           </div>
         </div>
       </article>
@@ -526,66 +330,8 @@ function renderProfiles() {
   }).join("");
 }
 
-function updateStatus(message, subtext) {
-  els.directoryStatus.textContent = message;
-  els.directorySubtext.textContent = subtext;
-}
-
-function applyFilter(nextFilter) {
-  currentFilter = nextFilter;
-
-  els.filterButtons.forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.filter === nextFilter);
-  });
-
-  renderProfiles();
-}
-
-async function loadProfiles() {
-  try {
-    updateStatus("Loading profiles...", "Fetching profiles from Supabase.");
-
-    const { data, error } = await sb
-      .from("profiles")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    console.log("profiles data:", data);
-    console.log("profiles error:", error);
-
-    if (error) throw error;
-
-    const rows = Array.isArray(data) ? data : [];
-
-    allProfiles = rows.filter(profile => isApproved(profile));
-
-    renderStats();
-    renderProfiles();
-
-    if (allProfiles.length) {
-      updateStatus("Profiles loaded", "Approved profiles are now live in the directory.");
-    } else {
-      updateStatus("No approved profiles yet", "Supabase returned zero approved rows for public display.");
-    }
-  } catch (err) {
-    console.error("loadProfiles failed:", err);
-    allProfiles = [];
-    renderStats();
-    renderProfiles();
-    updateStatus("Failed to load profiles", err.message || "Could not fetch profiles from Supabase.");
-  }
-}
-
-function bindUI() {
-  els.filterButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      applyFilter(btn.dataset.filter || "all");
-    });
-  });
-}
-
-bindUI();
 loadProfiles();
 </script>
+
 </body>
 </html>
