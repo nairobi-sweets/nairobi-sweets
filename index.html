@@ -1,32 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nairobi Sweets</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #050505;
-  color: #fff;
+  color: white;
 }
 
 header {
-  padding: 18px 22px;
+  padding: 18px 20px;
   background: #000;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 216, 75, .25);
-  position: sticky;
-  top: 0;
-  z-index: 20;
+  border-bottom: 1px solid rgba(255,216,75,.25);
 }
 
 .logo {
@@ -36,20 +35,20 @@ header {
 }
 
 nav a {
-  color: #fff;
+  color: white;
   text-decoration: none;
-  margin-left: 16px;
-  font-weight: 800;
+  margin-left: 14px;
+  font-weight: bold;
 }
 
 .hero {
   text-align: center;
-  padding: 65px 20px 55px;
-  background: radial-gradient(circle at top, #2b2100, #050505 62%);
+  padding: 55px 20px 35px;
+  background: radial-gradient(circle at top, #2b2100, #050505 60%);
 }
 
 .hero h1 {
-  font-size: 44px;
+  font-size: 42px;
   margin: 0;
   color: #ffd84b;
 }
@@ -61,10 +60,10 @@ nav a {
 
 .join-btn {
   display: inline-block;
-  margin-top: 18px;
+  margin-top: 16px;
   background: #ffd84b;
-  color: #000;
-  padding: 14px 24px;
+  color: black;
+  padding: 13px 22px;
   border-radius: 999px;
   text-decoration: none;
   font-weight: 900;
@@ -73,13 +72,13 @@ nav a {
 .container {
   max-width: 1200px;
   margin: auto;
-  padding: 35px 16px 70px;
+  padding: 25px 16px 60px;
 }
 
 .section-title {
-  font-size: 27px;
+  font-size: 26px;
+  margin-bottom: 20px;
   color: #ffd84b;
-  margin-bottom: 22px;
 }
 
 .grid {
@@ -90,7 +89,7 @@ nav a {
 
 .card {
   background: #111;
-  border: 1px solid rgba(255, 216, 75, .18);
+  border: 1px solid rgba(255,216,75,.18);
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 20px 45px rgba(0,0,0,.45);
@@ -98,14 +97,14 @@ nav a {
 
 .card img {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  height: 330px;
   object-fit: cover;
   background: #222;
   display: block;
 }
 
 .card-body {
-  padding: 18px;
+  padding: 17px;
 }
 
 .name {
@@ -124,26 +123,25 @@ nav a {
 .badge {
   display: inline-block;
   margin: 10px 0;
-  padding: 6px 11px;
+  padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(255, 216, 75, .14);
+  background: rgba(255,216,75,.15);
   color: #ffd84b;
   font-size: 13px;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: bold;
 }
 
 .bio {
   color: #e5e5e5;
   font-size: 14px;
   line-height: 1.45;
-  min-height: 42px;
+  min-height: 40px;
 }
 
 .actions {
   display: flex;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 14px;
 }
 
 .actions a {
@@ -157,34 +155,40 @@ nav a {
 
 .whatsapp {
   background: #25D366;
-  color: #fff;
+  color: white;
 }
 
 .call {
   background: #ffd84b;
-  color: #000;
+  color: black;
 }
 
 .loading,
 .empty {
-  grid-column: 1 / -1;
   text-align: center;
   color: #ccc;
-  padding: 35px;
+  padding: 30px;
 }
 
 footer {
   text-align: center;
-  padding: 26px;
+  padding: 25px;
   color: #888;
   border-top: 1px solid rgba(255,255,255,.08);
 }
 
 @media(max-width: 600px) {
-  .hero h1 { font-size: 32px; }
+  .hero h1 {
+    font-size: 32px;
+  }
+
+  .card img {
+    height: 300px;
+  }
+
   nav a {
     font-size: 14px;
-    margin-left: 10px;
+    margin-left: 8px;
   }
 }
 </style>
@@ -222,6 +226,7 @@ const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const profilesBox = document.getElementById("profiles");
 
 function cleanPhone(value) {
@@ -239,27 +244,14 @@ function cleanPhone(value) {
   return phone;
 }
 
-function escapeHTML(value) {
-  return String(value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
 function profileImage(p) {
-  const img =
+  return (
     p.photo_url ||
     p.image_url ||
     p.profile_photo ||
     p.avatar_url ||
-    p.image ||
-    "";
-
-  if (img && String(img).startsWith("http")) return img;
-
-  return "assets/logo/logo-badge.png";
+    "assets/logo/logo-badge.png"
+  );
 }
 
 function profileName(p) {
@@ -267,7 +259,7 @@ function profileName(p) {
 }
 
 function profilePlan(p) {
-  return p.plan || p.package || p.tier || "vip";
+  return p.plan || p.package || p.tier || "Featured";
 }
 
 async function loadProfiles() {
@@ -280,13 +272,8 @@ async function loadProfiles() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Supabase error:", error);
-    profilesBox.innerHTML = `
-      <div class="empty">
-        Could not load profiles.<br>
-        ${escapeHTML(error.message)}
-      </div>
-    `;
+    console.error(error);
+    profilesBox.innerHTML = `<div class="empty">Could not load profiles.</div>`;
     return;
   }
 
@@ -296,38 +283,43 @@ async function loadProfiles() {
   }
 
   profilesBox.innerHTML = data.map(p => {
-    const name = escapeHTML(profileName(p));
-    const img = escapeHTML(profileImage(p));
+    const name = profileName(p);
+    const img = profileImage(p);
     const phone = cleanPhone(p.phone);
     const whatsapp = cleanPhone(p.whatsapp || p.phone);
-    const location = escapeHTML(p.location || p.area || "Nairobi");
-    const bio = escapeHTML(p.bio || p.description || "");
-    const plan = escapeHTML(profilePlan(p));
 
     return `
       <article class="card">
-        <img
-          src="${img}"
-          alt="${name}"
+        <img 
+          src="${img}" 
+          alt="${name}" 
           loading="lazy"
           onerror="this.src='assets/logo/logo-badge.png'"
         />
 
         <div class="card-body">
           <h3 class="name">${name}</h3>
-          <p class="meta">${location}</p>
-          <span class="badge">${plan}</span>
-          <p class="bio">${bio}</p>
+
+          <p class="meta">${p.location || "Nairobi"}</p>
+
+          <span class="badge">${profilePlan(p)}</span>
+
+          <p class="bio">${p.bio || p.description || ""}</p>
 
           <div class="actions">
             ${whatsapp ? `
-              <a class="whatsapp" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">
+              <a 
+                class="whatsapp" 
+                href="https://wa.me/${whatsapp}" 
+                target="_blank">
                 WhatsApp
               </a>
             ` : ""}
 
             ${phone ? `
-              <a class="call" href="tel:+${phone}">
+              <a 
+                class="call" 
+                href="tel:+${phone}">
                 Call
               </a>
             ` : ""}
