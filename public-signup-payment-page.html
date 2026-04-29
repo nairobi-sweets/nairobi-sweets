@@ -1,75 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nairobi Sweets - Create Profile</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #050505;
+  color: #fff;
+}
+
+header {
+  padding: 18px 22px;
+  background: #000;
+  border-bottom: 1px solid rgba(255,216,75,.25);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  color: #ffd84b;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+header a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.wrapper {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 35px 16px;
+  background: radial-gradient(circle at top, #2b2100, #050505 60%);
+}
+
+.card {
+  width: 100%;
+  max-width: 520px;
+  background: #111;
+  border: 1px solid rgba(255,216,75,.22);
+  border-radius: 26px;
+  padding: 24px;
+  box-shadow: 0 25px 60px rgba(0,0,0,.55);
+}
+
+h1 {
+  margin: 0 0 8px;
+  color: #ffd84b;
+  font-size: 30px;
+}
+
+.subtitle {
+  color: #ccc;
+  margin-bottom: 22px;
+  font-size: 14px;
+}
+
+label {
+  display: block;
+  margin: 14px 0 7px;
+  font-weight: 800;
+  color: #ffd84b;
+  font-size: 14px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: #050505;
+  color: #fff;
+  outline: none;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.preview {
+  margin-top: 12px;
+  width: 100%;
+  height: 260px;
+  border-radius: 18px;
+  object-fit: cover;
+  background: #222;
+  display: none;
+  border: 1px solid rgba(255,216,75,.18);
+}
+
+.price-box {
+  margin-top: 15px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,216,75,.1);
+  color: #ffd84b;
+  font-weight: 900;
+}
+
+button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  border: none;
+  border-radius: 999px;
+  background: #ffd84b;
+  color: #000;
+  font-weight: 900;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.status {
+  margin-top: 15px;
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.error { color: #ff7777; }
+.success { color: #5cff9d; }
+
+footer {
+  text-align: center;
+  padding: 22px;
+  color: #888;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Nairobi Sweets</div>
+  <a href="index.html">Home</a>
+</header>
+
+<section class="wrapper">
+  <div class="card">
+    <h1>Create Profile</h1>
+    <p class="subtitle">Upload your profile, choose a package, then complete payment.</p>
+
+    <form id="signupForm">
+      <label>Profile Photo</label>
+      <input type="file" id="photo" accept="image/*" />
+      <img id="preview" class="preview" alt="Photo preview" />
+
+      <label>Stage Name</label>
+      <input id="stage_name" type="text" placeholder="Example: Zaria" required />
+
+      <label>Phone Number</label>
+      <input id="phone" type="tel" placeholder="Example: 0712345678" required />
+
+      <label>WhatsApp Number</label>
+      <input id="whatsapp" type="tel" placeholder="Example: 0712345678" required />
+
+      <label>Location</label>
+      <input id="location" type="text" placeholder="Example: Nairobi, Kilimani" required />
+
+      <label>Bio</label>
+      <textarea id="bio" placeholder="Write a short profile description..." required></textarea>
+
+      <label>Package</label>
+      <select id="plan" required>
+        <option value="Featured" data-amount="1000">Featured - KES 1000 / week</option>
+        <option value="VIP" data-amount="1500">VIP - KES 1500 / week</option>
+        <option value="VVIP" data-amount="3000">VVIP / Signature - KES 3000 / week</option>
+      </select>
+
+      <div id="priceBox" class="price-box">Amount: KES 1000</div>
+
+      <button id="submitBtn" type="submit">Create Profile & Pay</button>
+
+      <div id="status" class="status"></div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  © Nairobi Sweets
+</footer>
+
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-  const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const form = document.getElementById("signupForm");
+const photoInput = document.getElementById("photo");
+const preview = document.getElementById("preview");
+const statusBox = document.getElementById("status");
+const submitBtn = document.getElementById("submitBtn");
+const planSelect = document.getElementById("plan");
+const priceBox = document.getElementById("priceBox");
 
-  async function saveProfile() {
-    try {
+function setStatus(message, type = "") {
+  statusBox.className = "status " + type;
+  statusBox.innerHTML = message;
+}
 
-      const name = document.getElementById("name").value;
-      const phone = document.getElementById("phone").value;
-      const plan = document.getElementById("plan").value;
+function cleanPhone(value) {
+  if (!value) return "";
+  let phone = String(value).replace(/\D/g, "");
 
-      if (!name || !phone) {
-        alert("Fill all fields");
-        return;
-      }
+  if (phone.startsWith("0")) {
+    phone = "254" + phone.slice(1);
+  }
 
-      const { data, error } = await sb.from("profiles").insert([{
-        stage_name: name,
-        phone: phone,
-        plan: plan,
-        approval_status: "pending",
-        payment_status: "unpaid"
-      }]).select().single();
+  if (phone.startsWith("7") || phone.startsWith("1")) {
+    phone = "254" + phone;
+  }
 
-      if (error) {
-        console.error(error);
-        alert("Error saving profile");
-        return;
-      }
+  return phone;
+}
 
-      // 🔥 CALL STK PUSH
-      const res = await fetch("/.netlify/functions/mpesa-stk-push", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone,
-          amount: getAmount(plan),
-          profile_id: data.id
-        })
+function getSelectedAmount() {
+  const selected = planSelect.options[planSelect.selectedIndex];
+  return Number(selected.dataset.amount || 1000);
+}
+
+planSelect.addEventListener("change", () => {
+  priceBox.textContent = `Amount: KES ${getSelectedAmount()}`;
+});
+
+photoInput.addEventListener("change", () => {
+  const file = photoInput.files[0];
+
+  if (!file) {
+    preview.style.display = "none";
+    preview.src = "";
+    return;
+  }
+
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+});
+
+async function uploadProfilePhoto(file) {
+  if (!file) return "";
+
+  const ext = file.name.split(".").pop();
+  const safeName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const filePath = `profiles/${safeName}`;
+
+  const { error: uploadError } = await sb.storage
+    .from("profile-images")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false
+    });
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+  const { data } = sb.storage
+    .from("profile-images")
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
+}
+
+async function createPaymentRequest(profileId, phone, amount, plan) {
+  const res = await fetch("/.netlify/functions/mpesa-stk-push", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      profile_id: profileId,
+      phone,
+      amount,
+      plan
+    })
+  });
+
+  const result = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(result.error || result.message || "Payment request failed");
+  }
+
+  return result;
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Processing...";
+  setStatus("Uploading profile...");
+
+  try {
+    const stage_name = document.getElementById("stage_name").value.trim();
+    const phoneRaw = document.getElementById("phone").value.trim();
+    const whatsappRaw = document.getElementById("whatsapp").value.trim();
+    const location = document.getElementById("location").value.trim();
+    const bio = document.getElementById("bio").value.trim();
+    const plan = planSelect.value;
+    const amount = getSelectedAmount();
+
+    const phone = cleanPhone(phoneRaw);
+    const whatsapp = cleanPhone(whatsappRaw);
+
+    if (!stage_name || !phone || !whatsapp || !location || !bio) {
+      throw new Error("Please fill in all required fields.");
+    }
+
+    const photoFile = photoInput.files[0];
+    const photo_url = await uploadProfilePhoto(photoFile);
+
+    setStatus("Saving profile...");
+
+    const { data: profileData, error: insertError } = await sb
+      .from("profiles")
+      .insert([{
+        stage_name,
+        phone,
+        whatsapp,
+        location,
+        bio,
+        plan,
+        package: plan,
+        amount,
+        photo_url,
+        image_url: photo_url,
+        status: "pending",
+        payment_status: "pending"
+      }])
+      .select()
+      .single();
+
+    if (insertError) {
+      throw insertError;
+    }
+
+    setStatus("Sending M-Pesa STK push... Check your phone.");
+
+    const paymentResult = await createPaymentRequest(
+      profileData.id,
+      phone,
+      amount,
+      plan
+    );
+
+    const checkoutRequestId =
+      paymentResult.CheckoutRequestID ||
+      paymentResult.checkoutRequestID ||
+      paymentResult.checkout_request_id ||
+      "";
+
+    setStatus(
+      "Profile created. M-Pesa request sent. Complete payment on your phone.",
+      "success"
+    );
+
+    setTimeout(() => {
+      const params = new URLSearchParams({
+        profile_id: profileData.id,
+        checkout_request_id: checkoutRequestId
       });
 
-      const result = await res.json();
+      window.location.href = `payment-status.html?${params.toString()}`;
+    }, 1800);
 
-      if (!result.checkoutRequestID) {
-        alert("Payment failed to start");
-        return;
-      }
-
-      // 🚀 REDIRECT TO TRACKING
-      window.location.href =
-        `/payment-status.html?checkoutRequestID=${result.checkoutRequestID}`;
-
-    } catch (err) {
-      console.error("CRASH:", err);
-      alert("Something broke. Check console.");
-    }
+  } catch (err) {
+    console.error(err);
+    setStatus(err.message || "Something went wrong.", "error");
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Create Profile & Pay";
   }
-
-  function getAmount(plan) {
-    if (plan === "featured") return 1000;
-    if (plan === "vip") return 1500;
-    if (plan === "signature") return 3000;
-    return 0;
-  }
-
-  window.saveProfile = saveProfile;
-
 });
 </script>
+
+</body>
+</html>
