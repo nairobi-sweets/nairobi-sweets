@@ -113,10 +113,7 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: .35s ease;
     }
-
-    .card:hover img { transform: scale(1.05); }
 
     .content { padding: 18px; }
 
@@ -195,15 +192,8 @@
       font-weight: 900;
     }
 
-    .whatsapp {
-      background: #25D366;
-      color: #06130a;
-    }
-
-    .call {
-      background: #ffd84b;
-      color: #111;
-    }
+    .whatsapp { background: #25D366; color: #06130a; }
+    .call { background: #ffd84b; color: #111; }
 
     .empty {
       text-align: center;
@@ -234,7 +224,6 @@
 
 <div class="filters">
   <input id="searchInput" type="text" placeholder="Search by name, location, bio..." oninput="renderProfiles()" />
-
   <select id="sortSelect" onchange="renderProfiles()">
     <option value="featured">Featured first</option>
     <option value="likes">Most liked</option>
@@ -250,7 +239,6 @@
 <script>
   const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
   const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
-  const STORAGE_BUCKET = "profile-images";
 
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -285,7 +273,7 @@
   }
 
   function getProfileImage(p) {
-    let raw =
+    const raw = String(
       p.photo_url ||
       p.image_url ||
       p.profile_photo ||
@@ -293,31 +281,18 @@
       p.avatar_url ||
       p.image ||
       p.photo ||
-      "";
-
-    raw = String(raw || "").trim();
+      ""
+    ).trim();
 
     if (!raw || raw.toLowerCase().includes("logo")) {
       return "assets/logo/logo-badge.png";
     }
 
-    if (raw.startsWith("http://") || raw.startsWith("https://")) {
+    if (raw.startsWith("http")) {
       return raw;
     }
 
-    if (raw.startsWith("/")) {
-      raw = raw.slice(1);
-    }
-
-    if (raw.includes(`${STORAGE_BUCKET}/`)) {
-      raw = raw.split(`${STORAGE_BUCKET}/`).pop();
-    }
-
-    return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
-  }
-
-  function imageBase(url) {
-    return String(url || "").replace(/\.(jpg|jpeg|png|webp)$/i, "");
+    return "assets/logo/logo-badge.png";
   }
 
   function getWhatsAppLink(phone) {
@@ -336,49 +311,36 @@
   }
 
   async function loadProfiles() {
-    let data = null;
-    let error = null;
-
     let res = await sb
       .from("profiles")
       .select("*")
       .eq("approved", true)
       .order("created_at", { ascending: false });
 
-    data = res.data;
-    error = res.error;
-
-    if (error) {
+    if (res.error) {
       res = await sb
         .from("profiles")
         .select("*")
         .eq("status", "approved")
         .order("created_at", { ascending: false });
-
-      data = res.data;
-      error = res.error;
     }
 
-    if (error) {
+    if (res.error) {
       res = await sb
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false });
-
-      data = res.data;
-      error = res.error;
     }
 
-    if (error) {
-      console.error("PROFILE LOAD ERROR:", error);
+    if (res.error) {
+      console.error("PROFILE LOAD ERROR:", res.error);
       document.getElementById("profilesGrid").innerHTML =
         `<div class="empty">Could not load profiles. Check Supabase RLS or table columns.</div>`;
       return;
     }
 
-    allProfiles = data || [];
+    allProfiles = res.data || [];
     renderProfiles();
-    countVisibleViews();
   }
 
   async function addView(profileId, currentViews = 0) {
@@ -396,17 +358,13 @@
       .update({ views: newViews })
       .eq("id", profileId);
 
-    if (error) {
-      console.warn("VIEW UPDATE FAILED:", error);
-      return;
-    }
+    if (error) return;
 
-    allProfiles = allProfiles.map(p => {
-      if (String(p.id) === String(profileId)) {
-        return { ...p, views: newViews };
-      }
-      return p;
-    });
+    allProfiles = allProfiles.map(p =>
+      String(p.id) === String(profileId)
+        ? { ...p, views: newViews }
+        : p
+    );
 
     renderProfiles();
   }
@@ -431,38 +389,23 @@
       .eq("id", profileId);
 
     if (error) {
-      console.error("LIKE ERROR:", error);
       alert("Like failed. Check Supabase permissions.");
       return;
     }
 
-    allProfiles = allProfiles.map(p => {
-      if (String(p.id) === String(profileId)) {
-        return { ...p, likes: newLikes };
-      }
-      return p;
-    });
+    allProfiles = allProfiles.map(p =>
+      String(p.id) === String(profileId)
+        ? { ...p, likes: newLikes }
+        : p
+    );
 
     renderProfiles();
   }
 
-  function countVisibleViews() {
-    const visibleProfiles = allProfiles.slice(0, 12);
-
-    visibleProfiles.forEach(p => {
-      if (p.id) {
-        addView(p.id, p.views || 0);
-      }
-    });
-  }
-
   function renderProfiles() {
     const grid = document.getElementById("profilesGrid");
-    const searchInput = document.getElementById("searchInput");
-    const sortSelect = document.getElementById("sortSelect");
-
-    const q = searchInput.value.toLowerCase().trim();
-    const sort = sortSelect.value;
+    const q = document.getElementById("searchInput").value.toLowerCase().trim();
+    const sort = document.getElementById("sortSelect").value;
 
     let profiles = [...allProfiles];
 
@@ -472,7 +415,6 @@
           ${safeText(getName(p))}
           ${safeText(getLocation(p))}
           ${safeText(getBio(p))}
-          ${safeText(p.category)}
           ${safeText(getPhone(p))}
         `.toLowerCase();
 
@@ -497,13 +439,8 @@
         const ap = String(getPlan(a)).toLowerCase();
         const bp = String(getPlan(b)).toLowerCase();
 
-        const av =
-          ap.includes("vvip") || ap.includes("signature") ? 3 :
-          ap.includes("vip") ? 2 : 1;
-
-        const bv =
-          bp.includes("vvip") || bp.includes("signature") ? 3 :
-          bp.includes("vip") ? 2 : 1;
+        const av = ap.includes("signature") || ap.includes("vvip") ? 3 : ap.includes("vip") ? 2 : 1;
+        const bv = bp.includes("signature") || bp.includes("vvip") ? 3 : bp.includes("vip") ? 2 : 1;
 
         return bv - av;
       });
@@ -532,20 +469,7 @@
               src="${image}"
               alt="${name}"
               loading="lazy"
-              data-base="${imageBase(image)}"
-              data-try="0"
-              onerror="
-                const exts = ['.jpg', '.jpeg', '.png', '.webp'];
-                let i = Number(this.dataset.try || 0);
-
-                if (i < exts.length) {
-                  this.dataset.try = i + 1;
-                  this.src = this.dataset.base + exts[i];
-                } else {
-                  this.onerror = null;
-                  this.src = 'assets/logo/logo-badge.png';
-                }
-              "
+              onerror="this.onerror=null;this.src='assets/logo/logo-badge.png';"
             />
           </div>
 
