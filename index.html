@@ -3,15 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Nairobi Sweets</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -86,9 +83,7 @@
       outline: none;
     }
 
-    .filters select option {
-      color: #111;
-    }
+    .filters select option { color: #111; }
 
     .grid {
       max-width: 1200px;
@@ -121,13 +116,9 @@
       transition: .35s ease;
     }
 
-    .card:hover img {
-      transform: scale(1.05);
-    }
+    .card:hover img { transform: scale(1.05); }
 
-    .content {
-      padding: 18px;
-    }
+    .content { padding: 18px; }
 
     .name-row {
       display: flex;
@@ -222,17 +213,9 @@
     }
 
     @media (max-width: 650px) {
-      header {
-        padding: 14px 16px;
-      }
-
-      .filters {
-        grid-template-columns: 1fr;
-      }
-
-      .photo-wrap {
-        height: 390px;
-      }
+      header { padding: 14px 16px; }
+      .filters { grid-template-columns: 1fr; }
+      .photo-wrap { height: 390px; }
     }
   </style>
 </head>
@@ -250,12 +233,7 @@
 </section>
 
 <div class="filters">
-  <input
-    id="searchInput"
-    type="text"
-    placeholder="Search by name, location, bio..."
-    oninput="renderProfiles()"
-  />
+  <input id="searchInput" type="text" placeholder="Search by name, location, bio..." oninput="renderProfiles()" />
 
   <select id="sortSelect" onchange="renderProfiles()">
     <option value="featured">Featured first</option>
@@ -338,9 +316,12 @@
     return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
   }
 
+  function imageBase(url) {
+    return String(url || "").replace(/\.(jpg|jpeg|png|webp)$/i, "");
+  }
+
   function getWhatsAppLink(phone) {
     const clean = cleanPhone(phone);
-
     if (!clean) return "#";
 
     let finalPhone = clean;
@@ -404,7 +385,6 @@
     if (!profileId) return;
 
     const viewedKey = `viewed_${profileId}`;
-
     if (localStorage.getItem(viewedKey)) return;
 
     localStorage.setItem(viewedKey, "yes");
@@ -519,13 +499,11 @@
 
         const av =
           ap.includes("vvip") || ap.includes("signature") ? 3 :
-          ap.includes("vip") ? 2 :
-          1;
+          ap.includes("vip") ? 2 : 1;
 
         const bv =
           bp.includes("vvip") || bp.includes("signature") ? 3 :
-          bp.includes("vip") ? 2 :
-          1;
+          bp.includes("vip") ? 2 : 1;
 
         return bv - av;
       });
@@ -554,7 +532,20 @@
               src="${image}"
               alt="${name}"
               loading="lazy"
-              onerror="this.onerror=null;this.src='assets/logo/logo-badge.png';"
+              data-base="${imageBase(image)}"
+              data-try="0"
+              onerror="
+                const exts = ['.jpg', '.jpeg', '.png', '.webp'];
+                let i = Number(this.dataset.try || 0);
+
+                if (i < exts.length) {
+                  this.dataset.try = i + 1;
+                  this.src = this.dataset.base + exts[i];
+                } else {
+                  this.onerror = null;
+                  this.src = 'assets/logo/logo-badge.png';
+                }
+              "
             />
           </div>
 
