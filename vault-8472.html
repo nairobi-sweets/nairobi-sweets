@@ -1,1125 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nairobi Sweets Admin Vault</title>
-  <style>
-    :root {
-      --bg: #070b24;
-      --panel: #10163a;
-      --panel-2: #18204f;
-      --line: rgba(255,255,255,0.08);
-      --text: #ffffff;
-      --muted: rgba(255,255,255,0.72);
-      --gold: #ffd84b;
-      --green: #22c55e;
-      --red: #ff4d4f;
-      --blue: #2563eb;
-      --chip: rgba(255,255,255,0.09);
-      --shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nairobi Sweets Vault</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(180deg, #05081f 0%, #0b0f2c 100%);
-      color: var(--text);
-      padding: 20px;
-    }
-
-    .wrap {
-      max-width: 1450px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      margin: 0 0 18px;
-      font-size: 46px;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 18px;
-      box-shadow: var(--shadow);
-    }
-
-    .topbar,
-    .actions,
-    .tabs,
-    .log-toolbar,
-    .chipbar,
-    .card-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    input, button, select {
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: none;
-      font: inherit;
-    }
-
-    input, select {
-      background: #fff;
-      color: #111;
-      min-width: 220px;
-    }
-
-    button {
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .btn-gold { background: var(--gold); color: #111; }
-    .btn-green { background: var(--green); color: #fff; }
-    .btn-red { background: var(--red); color: #fff; }
-    .btn-blue { background: var(--blue); color: #fff; }
-    .btn-soft { background: var(--panel-2); color: #fff; border: 1px solid var(--line); }
-    .btn-dark { background: #222; color: #fff; }
-
-    .tabs button {
-      background: #222;
-      color: #fff;
-    }
-
-    .tabs .active {
-      background: var(--gold);
-      color: #000;
-    }
-
-    .stats,
-    .analytics-grid {
-      display: grid;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .stats { grid-template-columns: repeat(5, minmax(120px, 1fr)); }
-    .analytics-grid { grid-template-columns: repeat(5, minmax(160px, 1fr)); }
-
-    .plan-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(220px, 1fr));
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .stat,
-    .analytics-card,
-    .plan-card {
-      background: var(--panel-2);
-      padding: 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-    }
-
-    .label {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .value {
-      font-size: 34px;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    .money .value {
-      font-size: 28px;
-      line-height: 1.15;
-    }
-
-    .plan-name {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .plan-meta,
-    .substatus,
-    .muted {
-      color: var(--muted);
-    }
-
-    .substatus {
-      margin-top: 10px;
-      font-size: 15px;
-    }
-
-    .section-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin: 0 0 10px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(320px, 1fr));
-      gap: 16px;
-    }
-
-    .card,
-    .empty,
-    .error-box {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: var(--shadow);
-    }
-
-    .error-box strong,
-    .empty strong {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 20px;
-    }
-
-    .title-row,
-    .log-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      margin-bottom: 10px;
-    }
-
-    .name {
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .status-pill {
-      font-size: 12px;
-      opacity: .9;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.08);
-    }
-
-    .meta,
-    .log-meta {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(180px, 1fr));
-      gap: 8px 14px;
-      margin: 12px 0;
-    }
-
-    .meta div,
-    .log-meta div {
-      font-size: 14px;
-      color: var(--muted);
-    }
-
-    .meta strong,
-    .log-meta strong {
-      color: #fff;
-      font-weight: 600;
-    }
-
-    .chip {
-      background: var(--chip);
-      color: #fff;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      border: 1px solid var(--line);
-    }
-
-    .logs-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .log-card {
-      background: var(--panel-2);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-    }
-
-    .log-action {
-      font-weight: 700;
-      font-size: 15px;
-    }
-
-    .log-time {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .log-json {
-      margin-top: 10px;
-      background: rgba(0,0,0,0.18);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 12px;
-      padding: 12px;
-      overflow: auto;
-      font-size: 12px;
-      white-space: pre-wrap;
-      color: #eaf0ff;
-    }
-
-    details summary {
-      cursor: pointer;
-      color: #fff;
-      font-weight: 600;
-      margin-top: 8px;
-    }
-
-    .footer-note {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    #fatalError {
-      display: none;
-      background: #2a1020;
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 18px;
-    }
-
-    @media (max-width: 1100px) {
-      .analytics-grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
-      .plan-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    @media (max-width: 980px) {
-      .grid { grid-template-columns: 1fr; }
-      .stats { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
-      .meta, .log-meta { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 640px) {
-      .plan-grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 560px) {
-      h1 { font-size: 36px; }
-      .stats, .analytics-grid { grid-template-columns: 1fr 1fr; }
-      input, select { min-width: 100%; width: 100%; }
-    }
-  </style>
+<style>
+body{margin:0;font-family:Arial;background:#070713;color:#fff}
+header{padding:18px 24px;background:#03030a;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222}
+h1{color:#ffd84b;margin:0}
+button,input,select{padding:11px;border-radius:12px;border:0}
+button{font-weight:900;cursor:pointer;background:#ffd84b;color:#111}
+.lock{max-width:420px;margin:100px auto;background:#111225;padding:25px;border-radius:24px}
+.wrap{max-width:1300px;margin:25px auto;padding:0 18px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
+.stat{background:#131427;padding:18px;border-radius:20px;border:1px solid #25263a}
+.stat b{font-size:28px;color:#ffd84b}
+.tools{display:grid;grid-template-columns:1fr 180px 180px;gap:12px;margin-bottom:20px}
+.tools input,.tools select{background:#161728;color:#fff;border:1px solid #333}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.card{background:#111225;border:1px solid #2a2b40;border-radius:22px;overflow:hidden}
+.card img{width:100%;height:260px;object-fit:cover;background:#191a2e}
+.content{padding:15px}
+.name{font-size:22px;font-weight:900}
+.badge{display:inline-block;margin:6px 0;padding:5px 10px;border-radius:999px;background:#332b10;color:#ffd84b}
+.small{font-size:13px;color:#ccc;line-height:1.5}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.actions button{font-size:13px}
+.danger{background:#ff4d6d;color:white}
+.good{background:#25D366;color:#06130a}
+.blue{background:#4db8ff;color:#06101a}
+.hidden{display:none}
+textarea{width:100%;height:70px;border-radius:12px;background:#161728;color:#fff;border:1px solid #333;padding:10px}
+@media(max-width:700px){.tools{grid-template-columns:1fr}}
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <h1>Admin Vault</h1>
 
-    <div id="fatalError"></div>
+<div id="lockBox" class="lock">
+  <h1>Vault Login</h1>
+  <p class="small">Enter admin code.</p>
+  <input id="adminCode" type="password" placeholder="Admin code" style="width:100%;margin:10px 0;background:#161728;color:white">
+  <button onclick="unlock()" style="width:100%">Unlock Vault</button>
+</div>
 
-    <div class="panel">
-      <div class="topbar">
-        <input id="email" type="email" placeholder="Admin email" />
-        <input id="password" type="password" placeholder="Password" />
-        <button id="loginBtn" class="btn-gold">Login</button>
-        <button id="restoreBtn" class="btn-dark">Restore Session</button>
-        <button id="logoutBtn" class="btn-red">Logout</button>
-      </div>
-      <div id="status" class="substatus">Not logged in.</div>
-    </div>
+<div id="app" class="hidden">
+<header>
+  <h1>Nairobi Sweets Vault</h1>
+  <button onclick="logout()">Lock</button>
+</header>
 
-    <div class="panel">
-      <div class="section-title">Revenue + Plan Analytics</div>
-      <div class="analytics-grid">
-        <div class="analytics-card money">
-          <div class="label">Paid Revenue</div>
-          <div class="value" id="paidRevenue">KES 0</div>
-        </div>
-        <div class="analytics-card money">
-          <div class="label">Unpaid Revenue</div>
-          <div class="value" id="unpaidRevenue">KES 0</div>
-        </div>
-        <div class="analytics-card">
-          <div class="label">Paid Profiles</div>
-          <div class="value" id="paidProfilesCount">0</div>
-        </div>
-        <div class="analytics-card">
-          <div class="label">Unpaid Profiles</div>
-          <div class="value" id="unpaidProfilesCount">0</div>
-        </div>
-        <div class="analytics-card">
-          <div class="label">Top Plan</div>
-          <div class="value" id="topPlanName" style="font-size:22px;line-height:1.2;">-</div>
-        </div>
-      </div>
-
-      <div id="planBreakdown" class="plan-grid">
-        <div class="plan-card">
-          <div class="plan-name">No plan data yet</div>
-          <div class="plan-meta">Plan breakdown appears when profiles are loaded.</div>
-        </div>
-      </div>
-      <div id="analyticsStatus" class="substatus">Analytics will appear when profiles load.</div>
-    </div>
-
-    <div class="panel">
-      <div class="actions">
-        <button id="refreshBtn" class="btn-gold">Refresh</button>
-        <input id="search" type="text" placeholder="Search by name, phone, email, plan, status..." />
-      </div>
-
-      <div class="tabs" style="margin-top: 14px;">
-        <button class="active" data-filter="all">All</button>
-        <button data-filter="pending">Pending</button>
-        <button data-filter="approved">Approved</button>
-        <button data-filter="paid">Paid</button>
-        <button data-filter="unpaid">Unpaid</button>
-      </div>
-
-      <div class="stats">
-        <div class="stat">
-          <div class="label">Total</div>
-          <div class="value" id="totalCount">0</div>
-        </div>
-        <div class="stat">
-          <div class="label">Pending</div>
-          <div class="value" id="pendingCount">0</div>
-        </div>
-        <div class="stat">
-          <div class="label">Approved</div>
-          <div class="value" id="approvedCount">0</div>
-        </div>
-        <div class="stat">
-          <div class="label">Paid</div>
-          <div class="value" id="paidCount">0</div>
-        </div>
-        <div class="stat">
-          <div class="label">Unpaid</div>
-          <div class="value" id="unpaidCount">0</div>
-        </div>
-      </div>
-
-      <div id="adminMeta" class="substatus">Waiting for valid admin session...</div>
-    </div>
-
-    <div id="results"></div>
-
-    <div class="panel">
-      <div class="log-toolbar">
-        <div class="section-title">Audit Logs</div>
-        <button id="refreshLogsBtn" class="btn-soft">Refresh Logs</button>
-        <select id="logActionFilter">
-          <option value="">All actions</option>
-          <option value="approve_profile">approve_profile</option>
-          <option value="toggle_payment">toggle_payment</option>
-          <option value="delete_profile">delete_profile</option>
-          <option value="go_live_profile">go_live_profile</option>
-        </select>
-      </div>
-      <div id="logsStatus" class="substatus">Audit stream idle.</div>
-      <div id="auditLogs"></div>
-    </div>
-
-    <div class="footer-note">
-      Nairobi Sweets vault controls approvals, payments, cleanup, logs, and plan analytics.
-    </div>
+<div class="wrap">
+  <div class="stats">
+    <div class="stat">Total<br><b id="totalCount">0</b></div>
+    <div class="stat">Approved<br><b id="approvedCount">0</b></div>
+    <div class="stat">Missing Photos<br><b id="missingCount">0</b></div>
+    <div class="stat">Total Likes<br><b id="likesCount">0</b></div>
+    <div class="stat">Total Views<br><b id="viewsCount">0</b></div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    (() => {
-      const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-      const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
-      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-      const byId = (id) => document.getElementById(id);
-
-      const els = {
-        email: byId("email"),
-        password: byId("password"),
-        loginBtn: byId("loginBtn"),
-        restoreBtn: byId("restoreBtn"),
-        logoutBtn: byId("logoutBtn"),
-        refreshBtn: byId("refreshBtn"),
-        refreshLogsBtn: byId("refreshLogsBtn"),
-        search: byId("search"),
-        status: byId("status"),
-        adminMeta: byId("adminMeta"),
-        logsStatus: byId("logsStatus"),
-        analyticsStatus: byId("analyticsStatus"),
-        logActionFilter: byId("logActionFilter"),
-        results: byId("results"),
-        auditLogs: byId("auditLogs"),
-        planBreakdown: byId("planBreakdown"),
-        fatalError: byId("fatalError"),
-
-        total: byId("totalCount"),
-        pending: byId("pendingCount"),
-        approved: byId("approvedCount"),
-        paid: byId("paidCount"),
-        unpaid: byId("unpaidCount"),
-
-        paidRevenue: byId("paidRevenue"),
-        unpaidRevenue: byId("unpaidRevenue"),
-        paidProfilesCount: byId("paidProfilesCount"),
-        unpaidProfilesCount: byId("unpaidProfilesCount"),
-        topPlanName: byId("topPlanName"),
-
-        tabs: Array.from(document.querySelectorAll(".tabs button"))
-      };
-
-      let currentFilter = "all";
-      let searchTimer = null;
-
-      function showFatal(err) {
-        console.error("Vault crashed:", err);
-        if (!els.fatalError) return;
-        els.fatalError.style.display = "block";
-        els.fatalError.innerHTML = `
-          <h3 style="margin-top:0;">Vault Error</h3>
-          <pre style="white-space:pre-wrap;color:#ffb3b3;">${escapeHtml(err?.message || String(err))}</pre>
-        `;
-      }
-
-      function setStatus(message, isError = false) {
-        if (!els.status) return;
-        els.status.textContent = message || "";
-        els.status.style.color = isError ? "#ff9b9b" : "#d9e7ff";
-      }
-
-      function setAdminMeta(message, isError = false) {
-        if (!els.adminMeta) return;
-        els.adminMeta.textContent = message || "";
-        els.adminMeta.style.color = isError ? "#ffb3b3" : "rgba(255,255,255,0.72)";
-      }
-
-      function setLogsStatus(message, isError = false) {
-        if (!els.logsStatus) return;
-        els.logsStatus.textContent = message || "";
-        els.logsStatus.style.color = isError ? "#ffb3b3" : "rgba(255,255,255,0.72)";
-      }
-
-      function setAnalyticsStatus(message, isError = false) {
-        if (!els.analyticsStatus) return;
-        els.analyticsStatus.textContent = message || "";
-        els.analyticsStatus.style.color = isError ? "#ffb3b3" : "rgba(255,255,255,0.72)";
-      }
-
-      function escapeHtml(value) {
-        return String(value ?? "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#39;");
-      }
-
-      function lc(value) {
-        return String(value ?? "").trim().toLowerCase();
-      }
-
-      function formatDate(value) {
-        if (!value) return "-";
-        const d = new Date(value);
-        if (Number.isNaN(d.getTime())) return String(value);
-        return d.toLocaleString();
-      }
-
-      function currency(value) {
-        const num = Number(value) || 0;
-        return "KES " + num.toLocaleString();
-      }
-
-      function shortMoney(value) {
-        const num = Number(value);
-        if (!Number.isFinite(num)) return "-";
-        return "KES " + num.toLocaleString();
-      }
-
-      function prettyJson(value) {
-        try {
-          return JSON.stringify(value ?? null, null, 2);
-        } catch {
-          return String(value ?? "");
-        }
-      }
-
-      function getNumericAmount(profile) {
-        const candidates = [
-          profile.amount,
-          profile.plan_price,
-          profile.price,
-          profile.total_amount,
-          profile.package_price
-        ];
-
-        for (const raw of candidates) {
-          const cleaned = Number(String(raw ?? "").replace(/[^\d.-]/g, ""));
-          if (Number.isFinite(cleaned) && cleaned > 0) return cleaned;
-        }
-
-        const planName = lc(profile.plan || profile.category);
-        if (planName.includes("featured")) return 1000;
-        if (planName.includes("vip")) return 1500;
-        if (planName.includes("vvip") || planName.includes("signature")) return 3000;
-
-        return 0;
-      }
-
-      async function getAccessToken() {
-        const { data, error } = await sb.auth.getSession();
-        if (error) throw error;
-        return data?.session?.access_token || null;
-      }
-
-      async function requireAccessToken() {
-        const token = await getAccessToken();
-        if (!token) throw new Error("No active admin session. Please log in first.");
-        return token;
-      }
-
-      async function apiFetch(path, options = {}) {
-        const token = await requireAccessToken();
-
-        const res = await fetch(path, {
-          ...options,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            ...(options.headers || {})
-          }
-        });
-
-        const payload = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-          throw new Error(payload?.message || payload?.error || `HTTP ${res.status}`);
-        }
-
-        return payload;
-      }
-
-      function buildListUrl() {
-        const qs = new URLSearchParams();
-        const search = (els.search?.value || "").trim();
-        qs.set("limit", "200");
-        if (search) qs.set("search", search);
-        if (currentFilter !== "all") qs.set("status", currentFilter);
-        return `/.netlify/functions/admin-list-profiles?${qs.toString()}`;
-      }
-
-      function buildLogsUrl() {
-        const qs = new URLSearchParams();
-        qs.set("limit", "50");
-        const action = (els.logActionFilter?.value || "").trim();
-        if (action) qs.set("action", action);
-        return `/.netlify/functions/admin-list-audit-logs?${qs.toString()}`;
-      }
-
-      function renderSummary(summary = {}) {
-        if (els.total) els.total.textContent = String(summary.total ?? 0);
-        if (els.pending) els.pending.textContent = String(summary.pending ?? 0);
-        if (els.approved) els.approved.textContent = String(summary.approved ?? 0);
-        if (els.paid) els.paid.textContent = String(summary.paid ?? 0);
-        if (els.unpaid) els.unpaid.textContent = String(summary.unpaid ?? 0);
-      }
-
-      function renderAnalytics(rows = []) {
-        const planMap = {};
-        let paidRevenue = 0;
-        let unpaidRevenue = 0;
-        let paidProfiles = 0;
-        let unpaidProfiles = 0;
-
-        for (const row of rows) {
-          const plan = String(row.plan || row.category || "Unassigned").trim() || "Unassigned";
-          const amount = getNumericAmount(row);
-          const payment = lc(row.payment_status);
-
-          if (!planMap[plan]) {
-            planMap[plan] = {
-              plan,
-              totalProfiles: 0,
-              paidProfiles: 0,
-              unpaidProfiles: 0,
-              paidRevenue: 0,
-              unpaidRevenue: 0,
-              totalRevenuePotential: 0
-            };
-          }
-
-          planMap[plan].totalProfiles += 1;
-          planMap[plan].totalRevenuePotential += amount;
-
-          if (payment === "paid") {
-            paidRevenue += amount;
-            paidProfiles += 1;
-            planMap[plan].paidProfiles += 1;
-            planMap[plan].paidRevenue += amount;
-          } else {
-            unpaidRevenue += amount;
-            unpaidProfiles += 1;
-            planMap[plan].unpaidProfiles += 1;
-            planMap[plan].unpaidRevenue += amount;
-          }
-        }
-
-        const plans = Object.values(planMap).sort((a, b) => {
-          if (b.paidRevenue !== a.paidRevenue) return b.paidRevenue - a.paidRevenue;
-          return b.totalProfiles - a.totalProfiles;
-        });
-
-        if (els.paidRevenue) els.paidRevenue.textContent = currency(paidRevenue);
-        if (els.unpaidRevenue) els.unpaidRevenue.textContent = currency(unpaidRevenue);
-        if (els.paidProfilesCount) els.paidProfilesCount.textContent = String(paidProfiles);
-        if (els.unpaidProfilesCount) els.unpaidProfilesCount.textContent = String(unpaidProfiles);
-        if (els.topPlanName) els.topPlanName.textContent = plans[0]?.plan || "-";
-
-        if (!els.planBreakdown) return;
-
-        if (!plans.length) {
-          els.planBreakdown.innerHTML = `
-            <div class="plan-card">
-              <div class="plan-name">No plan data yet</div>
-              <div class="plan-meta">Plan breakdown appears when profiles are loaded.</div>
-            </div>
-          `;
-          setAnalyticsStatus("No profile data available for analytics.");
-          return;
-        }
-
-        els.planBreakdown.innerHTML = plans.map((plan) => `
-          <div class="plan-card">
-            <div class="plan-name">${escapeHtml(plan.plan)}</div>
-            <div class="chipbar">
-              <span class="chip">Profiles: ${plan.totalProfiles}</span>
-              <span class="chip">Paid: ${plan.paidProfiles}</span>
-              <span class="chip">Unpaid: ${plan.unpaidProfiles}</span>
-            </div>
-            <div class="plan-meta">Paid revenue: ${escapeHtml(currency(plan.paidRevenue))}</div>
-            <div class="plan-meta">Unpaid revenue: ${escapeHtml(currency(plan.unpaidRevenue))}</div>
-            <div class="plan-meta">Potential total: ${escapeHtml(currency(plan.totalRevenuePotential))}</div>
-          </div>
-        `).join("");
-
-        setAnalyticsStatus(`Analytics computed from ${rows.length} loaded profiles.`);
-      }
-
-      function renderEmpty(message = "No profiles found.") {
-        if (!els.results) return;
-        els.results.innerHTML = `
-          <div class="empty">
-            <strong>No profiles here yet</strong>
-            <div class="muted">${escapeHtml(message)}</div>
-          </div>
-        `;
-      }
-
-      function renderError(message) {
-        if (!els.results) return;
-        els.results.innerHTML = `
-          <div class="error-box">
-            <strong>Load failed</strong>
-            <div class="muted">${escapeHtml(message || "Unknown error")}</div>
-          </div>
-        `;
-      }
-
-      function renderProfiles(rows = []) {
-        if (!Array.isArray(rows) || !rows.length) {
-          renderEmpty("Try another filter or search term.");
-          return;
-        }
-
-        els.results.innerHTML = `
-          <div class="grid">
-            ${rows.map((p) => {
-              const id = p.id || "";
-              const name = p.stage_name || p.full_name || p.name || "Unnamed profile";
-              const approval = p.approval_status || "pending";
-              const payment = p.payment_status || "unpaid";
-              const phone = p.phone || "-";
-              const email = p.email || "-";
-              const plan = p.plan || p.category || "-";
-              const createdAt = formatDate(p.created_at);
-              const updatedAt = formatDate(p.updated_at);
-              const amount = p.amount || p.price || p.plan_price || getNumericAmount(p);
-              const city = p.city || p.location || "-";
-              const category = p.category || p.service_type || "-";
-              const image = p.photo_url || p.image_url || p.avatar_url || "";
-
-              return `
-                <div class="card">
-                  <div class="title-row">
-                    <div>
-                      <div class="name">${escapeHtml(name)}</div>
-                      <div class="chipbar">
-                        <span class="chip">Approval: ${escapeHtml(approval)}</span>
-                        <span class="chip">Payment: ${escapeHtml(payment)}</span>
-                        ${plan ? `<span class="chip">Plan: ${escapeHtml(plan)}</span>` : ""}
-                      </div>
-                    </div>
-                    <div class="status-pill">${escapeHtml(approval)} / ${escapeHtml(payment)}</div>
-                  </div>
-
-                  ${image ? `
-                    <div style="margin: 12px 0;">
-                      <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" style="width:100%; max-height:240px; object-fit:cover; border-radius:14px; border:1px solid rgba(255,255,255,0.08);" />
-                    </div>
-                  ` : ""}
-
-                  <div class="meta">
-                    <div><strong>Phone:</strong> ${escapeHtml(phone)}</div>
-                    <div><strong>Email:</strong> ${escapeHtml(email)}</div>
-                    <div><strong>Plan:</strong> ${escapeHtml(plan)}</div>
-                    <div><strong>Amount:</strong> ${escapeHtml(shortMoney(amount))}</div>
-                    <div><strong>Category:</strong> ${escapeHtml(category)}</div>
-                    <div><strong>City:</strong> ${escapeHtml(city)}</div>
-                    <div><strong>Created:</strong> ${escapeHtml(createdAt)}</div>
-                    <div><strong>Updated:</strong> ${escapeHtml(updatedAt)}</div>
-                  </div>
-
-                  <div class="card-actions">
-                    <button class="btn-gold" onclick="goLiveProfile('${escapeHtml(id)}', '${escapeHtml(name)}')">🔥 Go Live</button>
-                    <button class="btn-green" onclick="approveProfile('${escapeHtml(id)}')">Approve</button>
-                    <button class="btn-blue" onclick="togglePayment('${escapeHtml(id)}', '${escapeHtml(payment)}')">
-                      ${lc(payment) === "paid" ? "Mark Unpaid" : "Mark Paid"}
-                    </button>
-                    <button class="btn-red" onclick="deleteProfile('${escapeHtml(id)}', '${escapeHtml(name)}')">Delete</button>
-                  </div>
-                </div>
-              `;
-            }).join("")}
-          </div>
-        `;
-      }
-
-      function renderAuditLogs(logs = []) {
-        if (!els.auditLogs) return;
-
-        if (!Array.isArray(logs) || !logs.length) {
-          els.auditLogs.innerHTML = `
-            <div class="empty" style="margin-top:14px;">
-              <strong>No audit logs yet</strong>
-              <div class="muted">When admins touch records, the footprints will show up here.</div>
-            </div>
-          `;
-          return;
-        }
-
-        els.auditLogs.innerHTML = `
-          <div class="logs-grid">
-            ${logs.map((log) => {
-              const action = log.action || "unknown_action";
-              const adminEmail = log.admin_email || "-";
-              const targetLabel = log.target_label || "-";
-              const targetId = log.target_id || "-";
-              const createdAt = formatDate(log.created_at);
-              const source = log.meta?.source || "-";
-
-              return `
-                <div class="log-card">
-                  <div class="log-head">
-                    <div class="log-action">${escapeHtml(action)}</div>
-                    <div class="log-time">${escapeHtml(createdAt)}</div>
-                  </div>
-
-                  <div class="chipbar">
-                    <span class="chip">Admin: ${escapeHtml(adminEmail)}</span>
-                    <span class="chip">Target: ${escapeHtml(targetLabel)}</span>
-                    <span class="chip">ID: ${escapeHtml(targetId)}</span>
-                    <span class="chip">Source: ${escapeHtml(source)}</span>
-                  </div>
-
-                  <div class="log-meta">
-                    <div><strong>Table:</strong> ${escapeHtml(log.target_table || "-")}</div>
-                    <div><strong>Action:</strong> ${escapeHtml(action)}</div>
-                  </div>
-
-                  <details>
-                    <summary>Before</summary>
-                    <pre class="log-json">${escapeHtml(prettyJson(log.before_data))}</pre>
-                  </details>
-
-                  <details>
-                    <summary>After</summary>
-                    <pre class="log-json">${escapeHtml(prettyJson(log.after_data))}</pre>
-                  </details>
-
-                  <details>
-                    <summary>Meta</summary>
-                    <pre class="log-json">${escapeHtml(prettyJson(log.meta))}</pre>
-                  </details>
-                </div>
-              `;
-            }).join("")}
-          </div>
-        `;
-      }
-
-      async function loginAdmin() {
-        try {
-          const email = (els.email?.value || "").trim();
-          const password = els.password?.value || "";
-
-          if (!email || !password) {
-            setStatus("Enter admin email and password.", true);
-            return;
-          }
-
-          setStatus("Signing in...");
-          const { data, error } = await sb.auth.signInWithPassword({ email, password });
-          if (error) throw error;
-          if (!data?.session) throw new Error("Login returned no session.");
-
-          setStatus("Login successful.");
-          await Promise.all([loadProfiles(), loadAuditLogs()]);
-        } catch (err) {
-          console.error("login error:", err);
-          setStatus(err.message || "Login failed.", true);
-        }
-      }
-
-      async function restoreSession() {
-        try {
-          setStatus("Restoring session...");
-          const { data, error } = await sb.auth.getSession();
-          if (error) throw error;
-
-          if (!data?.session) {
-            setStatus("No saved session found.", true);
-            setAdminMeta("Waiting for valid admin session...", true);
-            setLogsStatus("Logs unavailable until admin session is active.", true);
-            setAnalyticsStatus("Analytics unavailable until profiles load.", true);
-            return;
-          }
-
-          setStatus("Session restored.");
-          await Promise.all([loadProfiles(), loadAuditLogs()]);
-        } catch (err) {
-          console.error("restore session error:", err);
-          setStatus(err.message || "Could not restore session.", true);
-        }
-      }
-
-      async function logoutAdmin() {
-        try {
-          await sb.auth.signOut();
-          renderSummary({});
-          renderAnalytics([]);
-          if (els.results) els.results.innerHTML = "";
-          if (els.auditLogs) els.auditLogs.innerHTML = "";
-          setStatus("Logged out.");
-          setAdminMeta("Waiting for valid admin session...");
-          setLogsStatus("Audit stream idle.");
-        } catch (err) {
-          console.error("logout error:", err);
-          setStatus(err.message || "Logout failed.", true);
-        }
-      }
-
-      async function loadProfiles() {
-        try {
-          setStatus("Loading profiles...");
-          const payload = await apiFetch(buildListUrl(), { method: "GET" });
-
-          const rows = Array.isArray(payload.profiles) ? payload.profiles : [];
-          renderSummary(payload.summary || {});
-          renderAnalytics(rows);
-          renderProfiles(rows);
-
-          const adminEmail = payload?.admin?.email || "admin";
-          const source = payload?.admin?.source || "unknown";
-          setAdminMeta(`Logged in as ${adminEmail}. Admin source: ${source}.`);
-          setStatus(`Loaded ${payload?.summary?.total ?? 0} profiles.`);
-        } catch (err) {
-          console.error("loadProfiles error:", err);
-          renderSummary({});
-          renderAnalytics([]);
-          renderError(err.message || "Failed to load profiles.");
-          setAdminMeta("Admin session missing or not authorized.", true);
-          setStatus(err.message || "Load failed.", true);
-        }
-      }
-
-      async function loadAuditLogs() {
-        try {
-          setLogsStatus("Loading audit logs...");
-          const payload = await apiFetch(buildLogsUrl(), { method: "GET" });
-          renderAuditLogs(payload.logs || []);
-          setLogsStatus(`Loaded ${(payload.logs || []).length} audit logs.`);
-        } catch (err) {
-          console.error("loadAuditLogs error:", err);
-          if (els.auditLogs) {
-            els.auditLogs.innerHTML = `
-              <div class="error-box" style="margin-top:14px;">
-                <strong>Audit log load failed</strong>
-                <div class="muted">${escapeHtml(err.message || "Unknown error")}</div>
-              </div>
-            `;
-          }
-          setLogsStatus(err.message || "Failed to load audit logs.", true);
-        }
-      }
-
-      async function approveProfile(profileId) {
-        try {
-          if (!profileId) throw new Error("Missing profile id.");
-          setStatus("Approving profile...");
-
-          await apiFetch("/.netlify/functions/admin-approve-profile", {
-            method: "POST",
-            body: JSON.stringify({
-              profile_id: profileId,
-              approval_status: "approved"
-            })
-          });
-
-          setStatus("Profile approved.");
-          await Promise.all([loadProfiles(), loadAuditLogs()]);
-        } catch (err) {
-          console.error("approveProfile error:", err);
-          setStatus(err.message || "Approval failed.", true);
-        }
-      }
-
-      async function togglePayment(profileId, currentPaymentStatus) {
-        try {
-          if (!profileId) throw new Error("Missing profile id.");
-          const nextStatus = lc(currentPaymentStatus) === "paid" ? "unpaid" : "paid";
-          setStatus(`Updating payment to ${nextStatus}...`);
-
-          await apiFetch("/.netlify/functions/admin-toggle-payment", {
-            method: "POST",
-            body: JSON.stringify({
-              profile_id: profileId,
-              payment_status: nextStatus
-            })
-          });
-
-          setStatus(`Payment marked ${nextStatus}.`);
-          await Promise.all([loadProfiles(), loadAuditLogs()]);
-        } catch (err) {
-          console.error("togglePayment error:", err);
-          setStatus(err.message || "Payment update failed.", true);
-        }
-      }
-
-      async function deleteProfile(profileId, profileName) {
-        try {
-          if (!profileId) throw new Error("Missing profile id.");
-          const ok = window.confirm(`Delete "${profileName || "this profile"}"? This cannot be undone.`);
-          if (!ok) return;
-
-          setStatus("Deleting profile...");
-
-          await apiFetch("/.netlify/functions/admin-delete-profile", {
-            method: "POST",
-            body: JSON.stringify({
-              profile_id: profileId
-            })
-          });
-
-          setStatus("Profile deleted.");
-          await Promise.all([loadProfiles(), loadAuditLogs()]);
-        } catch (err) {
-          console.error("deleteProfile error:", err);
-          setStatus(err.message || "Delete failed.", true);
-        }
-      }
-
-      async function goLiveProfile(profileId, profileName) {
-        try {
-          if (!profileId) throw new Error("Missing profile id.");
-          const ok = window.confirm(`Go live for "${profileName || "this profile"}"? This will approve and mark as paid.`);
-          if (!ok) return;
-
-          setStatus("Sending profile live...");
-
-          await apiFetch("/.netlify/functions/admin-go-live-profile", {
-            method: "POST",
-            body: JSON.stringify({
-              profile_id: profileId
-            })
-          });
-
-          setStatus("Profile is now live.");
-          await Promise.all([loadProfiles(), loadAuditLogs()]);
-        } catch (err) {
-          console.error("goLiveProfile error:", err);
-          setStatus(err.message || "Go Live failed.", true);
-        }
-      }
-
-      function setFilter(filterValue) {
-        currentFilter = filterValue;
-        els.tabs.forEach((btn) => {
-          btn.classList.toggle("active", btn.dataset.filter === filterValue);
-        });
-        loadProfiles();
-      }
-
-      if (els.search) {
-        els.search.addEventListener("input", () => {
-          clearTimeout(searchTimer);
-          searchTimer = setTimeout(() => loadProfiles(), 300);
-        });
-      }
-
-      if (els.logActionFilter) {
-        els.logActionFilter.addEventListener("change", loadAuditLogs);
-      }
-
-      els.tabs.forEach((btn) => {
-        btn.addEventListener("click", () => setFilter(btn.dataset.filter));
-      });
-
-      if (els.loginBtn) els.loginBtn.addEventListener("click", loginAdmin);
-      if (els.restoreBtn) els.restoreBtn.addEventListener("click", restoreSession);
-      if (els.logoutBtn) els.logoutBtn.addEventListener("click", logoutAdmin);
-      if (els.refreshBtn) els.refreshBtn.addEventListener("click", () => Promise.all([loadProfiles(), loadAuditLogs()]));
-      if (els.refreshLogsBtn) els.refreshLogsBtn.addEventListener("click", loadAuditLogs);
-
-      window.approveProfile = approveProfile;
-      window.togglePayment = togglePayment;
-      window.deleteProfile = deleteProfile;
-      window.goLiveProfile = goLiveProfile;
-
-      sb.auth.onAuthStateChange((_event, session) => {
-        if (session) setStatus("Authenticated.");
-      });
-
-      window.addEventListener("DOMContentLoaded", async () => {
-        try {
-          const { data, error } = await sb.auth.getSession();
-          if (error) throw error;
-
-          if (data?.session) {
-            setStatus("Session found. Loading vault...");
-            await Promise.all([loadProfiles(), loadAuditLogs()]);
-          } else {
-            setStatus("Not logged in.");
-            setAdminMeta("Waiting for valid admin session...");
-            setLogsStatus("Audit stream idle.");
-            setAnalyticsStatus("Analytics will appear when profiles load.");
-          }
-        } catch (err) {
-          console.error("initial session restore error:", err);
-          setStatus("Could not restore session.", true);
-          showFatal(err);
-        }
-      });
-    })();
-  </script>
+  <div class="tools">
+    <input id="search" placeholder="Search name, phone, location..." oninput="render()" />
+    <select id="filter" onchange="render()">
+      <option value="all">All profiles</option>
+      <option value="approved">Approved</option>
+      <option value="pending">Pending</option>
+      <option value="missing">Missing photos</option>
+      <option value="top">Top viewed</option>
+    </select>
+    <button onclick="loadProfiles()">Reload</button>
+  </div>
+
+  <div id="list" class="grid">Loading...</div>
+</div>
+</div>
+
+<script>
+const ADMIN_CODE = "8472";
+
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const STORAGE_BUCKET = "profile-images";
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let profiles = [];
+
+function unlock(){
+  if(adminCode.value !== ADMIN_CODE){
+    alert("Wrong code");
+    return;
+  }
+  localStorage.setItem("vault_ok","yes");
+  lockBox.classList.add("hidden");
+  app.classList.remove("hidden");
+  loadProfiles();
+}
+
+function logout(){
+  localStorage.removeItem("vault_ok");
+  location.reload();
+}
+
+if(localStorage.getItem("vault_ok") === "yes"){
+  lockBox.classList.add("hidden");
+  app.classList.remove("hidden");
+  loadProfiles();
+}
+
+function img(p){
+  let raw = String(
+    p.photo_url || p.image_url || p.profile_photo || p.profile_image || p.avatar_url || p.image || p.photo || ""
+  ).trim();
+
+  if(!raw || raw.toLowerCase().includes("logo") || raw.toLowerCase().includes("default")){
+    return "assets/logo/logo-badge.png";
+  }
+
+  if(raw.startsWith("http")) return raw;
+
+  raw = raw.replace(/^\/+/,"").split("/").pop();
+  return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
+}
+
+function isMissingPhoto(p){
+  const raw = String(p.photo_url || "").trim().toLowerCase();
+  return !raw || raw.includes("logo") || raw.includes("badge") || raw.includes("default");
+}
+
+async function loadProfiles(){
+  const {data,error} = await sb
+    .from("profiles")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    list.innerHTML = "Could not load profiles.";
+    console.error(error);
+    return;
+  }
+
+  profiles = data || [];
+  renderStats();
+  render();
+}
+
+function renderStats(){
+  totalCount.textContent = profiles.length;
+  approvedCount.textContent = profiles.filter(p => p.approved === true || p.status === "approved").length;
+  missingCount.textContent = profiles.filter(isMissingPhoto).length;
+  likesCount.textContent = profiles.reduce((s,p)=>s+Number(p.likes||0),0);
+  viewsCount.textContent = profiles.reduce((s,p)=>s+Number(p.views||0),0);
+}
+
+function render(){
+  const q = search.value.toLowerCase();
+  const f = filter.value;
+
+  let rows = [...profiles];
+
+  if(q){
+    rows = rows.filter(p => `
+      ${p.stage_name||""} ${p.name||""} ${p.phone||""} ${p.location||""}
+    `.toLowerCase().includes(q));
+  }
+
+  if(f === "approved") rows = rows.filter(p => p.approved === true || p.status === "approved");
+  if(f === "pending") rows = rows.filter(p => !(p.approved === true || p.status === "approved"));
+  if(f === "missing") rows = rows.filter(isMissingPhoto);
+  if(f === "top") rows.sort((a,b)=>Number(b.views||0)-Number(a.views||0));
+
+  if(!rows.length){
+    list.innerHTML = `<div>No profiles found.</div>`;
+    return;
+  }
+
+  list.innerHTML = rows.map(p => `
+    <div class="card">
+      <img src="${img(p)}" onerror="this.onerror=null;this.src='assets/logo/logo-badge.png'">
+      <div class="content">
+        <div class="name">${p.stage_name || p.name || "Unnamed"}</div>
+        <span class="badge">${p.plan || p.package || "featured"}</span>
+        <div class="small">
+          📍 ${p.location || "No location"}<br>
+          📞 ${p.phone || p.phone_number || p.whatsapp || "No phone"}<br>
+          ❤️ ${p.likes || 0} likes · 👁️ ${p.views || 0} views<br>
+          Status: ${p.approved ? "Approved" : (p.status || "Pending")}
+        </div>
+
+        <textarea id="photo_${p.id}" placeholder="Paste full photo URL here">${p.photo_url || ""}</textarea>
+
+        <div class="actions">
+          <button class="good" onclick="approve('${p.id}')">Approve</button>
+          <button class="danger" onclick="unapprove('${p.id}')">Hide</button>
+          <button class="blue" onclick="savePhoto('${p.id}')">Save Photo</button>
+          <button onclick="resetStats('${p.id}')">Reset Stats</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function approve(id){
+  await sb.from("profiles").update({
+    approved:true,
+    status:"approved"
+  }).eq("id",id);
+  loadProfiles();
+}
+
+async function unapprove(id){
+  await sb.from("profiles").update({
+    approved:false,
+    status:"pending"
+  }).eq("id",id);
+  loadProfiles();
+}
+
+async function savePhoto(id){
+  const value = document.getElementById(`photo_${id}`).value.trim();
+  if(!value){
+    alert("Paste photo URL first");
+    return;
+  }
+
+  await sb.from("profiles").update({
+    photo_url:value
+  }).eq("id",id);
+
+  loadProfiles();
+}
+
+async function resetStats(id){
+  await sb.from("profiles").update({
+    likes:0,
+    views:0
+  }).eq("id",id);
+
+  loadProfiles();
+}
+</script>
+
 </body>
 </html>
