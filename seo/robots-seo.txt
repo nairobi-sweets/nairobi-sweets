@@ -1,2 +1,4 @@
 User-agent: *
-Allow: /seo/
+Allow: /
+
+Sitemap: https://nairobi-sweets.com/sitemap.xml
