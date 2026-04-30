@@ -1,610 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Nairobi Sweets | Premium Nairobi Profiles, Spa & VIP Listings</title>
-
-  <meta name="description" content="Discover premium Nairobi profiles, VIP listings, spa experiences, verified photos, direct WhatsApp contacts, and luxury connections across Nairobi." />
-  <meta name="keywords" content="Nairobi sweets, Nairobi spa, Westlands spa, Nairobi VIP profiles, Kenya premium profiles, Nairobi massage, Nairobi luxury listings" />
-  <meta name="author" content="Nairobi Sweets" />
-  <meta name="robots" content="index, follow" />
-
-  <link rel="canonical" href="https://nairobi-sweets.com/" />
-  <link rel="icon" type="image/png" href="assets/logo/logo-badge.png" />
-
-  <meta property="og:title" content="Nairobi Sweets | Premium Nairobi Profiles" />
-  <meta property="og:description" content="Verified Nairobi premium profiles with direct WhatsApp, calls, and luxury experiences." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://nairobi-sweets.com/" />
-  <meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Nairobi Sweets | Premium Nairobi Profiles" />
-  <meta name="twitter:description" content="Premium Nairobi profiles and luxury verified connections." />
-  <meta name="twitter:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png" />
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Nairobi Sweets",
-    "url": "https://nairobi-sweets.com",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://nairobi-sweets.com/?search={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #070713;
-      color: white;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 18px 24px;
-      background: #020208;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .logo {
-      font-size: 26px;
-      font-weight: 900;
-      color: #ffd84b;
-    }
-
-    .join-btn {
-      background: #ffd84b;
-      color: #111;
-      text-decoration: none;
-      padding: 12px 20px;
-      border-radius: 999px;
-      font-weight: 900;
-    }
-
-    .hero {
-      text-align: center;
-      padding: 80px 20px 42px;
-      background:
-        radial-gradient(circle at top, rgba(255,216,75,0.22), transparent 34%),
-        linear-gradient(180deg, #141428, #070713);
-    }
-
-    .hero h1 {
-      font-size: clamp(42px, 7vw, 78px);
-      margin: 0;
-      letter-spacing: -1px;
-    }
-
-    .hero p {
-      max-width: 680px;
-      margin: 18px auto 0;
-      color: #d7d7ef;
-      line-height: 1.55;
-      font-size: 16px;
-    }
-
-    .filters {
-      max-width: 1200px;
-      margin: 26px auto 0;
-      padding: 0 18px;
-      display: grid;
-      grid-template-columns: 1fr 190px;
-      gap: 12px;
-    }
-
-    .filters input,
-    .filters select {
-      padding: 15px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.06);
-      color: white;
-      outline: none;
-    }
-
-    .filters select option { color: black; }
-
-    .profiles-grid {
-      max-width: 1200px;
-      margin: 35px auto 70px;
-      padding: 0 18px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 24px;
-    }
-
-    .profile-card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05));
-      border-radius: 28px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 24px 60px rgba(0,0,0,0.45);
-    }
-
-    .profile-image-wrap {
-      width: 100%;
-      height: 340px;
-      background: #151525;
-      overflow: hidden;
-    }
-
-    .profile-image-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.35s ease;
-    }
-
-    .profile-card:hover img { transform: scale(1.04); }
-
-    .profile-content { padding: 18px; }
-
-    .profile-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .profile-name {
-      font-size: 24px;
-      font-weight: 900;
-      margin: 0;
-    }
-
-    .badge {
-      padding: 7px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: bold;
-      color: #ffd84b;
-      background: rgba(255,216,75,0.12);
-      border: 1px solid rgba(255,216,75,0.35);
-      white-space: nowrap;
-    }
-
-    .profile-meta {
-      font-size: 14px;
-      color: #d6d6ea;
-      margin-top: 10px;
-      line-height: 1.5;
-    }
-
-    .profile-bio {
-      margin-top: 12px;
-      font-size: 14px;
-      line-height: 1.55;
-      color: white;
-      min-height: 44px;
-    }
-
-    .profile-stats {
-      margin-top: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255,255,255,0.07);
-      padding: 10px 12px;
-      border-radius: 16px;
-      font-size: 14px;
-    }
-
-    .like-btn {
-      border: none;
-      cursor: pointer;
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-weight: 900;
-      background: linear-gradient(135deg, #ff4d8d, #ffd84b);
-      color: #111;
-    }
-
-    .profile-actions {
-      margin-top: 14px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .profile-actions a {
-      text-align: center;
-      padding: 13px;
-      border-radius: 14px;
-      text-decoration: none;
-      font-weight: 900;
-    }
-
-    .whatsapp-btn { background: #25D366; color: #04150a; }
-    .call-btn { background: #ffd84b; color: #111; }
-
-    .seo-block {
-      max-width: 1200px;
-      margin: 60px auto 80px;
-      padding: 24px 18px;
-      color: #d8d8ee;
-      line-height: 1.65;
-    }
-
-    .seo-block h2 {
-      color: #ffd84b;
-      font-size: 30px;
-      margin-bottom: 12px;
-    }
-
-    .seo-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .seo-links a {
-      color: #ffd84b;
-      text-decoration: none;
-      border: 1px solid rgba(255,216,75,0.25);
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,216,75,0.08);
-    }
-
-    .empty {
-      text-align: center;
-      color: #d7d7ef;
-      padding: 50px;
-      grid-column: 1 / -1;
-    }
-
-    footer {
-      text-align: center;
-      color: #888;
-      padding: 30px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-    }
-
-    @media (max-width: 700px) {
-      header { padding: 14px 16px; }
-      .filters { grid-template-columns: 1fr; }
-      .profile-image-wrap { height: 390px; }
-    }
-  </style>
-</head>
-
-<body>
-
-<header>
-  <div class="logo">Nairobi Sweets</div>
-  <a href="public-signup-payment-page.html" class="join-btn">Join Now</a>
-</header>
-
-<section class="hero">
-  <h1>Premium Profiles</h1>
-  <p>
-    Discover approved Nairobi Sweets profiles with real photos,
-    direct WhatsApp contact, call buttons, likes, views, and premium listings across Nairobi.
-  </p>
-</section>
-
-<div class="filters">
-  <input
-    type="text"
-    id="searchInput"
-    placeholder="Search by name, location, bio..."
-    oninput="renderProfiles()"
-  />
-
-  <select id="sortSelect" onchange="renderProfiles()">
-    <option value="featured">Featured first</option>
-    <option value="likes">Most liked</option>
-    <option value="views">Most viewed</option>
-    <option value="newest">Newest</option>
-  </select>
-</div>
-
-<main id="profilesGrid" class="profiles-grid">
-  <div class="empty">Loading profiles...</div>
-</main>
-
-<section class="seo-block">
-  <h2>Premium Nairobi Profiles by Location</h2>
-  <p>
-    Explore premium Nairobi profiles across Westlands, Kilimani, Ruaka, Thika Road,
-    Kileleshwa, Syokimau, Runda, Thika, Rongai, and other popular Nairobi areas.
-  </p>
-  <p>
-    Nairobi Sweets connects visitors with verified premium listings, real photos,
-    direct WhatsApp contact, call buttons, likes, views, and updated profile information.
-  </p>
-  <div class="seo-links">
-    <a href="/">Nairobi Premium Profiles</a>
-    <a href="/">Westlands Profiles</a>
-    <a href="/">Kilimani Listings</a>
-    <a href="/">Ruaka Profiles</a>
-    <a href="/">Thika Road Listings</a>
-    <a href="/">Nairobi Spa Listings</a>
-  </div>
-</section>
-
-<footer>© Nairobi Sweets</footer>
-
-<script>
-const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
-const STORAGE_BUCKET = "profile-images";
-
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let allProfiles = [];
-
-function safe(v) {
-  return v ? String(v) : "";
-}
-
-function cleanPhone(phone) {
-  return String(phone || "").replace(/\D/g, "");
-}
-
-function normalizeKenyanPhone(phone) {
-  let p = cleanPhone(phone);
-  if (!p) return "";
-  if (p.startsWith("0")) return "254" + p.slice(1);
-  if (p.startsWith("7") || p.startsWith("1")) return "254" + p;
-  return p;
-}
-
-function getWhatsApp(phone) {
-  const normalized = normalizeKenyanPhone(phone);
-  return normalized ? `https://wa.me/${normalized}` : "#";
-}
-
-function getProfileImage(profile) {
-  let raw = String(
-    profile.photo_url ||
-    profile.image_url ||
-    profile.profile_photo ||
-    profile.profile_image ||
-    profile.avatar_url ||
-    profile.image ||
-    profile.photo ||
-    ""
-  ).trim();
-
-  if (!raw) return "assets/logo/logo-badge.png";
-
-  if (
-    raw.toLowerCase().includes("logo") ||
-    raw.toLowerCase().includes("badge") ||
-    raw.toLowerCase().includes("default")
-  ) {
-    return "assets/logo/logo-badge.png";
-  }
-
-  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
-
-  raw = raw.replace(/^\/+/, "");
-  raw = raw.split("/").pop();
-
-  return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
-}
-
-function profileWeight(plan) {
-  const p = String(plan || "").toLowerCase();
-  if (p.includes("signature") || p.includes("vvip")) return 4;
-  if (p.includes("vip")) return 3;
-  if (p.includes("featured")) return 2;
-  return 1;
-}
-
-async function loadProfiles() {
-  let { data, error } = await sb
-    .from("profiles")
-    .select("*")
-    .eq("approved", true)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    ({ data, error } = await sb
-      .from("profiles")
-      .select("*")
-      .eq("status", "approved")
-      .order("created_at", { ascending: false }));
-  }
-
-  if (error) {
-    ({ data, error } = await sb
-      .from("profiles")
-      .select("*")
-      .order("created_at", { ascending: false }));
-  }
-
-  if (error) {
-    console.error(error);
-    document.getElementById("profilesGrid").innerHTML =
-      `<div class="empty">Could not load profiles. Check Supabase policies.</div>`;
-    return;
-  }
-
-  allProfiles = data || [];
-  renderProfiles();
-}
-
-async function addView(id, currentViews) {
-  if (!id) return;
-
-  const key = `viewed_${id}`;
-  if (localStorage.getItem(key)) return;
-
-  localStorage.setItem(key, "yes");
-
-  const newViews = Number(currentViews || 0) + 1;
-
-  await sb
-    .from("profiles")
-    .update({ views: newViews })
-    .eq("id", id);
-
-  allProfiles = allProfiles.map(p =>
-    String(p.id) === String(id) ? { ...p, views: newViews } : p
-  );
-
-  renderProfiles();
-}
-
-async function likeProfile(id, currentLikes) {
-  if (!id) return;
-
-  const key = `liked_${id}`;
-  if (localStorage.getItem(key)) {
-    alert("You already liked this profile ❤️");
-    return;
-  }
-
-  localStorage.setItem(key, "yes");
-
-  const newLikes = Number(currentLikes || 0) + 1;
-
-  const { error } = await sb
-    .from("profiles")
-    .update({ likes: newLikes })
-    .eq("id", id);
-
-  if (error) {
-    alert("Could not save like.");
-    return;
-  }
-
-  allProfiles = allProfiles.map(p =>
-    String(p.id) === String(id) ? { ...p, likes: newLikes } : p
-  );
-
-  renderProfiles();
-}
-
-function renderProfiles() {
-  const grid = document.getElementById("profilesGrid");
-  const search = document.getElementById("searchInput").value.toLowerCase().trim();
-  const sort = document.getElementById("sortSelect").value;
-
-  let profiles = [...allProfiles];
-
-  if (search) {
-    profiles = profiles.filter(p => {
-      const blob = `
-        ${safe(p.stage_name || p.name)}
-        ${safe(p.location)}
-        ${safe(p.bio)}
-        ${safe(p.phone)}
-      `.toLowerCase();
-
-      return blob.includes(search);
-    });
-  }
-
-  if (sort === "likes") {
-    profiles.sort((a,b) => Number(b.likes || 0) - Number(a.likes || 0));
-  }
-
-  if (sort === "views") {
-    profiles.sort((a,b) => Number(b.views || 0) - Number(a.views || 0));
-  }
-
-  if (sort === "newest") {
-    profiles.sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-  }
-
-  if (sort === "featured") {
-    profiles.sort((a,b) => profileWeight(b.plan || b.package) - profileWeight(a.plan || a.package));
-  }
-
-  if (!profiles.length) {
-    grid.innerHTML = `<div class="empty">No profiles found.</div>`;
-    return;
-  }
-
-  grid.innerHTML = profiles.map(profile => {
-    const id = profile.id;
-    const name = safe(profile.stage_name || profile.name || "Nairobi Sweet");
-    const location = safe(profile.location || "Nairobi");
-    const phone = safe(profile.phone || profile.phone_number || profile.whatsapp);
-    const bio = safe(profile.bio || "Premium Nairobi profile.");
-    const plan = safe(profile.plan || profile.package || "featured");
-    const likes = Number(profile.likes || 0);
-    const views = Number(profile.views || 0);
-    const image = getProfileImage(profile);
-
-    return `
-      <article class="profile-card">
-        <div class="profile-image-wrap">
-          <img
-            src="${image}"
-            alt="${name} premium Nairobi profile in ${location}"
-            loading="lazy"
-            onerror="this.onerror=null;this.src='assets/logo/logo-badge.png';"
-          />
-        </div>
-
-        <div class="profile-content">
-          <div class="profile-top">
-            <h2 class="profile-name">${name}</h2>
-            <span class="badge">${plan}</span>
-          </div>
-
-          <div class="profile-meta">
-            📍 ${location}<br>
-            📞 ${phone || "Contact available"}
-          </div>
-
-          <div class="profile-bio">${bio}</div>
-
-          <div class="profile-stats">
-            <span>👁️ ${views} views</span>
-            <button class="like-btn" onclick="likeProfile('${id}', ${likes})">
-              💗 ${likes} likes
-            </button>
-          </div>
-
-          <div class="profile-actions">
-            <a
-              href="${getWhatsApp(phone)}"
-              target="_blank"
-              class="whatsapp-btn"
-              onclick="addView('${id}', ${views})"
-            >
-              WhatsApp
-            </a>
-
-            <a
-              href="tel:${phone}"
-              class="call-btn"
-              onclick="addView('${id}', ${views})"
-            >
-              Call
-            </a>
-          </div>
-        </div>
-      </article>
-    `;
-  }).join("");
-}
-
-loadProfiles();
-</script>
-
-</body>
-</html>
+# Nairobi Sweets Full SEO Expansion Pack
+
+## 1. Supabase Bulk Approval SQL
+```sql
+UPDATE profiles
+SET
+  approved = true,
+  status = 'approved'
+WHERE approved IS DISTINCT FROM true
+   OR status IS DISTINCT FROM 'approved';
+
+UPDATE profiles
+SET photo_url = 'https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/default.jpg'
+WHERE photo_url IS NULL;
+
+NOTIFY pgrst, 'reload schema';
+```
+
+---
+
+## 2. High-Ranking Location Page Structure
+Create dedicated SEO pages for:
+
+- westlands.html
+- kilimani.html
+- ruaka.html
+- thika-road.html
+- kileleshwa.html
+- rongai.html
+- runda.html
+- syokimau.html
+- vip.html
+- signature.html
+
+### Each page should include:
+- Unique title tag
+- Meta description
+- H1 with location keyword
+- Internal links to homepage + related locations
+- Live approved profiles filtered by location
+- FAQ schema
+- LocalBusiness structured data
+
+---
+
+## 3. Google Search Console Domination
+### Submit:
+- https://nairobi-sweets.com/sitemap.xml
+- Root domain property
+- robots.txt validation
+- Mobile usability
+- Core Web Vitals
+
+### Request indexing for:
+- Homepage
+- Join page
+- Each location page
+- VIP category pages
+
+---
+
+## 4. Technical SEO Enhancements
+### Add to every page:
+- Canonical tags
+- Open Graph tags
+- Twitter card tags
+- JSON-LD structured data
+- Lazy loading images
+- Compressed assets
+- Semantic headings
+
+---
+
+## 5. Conversion SEO Funnel
+### User journey:
+Google Search → Location Page → Profile Click → WhatsApp / Call → Signup → Payment → Approval → Live Listing
+
+---
+
+## 6. Revenue Multipliers
+### Build:
+- Auto-renew billing
+- Featured profile upsells
+- VIP homepage priority
+- Signature category premium placements
+- Analytics dashboard
+- Click tracking
+- WhatsApp lead logging
+
+---
+
+## 7. Content Scaling Machine
+### Add:
+- Blog articles
+- “Best Nairobi escorts by location” pages
+- Spa pages
+- VIP pages
+- Weekly fresh content
+- AI-generated SEO landing pages from Supabase data
+
+---
+
+## 8. Performance Targets
+Aim for:
+- <2 second load time
+- 90+ Lighthouse SEO score
+- 90+ mobile usability
+- Daily crawl growth
+- Indexed profile pages
+
+---
+
+# Final Objective
+## Transform Nairobi Sweets into:
+### Kenya’s dominant premium directory marketplace.
+
+This system compounds through:
+- SEO
+- Paid onboarding
+- Premium placements
+- Organic traffic
+- Automated renewals
+- Geographic expansion
+
+---
+
+# Deployment Order
+1. Approve all profiles
+2. Normalize images
+3. Deploy SEO index
+4. Launch location pages
+5. Submit sitemap
+6. Push Google indexing
+7. Scale content
+8. Activate revenue engine
