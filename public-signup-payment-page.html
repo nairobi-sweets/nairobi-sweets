@@ -8,145 +8,113 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #050505;
-  color: #fff;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#050507;
+  color:white;
 }
-
-header {
-  padding: 18px 22px;
-  background: #000;
-  border-bottom: 1px solid rgba(255,216,75,.25);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+header{
+  padding:18px 24px;
+  background:#03030a;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid rgba(255,216,75,.18);
 }
-
-.logo {
-  color: #ffd84b;
-  font-size: 22px;
-  font-weight: 900;
+.logo{
+  color:#ffd84b;
+  font-size:24px;
+  font-weight:900;
 }
-
-header a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 800;
+.home{
+  color:#111;
+  background:#ffd84b;
+  text-decoration:none;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:900;
 }
-
-.wrapper {
-  min-height: calc(100vh - 70px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 35px 16px;
-  background: radial-gradient(circle at top, #2b2100, #050505 60%);
+.wrap{
+  max-width:520px;
+  margin:40px auto;
+  padding:0 18px;
 }
-
-.card {
-  width: 100%;
-  max-width: 520px;
-  background: #111;
-  border: 1px solid rgba(255,216,75,.22);
-  border-radius: 26px;
-  padding: 24px;
-  box-shadow: 0 25px 60px rgba(0,0,0,.55);
+.card{
+  background:#111;
+  border:1px solid rgba(255,216,75,.25);
+  border-radius:26px;
+  padding:24px;
+  box-shadow:0 25px 80px rgba(0,0,0,.5);
 }
-
-h1 {
-  margin: 0 0 8px;
-  color: #ffd84b;
-  font-size: 30px;
+h1{
+  color:#ffd84b;
+  margin:0 0 8px;
 }
-
-.subtitle {
-  color: #ccc;
-  margin-bottom: 22px;
-  font-size: 14px;
+p{
+  color:#ddd;
 }
-
-label {
-  display: block;
-  margin: 14px 0 7px;
-  font-weight: 800;
-  color: #ffd84b;
-  font-size: 14px;
+label{
+  display:block;
+  color:#ffd84b;
+  font-weight:900;
+  margin-top:14px;
 }
-
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 13px 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: #050505;
-  color: #fff;
-  outline: none;
+input,textarea,select{
+  width:100%;
+  padding:14px;
+  margin-top:7px;
+  border-radius:14px;
+  border:1px solid #333;
+  background:#050505;
+  color:white;
+  outline:none;
 }
-
-textarea {
-  min-height: 100px;
-  resize: vertical;
+textarea{
+  min-height:95px;
+  resize:vertical;
 }
-
-.preview {
-  margin-top: 12px;
-  width: 100%;
-  height: 260px;
-  border-radius: 18px;
-  object-fit: cover;
-  background: #222;
-  display: none;
-  border: 1px solid rgba(255,216,75,.18);
+.preview{
+  width:100%;
+  height:230px;
+  object-fit:cover;
+  border-radius:18px;
+  background:#191919;
+  margin-top:12px;
+  display:none;
 }
-
-.price-box {
-  margin-top: 15px;
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(255,216,75,.1);
-  color: #ffd84b;
-  font-weight: 900;
+.amount{
+  margin-top:16px;
+  padding:16px;
+  border-radius:16px;
+  background:rgba(255,216,75,.13);
+  color:#ffd84b;
+  font-size:18px;
+  font-weight:900;
 }
-
-button {
-  width: 100%;
-  margin-top: 20px;
-  padding: 15px;
-  border: none;
-  border-radius: 999px;
-  background: #ffd84b;
-  color: #000;
-  font-weight: 900;
-  cursor: pointer;
-  font-size: 16px;
+button{
+  width:100%;
+  margin-top:18px;
+  padding:16px;
+  border:0;
+  border-radius:999px;
+  background:#ffd84b;
+  color:#111;
+  font-weight:900;
+  font-size:16px;
+  cursor:pointer;
 }
-
-button:disabled {
-  opacity: .55;
-  cursor: not-allowed;
+.status{
+  margin-top:14px;
+  color:#ff5c7a;
+  font-weight:800;
 }
-
-.status {
-  margin-top: 15px;
-  color: #ccc;
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.error { color: #ff7777; }
-.success { color: #5cff9d; }
-
-footer {
-  text-align: center;
-  padding: 22px;
-  color: #888;
-  border-top: 1px solid rgba(255,255,255,.08);
+.good{color:#25D366}
+footer{
+  text-align:center;
+  color:#888;
+  padding:30px;
 }
 </style>
 </head>
@@ -155,245 +123,251 @@ footer {
 
 <header>
   <div class="logo">Nairobi Sweets</div>
-  <a href="index.html">Home</a>
+  <a class="home" href="index.html">Home</a>
 </header>
 
-<section class="wrapper">
+<div class="wrap">
   <div class="card">
     <h1>Create Profile</h1>
-    <p class="subtitle">Upload your profile, choose a package, then complete payment.</p>
+    <p>Create your profile, upload a photo, choose package, then pay.</p>
 
-    <form id="signupForm">
-      <label>Profile Photo</label>
-      <input type="file" id="photo" accept="image/*" />
-      <img id="preview" class="preview" alt="Photo preview" />
+    <label>Profile Photo</label>
+    <input id="photoFile" type="file" accept="image/*" onchange="previewPhoto()" />
+    <img id="photoPreview" class="preview" />
 
-      <label>Stage Name</label>
-      <input id="stage_name" type="text" placeholder="Example: Zaria" required />
+    <label>Stage Name</label>
+    <input id="stage_name" placeholder="Example: Hot Salam" />
 
-      <label>Phone Number</label>
-      <input id="phone" type="tel" placeholder="Example: 0712345678" required />
+    <label>Phone Number</label>
+    <input id="phone" placeholder="Example: 0757291539" />
 
-      <label>WhatsApp Number</label>
-      <input id="whatsapp" type="tel" placeholder="Example: 0712345678" required />
+    <label>WhatsApp Number</label>
+    <input id="whatsapp" placeholder="Example: 0757291539" />
 
-      <label>Location</label>
-      <input id="location" type="text" placeholder="Example: Nairobi, Kilimani" required />
+    <label>Location</label>
+    <input id="location" placeholder="Example: Nairobi" />
 
-      <label>Bio</label>
-      <textarea id="bio" placeholder="Write a short profile description..." required></textarea>
+    <label>Bio</label>
+    <textarea id="bio" placeholder="Write short profile bio..."></textarea>
 
-      <label>Package</label>
-      <select id="plan" required>
-        <option value="Featured" data-amount="1000">Featured - KES 1000 / week</option>
-        <option value="VIP" data-amount="1500">VIP - KES 1500 / week</option>
-        <option value="VVIP" data-amount="3000">VVIP / Signature - KES 3000 / week</option>
-      </select>
+    <label>Package</label>
+    <select id="packageSelect" onchange="updateAmount()">
+      <option value="Featured" data-amount="1000">Featured - KES 1000 / week</option>
+      <option value="VIP" data-amount="1500">VIP - KES 1500 / week</option>
+      <option value="VVIP / Signature" data-amount="3000">VVIP / Signature - KES 3000 / week</option>
+    </select>
 
-      <div id="priceBox" class="price-box">Amount: KES 1000</div>
+    <div class="amount" id="amountBox">Amount: KES 1000</div>
 
-      <button id="submitBtn" type="submit">Create Profile & Pay</button>
+    <button onclick="createProfileAndPay()">Create Profile & Pay</button>
 
-      <div id="status" class="status"></div>
-    </form>
+    <div id="status" class="status"></div>
   </div>
-</section>
+</div>
 
-<footer>
-  © Nairobi Sweets
-</footer>
+<footer>© Nairobi Sweets</footer>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const STORAGE_BUCKET = "profile-images";
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const form = document.getElementById("signupForm");
-const photoInput = document.getElementById("photo");
-const preview = document.getElementById("preview");
-const statusBox = document.getElementById("status");
-const submitBtn = document.getElementById("submitBtn");
-const planSelect = document.getElementById("plan");
-const priceBox = document.getElementById("priceBox");
-
-function setStatus(message, type = "") {
-  statusBox.className = "status " + type;
-  statusBox.innerHTML = message;
+function $(id){
+  return document.getElementById(id);
 }
 
-function cleanPhone(value) {
-  if (!value) return "";
-  let phone = String(value).replace(/\D/g, "");
-
-  if (phone.startsWith("0")) {
-    phone = "254" + phone.slice(1);
-  }
-
-  if (phone.startsWith("7") || phone.startsWith("1")) {
-    phone = "254" + phone;
-  }
-
-  return phone;
+function setStatus(message, good = false){
+  $("status").textContent = message;
+  $("status").className = good ? "status good" : "status";
 }
 
-function getSelectedAmount() {
-  const selected = planSelect.options[planSelect.selectedIndex];
-  return Number(selected.dataset.amount || 1000);
+function cleanPhone(phone){
+  return String(phone || "").replace(/\D/g, "");
 }
 
-planSelect.addEventListener("change", () => {
-  priceBox.textContent = `Amount: KES ${getSelectedAmount()}`;
-});
+function normalizeKenyanPhone(phone){
+  let p = cleanPhone(phone);
 
-photoInput.addEventListener("change", () => {
-  const file = photoInput.files[0];
+  if(!p) return "";
 
-  if (!file) {
+  if(p.startsWith("0")) return "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) return "254" + p;
+
+  return p;
+}
+
+function updateAmount(){
+  const select = $("packageSelect");
+  const amount = select.options[select.selectedIndex].dataset.amount;
+  $("amountBox").textContent = `Amount: KES ${amount}`;
+}
+
+function previewPhoto(){
+  const file = $("photoFile").files[0];
+  const preview = $("photoPreview");
+
+  if(!file){
     preview.style.display = "none";
-    preview.src = "";
     return;
   }
 
   preview.src = URL.createObjectURL(file);
   preview.style.display = "block";
-});
+}
 
-async function uploadProfilePhoto(file) {
-  if (!file) return "";
+async function uploadPhoto(stageName){
+  const file = $("photoFile").files[0];
 
-  const ext = file.name.split(".").pop();
-  const safeName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const filePath = `profiles/${safeName}`;
+  if(!file){
+    return "";
+  }
 
-  const { error: uploadError } = await sb.storage
-    .from("profile-images")
-    .upload(filePath, file, {
+  const ext = file.name.split(".").pop().toLowerCase();
+  const safeName = stageName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const fileName = `${Date.now()}-${safeName}.${ext}`;
+
+  const { error } = await sb.storage
+    .from(STORAGE_BUCKET)
+    .upload(fileName, file, {
       cacheControl: "3600",
       upsert: false
     });
 
-  if (uploadError) {
-    throw uploadError;
+  if(error){
+    console.error("UPLOAD ERROR:", error);
+    throw new Error("Photo upload failed");
   }
 
-  const { data } = sb.storage
-    .from("profile-images")
-    .getPublicUrl(filePath);
-
-  return data.publicUrl;
+  return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${fileName}`;
 }
 
-async function createPaymentRequest(profileId, phone, amount, plan) {
-  const res = await fetch("/.netlify/functions/mpesa-stk-push", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      profile_id: profileId,
-      phone,
-      amount,
-      plan
-    })
-  });
+async function createProfileAndPay(){
+  try{
+    setStatus("Preparing profile...");
 
-  const result = await res.json().catch(() => ({}));
+    const stageName = $("stage_name").value.trim();
+    const phoneRaw = $("phone").value.trim();
+    const whatsappRaw = $("whatsapp").value.trim();
+    const location = $("location").value.trim();
+    const bio = $("bio").value.trim();
 
-  if (!res.ok) {
-    throw new Error(result.error || result.message || "Payment request failed");
-  }
+    const packageSelect = $("packageSelect");
+    const selectedPackage = packageSelect.value;
+    const amount = Number(packageSelect.options[packageSelect.selectedIndex].dataset.amount || 0);
 
-  return result;
-}
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Processing...";
-  setStatus("Uploading profile...");
-
-  try {
-    const stage_name = document.getElementById("stage_name").value.trim();
-    const phoneRaw = document.getElementById("phone").value.trim();
-    const whatsappRaw = document.getElementById("whatsapp").value.trim();
-    const location = document.getElementById("location").value.trim();
-    const bio = document.getElementById("bio").value.trim();
-    const plan = planSelect.value;
-    const amount = getSelectedAmount();
-
-    const phone = cleanPhone(phoneRaw);
-    const whatsapp = cleanPhone(whatsappRaw);
-
-    if (!stage_name || !phone || !whatsapp || !location || !bio) {
-      throw new Error("Please fill in all required fields.");
+    if(!stageName){
+      setStatus("Missing stage name");
+      return;
     }
 
-    const photoFile = photoInput.files[0];
-    const photo_url = await uploadProfilePhoto(photoFile);
+    if(!phoneRaw){
+      setStatus("Missing phone number");
+      return;
+    }
 
-    setStatus("Saving profile...");
+    if(!whatsappRaw){
+      setStatus("Missing WhatsApp number");
+      return;
+    }
 
-    const { data: profileData, error: insertError } = await sb
+    if(!location){
+      setStatus("Missing location");
+      return;
+    }
+
+    const phone = normalizeKenyanPhone(phoneRaw);
+    const whatsapp = normalizeKenyanPhone(whatsappRaw);
+
+    if(phone.length < 12){
+      setStatus("Phone number is not valid");
+      return;
+    }
+
+    setStatus("Uploading photo...");
+    const photoUrl = await uploadPhoto(stageName);
+
+    setStatus("Creating profile...");
+
+    const profilePayload = {
+      stage_name: stageName,
+      name: stageName,
+      full_name: stageName,
+
+      phone: phone,
+      phone_number: phone,
+      whatsapp: whatsapp,
+
+      location: location,
+      bio: bio,
+
+      photo_url: photoUrl,
+
+      package: selectedPackage,
+      plan: selectedPackage,
+      amount_paid: amount,
+
+      payment_status: "pending",
+      approved: false,
+      status: "pending",
+
+      likes: 0,
+      views: 0
+    };
+
+    const { data: profile, error: profileError } = await sb
       .from("profiles")
-      .insert([{
-        stage_name,
-        phone,
-        whatsapp,
-        location,
-        bio,
-        plan,
-        package: plan,
-        amount,
-        photo_url,
-        image_url: photo_url,
-        status: "pending",
-        payment_status: "pending"
-      }])
+      .insert(profilePayload)
       .select()
       .single();
 
-    if (insertError) {
-      throw insertError;
+    if(profileError){
+      console.error("PROFILE ERROR:", profileError);
+      setStatus(profileError.message || "Could not create profile");
+      return;
     }
 
-    setStatus("Sending M-Pesa STK push... Check your phone.");
+    setStatus("Profile created. Sending M-Pesa request...", true);
 
-    const paymentResult = await createPaymentRequest(
-      profileData.id,
-      phone,
-      amount,
-      plan
-    );
+    const paymentPayload = {
+      profile_id: profile.id,
+      name: stageName,
+      stage_name: stageName,
+      phone: phone,
+      amount: amount,
+      package: selectedPackage
+    };
 
-    const checkoutRequestId =
-      paymentResult.CheckoutRequestID ||
-      paymentResult.checkoutRequestID ||
-      paymentResult.checkout_request_id ||
-      "";
+    const res = await fetch("/.netlify/functions/mpesa-stk-push", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(paymentPayload)
+    });
 
-    setStatus(
-      "Profile created. M-Pesa request sent. Complete payment on your phone.",
-      "success"
-    );
+    const paymentData = await res.json().catch(() => ({}));
+
+    if(!res.ok){
+      console.error("PAYMENT ERROR:", paymentData);
+      setStatus(paymentData.error || "Profile saved, but payment request failed");
+      return;
+    }
+
+    setStatus("M-Pesa request sent. Check your phone to complete payment.", true);
 
     setTimeout(() => {
-      const params = new URLSearchParams({
-        profile_id: profileData.id,
-        checkout_request_id: checkoutRequestId
-      });
+      window.location.href = "payment-status.html";
+    }, 2500);
 
-      window.location.href = `payment-status.html?${params.toString()}`;
-    }, 1800);
-
-  } catch (err) {
+  }catch(err){
     console.error(err);
-    setStatus(err.message || "Something went wrong.", "error");
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Create Profile & Pay";
+    setStatus(err.message || "Something went wrong");
   }
-});
+}
+
+updateAmount();
 </script>
 
 </body>
