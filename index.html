@@ -9,12 +9,14 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:Arial,sans-serif;
   background:#fffaf0;
   color:#111827;
 }
+
 header{
   max-width:1450px;
   margin:0 auto;
@@ -24,17 +26,20 @@ header{
   border-radius:0 0 24px 24px;
   box-shadow:0 20px 45px rgba(0,0,0,.22);
 }
+
 .topbar{
   display:flex;
   justify-content:space-between;
   align-items:center;
   gap:15px;
 }
+
 .brand{
   display:flex;
   align-items:center;
   gap:12px;
 }
+
 .logo-img{
   width:58px;
   height:58px;
@@ -42,20 +47,24 @@ header{
   object-fit:cover;
   background:#222;
 }
+
 .brand-small{
   color:#d7d7df;
   font-size:13px;
 }
+
 .brand-title{
   color:#ffd51e;
   font-size:30px;
   font-weight:900;
 }
+
 .nav{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
 }
+
 .nav a{
   color:white;
   text-decoration:none;
@@ -64,39 +73,46 @@ header{
   border-radius:999px;
   font-weight:800;
 }
+
 .nav .active{
   background:#ffc400;
   color:#111;
 }
+
 .filters{
   margin-top:18px;
 }
+
 .filter-row{
   display:flex;
   gap:8px;
   flex-wrap:wrap;
 }
+
 .pill{
   border:none;
   padding:9px 16px;
   border-radius:10px;
   font-weight:900;
-  cursor:pointer;
 }
+
 .signature{background:#ffc400;color:#111}
 .vip{background:#ffd51e;color:#111}
 .featured{background:#e83e95;color:white}
 .verified{background:#22c55e;color:white}
+
 .filter-text{
   color:#9ca3af;
   font-size:14px;
   margin-top:18px;
 }
+
 main{
   max-width:1220px;
   margin:-35px auto 60px;
   padding:0 16px;
 }
+
 .section-kicker{
   color:#ff9ad5;
   font-size:13px;
@@ -104,20 +120,24 @@ main{
   font-weight:900;
   letter-spacing:.08em;
 }
+
 h1{
   margin:4px 0 2px;
   color:#ffd51e;
   font-size:34px;
 }
+
 .sub{
   color:#9ca3af;
   margin:0 0 18px;
 }
+
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
   gap:22px;
 }
+
 .card{
   background:#555965;
   border-radius:20px;
@@ -126,17 +146,21 @@ h1{
   box-shadow:0 18px 40px rgba(0,0,0,.22);
   color:white;
 }
+
 .image-wrap{
   position:relative;
   height:285px;
   overflow:hidden;
+  background:#111;
 }
+
 .image-wrap img{
   width:100%;
   height:100%;
   object-fit:cover;
   display:block;
 }
+
 .tags{
   position:absolute;
   top:12px;
@@ -145,12 +169,14 @@ h1{
   gap:6px;
   flex-wrap:wrap;
 }
+
 .tag{
   font-size:12px;
   padding:7px 10px;
   border-radius:999px;
   font-weight:900;
 }
+
 .online{
   position:absolute;
   top:54px;
@@ -161,6 +187,7 @@ h1{
   font-size:12px;
   font-weight:900;
 }
+
 .rank{
   position:absolute;
   right:12px;
@@ -172,15 +199,18 @@ h1{
   font-size:12px;
   font-weight:900;
 }
+
 .card-body{
   padding:16px;
 }
+
 .name{
   margin:0;
   color:#ff9ad5;
   font-size:21px;
   font-weight:900;
 }
+
 .tier{
   color:#cbd5e1;
   text-transform:uppercase;
@@ -188,12 +218,14 @@ h1{
   font-weight:800;
   margin:6px 0 10px;
 }
+
 .meta-row{
   display:flex;
   gap:8px;
   flex-wrap:wrap;
   margin-bottom:13px;
 }
+
 .chip{
   background:rgba(255,255,255,.12);
   padding:8px 12px;
@@ -201,17 +233,20 @@ h1{
   font-size:12px;
   font-weight:800;
 }
+
 .bio{
   color:#f3f4f6;
   font-size:14px;
   line-height:1.45;
   min-height:55px;
 }
+
 .stats{
   display:flex;
   gap:10px;
   margin:12px 0;
 }
+
 .stat{
   background:rgba(255,255,255,.12);
   padding:9px 14px;
@@ -219,15 +254,18 @@ h1{
   font-size:13px;
   font-weight:800;
 }
+
 .status{
   background:rgba(34,197,94,.22);
   color:#86efac;
 }
+
 .actions{
   display:flex;
   gap:10px;
   margin-top:12px;
 }
+
 .actions a{
   flex:1;
   text-align:center;
@@ -236,14 +274,17 @@ h1{
   text-decoration:none;
   font-weight:900;
 }
+
 .whatsapp{background:#22c55e;color:white}
 .call{background:#e83e95;color:white}
+
 .bottom-actions{
   display:grid;
   grid-template-columns:1fr 1fr 1fr;
   gap:8px;
   margin-top:12px;
 }
+
 .bottom-actions button{
   border:none;
   border-radius:10px;
@@ -252,16 +293,19 @@ h1{
   color:white;
   font-weight:800;
 }
+
 .bottom-actions .gold{
   background:#ffc400;
   color:#111;
 }
+
 .loading,.empty{
   grid-column:1/-1;
   text-align:center;
   padding:35px;
   color:#555;
 }
+
 .side-tab{
   position:fixed;
   right:0;
@@ -274,11 +318,13 @@ h1{
   font-weight:900;
   letter-spacing:.12em;
 }
+
 footer{
   text-align:center;
   padding:30px;
   color:#6b7280;
 }
+
 @media(max-width:700px){
   header{border-radius:0;padding-bottom:45px}
   .topbar{align-items:flex-start;flex-direction:column}
@@ -295,7 +341,7 @@ footer{
 <header>
   <div class="topbar">
     <div class="brand">
-      <img class="logo-img" src="assets/logo/logo-badge.png" onerror="this.style.display='none'">
+      <img class="logo-img" src="assets/logo/logo-badge.png" />
       <div>
         <div class="brand-small">Private luxury profile directory</div>
         <div class="brand-title">Nairobi Sweets</div>
@@ -319,6 +365,7 @@ footer{
       <button class="pill featured">Featured</button>
       <button class="pill verified">Verified</button>
     </div>
+
     <div class="filter-text">
       <b>Active filters</b><br><br>
       No active filters
@@ -347,6 +394,9 @@ const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const grid = document.getElementById("profilesGrid");
 
+const FALLBACK_IMAGE = "assets/logo/logo-badge.png";
+const STORAGE_BASE = "https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/";
+
 function cleanPhone(value) {
   if (!value) return "";
   let phone = String(value).replace(/\D/g, "");
@@ -370,12 +420,29 @@ function profileImage(p) {
     p.image_url ||
     p.profile_photo ||
     p.avatar_url ||
+    p.profile_image ||
+    p.picture ||
+    p.photo ||
     p.image ||
     "";
 
-  if (img && String(img).startsWith("http")) return img;
+  if (!img) return FALLBACK_IMAGE;
 
-  return "assets/logo/logo-badge.png";
+  const value = String(img).trim();
+
+  if (value.startsWith("http://") || value.startsWith("https://")) {
+    return value;
+  }
+
+  if (value.startsWith("profiles/")) {
+    return STORAGE_BASE + value;
+  }
+
+  if (value.includes(".")) {
+    return STORAGE_BASE + "profiles/" + value;
+  }
+
+  return FALLBACK_IMAGE;
 }
 
 function profileName(p) {
@@ -393,9 +460,8 @@ function priceFor(plan) {
   return "KES 1000/week";
 }
 
-function rankNumber(p) {
-  const base = p.id ? String(p.id).replace(/\D/g,"").slice(-5) : "";
-  return base || Math.floor(10000 + Math.random() * 90000);
+function rankNumber(index) {
+  return 50 + index + 1;
 }
 
 async function loadProfiles() {
@@ -408,7 +474,7 @@ async function loadProfiles() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error(error);
+    console.error("SUPABASE ERROR:", error);
     grid.innerHTML = `<div class="empty">Could not load profiles.</div>`;
     return;
   }
@@ -418,7 +484,9 @@ async function loadProfiles() {
     return;
   }
 
-  grid.innerHTML = data.map(p => {
+  console.log("Loaded profiles:", data);
+
+  grid.innerHTML = data.map((p, index) => {
     const name = safe(profileName(p));
     const plan = safe(profilePlan(p));
     const img = safe(profileImage(p));
@@ -431,17 +499,21 @@ async function loadProfiles() {
     return `
       <article class="card">
         <div class="image-wrap">
-          <img src="${img}" alt="${name}" loading="lazy" onerror="this.src='assets/logo/logo-badge.png'">
+          <img 
+            src="${img}" 
+            alt="${name}" 
+            loading="lazy"
+            onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}'"
+          >
 
           <div class="tags">
             <span class="tag signature">👑 Signature</span>
             <span class="tag vip">VIP</span>
             <span class="tag featured">Featured</span>
-            <span class="tag verified">Verified</span>
           </div>
 
           <div class="online">Online</div>
-          <div class="rank">Rank ${rankNumber(p)}</div>
+          <div class="rank">Rank ${rankNumber(index)}</div>
         </div>
 
         <div class="card-body">
