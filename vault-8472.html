@@ -4,36 +4,135 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Nairobi Sweets Vault</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:#070713;color:#fff}
-header{padding:18px 24px;background:#03030a;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222}
-h1{color:#ffd84b;margin:0}
-button,input,select{padding:11px;border-radius:12px;border:0}
-button{font-weight:900;cursor:pointer;background:#ffd84b;color:#111}
-.lock{max-width:420px;margin:100px auto;background:#111225;padding:25px;border-radius:24px}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#070713;color:#fff}
+.hidden{display:none!important}
+
+.lock{
+  max-width:430px;
+  margin:100px auto;
+  background:#111225;
+  padding:26px;
+  border-radius:24px;
+}
+.lock h1{color:#ffd84b;margin-top:0}
+.lock input{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:0;
+  background:#191a2c;
+  color:white;
+  margin:12px 0;
+}
+button{
+  border:0;
+  border-radius:14px;
+  padding:12px;
+  font-weight:900;
+  cursor:pointer;
+  background:#ffd84b;
+  color:#111;
+}
+
+header{
+  padding:18px 24px;
+  background:#03030a;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+header h1{color:#ffd84b;margin:0}
+
 .wrap{max-width:1300px;margin:25px auto;padding:0 18px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
-.stat{background:#131427;padding:18px;border-radius:20px;border:1px solid #25263a}
-.stat b{font-size:28px;color:#ffd84b}
-.tools{display:grid;grid-template-columns:1fr 180px 180px;gap:12px;margin-bottom:20px}
-.tools input,.tools select{background:#161728;color:#fff;border:1px solid #333}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.card{background:#111225;border:1px solid #2a2b40;border-radius:22px;overflow:hidden}
-.card img{width:100%;height:260px;object-fit:cover;background:#191a2e}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:14px;
+  margin-bottom:20px;
+}
+.stat{
+  background:#111225;
+  border:1px solid #292a40;
+  border-radius:20px;
+  padding:18px;
+}
+.stat b{font-size:30px;color:#ffd84b}
+
+.tools{
+  display:grid;
+  grid-template-columns:1fr 180px 160px;
+  gap:12px;
+  margin-bottom:20px;
+}
+.tools input,.tools select{
+  padding:13px;
+  border-radius:14px;
+  border:1px solid #33354c;
+  background:#151629;
+  color:white;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:18px;
+}
+
+.card{
+  background:#111225;
+  border:1px solid #292a40;
+  border-radius:22px;
+  overflow:hidden;
+}
+.card img{
+  width:100%;
+  height:260px;
+  object-fit:cover;
+  background:#18192b;
+}
 .content{padding:15px}
 .name{font-size:22px;font-weight:900}
-.badge{display:inline-block;margin:6px 0;padding:5px 10px;border-radius:999px;background:#332b10;color:#ffd84b}
-.small{font-size:13px;color:#ccc;line-height:1.5}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.actions button{font-size:13px}
-.danger{background:#ff4d6d;color:white}
+.badge{
+  display:inline-block;
+  margin:7px 0;
+  padding:5px 10px;
+  border-radius:999px;
+  background:rgba(255,216,75,.14);
+  border:1px solid rgba(255,216,75,.35);
+  color:#ffd84b;
+  font-size:12px;
+}
+.small{font-size:13px;color:#d8d8ee;line-height:1.5}
+textarea{
+  width:100%;
+  height:72px;
+  margin-top:10px;
+  border-radius:13px;
+  background:#17182a;
+  color:white;
+  border:1px solid #33354c;
+  padding:10px;
+}
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
 .good{background:#25D366;color:#06130a}
+.danger{background:#ff4d6d;color:white}
 .blue{background:#4db8ff;color:#06101a}
-.hidden{display:none}
-textarea{width:100%;height:70px;border-radius:12px;background:#161728;color:#fff;border:1px solid #333;padding:10px}
-@media(max-width:700px){.tools{grid-template-columns:1fr}}
+
+@media(max-width:700px){
+  .tools{grid-template-columns:1fr}
+}
 </style>
 </head>
 
@@ -41,40 +140,40 @@ textarea{width:100%;height:70px;border-radius:12px;background:#161728;color:#fff
 
 <div id="lockBox" class="lock">
   <h1>Vault Login</h1>
-  <p class="small">Enter admin code.</p>
-  <input id="adminCode" type="password" placeholder="Admin code" style="width:100%;margin:10px 0;background:#161728;color:white">
+  <p>Enter admin code.</p>
+  <input id="adminCode" type="password" placeholder="Admin code" />
   <button onclick="unlock()" style="width:100%">Unlock Vault</button>
 </div>
 
 <div id="app" class="hidden">
-<header>
-  <h1>Nairobi Sweets Vault</h1>
-  <button onclick="logout()">Lock</button>
-</header>
+  <header>
+    <h1>Nairobi Sweets Vault</h1>
+    <button onclick="logout()">Lock Vault</button>
+  </header>
 
-<div class="wrap">
-  <div class="stats">
-    <div class="stat">Total<br><b id="totalCount">0</b></div>
-    <div class="stat">Approved<br><b id="approvedCount">0</b></div>
-    <div class="stat">Missing Photos<br><b id="missingCount">0</b></div>
-    <div class="stat">Total Likes<br><b id="likesCount">0</b></div>
-    <div class="stat">Total Views<br><b id="viewsCount">0</b></div>
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat">Total<br><b id="totalCount">0</b></div>
+      <div class="stat">Approved<br><b id="approvedCount">0</b></div>
+      <div class="stat">Missing Photos<br><b id="missingCount">0</b></div>
+      <div class="stat">Likes<br><b id="likesCount">0</b></div>
+      <div class="stat">Views<br><b id="viewsCount">0</b></div>
+    </div>
+
+    <div class="tools">
+      <input id="search" placeholder="Search name, phone, location..." oninput="render()" />
+      <select id="filter" onchange="render()">
+        <option value="all">All</option>
+        <option value="approved">Approved</option>
+        <option value="pending">Pending</option>
+        <option value="missing">Missing photos</option>
+        <option value="top">Top viewed</option>
+      </select>
+      <button onclick="loadProfiles()">Reload</button>
+    </div>
+
+    <div id="list" class="grid">Loading...</div>
   </div>
-
-  <div class="tools">
-    <input id="search" placeholder="Search name, phone, location..." oninput="render()" />
-    <select id="filter" onchange="render()">
-      <option value="all">All profiles</option>
-      <option value="approved">Approved</option>
-      <option value="pending">Pending</option>
-      <option value="missing">Missing photos</option>
-      <option value="top">Top viewed</option>
-    </select>
-    <button onclick="loadProfiles()">Reload</button>
-  </div>
-
-  <div id="list" class="grid">Loading...</div>
-</div>
 </div>
 
 <script>
@@ -85,16 +184,20 @@ const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 const STORAGE_BUCKET = "profile-images";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 let profiles = [];
 
 function unlock(){
-  if(adminCode.value !== ADMIN_CODE){
+  const code = document.getElementById("adminCode").value.trim();
+
+  if(code !== ADMIN_CODE){
     alert("Wrong code");
     return;
   }
+
   localStorage.setItem("vault_ok","yes");
-  lockBox.classList.add("hidden");
-  app.classList.remove("hidden");
+  document.getElementById("lockBox").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
   loadProfiles();
 }
 
@@ -104,28 +207,36 @@ function logout(){
 }
 
 if(localStorage.getItem("vault_ok") === "yes"){
-  lockBox.classList.add("hidden");
-  app.classList.remove("hidden");
+  document.getElementById("lockBox").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
   loadProfiles();
 }
 
-function img(p){
+function getImage(p){
   let raw = String(
-    p.photo_url || p.image_url || p.profile_photo || p.profile_image || p.avatar_url || p.image || p.photo || ""
+    p.photo_url ||
+    p.image_url ||
+    p.profile_photo ||
+    p.profile_image ||
+    p.avatar_url ||
+    p.image ||
+    p.photo ||
+    ""
   ).trim();
 
-  if(!raw || raw.toLowerCase().includes("logo") || raw.toLowerCase().includes("default")){
+  if(!raw || raw.toLowerCase().includes("logo") || raw.toLowerCase().includes("badge") || raw.toLowerCase().includes("default")){
     return "assets/logo/logo-badge.png";
   }
 
   if(raw.startsWith("http")) return raw;
 
   raw = raw.replace(/^\/+/,"").split("/").pop();
+
   return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
 }
 
-function isMissingPhoto(p){
-  const raw = String(p.photo_url || "").trim().toLowerCase();
+function missingPhoto(p){
+  const raw = String(p.photo_url || "").toLowerCase();
   return !raw || raw.includes("logo") || raw.includes("badge") || raw.includes("default");
 }
 
@@ -136,8 +247,8 @@ async function loadProfiles(){
     .order("created_at",{ascending:false});
 
   if(error){
-    list.innerHTML = "Could not load profiles.";
     console.error(error);
+    document.getElementById("list").innerHTML = "Could not load profiles.";
     return;
   }
 
@@ -149,57 +260,71 @@ async function loadProfiles(){
 function renderStats(){
   totalCount.textContent = profiles.length;
   approvedCount.textContent = profiles.filter(p => p.approved === true || p.status === "approved").length;
-  missingCount.textContent = profiles.filter(isMissingPhoto).length;
+  missingCount.textContent = profiles.filter(missingPhoto).length;
   likesCount.textContent = profiles.reduce((s,p)=>s+Number(p.likes||0),0);
   viewsCount.textContent = profiles.reduce((s,p)=>s+Number(p.views||0),0);
 }
 
 function render(){
-  const q = search.value.toLowerCase();
-  const f = filter.value;
+  const q = document.getElementById("search").value.toLowerCase();
+  const f = document.getElementById("filter").value;
 
   let rows = [...profiles];
 
   if(q){
     rows = rows.filter(p => `
-      ${p.stage_name||""} ${p.name||""} ${p.phone||""} ${p.location||""}
+      ${p.stage_name || ""}
+      ${p.name || ""}
+      ${p.phone || ""}
+      ${p.location || ""}
     `.toLowerCase().includes(q));
   }
 
   if(f === "approved") rows = rows.filter(p => p.approved === true || p.status === "approved");
   if(f === "pending") rows = rows.filter(p => !(p.approved === true || p.status === "approved"));
-  if(f === "missing") rows = rows.filter(isMissingPhoto);
+  if(f === "missing") rows = rows.filter(missingPhoto);
   if(f === "top") rows.sort((a,b)=>Number(b.views||0)-Number(a.views||0));
 
   if(!rows.length){
-    list.innerHTML = `<div>No profiles found.</div>`;
+    list.innerHTML = "<div>No profiles found.</div>";
     return;
   }
 
-  list.innerHTML = rows.map(p => `
-    <div class="card">
-      <img src="${img(p)}" onerror="this.onerror=null;this.src='assets/logo/logo-badge.png'">
-      <div class="content">
-        <div class="name">${p.stage_name || p.name || "Unnamed"}</div>
-        <span class="badge">${p.plan || p.package || "featured"}</span>
-        <div class="small">
-          📍 ${p.location || "No location"}<br>
-          📞 ${p.phone || p.phone_number || p.whatsapp || "No phone"}<br>
-          ❤️ ${p.likes || 0} likes · 👁️ ${p.views || 0} views<br>
-          Status: ${p.approved ? "Approved" : (p.status || "Pending")}
-        </div>
+  list.innerHTML = rows.map(p => {
+    const id = p.id;
+    const name = p.stage_name || p.name || "Unnamed";
+    const phone = p.phone || p.phone_number || p.whatsapp || "";
+    const location = p.location || "No location";
+    const plan = p.plan || p.package || "featured";
+    const status = p.approved ? "Approved" : (p.status || "Pending");
 
-        <textarea id="photo_${p.id}" placeholder="Paste full photo URL here">${p.photo_url || ""}</textarea>
+    return `
+      <div class="card">
+        <img src="${getImage(p)}" onerror="this.onerror=null;this.src='assets/logo/logo-badge.png';">
 
-        <div class="actions">
-          <button class="good" onclick="approve('${p.id}')">Approve</button>
-          <button class="danger" onclick="unapprove('${p.id}')">Hide</button>
-          <button class="blue" onclick="savePhoto('${p.id}')">Save Photo</button>
-          <button onclick="resetStats('${p.id}')">Reset Stats</button>
+        <div class="content">
+          <div class="name">${name}</div>
+          <span class="badge">${plan}</span>
+
+          <div class="small">
+            📍 ${location}<br>
+            📞 ${phone || "No phone"}<br>
+            ❤️ ${p.likes || 0} likes · 👁️ ${p.views || 0} views<br>
+            Status: ${status}
+          </div>
+
+          <textarea id="photo_${id}" placeholder="Paste full image URL here">${p.photo_url || ""}</textarea>
+
+          <div class="actions">
+            <button class="good" onclick="approve('${id}')">Approve</button>
+            <button class="danger" onclick="hideProfile('${id}')">Hide</button>
+            <button class="blue" onclick="savePhoto('${id}')">Save Photo</button>
+            <button onclick="resetStats('${id}')">Reset Stats</button>
+          </div>
         </div>
       </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 async function approve(id){
@@ -207,19 +332,22 @@ async function approve(id){
     approved:true,
     status:"approved"
   }).eq("id",id);
+
   loadProfiles();
 }
 
-async function unapprove(id){
+async function hideProfile(id){
   await sb.from("profiles").update({
     approved:false,
     status:"pending"
   }).eq("id",id);
+
   loadProfiles();
 }
 
 async function savePhoto(id){
   const value = document.getElementById(`photo_${id}`).value.trim();
+
   if(!value){
     alert("Paste photo URL first");
     return;
