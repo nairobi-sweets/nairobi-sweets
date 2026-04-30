@@ -1,483 +1,488 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nairobi Sweets</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nairobi Sweets</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-*{box-sizing:border-box}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f7f7f7;
-  color:#0b1020;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #080814;
+      color: #fff;
+    }
 
-.header{
-  max-width:1450px;
-  margin:0 auto;
-  background:linear-gradient(90deg,#303039,#171821);
-  padding:22px 40px;
-  border-radius:0 0 28px 28px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  color:white;
-  box-shadow:0 20px 45px rgba(0,0,0,.18);
-}
+    header {
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.55);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+    }
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
+    .brand {
+      font-size: 24px;
+      font-weight: 900;
+      color: #ffd84b;
+    }
 
-.logo{
-  width:48px;
-  height:48px;
-  border-radius:10px;
-  object-fit:cover;
-  background:#111;
-}
+    .join-btn {
+      background: #ffd84b;
+      color: #111;
+      padding: 10px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 800;
+    }
 
-.kicker{
-  font-size:12px;
-  letter-spacing:4px;
-  color:#d1d5db;
-  font-weight:800;
-}
+    .hero {
+      text-align: center;
+      padding: 60px 20px 36px;
+      background:
+        radial-gradient(circle at top, rgba(255,216,75,0.22), transparent 35%),
+        linear-gradient(180deg, #12122b, #080814);
+    }
 
-.title{
-  color:#ffd21f;
-  font-size:26px;
-  font-weight:900;
-}
+    .hero h1 {
+      font-size: clamp(34px, 6vw, 68px);
+      margin: 0 0 12px;
+      color: #fff;
+    }
 
-.nav{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
+    .hero p {
+      color: #cfcfe8;
+      max-width: 680px;
+      margin: auto;
+      font-size: 17px;
+    }
 
-.nav a{
-  text-decoration:none;
-  color:white;
-  padding:13px 24px;
-  border-radius:999px;
-  background:rgba(255,255,255,.09);
-  font-weight:900;
-}
+    .filters {
+      max-width: 1200px;
+      margin: 20px auto 0;
+      padding: 0 18px;
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 12px;
+    }
 
-.nav .gold{
-  background:#ffc400;
-  color:#111;
-}
+    .filters input,
+    .filters select {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      outline: none;
+    }
 
-.nav .pink{
-  background:#e83e95;
-  color:white;
-}
+    .filters select option {
+      color: #111;
+    }
 
-.hero-gap{
-  max-width:1450px;
-  height:45px;
-  background:#070b1c;
-  margin:0 auto;
-  border-radius:0 0 28px 28px;
-}
+    .grid {
+      max-width: 1200px;
+      margin: 26px auto 60px;
+      padding: 0 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 22px;
+    }
 
-.wrap{
-  max-width:1220px;
-  margin:34px auto 70px;
-  padding:0 16px;
-}
+    .card {
+      border-radius: 26px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+    }
 
-.panel{
-  background:white;
-  border-radius:28px;
-  padding:28px;
-  box-shadow:0 18px 45px rgba(0,0,0,.08);
-}
+    .photo-wrap {
+      width: 100%;
+      height: 330px;
+      background: #17172b;
+      overflow: hidden;
+    }
 
-.panel-top{
-  display:flex;
-  justify-content:space-between;
-  gap:18px;
-  align-items:flex-start;
-  margin-bottom:22px;
-}
+    .photo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .35s ease;
+    }
 
-h1{
-  margin:0 0 12px;
-  font-size:30px;
-  color:#0b1020;
-}
+    .card:hover img {
+      transform: scale(1.05);
+    }
 
-.sub{
-  margin:0;
-  color:#64748b;
-  line-height:1.6;
-  max-width:700px;
-}
+    .content {
+      padding: 18px;
+    }
 
-.filters{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
+    .name-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
 
-.filter{
-  border:none;
-  padding:12px 20px;
-  border-radius:999px;
-  font-weight:900;
-  background:#f1f5f9;
-  color:#0f172a;
-}
+    .name {
+      font-size: 22px;
+      font-weight: 900;
+      margin: 0;
+    }
 
-.filter.active{
-  background:#ffc400;
-}
+    .badge {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,216,75,0.15);
+      color: #ffd84b;
+      border: 1px solid rgba(255,216,75,0.35);
+      white-space: nowrap;
+    }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
-  gap:18px;
-}
+    .meta {
+      color: #cfcfe8;
+      margin: 8px 0 12px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
 
-.card{
-  background:#071126;
-  border-radius:18px;
-  overflow:hidden;
-  color:white;
-  box-shadow:0 16px 34px rgba(0,0,0,.18);
-}
+    .bio {
+      color: #fff;
+      opacity: .9;
+      font-size: 14px;
+      min-height: 38px;
+    }
 
-.image-wrap{
-  height:360px;
-  position:relative;
-  overflow:hidden;
-  background:#111;
-}
+    .profile-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-size: 14px;
+    }
 
-.image-wrap img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
+    .like-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff4d8d, #ffd84b);
+      color: #111;
+      font-weight: 900;
+    }
 
-.badges{
-  position:absolute;
-  top:14px;
-  left:14px;
-  display:flex;
-  gap:8px;
-  z-index:2;
-}
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
 
-.badge{
-  padding:8px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-}
+    .actions a {
+      text-align: center;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 14px;
+      font-weight: 900;
+    }
 
-.vip{
-  background:#e83e95;
-  color:white;
-}
+    .whatsapp {
+      background: #25D366;
+      color: #06130a;
+    }
 
-.live{
-  background:#4ade80;
-  color:#052e16;
-}
+    .call {
+      background: #ffd84b;
+      color: #111;
+    }
 
-.body{
-  padding:18px;
-}
+    .empty {
+      text-align: center;
+      color: #cfcfe8;
+      padding: 40px;
+      grid-column: 1 / -1;
+    }
 
-.name{
-  margin:0 0 8px;
-  font-size:24px;
-  font-weight:900;
-  color:white;
-}
+    @media (max-width: 650px) {
+      .filters {
+        grid-template-columns: 1fr;
+      }
 
-.location{
-  color:#cbd5e1;
-  font-size:14px;
-  margin-bottom:14px;
-}
+      header {
+        padding: 14px 16px;
+      }
 
-.bio{
-  color:#e5e7eb;
-  line-height:1.55;
-  font-size:14px;
-  min-height:68px;
-}
-
-.chips{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin:16px 0;
-}
-
-.chip{
-  background:rgba(255,255,255,.09);
-  padding:9px 13px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-  color:white;
-}
-
-.actions{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-}
-
-.actions a{
-  flex:1;
-  text-align:center;
-  text-decoration:none;
-  padding:14px 10px;
-  border-radius:12px;
-  font-weight:900;
-}
-
-.whatsapp{
-  background:#22c55e;
-  color:white;
-}
-
-.call{
-  background:#e83e95;
-  color:white;
-}
-
-.side-tab{
-  position:fixed;
-  right:0;
-  top:48%;
-  writing-mode:vertical-rl;
-  background:#ffc400;
-  color:#111;
-  padding:20px 13px;
-  border-radius:14px 0 0 14px;
-  font-weight:900;
-  letter-spacing:.12em;
-}
-
-.loading,.empty{
-  grid-column:1/-1;
-  text-align:center;
-  padding:35px;
-  color:#64748b;
-}
-
-@media(max-width:750px){
-  .header{
-    flex-direction:column;
-    align-items:flex-start;
-    padding:20px;
-  }
-
-  .panel-top{
-    flex-direction:column;
-  }
-
-  .side-tab{
-    display:none;
-  }
-}
-</style>
+      .photo-wrap {
+        height: 380px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header class="header">
-  <div class="brand">
-    <img 
-      class="logo" 
-      src="https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/profiles/1775706112598-sly.jpg"
-      alt="Nairobi Sweets logo"
-    />
-    <div>
-      <div class="kicker">PRIVATE VIP DIRECTORY</div>
-      <div class="title">Nairobi Sweets</div>
-    </div>
-  </div>
-
-  <nav class="nav">
-    <a class="gold" href="#profiles">Signature</a>
-    <a href="#profiles">Directory</a>
-    <a href="login.html">Login</a>
-    <a class="pink" href="public-signup-payment-page.html">Join VIP</a>
-  </nav>
+<header>
+  <div class="brand">Nairobi Sweets</div>
+  <a class="join-btn" href="public-signup-payment-page.html">Join Now</a>
 </header>
 
-<div class="hero-gap"></div>
+<section class="hero">
+  <h1>Premium Profiles</h1>
+  <p>Discover approved Nairobi Sweets profiles with real photos, contact buttons, likes, and views.</p>
+</section>
 
-<main class="wrap" id="profiles">
-  <section class="panel">
-    <div class="panel-top">
-      <div>
-        <h1>Directory profiles</h1>
-        <p class="sub">
-          Approved listings only. Signature, VIP, and Featured profiles are surfaced from your Supabase directory in real time.
-        </p>
-      </div>
+<div class="filters">
+  <input id="searchInput" type="text" placeholder="Search by name, location, bio..." oninput="renderProfiles()" />
+  <select id="sortSelect" onchange="renderProfiles()">
+    <option value="featured">Featured first</option>
+    <option value="likes">Most liked</option>
+    <option value="views">Most viewed</option>
+    <option value="newest">Newest</option>
+  </select>
+</div>
 
-      <div class="filters">
-        <button class="filter active">All</button>
-        <button class="filter">Signature</button>
-        <button class="filter">VIP</button>
-        <button class="filter">Featured</button>
-      </div>
-    </div>
-
-    <div id="profilesGrid" class="grid">
-      <div class="loading">Loading profiles...</div>
-    </div>
-  </section>
+<main id="profilesGrid" class="grid">
+  <div class="empty">Loading profiles...</div>
 </main>
 
-<div class="side-tab">👑 SIGNATURE</div>
-
 <script>
-const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+  const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const grid = document.getElementById("profilesGrid");
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const STORAGE_BASE = "https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/profiles/";
-const FALLBACK_IMAGE = STORAGE_BASE + "1775706112598-sly.jpg";
+  let allProfiles = [];
 
-function cleanPhone(value){
-  if(!value) return "";
-  let phone = String(value).replace(/\D/g,"");
-  if(phone.startsWith("0")) phone = "254" + phone.slice(1);
-  if(phone.startsWith("7") || phone.startsWith("1")) phone = "254" + phone;
-  return phone;
-}
-
-function safe(value){
-  return String(value || "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-function profileImage(p){
-  const img =
-    p.photo_url ||
-    p.image_url ||
-    p.profile_photo ||
-    p.avatar_url ||
-    p.profile_image ||
-    p.picture ||
-    p.photo ||
-    p.image ||
-    "";
-
-  const value = String(img || "").trim();
-
-  if(value.startsWith("https://")) return value;
-
-  if(value.startsWith("profiles/")){
-    return "https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/" + value;
+  function safeText(value) {
+    return value ? String(value) : "";
   }
 
-  if(value.includes(".jpg") || value.includes(".jpeg") || value.includes(".png") || value.includes(".webp")){
-    return STORAGE_BASE + value;
+  function getProfileImage(p) {
+    return (
+      p.photo_url ||
+      p.image_url ||
+      p.profile_photo ||
+      p.profile_image ||
+      p.avatar_url ||
+      "assets/logo/logo-badge.png"
+    );
   }
 
-  return FALLBACK_IMAGE;
-}
-
-function profileName(p){
-  return p.stage_name || p.name || p.full_name || "Nairobi Sweet";
-}
-
-function profilePlan(p){
-  return p.plan || p.package || p.tier || "vip";
-}
-
-async function loadProfiles(){
-  grid.innerHTML = `<div class="loading">Loading profiles...</div>`;
-
-  const { data, error } = await sb
-    .from("profiles")
-    .select("*")
-    .eq("status","approved")
-    .order("created_at",{ ascending:false });
-
-  if(error){
-    console.error(error);
-    grid.innerHTML = `<div class="empty">Could not load profiles.</div>`;
-    return;
+  function getName(p) {
+    return p.stage_name || p.name || p.full_name || "Nairobi Sweet";
   }
 
-  if(!data || data.length === 0){
-    grid.innerHTML = `<div class="empty">No approved profiles yet.</div>`;
-    return;
+  function getLocation(p) {
+    return p.location || p.city || "Nairobi";
   }
 
-  grid.innerHTML = data.map(p => {
-    const name = safe(profileName(p));
-    const img = safe(profileImage(p));
-    const phone = cleanPhone(p.phone);
-    const whatsapp = cleanPhone(p.whatsapp || p.phone);
-    const location = safe(p.location || p.area || "Nairobi");
-    const bio = safe(p.bio || p.description || `Get amazing services with ${name}`);
-    const plan = safe(profilePlan(p));
+  function getPhone(p) {
+    return p.phone || p.phone_number || p.whatsapp || "";
+  }
 
-    return `
-      <article class="card">
-        <div class="image-wrap">
-          <img 
-            src="${img}" 
-            alt="${name}" 
-            loading="lazy"
-            onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'"
-          />
-          <div class="badges">
-            <span class="badge vip">${plan}</span>
-            <span class="badge live">LIVE</span>
+  function getWhatsAppLink(phone) {
+    const clean = String(phone || "").replace(/\D/g, "");
+
+    if (!clean) return "#";
+
+    let finalPhone = clean;
+
+    if (clean.startsWith("0")) {
+      finalPhone = "254" + clean.slice(1);
+    } else if (clean.startsWith("7") || clean.startsWith("1")) {
+      finalPhone = "254" + clean;
+    }
+
+    return `https://wa.me/${finalPhone}`;
+  }
+
+  async function loadProfiles() {
+    const { data, error } = await sb
+      .from("profiles")
+      .select("*")
+      .or("approved.eq.true,status.eq.approved,is_approved.eq.true")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      document.getElementById("profilesGrid").innerHTML =
+        `<div class="empty">Could not load profiles. Check Supabase RLS or table columns.</div>`;
+      return;
+    }
+
+    allProfiles = data || [];
+    renderProfiles();
+    countVisibleViews();
+  }
+
+  async function addView(profileId, currentViews = 0) {
+    const viewedKey = `viewed_${profileId}`;
+
+    if (localStorage.getItem(viewedKey)) return;
+
+    localStorage.setItem(viewedKey, "yes");
+
+    await sb
+      .from("profiles")
+      .update({ views: Number(currentViews || 0) + 1 })
+      .eq("id", profileId);
+  }
+
+  async function likeProfile(profileId, currentLikes = 0) {
+    const likedKey = `liked_${profileId}`;
+
+    if (localStorage.getItem(likedKey)) {
+      alert("You already liked this profile ❤️");
+      return;
+    }
+
+    localStorage.setItem(likedKey, "yes");
+
+    const { error } = await sb
+      .from("profiles")
+      .update({ likes: Number(currentLikes || 0) + 1 })
+      .eq("id", profileId);
+
+    if (error) {
+      console.error(error);
+      alert("Like failed. Check Supabase permissions.");
+      return;
+    }
+
+    allProfiles = allProfiles.map(p => {
+      if (p.id === profileId) {
+        return { ...p, likes: Number(p.likes || 0) + 1 };
+      }
+      return p;
+    });
+
+    renderProfiles();
+  }
+
+  function countVisibleViews() {
+    allProfiles.forEach(p => {
+      if (p.id) addView(p.id, p.views || 0);
+    });
+  }
+
+  function renderProfiles() {
+    const grid = document.getElementById("profilesGrid");
+    const q = document.getElementById("searchInput").value.toLowerCase().trim();
+    const sort = document.getElementById("sortSelect").value;
+
+    let profiles = [...allProfiles];
+
+    if (q) {
+      profiles = profiles.filter(p => {
+        const haystack = `
+          ${safeText(getName(p))}
+          ${safeText(getLocation(p))}
+          ${safeText(p.bio)}
+          ${safeText(p.description)}
+          ${safeText(p.category)}
+        `.toLowerCase();
+
+        return haystack.includes(q);
+      });
+    }
+
+    if (sort === "likes") {
+      profiles.sort((a, b) => Number(b.likes || 0) - Number(a.likes || 0));
+    }
+
+    if (sort === "views") {
+      profiles.sort((a, b) => Number(b.views || 0) - Number(a.views || 0));
+    }
+
+    if (sort === "newest") {
+      profiles.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+    }
+
+    if (sort === "featured") {
+      profiles.sort((a, b) => {
+        const av = a.plan === "VVIP" || a.plan === "Signature" ? 3 : a.plan === "VIP" ? 2 : 1;
+        const bv = b.plan === "VVIP" || b.plan === "Signature" ? 3 : b.plan === "VIP" ? 2 : 1;
+        return bv - av;
+      });
+    }
+
+    if (!profiles.length) {
+      grid.innerHTML = `<div class="empty">No approved profiles found.</div>`;
+      return;
+    }
+
+    grid.innerHTML = profiles.map(p => {
+      const name = getName(p);
+      const location = getLocation(p);
+      const phone = getPhone(p);
+      const image = getProfileImage(p);
+      const bio = p.bio || p.description || "Premium Nairobi profile.";
+      const likes = Number(p.likes || 0);
+      const views = Number(p.views || 0);
+      const plan = p.plan || p.package || "Featured";
+
+      return `
+        <article class="card">
+          <div class="photo-wrap">
+            <img 
+              src="${image}" 
+              alt="${name}" 
+              loading="lazy"
+              onerror="this.onerror=null;this.src='assets/logo/logo-badge.png';"
+            />
           </div>
-        </div>
 
-        <div class="body">
-          <h2 class="name">${name}</h2>
-          <div class="location">${location}</div>
-          <p class="bio">${bio}</p>
+          <div class="content">
+            <div class="name-row">
+              <h2 class="name">${name}</h2>
+              <span class="badge">${plan}</span>
+            </div>
 
-          <div class="chips">
-            <span class="chip">${location}</span>
-            <span class="chip">Direct contact</span>
+            <div class="meta">
+              📍 ${location}<br>
+              📞 ${phone || "Contact available"}
+            </div>
+
+            <div class="bio">${bio}</div>
+
+            <div class="profile-stats">
+              <span>👁️ ${views} views</span>
+              <button class="like-btn" onclick="likeProfile('${p.id}', ${likes})">
+                ❤️ ${likes} likes
+              </button>
+            </div>
+
+            <div class="actions">
+              <a class="whatsapp" href="${getWhatsAppLink(phone)}" target="_blank">WhatsApp</a>
+              <a class="call" href="tel:${phone}">Call</a>
+            </div>
           </div>
+        </article>
+      `;
+    }).join("");
+  }
 
-          <div class="actions">
-            ${whatsapp ? `<a class="whatsapp" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
-            ${phone ? `<a class="call" href="tel:+${phone}">Call</a>` : ""}
-          </div>
-        </div>
-      </article>
-    `;
-  }).join("");
-}
-
-loadProfiles();
+  loadProfiles();
 </script>
 
 </body>
