@@ -1,135 +1,267 @@
-# Nairobi Sweets Full SEO Expansion Pack
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Premium Nairobi Escorts | Nairobi Sweets</title>
+  <meta name="description" content="Verified premium Nairobi profiles with real photos, direct WhatsApp access, VIP listings, and location-based discovery." />
+  <meta name="keywords" content="Nairobi escorts, Nairobi sweets, VIP Nairobi profiles, Nairobi spa listings, Westlands escorts, Kilimani escorts" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://nairobi-sweets.com/" />
 
-## 1. Supabase Bulk Approval SQL
-```sql
-UPDATE profiles
-SET
-  approved = true,
-  status = 'approved'
-WHERE approved IS DISTINCT FROM true
-   OR status IS DISTINCT FROM 'approved';
+  <meta property="og:title" content="Nairobi Sweets | Premium Nairobi Profiles" />
+  <meta property="og:description" content="Explore verified premium Nairobi profiles by location." />
+  <meta property="og:url" content="https://nairobi-sweets.com/" />
+  <meta property="og:type" content="website" />
 
-UPDATE profiles
-SET photo_url = 'https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/default.jpg'
-WHERE photo_url IS NULL;
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Nairobi Sweets",
+    "url": "https://nairobi-sweets.com/"
+  }
+  </script>
 
-NOTIFY pgrst, 'reload schema';
-```
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
----
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg,#020617,#000814);
+      color: white;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.85);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ffd84b;
+    }
+    .join-btn {
+      background: #ffd84b;
+      color: black;
+      padding: 14px 28px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .hero {
+      text-align: center;
+      padding: 80px 20px 40px;
+    }
+    .hero h1 {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      max-width: 800px;
+      margin: auto;
+      font-size: 1.2rem;
+      color: #ddd;
+    }
+    .filters {
+      display: flex;
+      gap: 12px;
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .filters input, .filters select {
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      background: #111827;
+      color: white;
+    }
+    .filters input { flex: 1; }
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap: 24px;
+      padding: 20px;
+      max-width: 1400px;
+      margin: auto;
+    }
+    .card {
+      background: linear-gradient(180deg,#111827,#0f172a);
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255,216,75,0.15);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .card img {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+      display: block;
+    }
+    .card-content {
+      padding: 18px;
+    }
+    .card h3 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid #ffd84b;
+      color: #ffd84b;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+    }
+    .meta, .bio { margin-bottom: 10px; color: #ddd; }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .actions a {
+      flex: 1;
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .whatsapp { background: #22c55e; color: black; }
+    .call { background: #ffd84b; color: black; }
+    .seo-links {
+      max-width: 1200px;
+      margin: 80px auto;
+      padding: 40px 20px;
+    }
+    .seo-links h2 {
+      color: #ffd84b;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+    .seo-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .seo-buttons a {
+      padding: 12px 18px;
+      border: 1px solid #ffd84b;
+      border-radius: 999px;
+      color: #ffd84b;
+      text-decoration: none;
+    }
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
 
-## 2. High-Ranking Location Page Structure
-Create dedicated SEO pages for:
+<header>
+  <div class="logo">Nairobi Sweets</div>
+  <a href="/public-signup-payment-page" class="join-btn">Join Now</a>
+</header>
 
-- westlands.html
-- kilimani.html
-- ruaka.html
-- thika-road.html
-- kileleshwa.html
-- rongai.html
-- runda.html
-- syokimau.html
-- vip.html
-- signature.html
+<section class="hero">
+  <h1>Premium Profiles</h1>
+  <p>Discover approved Nairobi Sweets profiles with real photos, WhatsApp access, VIP listings, and location-based discovery.</p>
+</section>
 
-### Each page should include:
-- Unique title tag
-- Meta description
-- H1 with location keyword
-- Internal links to homepage + related locations
-- Live approved profiles filtered by location
-- FAQ schema
-- LocalBusiness structured data
+<section class="filters">
+  <input type="text" id="searchInput" placeholder="Search by name, location, bio..." />
+  <select id="sortSelect">
+    <option value="featured">Featured first</option>
+    <option value="latest">Latest</option>
+  </select>
+</section>
 
----
+<section class="profiles-grid" id="profilesGrid"></section>
 
-## 3. Google Search Console Domination
-### Submit:
-- https://nairobi-sweets.com/sitemap.xml
-- Root domain property
-- robots.txt validation
-- Mobile usability
-- Core Web Vitals
+<section class="seo-links">
+  <h2>Premium Nairobi Profiles by Location</h2>
+  <p>Explore premium Nairobi profiles across Westlands, Kilimani, Ruaka, Thika Road, Kileleshwa, Syokimau, Runda, Thika, and Rongai.</p>
+  <div class="seo-buttons">
+    <a href="/seo/locations/westlands.html">Westlands Profiles</a>
+    <a href="/seo/locations/kilimani.html">Kilimani Listings</a>
+    <a href="/seo/locations/ruaka.html">Ruaka Profiles</a>
+    <a href="/seo/locations/thika-road.html">Thika Road Listings</a>
+    <a href="/seo/categories/vip.html">VIP Nairobi Profiles</a>
+  </div>
+</section>
 
-### Request indexing for:
-- Homepage
-- Join page
-- Each location page
-- VIP category pages
+<footer>
+  © Nairobi Sweets
+</footer>
 
----
+<script>
+const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
+const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-## 4. Technical SEO Enhancements
-### Add to every page:
-- Canonical tags
-- Open Graph tags
-- Twitter card tags
-- JSON-LD structured data
-- Lazy loading images
-- Compressed assets
-- Semantic headings
+const grid = document.getElementById('profilesGrid');
+const searchInput = document.getElementById('searchInput');
 
----
+let profiles = [];
 
-## 5. Conversion SEO Funnel
-### User journey:
-Google Search → Location Page → Profile Click → WhatsApp / Call → Signup → Payment → Approval → Live Listing
+async function loadProfiles() {
+  const { data, error } = await sb
+    .from('profiles')
+    .select('*')
+    .eq('approved', true)
+    .order('created_at', { ascending: false });
 
----
+  if (error) {
+    console.error(error);
+    return;
+  }
 
-## 6. Revenue Multipliers
-### Build:
-- Auto-renew billing
-- Featured profile upsells
-- VIP homepage priority
-- Signature category premium placements
-- Analytics dashboard
-- Click tracking
-- WhatsApp lead logging
+  profiles = data || [];
+  renderProfiles(profiles);
+}
 
----
+function renderProfiles(items) {
+  grid.innerHTML = items.map(profile => `
+    <div class="card">
+      <img src="${profile.photo_url || '/assets/default.jpg'}" loading="lazy" alt="${profile.stage_name}">
+      <div class="card-content">
+        <h3>${profile.stage_name || ''}</h3>
+        <div class="badge">${profile.package || 'featured'}</div>
+        <div class="meta">📍 ${profile.location || 'Nairobi'}</div>
+        <div class="meta">📞 ${profile.phone || ''}</div>
+        <div class="bio">${profile.bio || ''}</div>
+        <div class="actions">
+          <a class="whatsapp" href="https://wa.me/${(profile.whatsapp || '').replace(/\D/g,'')}" target="_blank">WhatsApp</a>
+          <a class="call" href="tel:${profile.phone || ''}">Call</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
 
-## 7. Content Scaling Machine
-### Add:
-- Blog articles
-- “Best Nairobi escorts by location” pages
-- Spa pages
-- VIP pages
-- Weekly fresh content
-- AI-generated SEO landing pages from Supabase data
+searchInput.addEventListener('input', e => {
+  const q = e.target.value.toLowerCase();
+  const filtered = profiles.filter(p =>
+    (p.stage_name || '').toLowerCase().includes(q) ||
+    (p.location || '').toLowerCase().includes(q) ||
+    (p.bio || '').toLowerCase().includes(q)
+  );
+  renderProfiles(filtered);
+});
 
----
+loadProfiles();
+</script>
 
-## 8. Performance Targets
-Aim for:
-- <2 second load time
-- 90+ Lighthouse SEO score
-- 90+ mobile usability
-- Daily crawl growth
-- Indexed profile pages
-
----
-
-# Final Objective
-## Transform Nairobi Sweets into:
-### Kenya’s dominant premium directory marketplace.
-
-This system compounds through:
-- SEO
-- Paid onboarding
-- Premium placements
-- Organic traffic
-- Automated renewals
-- Geographic expansion
-
----
-
-# Deployment Order
-1. Approve all profiles
-2. Normalize images
-3. Deploy SEO index
-4. Launch location pages
-5. Submit sitemap
-6. Push Google indexing
-7. Scale content
-8. Activate revenue engine
+</body>
+</html>
