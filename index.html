@@ -304,7 +304,11 @@ h1{
 
 <header class="header">
   <div class="brand">
-    <img class="logo" src="assets/logo/logo-badge.png" />
+    <img 
+      class="logo" 
+      src="https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/profiles/1775706112598-sly.jpg"
+      alt="Nairobi Sweets logo"
+    />
     <div>
       <div class="kicker">PRIVATE VIP DIRECTORY</div>
       <div class="title">Nairobi Sweets</div>
@@ -354,8 +358,8 @@ const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const grid = document.getElementById("profilesGrid");
 
-const FALLBACK_IMAGE = "assets/logo/logo-badge.png";
-const STORAGE_BASE = "https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/";
+const STORAGE_BASE = "https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/profiles/";
+const FALLBACK_IMAGE = STORAGE_BASE + "1775706112598-sly.jpg";
 
 function cleanPhone(value){
   if(!value) return "";
@@ -386,20 +390,16 @@ function profileImage(p){
     p.image ||
     "";
 
-  if(!img) return FALLBACK_IMAGE;
+  const value = String(img || "").trim();
 
-  const value = String(img).trim();
-
-  if(value.startsWith("http://") || value.startsWith("https://")){
-    return value;
-  }
+  if(value.startsWith("https://")) return value;
 
   if(value.startsWith("profiles/")){
-    return STORAGE_BASE + value;
+    return "https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/" + value;
   }
 
-  if(value.includes(".")){
-    return STORAGE_BASE + "profiles/" + value;
+  if(value.includes(".jpg") || value.includes(".jpeg") || value.includes(".png") || value.includes(".webp")){
+    return STORAGE_BASE + value;
   }
 
   return FALLBACK_IMAGE;
@@ -410,7 +410,7 @@ function profileName(p){
 }
 
 function profilePlan(p){
-  return p.plan || p.package || p.tier || "VIP";
+  return p.plan || p.package || p.tier || "vip";
 }
 
 async function loadProfiles(){
@@ -445,7 +445,12 @@ async function loadProfiles(){
     return `
       <article class="card">
         <div class="image-wrap">
-          <img src="${img}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'">
+          <img 
+            src="${img}" 
+            alt="${name}" 
+            loading="lazy"
+            onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'"
+          />
           <div class="badges">
             <span class="badge vip">${plan}</span>
             <span class="badge live">LIVE</span>
