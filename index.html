@@ -306,7 +306,6 @@
     let data = null;
     let error = null;
 
-    // Try approved column first
     let res = await sb
       .from("profiles")
       .select("*")
@@ -316,7 +315,6 @@
     data = res.data;
     error = res.error;
 
-    // Fallback: try status column
     if (error) {
       res = await sb
         .from("profiles")
@@ -328,7 +326,6 @@
       error = res.error;
     }
 
-    // Final fallback: load all profiles
     if (error) {
       res = await sb
         .from("profiles")
@@ -366,6 +363,13 @@
 
     if (error) {
       console.warn("View update failed:", error);
+    } else {
+      allProfiles = allProfiles.map(p => {
+        if (String(p.id) === String(profileId)) {
+          return { ...p, views: Number(p.views || 0) + 1 };
+        }
+        return p;
+      });
     }
   }
 
@@ -403,8 +407,12 @@
   }
 
   function countVisibleViews() {
-    allProfiles.forEach(p => {
-      if (p.id) addView(p.id, p.views || 0);
+    const visibleProfiles = allProfiles.slice(0, 12);
+
+    visibleProfiles.forEach(p => {
+      if (p.id) {
+        addView(p.id, p.views || 0);
+      }
     });
   }
 
@@ -504,8 +512,18 @@
             </div>
 
             <div class="actions">
-              <a class="whatsapp" href="${getWhatsAppLink(phone)}" target="_blank">WhatsApp</a>
-              <a class="call" href="tel:${phone}">Call</a>
+              <a class="whatsapp"
+                 href="${getWhatsAppLink(phone)}"
+                 target="_blank"
+                 onclick="addView('${id}', ${views})">
+                 WhatsApp
+              </a>
+
+              <a class="call"
+                 href="tel:${phone}"
+                 onclick="addView('${id}', ${views})">
+                 Call
+              </a>
             </div>
           </div>
         </article>
