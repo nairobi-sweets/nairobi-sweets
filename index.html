@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Nairobi Sweets</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -83,7 +86,9 @@
       outline: none;
     }
 
-    .filters select option { color: #111; }
+    .filters select option {
+      color: #111;
+    }
 
     .grid {
       max-width: 1200px;
@@ -116,9 +121,13 @@
       transition: .35s ease;
     }
 
-    .card:hover img { transform: scale(1.05); }
+    .card:hover img {
+      transform: scale(1.05);
+    }
 
-    .content { padding: 18px; }
+    .content {
+      padding: 18px;
+    }
 
     .name-row {
       display: flex;
@@ -213,9 +222,17 @@
     }
 
     @media (max-width: 650px) {
-      header { padding: 14px 16px; }
-      .filters { grid-template-columns: 1fr; }
-      .photo-wrap { height: 390px; }
+      header {
+        padding: 14px 16px;
+      }
+
+      .filters {
+        grid-template-columns: 1fr;
+      }
+
+      .photo-wrap {
+        height: 390px;
+      }
     }
   </style>
 </head>
@@ -233,7 +250,12 @@
 </section>
 
 <div class="filters">
-  <input id="searchInput" type="text" placeholder="Search by name, location, bio..." oninput="renderProfiles()" />
+  <input
+    id="searchInput"
+    type="text"
+    placeholder="Search by name, location, bio..."
+    oninput="renderProfiles()"
+  />
 
   <select id="sortSelect" onchange="renderProfiles()">
     <option value="featured">Featured first</option>
@@ -250,6 +272,7 @@
 <script>
   const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
   const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+  const STORAGE_BUCKET = "profile-images";
 
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -259,16 +282,8 @@
     return value ? String(value) : "";
   }
 
-  function getProfileImage(p) {
-    return (
-      p.photo_url ||
-      p.image_url ||
-      p.profile_photo ||
-      p.profile_image ||
-      p.avatar_url ||
-      p.image ||
-      "assets/logo/logo-badge.png"
-    );
+  function cleanPhone(phone) {
+    return String(phone || "").replace(/\D/g, "");
   }
 
   function getName(p) {
@@ -276,19 +291,56 @@
   }
 
   function getLocation(p) {
-    return p.location || p.city || "Nairobi";
+    return p.location || p.city || p.area || "Nairobi";
   }
 
   function getPhone(p) {
-    return p.phone || p.phone_number || p.whatsapp || "";
+    return p.phone || p.phone_number || p.whatsapp || p.mobile || "";
   }
 
   function getPlan(p) {
     return p.plan || p.package || p.tier || "Featured";
   }
 
+  function getBio(p) {
+    return p.bio || p.description || p.about || "Premium Nairobi profile.";
+  }
+
+  function getProfileImage(p) {
+    let raw =
+      p.photo_url ||
+      p.image_url ||
+      p.profile_photo ||
+      p.profile_image ||
+      p.avatar_url ||
+      p.image ||
+      p.photo ||
+      "";
+
+    raw = String(raw || "").trim();
+
+    if (!raw || raw.toLowerCase().includes("logo")) {
+      return "assets/logo/logo-badge.png";
+    }
+
+    if (raw.startsWith("http://") || raw.startsWith("https://")) {
+      return raw;
+    }
+
+    if (raw.startsWith("/")) {
+      raw = raw.slice(1);
+    }
+
+    if (raw.includes(`${STORAGE_BUCKET}/`)) {
+      raw = raw.split(`${STORAGE_BUCKET}/`).pop();
+    }
+
+    return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
+  }
+
   function getWhatsAppLink(phone) {
-    const clean = String(phone || "").replace(/\D/g, "");
+    const clean = cleanPhone(phone);
+
     if (!clean) return "#";
 
     let finalPhone = clean;
@@ -352,25 +404,31 @@
     if (!profileId) return;
 
     const viewedKey = `viewed_${profileId}`;
+
     if (localStorage.getItem(viewedKey)) return;
 
     localStorage.setItem(viewedKey, "yes");
 
+    const newViews = Number(currentViews || 0) + 1;
+
     const { error } = await sb
       .from("profiles")
-      .update({ views: Number(currentViews || 0) + 1 })
+      .update({ views: newViews })
       .eq("id", profileId);
 
     if (error) {
-      console.warn("View update failed:", error);
-    } else {
-      allProfiles = allProfiles.map(p => {
-        if (String(p.id) === String(profileId)) {
-          return { ...p, views: Number(p.views || 0) + 1 };
-        }
-        return p;
-      });
+      console.warn("VIEW UPDATE FAILED:", error);
+      return;
     }
+
+    allProfiles = allProfiles.map(p => {
+      if (String(p.id) === String(profileId)) {
+        return { ...p, views: newViews };
+      }
+      return p;
+    });
+
+    renderProfiles();
   }
 
   async function likeProfile(profileId, currentLikes = 0) {
@@ -385,9 +443,11 @@
 
     localStorage.setItem(likedKey, "yes");
 
+    const newLikes = Number(currentLikes || 0) + 1;
+
     const { error } = await sb
       .from("profiles")
-      .update({ likes: Number(currentLikes || 0) + 1 })
+      .update({ likes: newLikes })
       .eq("id", profileId);
 
     if (error) {
@@ -398,7 +458,7 @@
 
     allProfiles = allProfiles.map(p => {
       if (String(p.id) === String(profileId)) {
-        return { ...p, likes: Number(p.likes || 0) + 1 };
+        return { ...p, likes: newLikes };
       }
       return p;
     });
@@ -431,9 +491,9 @@
         const haystack = `
           ${safeText(getName(p))}
           ${safeText(getLocation(p))}
-          ${safeText(p.bio)}
-          ${safeText(p.description)}
+          ${safeText(getBio(p))}
           ${safeText(p.category)}
+          ${safeText(getPhone(p))}
         `.toLowerCase();
 
         return haystack.includes(q);
@@ -457,8 +517,15 @@
         const ap = String(getPlan(a)).toLowerCase();
         const bp = String(getPlan(b)).toLowerCase();
 
-        const av = ap.includes("vvip") || ap.includes("signature") ? 3 : ap.includes("vip") ? 2 : 1;
-        const bv = bp.includes("vvip") || bp.includes("signature") ? 3 : bp.includes("vip") ? 2 : 1;
+        const av =
+          ap.includes("vvip") || ap.includes("signature") ? 3 :
+          ap.includes("vip") ? 2 :
+          1;
+
+        const bv =
+          bp.includes("vvip") || bp.includes("signature") ? 3 :
+          bp.includes("vip") ? 2 :
+          1;
 
         return bv - av;
       });
@@ -475,7 +542,7 @@
       const location = getLocation(p);
       const phone = getPhone(p);
       const image = getProfileImage(p);
-      const bio = p.bio || p.description || "Premium Nairobi profile.";
+      const bio = getBio(p);
       const likes = Number(p.likes || 0);
       const views = Number(p.views || 0);
       const plan = getPlan(p);
@@ -507,22 +574,26 @@
             <div class="profile-stats">
               <span>👁️ ${views} views</span>
               <button class="like-btn" onclick="likeProfile('${id}', ${likes})">
-                ❤️ ${likes} likes
+                💗 ${likes} likes
               </button>
             </div>
 
             <div class="actions">
-              <a class="whatsapp"
-                 href="${getWhatsAppLink(phone)}"
-                 target="_blank"
-                 onclick="addView('${id}', ${views})">
-                 WhatsApp
+              <a
+                class="whatsapp"
+                href="${getWhatsAppLink(phone)}"
+                target="_blank"
+                onclick="addView('${id}', ${views})"
+              >
+                WhatsApp
               </a>
 
-              <a class="call"
-                 href="tel:${phone}"
-                 onclick="addView('${id}', ${views})">
-                 Call
+              <a
+                class="call"
+                href="tel:${phone}"
+                onclick="addView('${id}', ${views})"
+              >
+                Call
               </a>
             </div>
           </div>
