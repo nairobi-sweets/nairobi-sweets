@@ -1,195 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Nairobi Sweets</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#fffaf0;
+  color:#111827;
 }
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #050505;
-  color: white;
+header{
+  max-width:1450px;
+  margin:0 auto;
+  background:#11131c;
+  color:white;
+  padding:18px 24px 76px;
+  border-radius:0 0 24px 24px;
+  box-shadow:0 20px 45px rgba(0,0,0,.22);
 }
-
-header {
-  padding: 18px 20px;
-  background: #000;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(255,216,75,.25);
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
 }
-
-.logo {
-  font-size: 22px;
-  font-weight: 900;
-  color: #ffd84b;
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
-
-nav a {
-  color: white;
-  text-decoration: none;
-  margin-left: 14px;
-  font-weight: bold;
+.logo-img{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#222;
 }
-
-.hero {
-  text-align: center;
-  padding: 55px 20px 35px;
-  background: radial-gradient(circle at top, #2b2100, #050505 60%);
+.brand-small{
+  color:#d7d7df;
+  font-size:13px;
 }
-
-.hero h1 {
-  font-size: 42px;
-  margin: 0;
-  color: #ffd84b;
+.brand-title{
+  color:#ffd51e;
+  font-size:30px;
+  font-weight:900;
 }
-
-.hero p {
-  color: #ddd;
-  font-size: 17px;
+.nav{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
 }
-
-.join-btn {
-  display: inline-block;
-  margin-top: 16px;
-  background: #ffd84b;
-  color: black;
-  padding: 13px 22px;
-  border-radius: 999px;
-  text-decoration: none;
-  font-weight: 900;
+.nav a{
+  color:white;
+  text-decoration:none;
+  background:rgba(255,255,255,.09);
+  padding:12px 20px;
+  border-radius:999px;
+  font-weight:800;
 }
-
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 25px 16px 60px;
+.nav .active{
+  background:#ffc400;
+  color:#111;
 }
-
-.section-title {
-  font-size: 26px;
-  margin-bottom: 20px;
-  color: #ffd84b;
+.filters{
+  margin-top:18px;
 }
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 22px;
+.filter-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
 }
-
-.card {
-  background: #111;
-  border: 1px solid rgba(255,216,75,.18);
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 20px 45px rgba(0,0,0,.45);
+.pill{
+  border:none;
+  padding:9px 16px;
+  border-radius:10px;
+  font-weight:900;
+  cursor:pointer;
 }
-
-.card img {
-  width: 100%;
-  height: 330px;
-  object-fit: cover;
-  background: #222;
-  display: block;
+.signature{background:#ffc400;color:#111}
+.vip{background:#ffd51e;color:#111}
+.featured{background:#e83e95;color:white}
+.verified{background:#22c55e;color:white}
+.filter-text{
+  color:#9ca3af;
+  font-size:14px;
+  margin-top:18px;
 }
-
-.card-body {
-  padding: 17px;
+main{
+  max-width:1220px;
+  margin:-35px auto 60px;
+  padding:0 16px;
 }
-
-.name {
-  font-size: 22px;
-  font-weight: 900;
-  color: #ffd84b;
-  margin: 0 0 6px;
+.section-kicker{
+  color:#ff9ad5;
+  font-size:13px;
+  text-transform:uppercase;
+  font-weight:900;
+  letter-spacing:.08em;
 }
-
-.meta {
-  color: #ccc;
-  margin: 5px 0;
-  font-size: 14px;
+h1{
+  margin:4px 0 2px;
+  color:#ffd51e;
+  font-size:34px;
 }
-
-.badge {
-  display: inline-block;
-  margin: 10px 0;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255,216,75,.15);
-  color: #ffd84b;
-  font-size: 13px;
-  font-weight: bold;
+.sub{
+  color:#9ca3af;
+  margin:0 0 18px;
 }
-
-.bio {
-  color: #e5e5e5;
-  font-size: 14px;
-  line-height: 1.45;
-  min-height: 40px;
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+  gap:22px;
 }
-
-.actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 14px;
+.card{
+  background:#555965;
+  border-radius:20px;
+  overflow:hidden;
+  border:1px solid rgba(255,196,0,.55);
+  box-shadow:0 18px 40px rgba(0,0,0,.22);
+  color:white;
 }
-
-.actions a {
-  flex: 1;
-  text-align: center;
-  padding: 12px 8px;
-  border-radius: 14px;
-  text-decoration: none;
-  font-weight: 900;
+.image-wrap{
+  position:relative;
+  height:285px;
+  overflow:hidden;
 }
-
-.whatsapp {
-  background: #25D366;
-  color: white;
+.image-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
-
-.call {
-  background: #ffd84b;
-  color: black;
+.tags{
+  position:absolute;
+  top:12px;
+  left:12px;
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
 }
-
-.loading,
-.empty {
-  text-align: center;
-  color: #ccc;
-  padding: 30px;
+.tag{
+  font-size:12px;
+  padding:7px 10px;
+  border-radius:999px;
+  font-weight:900;
 }
-
-footer {
-  text-align: center;
-  padding: 25px;
-  color: #888;
-  border-top: 1px solid rgba(255,255,255,.08);
+.online{
+  position:absolute;
+  top:54px;
+  left:12px;
+  background:#1f2937;
+  padding:6px 11px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
 }
-
-@media(max-width: 600px) {
-  .hero h1 {
-    font-size: 32px;
-  }
-
-  .card img {
-    height: 300px;
-  }
-
-  nav a {
-    font-size: 14px;
-    margin-left: 8px;
-  }
+.rank{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+  background:rgba(0,0,0,.45);
+  color:#ffd51e;
+  padding:7px 11px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+}
+.card-body{
+  padding:16px;
+}
+.name{
+  margin:0;
+  color:#ff9ad5;
+  font-size:21px;
+  font-weight:900;
+}
+.tier{
+  color:#cbd5e1;
+  text-transform:uppercase;
+  font-size:12px;
+  font-weight:800;
+  margin:6px 0 10px;
+}
+.meta-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:13px;
+}
+.chip{
+  background:rgba(255,255,255,.12);
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+}
+.bio{
+  color:#f3f4f6;
+  font-size:14px;
+  line-height:1.45;
+  min-height:55px;
+}
+.stats{
+  display:flex;
+  gap:10px;
+  margin:12px 0;
+}
+.stat{
+  background:rgba(255,255,255,.12);
+  padding:9px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:800;
+}
+.status{
+  background:rgba(34,197,94,.22);
+  color:#86efac;
+}
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+.actions a{
+  flex:1;
+  text-align:center;
+  padding:14px 8px;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:900;
+}
+.whatsapp{background:#22c55e;color:white}
+.call{background:#e83e95;color:white}
+.bottom-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+.bottom-actions button{
+  border:none;
+  border-radius:10px;
+  padding:11px 8px;
+  background:rgba(255,255,255,.12);
+  color:white;
+  font-weight:800;
+}
+.bottom-actions .gold{
+  background:#ffc400;
+  color:#111;
+}
+.loading,.empty{
+  grid-column:1/-1;
+  text-align:center;
+  padding:35px;
+  color:#555;
+}
+.side-tab{
+  position:fixed;
+  right:0;
+  top:48%;
+  writing-mode:vertical-rl;
+  background:#ffc400;
+  color:#111;
+  padding:18px 12px;
+  border-radius:12px 0 0 12px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+footer{
+  text-align:center;
+  padding:30px;
+  color:#6b7280;
+}
+@media(max-width:700px){
+  header{border-radius:0;padding-bottom:45px}
+  .topbar{align-items:flex-start;flex-direction:column}
+  .brand-title{font-size:25px}
+  main{margin-top:-20px}
+  h1{font-size:28px}
+  .side-tab{display:none}
 }
 </style>
 </head>
@@ -197,61 +293,89 @@ footer {
 <body>
 
 <header>
-  <div class="logo">Nairobi Sweets</div>
-  <nav>
-    <a href="join.html">Join</a>
-    <a href="login.html">Login</a>
-  </nav>
+  <div class="topbar">
+    <div class="brand">
+      <img class="logo-img" src="assets/logo/logo-badge.png" onerror="this.style.display='none'">
+      <div>
+        <div class="brand-small">Private luxury profile directory</div>
+        <div class="brand-title">Nairobi Sweets</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a class="active" href="#signature">Signature</a>
+      <a href="#featured">Featured</a>
+      <a href="#profiles">Directory</a>
+      <a href="public-signup-payment-page.html">Private Booking</a>
+      <a href="login.html">Login</a>
+      <a class="active" href="public-signup-payment-page.html">Join</a>
+    </nav>
+  </div>
+
+  <div class="filters">
+    <div class="filter-row">
+      <button class="pill signature">👑 Signature</button>
+      <button class="pill vip">VIP</button>
+      <button class="pill featured">Featured</button>
+      <button class="pill verified">Verified</button>
+    </div>
+    <div class="filter-text">
+      <b>Active filters</b><br><br>
+      No active filters
+    </div>
+  </div>
 </header>
 
-<section class="hero">
-  <h1>Premium Nairobi Profiles</h1>
-  <p>Browse approved profiles and contact directly.</p>
-  <a class="join-btn" href="public-signup-payment-page.html">Create Profile</a>
-</section>
+<main id="profiles">
+  <div class="section-kicker">Premium Tier</div>
+  <h1 id="signature">Signature Selection</h1>
+  <p class="sub">Priority listings reserved for the highest-visibility profiles.</p>
 
-<main class="container">
-  <h2 class="section-title">Featured Profiles</h2>
-  <div id="profiles" class="grid">
+  <div id="profilesGrid" class="grid">
     <div class="loading">Loading profiles...</div>
   </div>
 </main>
 
-<footer>
-  © Nairobi Sweets
-</footer>
+<div class="side-tab">👑 SIGNATURE</div>
+
+<footer>© Nairobi Sweets</footer>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const profilesBox = document.getElementById("profiles");
+const grid = document.getElementById("profilesGrid");
 
 function cleanPhone(value) {
   if (!value) return "";
   let phone = String(value).replace(/\D/g, "");
-
-  if (phone.startsWith("0")) {
-    phone = "254" + phone.slice(1);
-  }
-
-  if (phone.startsWith("7") || phone.startsWith("1")) {
-    phone = "254" + phone;
-  }
-
+  if (phone.startsWith("0")) phone = "254" + phone.slice(1);
+  if (phone.startsWith("7") || phone.startsWith("1")) phone = "254" + phone;
   return phone;
 }
 
+function safe(value) {
+  return String(value || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
 function profileImage(p) {
-  return (
+  const img =
     p.photo_url ||
     p.image_url ||
     p.profile_photo ||
     p.avatar_url ||
-    "assets/logo/logo-badge.png"
-  );
+    p.image ||
+    "";
+
+  if (img && String(img).startsWith("http")) return img;
+
+  return "assets/logo/logo-badge.png";
 }
 
 function profileName(p) {
@@ -259,11 +383,23 @@ function profileName(p) {
 }
 
 function profilePlan(p) {
-  return p.plan || p.package || p.tier || "Featured";
+  return p.plan || p.package || p.tier || "VIP";
+}
+
+function priceFor(plan) {
+  const x = String(plan || "").toLowerCase();
+  if (x.includes("vvip") || x.includes("signature")) return "KES 3000/week";
+  if (x.includes("vip")) return "KES 1500/week";
+  return "KES 1000/week";
+}
+
+function rankNumber(p) {
+  const base = p.id ? String(p.id).replace(/\D/g,"").slice(-5) : "";
+  return base || Math.floor(10000 + Math.random() * 90000);
 }
 
 async function loadProfiles() {
-  profilesBox.innerHTML = `<div class="loading">Loading profiles...</div>`;
+  grid.innerHTML = `<div class="loading">Loading profiles...</div>`;
 
   const { data, error } = await sb
     .from("profiles")
@@ -273,56 +409,67 @@ async function loadProfiles() {
 
   if (error) {
     console.error(error);
-    profilesBox.innerHTML = `<div class="empty">Could not load profiles.</div>`;
+    grid.innerHTML = `<div class="empty">Could not load profiles.</div>`;
     return;
   }
 
   if (!data || data.length === 0) {
-    profilesBox.innerHTML = `<div class="empty">No approved profiles yet.</div>`;
+    grid.innerHTML = `<div class="empty">No approved profiles yet.</div>`;
     return;
   }
 
-  profilesBox.innerHTML = data.map(p => {
-    const name = profileName(p);
-    const img = profileImage(p);
+  grid.innerHTML = data.map(p => {
+    const name = safe(profileName(p));
+    const plan = safe(profilePlan(p));
+    const img = safe(profileImage(p));
     const phone = cleanPhone(p.phone);
     const whatsapp = cleanPhone(p.whatsapp || p.phone);
+    const location = safe(p.location || p.area || "Nairobi");
+    const bio = safe(p.bio || p.description || `Get amazing services with ${name}`);
+    const price = priceFor(plan);
 
     return `
       <article class="card">
-        <img 
-          src="${img}" 
-          alt="${name}" 
-          loading="lazy"
-          onerror="this.src='assets/logo/logo-badge.png'"
-        />
+        <div class="image-wrap">
+          <img src="${img}" alt="${name}" loading="lazy" onerror="this.src='assets/logo/logo-badge.png'">
+
+          <div class="tags">
+            <span class="tag signature">👑 Signature</span>
+            <span class="tag vip">VIP</span>
+            <span class="tag featured">Featured</span>
+            <span class="tag verified">Verified</span>
+          </div>
+
+          <div class="online">Online</div>
+          <div class="rank">Rank ${rankNumber(p)}</div>
+        </div>
 
         <div class="card-body">
-          <h3 class="name">${name}</h3>
+          <h2 class="name">${name}</h2>
+          <div class="tier">${plan}</div>
 
-          <p class="meta">${p.location || "Nairobi"}</p>
+          <div class="meta-row">
+            <span class="chip">${location}</span>
+            <span class="chip">${price}</span>
+          </div>
 
-          <span class="badge">${profilePlan(p)}</span>
+          <p class="bio">${bio}</p>
 
-          <p class="bio">${p.bio || p.description || ""}</p>
+          <div class="stats">
+            <span class="stat">💗 ${Math.floor(30 + Math.random()*900)}</span>
+            <span class="stat">👁 ${Math.floor(200 + Math.random()*3500)}</span>
+            <span class="stat status">🟢 Online</span>
+          </div>
 
           <div class="actions">
-            ${whatsapp ? `
-              <a 
-                class="whatsapp" 
-                href="https://wa.me/${whatsapp}" 
-                target="_blank">
-                WhatsApp
-              </a>
-            ` : ""}
+            ${whatsapp ? `<a class="whatsapp" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+            ${phone ? `<a class="call" href="tel:+${phone}">Call</a>` : ""}
+          </div>
 
-            ${phone ? `
-              <a 
-                class="call" 
-                href="tel:+${phone}">
-                Call
-              </a>
-            ` : ""}
+          <div class="bottom-actions">
+            <button>Featured</button>
+            <button>VIP</button>
+            <button class="gold">👑 Signature</button>
           </div>
         </div>
       </article>
