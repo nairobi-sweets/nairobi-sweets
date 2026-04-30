@@ -1,27 +1,570 @@
-const STORAGE_BUCKET = "profile-images";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nairobi Sweets</title>
 
-function getProfileImage(p) {
-  let raw = String(
-    p.photo_url ||
-    p.image_url ||
-    p.profile_photo ||
-    p.profile_image ||
-    p.avatar_url ||
-    p.image ||
-    p.photo ||
-    ""
-  ).trim();
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  if (!raw || raw.toLowerCase().includes("logo")) {
-    return "assets/logo/logo-badge.png";
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #070713;
+      color: #fff;
+    }
+
+    header {
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #03030a;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      font-size: 25px;
+      font-weight: 900;
+      color: #ffd84b;
+    }
+
+    .join-btn {
+      background: #ffd84b;
+      color: #111;
+      padding: 12px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 900;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 70px 20px 42px;
+      background:
+        radial-gradient(circle at top, rgba(255,216,75,.22), transparent 34%),
+        linear-gradient(180deg, #141428, #070713);
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 7vw, 72px);
+      margin: 0 0 14px;
+    }
+
+    .hero p {
+      color: #d8d8ee;
+      max-width: 650px;
+      margin: auto;
+      line-height: 1.5;
+    }
+
+    .filters {
+      max-width: 1200px;
+      margin: 26px auto 0;
+      padding: 0 18px;
+      display: grid;
+      grid-template-columns: 1fr 190px;
+      gap: 12px;
+    }
+
+    .filters input,
+    .filters select {
+      padding: 15px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      outline: none;
+    }
+
+    .filters select option {
+      color: #111;
+    }
+
+    .grid {
+      max-width: 1200px;
+      margin: 34px auto 70px;
+      padding: 0 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      border-radius: 28px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 22px 60px rgba(0,0,0,.42);
+    }
+
+    .photo-wrap {
+      height: 340px;
+      background: #17172b;
+      overflow: hidden;
+    }
+
+    .photo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: .35s ease;
+    }
+
+    .card:hover img {
+      transform: scale(1.04);
+    }
+
+    .content {
+      padding: 18px;
+    }
+
+    .name-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .name {
+      margin: 0;
+      font-size: 23px;
+      font-weight: 900;
+    }
+
+    .badge {
+      font-size: 12px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,216,75,.14);
+      border: 1px solid rgba(255,216,75,.35);
+      color: #ffd84b;
+      white-space: nowrap;
+    }
+
+    .meta {
+      color: #cfcfe8;
+      margin: 10px 0 12px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .bio {
+      color: #fff;
+      opacity: .92;
+      font-size: 14px;
+      min-height: 40px;
+      line-height: 1.5;
+    }
+
+    .profile-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      padding: 11px 12px;
+      border-radius: 17px;
+      background: rgba(255,255,255,.08);
+      font-size: 14px;
+    }
+
+    .like-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 13px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff4d8d, #ffd84b);
+      color: #111;
+      font-weight: 900;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .actions a {
+      text-align: center;
+      text-decoration: none;
+      padding: 13px;
+      border-radius: 15px;
+      font-weight: 900;
+    }
+
+    .whatsapp {
+      background: #25D366;
+      color: #06130a;
+    }
+
+    .call {
+      background: #ffd84b;
+      color: #111;
+    }
+
+    .empty {
+      text-align: center;
+      color: #d8d8ee;
+      padding: 45px;
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 650px) {
+      header {
+        padding: 14px 16px;
+      }
+
+      .filters {
+        grid-template-columns: 1fr;
+      }
+
+      .photo-wrap {
+        height: 390px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">Nairobi Sweets</div>
+  <a class="join-btn" href="public-signup-payment-page.html">Join Now</a>
+</header>
+
+<section class="hero">
+  <h1>Premium Profiles</h1>
+  <p>Discover approved Nairobi Sweets profiles with real photos, contact buttons, likes, and views.</p>
+</section>
+
+<div class="filters">
+  <input
+    id="searchInput"
+    type="text"
+    placeholder="Search by name, location, bio..."
+    oninput="renderProfiles()"
+  />
+
+  <select id="sortSelect" onchange="renderProfiles()">
+    <option value="featured">Featured first</option>
+    <option value="likes">Most liked</option>
+    <option value="views">Most viewed</option>
+    <option value="newest">Newest</option>
+  </select>
+</div>
+
+<main id="profilesGrid" class="grid">
+  <div class="empty">Loading profiles...</div>
+</main>
+
+<script>
+  const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+  const STORAGE_BUCKET = "profile-images";
+
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let allProfiles = [];
+
+  function safeText(value) {
+    return value ? String(value) : "";
   }
 
-  if (raw.startsWith("http://") || raw.startsWith("https://")) {
-    return raw;
+  function cleanPhone(phone) {
+    return String(phone || "").replace(/\D/g, "");
   }
 
-  raw = raw.replace(/^\/+/, "");
-  raw = raw.split("/").pop();
+  function getName(p) {
+    return p.stage_name || p.name || p.full_name || "Nairobi Sweet";
+  }
 
-  return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
-}
+  function getLocation(p) {
+    return p.location || p.city || p.area || "Nairobi";
+  }
+
+  function getPhone(p) {
+    return p.phone || p.phone_number || p.whatsapp || p.mobile || "";
+  }
+
+  function getPlan(p) {
+    return p.plan || p.package || p.tier || "Featured";
+  }
+
+  function getBio(p) {
+    return p.bio || p.description || p.about || "Premium Nairobi profile.";
+  }
+
+  function getProfileImage(p) {
+    let raw = String(
+      p.photo_url ||
+      p.image_url ||
+      p.profile_photo ||
+      p.profile_image ||
+      p.avatar_url ||
+      p.image ||
+      p.photo ||
+      ""
+    ).trim();
+
+    if (!raw || raw.toLowerCase().includes("logo")) {
+      return "assets/logo/logo-badge.png";
+    }
+
+    if (raw.startsWith("http://") || raw.startsWith("https://")) {
+      return raw;
+    }
+
+    raw = raw.replace(/^\/+/, "");
+    raw = raw.split("/").pop();
+
+    return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
+  }
+
+  function getWhatsAppLink(phone) {
+    const clean = cleanPhone(phone);
+
+    if (!clean) return "#";
+
+    let finalPhone = clean;
+
+    if (clean.startsWith("0")) {
+      finalPhone = "254" + clean.slice(1);
+    } else if (clean.startsWith("7") || clean.startsWith("1")) {
+      finalPhone = "254" + clean;
+    }
+
+    return `https://wa.me/${finalPhone}`;
+  }
+
+  async function loadProfiles() {
+    let res = await sb
+      .from("profiles")
+      .select("*")
+      .eq("approved", true)
+      .order("created_at", { ascending: false });
+
+    if (res.error) {
+      res = await sb
+        .from("profiles")
+        .select("*")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
+    }
+
+    if (res.error) {
+      res = await sb
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false });
+    }
+
+    if (res.error) {
+      console.error("PROFILE LOAD ERROR:", res.error);
+      document.getElementById("profilesGrid").innerHTML =
+        `<div class="empty">Could not load profiles. Check Supabase RLS or table columns.</div>`;
+      return;
+    }
+
+    allProfiles = res.data || [];
+    renderProfiles();
+  }
+
+  async function addView(profileId, currentViews = 0) {
+    if (!profileId) return;
+
+    const viewedKey = `viewed_${profileId}`;
+    if (localStorage.getItem(viewedKey)) return;
+
+    localStorage.setItem(viewedKey, "yes");
+
+    const newViews = Number(currentViews || 0) + 1;
+
+    const { error } = await sb
+      .from("profiles")
+      .update({ views: newViews })
+      .eq("id", profileId);
+
+    if (error) return;
+
+    allProfiles = allProfiles.map(p =>
+      String(p.id) === String(profileId)
+        ? { ...p, views: newViews }
+        : p
+    );
+
+    renderProfiles();
+  }
+
+  async function likeProfile(profileId, currentLikes = 0) {
+    if (!profileId) return;
+
+    const likedKey = `liked_${profileId}`;
+
+    if (localStorage.getItem(likedKey)) {
+      alert("You already liked this profile ❤️");
+      return;
+    }
+
+    localStorage.setItem(likedKey, "yes");
+
+    const newLikes = Number(currentLikes || 0) + 1;
+
+    const { error } = await sb
+      .from("profiles")
+      .update({ likes: newLikes })
+      .eq("id", profileId);
+
+    if (error) {
+      alert("Like failed. Check Supabase permissions.");
+      return;
+    }
+
+    allProfiles = allProfiles.map(p =>
+      String(p.id) === String(profileId)
+        ? { ...p, likes: newLikes }
+        : p
+    );
+
+    renderProfiles();
+  }
+
+  function renderProfiles() {
+    const grid = document.getElementById("profilesGrid");
+    const q = document.getElementById("searchInput").value.toLowerCase().trim();
+    const sort = document.getElementById("sortSelect").value;
+
+    let profiles = [...allProfiles];
+
+    if (q) {
+      profiles = profiles.filter(p => {
+        const haystack = `
+          ${safeText(getName(p))}
+          ${safeText(getLocation(p))}
+          ${safeText(getBio(p))}
+          ${safeText(getPhone(p))}
+        `.toLowerCase();
+
+        return haystack.includes(q);
+      });
+    }
+
+    if (sort === "likes") {
+      profiles.sort((a, b) => Number(b.likes || 0) - Number(a.likes || 0));
+    }
+
+    if (sort === "views") {
+      profiles.sort((a, b) => Number(b.views || 0) - Number(a.views || 0));
+    }
+
+    if (sort === "newest") {
+      profiles.sort((a, b) =>
+        new Date(b.created_at || 0) - new Date(a.created_at || 0)
+      );
+    }
+
+    if (sort === "featured") {
+      profiles.sort((a, b) => {
+        const ap = String(getPlan(a)).toLowerCase();
+        const bp = String(getPlan(b)).toLowerCase();
+
+        const av =
+          ap.includes("signature") || ap.includes("vvip") ? 3 :
+          ap.includes("vip") ? 2 : 1;
+
+        const bv =
+          bp.includes("signature") || bp.includes("vvip") ? 3 :
+          bp.includes("vip") ? 2 : 1;
+
+        return bv - av;
+      });
+    }
+
+    if (!profiles.length) {
+      grid.innerHTML = `<div class="empty">No profiles found.</div>`;
+      return;
+    }
+
+    grid.innerHTML = profiles.map(p => {
+      const id = p.id;
+      const name = getName(p);
+      const location = getLocation(p);
+      const phone = getPhone(p);
+      const image = getProfileImage(p);
+      const bio = getBio(p);
+      const likes = Number(p.likes || 0);
+      const views = Number(p.views || 0);
+      const plan = getPlan(p);
+
+      return `
+        <article class="card">
+          <div class="photo-wrap">
+            <img
+              src="${image}"
+              alt="${name}"
+              loading="lazy"
+              onerror="this.onerror=null;this.src='assets/logo/logo-badge.png';"
+            />
+          </div>
+
+          <div class="content">
+            <div class="name-row">
+              <h2 class="name">${name}</h2>
+              <span class="badge">${plan}</span>
+            </div>
+
+            <div class="meta">
+              📍 ${location}<br>
+              📞 ${phone || "Contact available"}
+            </div>
+
+            <div class="bio">${bio}</div>
+
+            <div class="profile-stats">
+              <span>👁️ ${views} views</span>
+
+              <button
+                class="like-btn"
+                onclick="likeProfile('${id}', ${likes})"
+              >
+                💗 ${likes} likes
+              </button>
+            </div>
+
+            <div class="actions">
+              <a
+                class="whatsapp"
+                href="${getWhatsAppLink(phone)}"
+                target="_blank"
+                onclick="addView('${id}', ${views})"
+              >
+                WhatsApp
+              </a>
+
+              <a
+                class="call"
+                href="tel:${phone}"
+                onclick="addView('${id}', ${views})"
+              >
+                Call
+              </a>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  loadProfiles();
+</script>
+
+</body>
+</html>
