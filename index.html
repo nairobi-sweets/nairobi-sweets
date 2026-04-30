@@ -13,143 +13,153 @@
 body{
   margin:0;
   font-family:Arial,sans-serif;
-  background:#fffaf0;
-  color:#111827;
+  background:#f7f7f7;
+  color:#0b1020;
 }
 
-header{
+.header{
   max-width:1450px;
   margin:0 auto;
-  background:#11131c;
-  color:white;
-  padding:18px 24px 76px;
-  border-radius:0 0 24px 24px;
-  box-shadow:0 20px 45px rgba(0,0,0,.22);
-}
-
-.topbar{
+  background:linear-gradient(90deg,#303039,#171821);
+  padding:22px 40px;
+  border-radius:0 0 28px 28px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:15px;
+  color:white;
+  box-shadow:0 20px 45px rgba(0,0,0,.18);
 }
 
 .brand{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:14px;
 }
 
-.logo-img{
-  width:58px;
-  height:58px;
-  border-radius:50%;
+.logo{
+  width:48px;
+  height:48px;
+  border-radius:10px;
   object-fit:cover;
-  background:#222;
+  background:#111;
 }
 
-.brand-small{
-  color:#d7d7df;
-  font-size:13px;
+.kicker{
+  font-size:12px;
+  letter-spacing:4px;
+  color:#d1d5db;
+  font-weight:800;
 }
 
-.brand-title{
-  color:#ffd51e;
-  font-size:30px;
+.title{
+  color:#ffd21f;
+  font-size:26px;
   font-weight:900;
 }
 
 .nav{
   display:flex;
-  gap:10px;
+  gap:12px;
   flex-wrap:wrap;
 }
 
 .nav a{
-  color:white;
   text-decoration:none;
-  background:rgba(255,255,255,.09);
-  padding:12px 20px;
+  color:white;
+  padding:13px 24px;
   border-radius:999px;
-  font-weight:800;
+  background:rgba(255,255,255,.09);
+  font-weight:900;
 }
 
-.nav .active{
+.nav .gold{
   background:#ffc400;
   color:#111;
 }
 
-.filters{
-  margin-top:18px;
+.nav .pink{
+  background:#e83e95;
+  color:white;
 }
 
-.filter-row{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
+.hero-gap{
+  max-width:1450px;
+  height:45px;
+  background:#070b1c;
+  margin:0 auto;
+  border-radius:0 0 28px 28px;
 }
 
-.pill{
-  border:none;
-  padding:9px 16px;
-  border-radius:10px;
-  font-weight:900;
-}
-
-.signature{background:#ffc400;color:#111}
-.vip{background:#ffd51e;color:#111}
-.featured{background:#e83e95;color:white}
-.verified{background:#22c55e;color:white}
-
-.filter-text{
-  color:#9ca3af;
-  font-size:14px;
-  margin-top:18px;
-}
-
-main{
+.wrap{
   max-width:1220px;
-  margin:-35px auto 60px;
+  margin:34px auto 70px;
   padding:0 16px;
 }
 
-.section-kicker{
-  color:#ff9ad5;
-  font-size:13px;
-  text-transform:uppercase;
-  font-weight:900;
-  letter-spacing:.08em;
+.panel{
+  background:white;
+  border-radius:28px;
+  padding:28px;
+  box-shadow:0 18px 45px rgba(0,0,0,.08);
+}
+
+.panel-top{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  align-items:flex-start;
+  margin-bottom:22px;
 }
 
 h1{
-  margin:4px 0 2px;
-  color:#ffd51e;
-  font-size:34px;
+  margin:0 0 12px;
+  font-size:30px;
+  color:#0b1020;
 }
 
 .sub{
-  color:#9ca3af;
-  margin:0 0 18px;
+  margin:0;
+  color:#64748b;
+  line-height:1.6;
+  max-width:700px;
+}
+
+.filters{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.filter{
+  border:none;
+  padding:12px 20px;
+  border-radius:999px;
+  font-weight:900;
+  background:#f1f5f9;
+  color:#0f172a;
+}
+
+.filter.active{
+  background:#ffc400;
 }
 
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
-  gap:22px;
+  gap:18px;
 }
 
 .card{
-  background:#555965;
-  border-radius:20px;
+  background:#071126;
+  border-radius:18px;
   overflow:hidden;
-  border:1px solid rgba(255,196,0,.55);
-  box-shadow:0 18px 40px rgba(0,0,0,.22);
   color:white;
+  box-shadow:0 16px 34px rgba(0,0,0,.18);
 }
 
 .image-wrap{
+  height:360px;
   position:relative;
-  height:285px;
   overflow:hidden;
   background:#111;
 }
@@ -161,149 +171,95 @@ h1{
   display:block;
 }
 
-.tags{
+.badges{
   position:absolute;
-  top:12px;
-  left:12px;
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
-
-.tag{
-  font-size:12px;
-  padding:7px 10px;
-  border-radius:999px;
-  font-weight:900;
-}
-
-.online{
-  position:absolute;
-  top:54px;
-  left:12px;
-  background:#1f2937;
-  padding:6px 11px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-}
-
-.rank{
-  position:absolute;
-  right:12px;
-  bottom:12px;
-  background:rgba(0,0,0,.45);
-  color:#ffd51e;
-  padding:7px 11px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-}
-
-.card-body{
-  padding:16px;
-}
-
-.name{
-  margin:0;
-  color:#ff9ad5;
-  font-size:21px;
-  font-weight:900;
-}
-
-.tier{
-  color:#cbd5e1;
-  text-transform:uppercase;
-  font-size:12px;
-  font-weight:800;
-  margin:6px 0 10px;
-}
-
-.meta-row{
+  top:14px;
+  left:14px;
   display:flex;
   gap:8px;
-  flex-wrap:wrap;
-  margin-bottom:13px;
+  z-index:2;
 }
 
-.chip{
-  background:rgba(255,255,255,.12);
+.badge{
   padding:8px 12px;
   border-radius:999px;
   font-size:12px;
-  font-weight:800;
+  font-weight:900;
+}
+
+.vip{
+  background:#e83e95;
+  color:white;
+}
+
+.live{
+  background:#4ade80;
+  color:#052e16;
+}
+
+.body{
+  padding:18px;
+}
+
+.name{
+  margin:0 0 8px;
+  font-size:24px;
+  font-weight:900;
+  color:white;
+}
+
+.location{
+  color:#cbd5e1;
+  font-size:14px;
+  margin-bottom:14px;
 }
 
 .bio{
-  color:#f3f4f6;
+  color:#e5e7eb;
+  line-height:1.55;
   font-size:14px;
-  line-height:1.45;
-  min-height:55px;
+  min-height:68px;
 }
 
-.stats{
+.chips{
   display:flex;
-  gap:10px;
-  margin:12px 0;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:16px 0;
 }
 
-.stat{
-  background:rgba(255,255,255,.12);
-  padding:9px 14px;
+.chip{
+  background:rgba(255,255,255,.09);
+  padding:9px 13px;
   border-radius:999px;
-  font-size:13px;
-  font-weight:800;
-}
-
-.status{
-  background:rgba(34,197,94,.22);
-  color:#86efac;
+  font-size:12px;
+  font-weight:900;
+  color:white;
 }
 
 .actions{
   display:flex;
   gap:10px;
-  margin-top:12px;
+  margin-top:14px;
 }
 
 .actions a{
   flex:1;
   text-align:center;
-  padding:14px 8px;
-  border-radius:12px;
   text-decoration:none;
+  padding:14px 10px;
+  border-radius:12px;
   font-weight:900;
 }
 
-.whatsapp{background:#22c55e;color:white}
-.call{background:#e83e95;color:white}
-
-.bottom-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:8px;
-  margin-top:12px;
-}
-
-.bottom-actions button{
-  border:none;
-  border-radius:10px;
-  padding:11px 8px;
-  background:rgba(255,255,255,.12);
+.whatsapp{
+  background:#22c55e;
   color:white;
-  font-weight:800;
 }
 
-.bottom-actions .gold{
-  background:#ffc400;
-  color:#111;
-}
-
-.loading,.empty{
-  grid-column:1/-1;
-  text-align:center;
-  padding:35px;
-  color:#555;
+.call{
+  background:#e83e95;
+  color:white;
 }
 
 .side-tab{
@@ -313,79 +269,83 @@ h1{
   writing-mode:vertical-rl;
   background:#ffc400;
   color:#111;
-  padding:18px 12px;
-  border-radius:12px 0 0 12px;
+  padding:20px 13px;
+  border-radius:14px 0 0 14px;
   font-weight:900;
   letter-spacing:.12em;
 }
 
-footer{
+.loading,.empty{
+  grid-column:1/-1;
   text-align:center;
-  padding:30px;
-  color:#6b7280;
+  padding:35px;
+  color:#64748b;
 }
 
-@media(max-width:700px){
-  header{border-radius:0;padding-bottom:45px}
-  .topbar{align-items:flex-start;flex-direction:column}
-  .brand-title{font-size:25px}
-  main{margin-top:-20px}
-  h1{font-size:28px}
-  .side-tab{display:none}
+@media(max-width:750px){
+  .header{
+    flex-direction:column;
+    align-items:flex-start;
+    padding:20px;
+  }
+
+  .panel-top{
+    flex-direction:column;
+  }
+
+  .side-tab{
+    display:none;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="topbar">
-    <div class="brand">
-      <img class="logo-img" src="assets/logo/logo-badge.png" />
+<header class="header">
+  <div class="brand">
+    <img class="logo" src="assets/logo/logo-badge.png" />
+    <div>
+      <div class="kicker">PRIVATE VIP DIRECTORY</div>
+      <div class="title">Nairobi Sweets</div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a class="gold" href="#profiles">Signature</a>
+    <a href="#profiles">Directory</a>
+    <a href="login.html">Login</a>
+    <a class="pink" href="public-signup-payment-page.html">Join VIP</a>
+  </nav>
+</header>
+
+<div class="hero-gap"></div>
+
+<main class="wrap" id="profiles">
+  <section class="panel">
+    <div class="panel-top">
       <div>
-        <div class="brand-small">Private luxury profile directory</div>
-        <div class="brand-title">Nairobi Sweets</div>
+        <h1>Directory profiles</h1>
+        <p class="sub">
+          Approved listings only. Signature, VIP, and Featured profiles are surfaced from your Supabase directory in real time.
+        </p>
+      </div>
+
+      <div class="filters">
+        <button class="filter active">All</button>
+        <button class="filter">Signature</button>
+        <button class="filter">VIP</button>
+        <button class="filter">Featured</button>
       </div>
     </div>
 
-    <nav class="nav">
-      <a class="active" href="#signature">Signature</a>
-      <a href="#featured">Featured</a>
-      <a href="#profiles">Directory</a>
-      <a href="public-signup-payment-page.html">Private Booking</a>
-      <a href="login.html">Login</a>
-      <a class="active" href="public-signup-payment-page.html">Join</a>
-    </nav>
-  </div>
-
-  <div class="filters">
-    <div class="filter-row">
-      <button class="pill signature">👑 Signature</button>
-      <button class="pill vip">VIP</button>
-      <button class="pill featured">Featured</button>
-      <button class="pill verified">Verified</button>
+    <div id="profilesGrid" class="grid">
+      <div class="loading">Loading profiles...</div>
     </div>
-
-    <div class="filter-text">
-      <b>Active filters</b><br><br>
-      No active filters
-    </div>
-  </div>
-</header>
-
-<main id="profiles">
-  <div class="section-kicker">Premium Tier</div>
-  <h1 id="signature">Signature Selection</h1>
-  <p class="sub">Priority listings reserved for the highest-visibility profiles.</p>
-
-  <div id="profilesGrid" class="grid">
-    <div class="loading">Loading profiles...</div>
-  </div>
+  </section>
 </main>
 
 <div class="side-tab">👑 SIGNATURE</div>
-
-<footer>© Nairobi Sweets</footer>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
@@ -397,15 +357,15 @@ const grid = document.getElementById("profilesGrid");
 const FALLBACK_IMAGE = "assets/logo/logo-badge.png";
 const STORAGE_BASE = "https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/profile-images/";
 
-function cleanPhone(value) {
-  if (!value) return "";
-  let phone = String(value).replace(/\D/g, "");
-  if (phone.startsWith("0")) phone = "254" + phone.slice(1);
-  if (phone.startsWith("7") || phone.startsWith("1")) phone = "254" + phone;
+function cleanPhone(value){
+  if(!value) return "";
+  let phone = String(value).replace(/\D/g,"");
+  if(phone.startsWith("0")) phone = "254" + phone.slice(1);
+  if(phone.startsWith("7") || phone.startsWith("1")) phone = "254" + phone;
   return phone;
 }
 
-function safe(value) {
+function safe(value){
   return String(value || "")
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
@@ -414,7 +374,7 @@ function safe(value) {
     .replaceAll("'","&#039;");
 }
 
-function profileImage(p) {
+function profileImage(p){
   const img =
     p.photo_url ||
     p.image_url ||
@@ -426,122 +386,85 @@ function profileImage(p) {
     p.image ||
     "";
 
-  if (!img) return FALLBACK_IMAGE;
+  if(!img) return FALLBACK_IMAGE;
 
   const value = String(img).trim();
 
-  if (value.startsWith("http://") || value.startsWith("https://")) {
+  if(value.startsWith("http://") || value.startsWith("https://")){
     return value;
   }
 
-  if (value.startsWith("profiles/")) {
+  if(value.startsWith("profiles/")){
     return STORAGE_BASE + value;
   }
 
-  if (value.includes(".")) {
+  if(value.includes(".")){
     return STORAGE_BASE + "profiles/" + value;
   }
 
   return FALLBACK_IMAGE;
 }
 
-function profileName(p) {
+function profileName(p){
   return p.stage_name || p.name || p.full_name || "Nairobi Sweet";
 }
 
-function profilePlan(p) {
+function profilePlan(p){
   return p.plan || p.package || p.tier || "VIP";
 }
 
-function priceFor(plan) {
-  const x = String(plan || "").toLowerCase();
-  if (x.includes("vvip") || x.includes("signature")) return "KES 3000/week";
-  if (x.includes("vip")) return "KES 1500/week";
-  return "KES 1000/week";
-}
-
-function rankNumber(index) {
-  return 50 + index + 1;
-}
-
-async function loadProfiles() {
+async function loadProfiles(){
   grid.innerHTML = `<div class="loading">Loading profiles...</div>`;
 
   const { data, error } = await sb
     .from("profiles")
     .select("*")
-    .eq("status", "approved")
-    .order("created_at", { ascending: false });
+    .eq("status","approved")
+    .order("created_at",{ ascending:false });
 
-  if (error) {
-    console.error("SUPABASE ERROR:", error);
+  if(error){
+    console.error(error);
     grid.innerHTML = `<div class="empty">Could not load profiles.</div>`;
     return;
   }
 
-  if (!data || data.length === 0) {
+  if(!data || data.length === 0){
     grid.innerHTML = `<div class="empty">No approved profiles yet.</div>`;
     return;
   }
 
-  console.log("Loaded profiles:", data);
-
-  grid.innerHTML = data.map((p, index) => {
+  grid.innerHTML = data.map(p => {
     const name = safe(profileName(p));
-    const plan = safe(profilePlan(p));
     const img = safe(profileImage(p));
     const phone = cleanPhone(p.phone);
     const whatsapp = cleanPhone(p.whatsapp || p.phone);
     const location = safe(p.location || p.area || "Nairobi");
     const bio = safe(p.bio || p.description || `Get amazing services with ${name}`);
-    const price = priceFor(plan);
+    const plan = safe(profilePlan(p));
 
     return `
       <article class="card">
         <div class="image-wrap">
-          <img 
-            src="${img}" 
-            alt="${name}" 
-            loading="lazy"
-            onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}'"
-          >
-
-          <div class="tags">
-            <span class="tag signature">👑 Signature</span>
-            <span class="tag vip">VIP</span>
-            <span class="tag featured">Featured</span>
+          <img src="${img}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'">
+          <div class="badges">
+            <span class="badge vip">${plan}</span>
+            <span class="badge live">LIVE</span>
           </div>
-
-          <div class="online">Online</div>
-          <div class="rank">Rank ${rankNumber(index)}</div>
         </div>
 
-        <div class="card-body">
+        <div class="body">
           <h2 class="name">${name}</h2>
-          <div class="tier">${plan}</div>
-
-          <div class="meta-row">
-            <span class="chip">${location}</span>
-            <span class="chip">${price}</span>
-          </div>
-
+          <div class="location">${location}</div>
           <p class="bio">${bio}</p>
 
-          <div class="stats">
-            <span class="stat">💗 ${Math.floor(30 + Math.random()*900)}</span>
-            <span class="stat">👁 ${Math.floor(200 + Math.random()*3500)}</span>
-            <span class="stat status">🟢 Online</span>
+          <div class="chips">
+            <span class="chip">${location}</span>
+            <span class="chip">Direct contact</span>
           </div>
 
           <div class="actions">
             ${whatsapp ? `<a class="whatsapp" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
             ${phone ? `<a class="call" href="tel:+${phone}">Call</a>` : ""}
-          </div>
-
-          <div class="bottom-actions">
-            <button>Featured</button>
-            <button>VIP</button>
-            <button class="gold">👑 Signature</button>
           </div>
         </div>
       </article>
