@@ -94,9 +94,7 @@
       color: white;
     }
 
-    .filters input {
-      flex: 1;
-    }
+    .filters input { flex: 1; }
 
     .profiles-grid {
       display: grid;
@@ -108,11 +106,36 @@
     }
 
     .card {
+      position: relative;
+      min-height: 650px;
       background: linear-gradient(180deg,#111827,#0f172a);
       border-radius: 24px;
       overflow: hidden;
       border: 1px solid rgba(255,216,75,0.15);
       box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 18px 45px rgba(255,216,75,0.18);
+    }
+
+    .card.signature,
+    .card.vvip,
+    .card.vvip-signature {
+      border: 2px solid #facc15;
+      box-shadow: 0 0 35px rgba(250,204,21,.35);
+    }
+
+    .card.vip {
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 0 30px rgba(203,213,225,.18);
+    }
+
+    .card.featured {
+      border: 2px solid #fb923c;
+      box-shadow: 0 0 24px rgba(251,146,60,.20);
     }
 
     .card img {
@@ -120,6 +143,19 @@
       height: 360px;
       object-fit: cover;
       display: block;
+      background: #111827;
+    }
+
+    .rank-badge {
+      position: absolute;
+      top: 310px;
+      right: 16px;
+      background: rgba(0,0,0,.72);
+      color: #ffd84b;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
     }
 
     .card-content {
@@ -139,12 +175,46 @@
       color: #ffd84b;
       font-size: 0.8rem;
       margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
     }
 
-    .meta,
+    .meta {
+      margin-bottom: 10px;
+      color: #ddd;
+    }
+
     .bio {
       margin-bottom: 10px;
       color: #ddd;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 95px;
+      line-height: 1.45;
+    }
+
+    .status-online {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34,197,94,.16);
+      color: #86efac;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .status-online::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #22c55e;
     }
 
     .actions {
@@ -162,15 +232,8 @@
       text-decoration: none;
     }
 
-    .whatsapp {
-      background: #22c55e;
-      color: black;
-    }
-
-    .call {
-      background: #ffd84b;
-      color: black;
-    }
+    .whatsapp { background: #22c55e; color: black; }
+    .call { background: #ffd84b; color: black; }
 
     .seo-links {
       max-width: 1200px;
@@ -182,6 +245,11 @@
       color: #ffd84b;
       font-size: 2.5rem;
       margin-bottom: 20px;
+    }
+
+    .seo-links p {
+      color: #ddd;
+      line-height: 1.6;
     }
 
     .seo-buttons {
@@ -199,6 +267,13 @@
       text-decoration: none;
     }
 
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #ddd;
+      padding: 50px;
+    }
+
     footer {
       text-align: center;
       padding: 30px;
@@ -206,21 +281,19 @@
     }
 
     @media(max-width:768px) {
-      .hero h1 {
-        font-size: 2.5rem;
-      }
-
-      .filters {
-        flex-direction: column;
-      }
+      .hero h1 { font-size: 2.5rem; }
+      .filters { flex-direction: column; }
+      .card img { height: 390px; }
+      .rank-badge { top: 340px; }
     }
   </style>
 </head>
+
 <body>
 
 <header>
   <div class="logo">Nairobi Sweets</div>
-  <a href="/public-signup-payment-page" class="join-btn">Join Now</a>
+  <a href="/public-signup-payment-page.html" class="join-btn">Join Now</a>
 </header>
 
 <section class="hero">
@@ -236,10 +309,14 @@
   <select id="sortSelect">
     <option value="featured">Featured first</option>
     <option value="latest">Latest</option>
+    <option value="likes">Most liked</option>
+    <option value="views">Most viewed</option>
   </select>
 </section>
 
-<section class="profiles-grid" id="profilesGrid"></section>
+<section class="profiles-grid" id="profilesGrid">
+  <div class="empty">Loading premium profiles...</div>
+</section>
 
 <section class="seo-links">
   <h2>Premium Nairobi Profiles by Location</h2>
@@ -264,6 +341,7 @@
 <script>
 const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
+const STORAGE_BUCKET = 'profile-images';
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -273,15 +351,85 @@ const sortSelect = document.getElementById('sortSelect');
 
 let profiles = [];
 
+function cleanPhone(phone) {
+  return String(phone || '').replace(/\D/g, '');
+}
+
+function normalizeKenyanPhone(phone) {
+  let p = cleanPhone(phone);
+  if (!p) return '';
+  if (p.startsWith('0')) return '254' + p.slice(1);
+  if (p.startsWith('7') || p.startsWith('1')) return '254' + p;
+  return p;
+}
+
+function whatsappLink(phone) {
+  const p = normalizeKenyanPhone(phone);
+  return p ? `https://wa.me/${p}` : '#';
+}
+
+function packageClass(pkg) {
+  const p = String(pkg || 'featured').toLowerCase();
+
+  if (p.includes('signature')) return 'signature';
+  if (p.includes('vvip')) return 'vvip';
+  if (p.includes('vip')) return 'vip';
+  if (p.includes('featured')) return 'featured';
+
+  return 'featured';
+}
+
+function packageRank(pkg) {
+  const p = String(pkg || '').toLowerCase();
+
+  if (p.includes('signature') || p.includes('vvip')) return 4;
+  if (p.includes('vip')) return 3;
+  if (p.includes('featured')) return 2;
+
+  return 1;
+}
+
+function imageUrl(profile) {
+  let raw = String(
+    profile.photo_url ||
+    profile.image_url ||
+    profile.profile_photo ||
+    profile.profile_image ||
+    profile.avatar_url ||
+    profile.image ||
+    profile.photo ||
+    ''
+  ).trim();
+
+  if (!raw || raw.toLowerCase().includes('logo') || raw.toLowerCase().includes('default')) {
+    return '/assets/logo/logo-badge.png';
+  }
+
+  if (raw.startsWith('http')) return raw;
+
+  raw = raw.replace(/^\/+/, '').split('/').pop();
+
+  return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
+}
+
 async function loadProfiles() {
-  const { data, error } = await sb
+  let { data, error } = await sb
     .from('profiles')
     .select('*')
     .eq('approved', true)
     .order('created_at', { ascending: false });
 
   if (error) {
+    ({ data, error } = await sb
+      .from('profiles')
+      .select('*')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false }));
+  }
+
+  if (error) {
     console.error(error);
+    grid.innerHTML = '<div class="empty">Could not load profiles. Check Supabase policies.</div>';
     return;
   }
 
@@ -290,73 +438,98 @@ async function loadProfiles() {
 }
 
 function renderProfiles(items) {
-  grid.innerHTML = items.map(profile => `
-    <div class="card">
-      <img 
-        src="${profile.photo_url || '/assets/default.jpg'}"
-        loading="lazy"
-        alt="${profile.stage_name || 'Profile'}"
-      />
+  if (!items.length) {
+    grid.innerHTML = '<div class="empty">No profiles found.</div>';
+    return;
+  }
 
-      <div class="card-content">
-        <h3>${profile.stage_name || ''}</h3>
+  grid.innerHTML = items.map(profile => {
+    const name = profile.stage_name || profile.name || 'Nairobi Sweet';
+    const pkg = profile.package || profile.plan || 'Featured';
+    const location = profile.location || 'Nairobi';
+    const phone = profile.phone || profile.phone_number || profile.whatsapp || '';
+    const whatsapp = profile.whatsapp || profile.phone || profile.phone_number || '';
+    const bio = profile.bio || 'Premium Nairobi profile.';
+    const photo = imageUrl(profile);
+    const tier = packageClass(pkg);
+    const likes = Number(profile.likes || 0);
+    const views = Number(profile.views || 0);
 
-        <div class="badge">
-          ${profile.package || 'featured'}
+    return `
+      <div class="card ${tier}">
+        <img
+          src="${photo}"
+          loading="lazy"
+          alt="${name} premium Nairobi profile in ${location}"
+          onerror="this.onerror=null;this.src='/assets/logo/logo-badge.png';"
+        />
+
+        <div class="rank-badge">
+          ${pkg}
         </div>
 
-        <div class="meta">
-          📍 ${profile.location || 'Nairobi'}
-        </div>
+        <div class="card-content">
+          <h3>${name}</h3>
 
-        <div class="meta">
-          📞 ${profile.phone || ''}
-        </div>
+          <div class="badge">${pkg}</div>
 
-        <div class="bio">
-          ${profile.bio || ''}
-        </div>
+          <div class="meta">📍 ${location}</div>
+          <div class="meta">📞 ${phone || 'Contact available'}</div>
+          <div class="meta">❤️ ${likes} likes · 👁️ ${views} views</div>
 
-        <div class="actions">
-          <a 
-            class="whatsapp"
-            href="https://wa.me/${(profile.whatsapp || '').replace(/\D/g,'')}"
-            target="_blank"
-          >
-            WhatsApp
-          </a>
+          <div class="bio">${bio}</div>
 
-          <a 
-            class="call"
-            href="tel:${profile.phone || ''}"
-          >
-            Call
-          </a>
+          <div class="status-online">Online</div>
+
+          <div class="actions">
+            <a
+              class="whatsapp"
+              href="${whatsappLink(whatsapp)}"
+              target="_blank"
+            >
+              WhatsApp
+            </a>
+
+            <a
+              class="call"
+              href="tel:${phone}"
+            >
+              Call
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function applyFilters() {
-  const q = searchInput.value.toLowerCase();
+  const q = searchInput.value.toLowerCase().trim();
 
   let filtered = profiles.filter(p =>
-    (p.stage_name || '').toLowerCase().includes(q) ||
+    (p.stage_name || p.name || '').toLowerCase().includes(q) ||
     (p.location || '').toLowerCase().includes(q) ||
     (p.bio || '').toLowerCase().includes(q)
   );
 
   if (sortSelect.value === 'featured') {
-    filtered.sort((a, b) => {
-      const rank = pkg => {
-        if (pkg === 'signature') return 3;
-        if (pkg === 'vip') return 2;
-        return 1;
-      };
+    filtered.sort((a, b) =>
+      packageRank(b.package || b.plan) - packageRank(a.package || a.plan)
+    );
+  }
 
-      return rank(b.package) - rank(a.package);
-    });
+  if (sortSelect.value === 'latest') {
+    filtered.sort((a, b) =>
+      new Date(b.created_at || 0) - new Date(a.created_at || 0)
+    );
+  }
+
+  if (sortSelect.value === 'likes') {
+    filtered.sort((a, b) => Number(b.likes || 0) - Number(a.likes || 0));
+  }
+
+  if (sortSelect.value === 'views') {
+    filtered.sort((a, b) => Number(b.views || 0) - Number(a.views || 0));
   }
 
   renderProfiles(filtered);
