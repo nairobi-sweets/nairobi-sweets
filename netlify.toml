@@ -1,3 +1,11 @@
-[build]
-  publish = "."
-  functions = "netlify/functions"
+[functions]
+  directory = "netlify/functions"
+
+[functions."auto-renew"]
+  schedule = "0 2 * * *"
+
+[functions."renewal-reminder-worker"]
+  schedule = "0 9 * * *"
+
+[functions."whatsapp-sender-worker"]
+  schedule = "*/15 * * * *"
