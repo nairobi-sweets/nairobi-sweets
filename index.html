@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <title>Nairobi Sweets | Premium Nairobi Profiles</title>
-
 <meta name="description" content="Discover approved Nairobi Sweets profiles with real photos, WhatsApp access, VIP listings, views, likes, and location-based discovery." />
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -26,7 +25,7 @@ header{
   position:sticky;
   top:0;
   z-index:50;
-  background:rgba(0,0,0,.92);
+  background:rgba(0,0,0,.94);
   backdrop-filter:blur(18px);
   padding:28px 55px;
   display:flex;
@@ -52,15 +51,15 @@ header{
 
 .hero{
   text-align:center;
-  padding:40px 20px 25px;
+  padding:32px 20px 18px;
   background:
     radial-gradient(circle at top,rgba(255,216,75,.12),transparent 35%),
     #050814;
 }
 
 .hero h1{
-  font-size:clamp(32px,5vw,66px);
-  margin:0 0 12px;
+  font-size:clamp(30px,5vw,60px);
+  margin:0 0 10px;
 }
 
 .hero span{color:#ffd84b}
@@ -69,13 +68,13 @@ header{
   color:#b7bfd6;
   max-width:760px;
   margin:auto;
-  font-size:18px;
+  font-size:17px;
 }
 
 .controls{
   max-width:1500px;
   margin:auto;
-  padding:35px 28px 10px;
+  padding:28px 28px 8px;
   display:grid;
   grid-template-columns:1fr 190px;
   gap:18px;
@@ -86,20 +85,15 @@ input,select{
   border:1px solid rgba(255,216,75,.18);
   color:white;
   border-radius:18px;
-  padding:18px 20px;
-  font-size:17px;
+  padding:16px 20px;
+  font-size:16px;
   outline:none;
-}
-
-input:focus,select:focus{
-  border-color:#ffd84b;
-  box-shadow:0 0 0 4px rgba(255,216,75,.12);
 }
 
 .grid{
   max-width:1500px;
   margin:auto;
-  padding:28px;
+  padding:24px 28px;
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
   gap:34px;
@@ -112,7 +106,7 @@ input:focus,select:focus{
   border-radius:30px;
   background:#0b1020;
   border:2px solid #ff9800;
-  min-height:560px;
+  min-height:auto;
   transition:.35s ease;
   box-shadow:0 22px 80px rgba(0,0,0,.45);
 }
@@ -135,7 +129,7 @@ input:focus,select:focus{
 .card:hover::before{opacity:1}
 
 .photo-wrap{
-  height:360px;
+  height:320px;
   background:#111827;
   overflow:hidden;
 }
@@ -166,15 +160,15 @@ input:focus,select:focus{
 }
 
 .content{
-  padding:26px;
+  padding:20px;
   background:linear-gradient(180deg,rgba(12,18,38,.98),rgba(5,8,20,1));
 }
 
 .name{
-  font-size:38px;
-  line-height:1;
+  font-size:28px;
+  line-height:1.05;
   font-weight:900;
-  margin-bottom:12px;
+  margin-bottom:10px;
 }
 
 .card:hover .name{color:#ffd84b}
@@ -182,46 +176,47 @@ input:focus,select:focus{
 .meta{
   color:#ffd84b;
   font-weight:900;
-  margin-bottom:10px;
-  font-size:18px;
+  margin-bottom:8px;
+  font-size:16px;
+  line-height:1.25;
 }
 
 .stats{
   display:flex;
-  gap:12px;
+  gap:8px;
   flex-wrap:wrap;
-  margin:12px 0 14px;
+  margin:8px 0 10px;
 }
 
 .stat{
   background:rgba(255,216,75,.12);
   color:#ffd84b;
   border:1px solid rgba(255,216,75,.25);
-  padding:8px 12px;
+  padding:7px 10px;
   border-radius:999px;
   font-weight:900;
-  font-size:14px;
+  font-size:13px;
 }
 
 .bio{
   color:#cbd5e1;
-  line-height:1.45;
-  font-size:16px;
-  min-height:48px;
+  line-height:1.35;
+  font-size:15px;
+  min-height:38px;
 }
 
 .actions{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:18px;
+  gap:10px;
+  margin-top:14px;
 }
 
 .action-btn{
   border:none;
-  border-radius:16px;
-  padding:14px 12px;
-  font-size:15px;
+  border-radius:15px;
+  padding:13px 10px;
+  font-size:14px;
   font-weight:900;
   cursor:pointer;
   transition:.2s ease;
@@ -254,9 +249,10 @@ footer{
   header{padding:20px}
   .brand{font-size:30px}
   .join-btn{padding:13px 22px;font-size:15px}
-  .controls{grid-template-columns:1fr;padding:25px 18px 8px}
-  .grid{padding:18px}
-  .photo-wrap{height:330px}
+  .controls{grid-template-columns:1fr;padding:24px 18px 8px}
+  .grid{padding:18px;gap:24px}
+  .photo-wrap{height:300px}
+  .name{font-size:26px}
 }
 </style>
 </head>
@@ -305,8 +301,6 @@ const sortSelect = document.getElementById("sortSelect");
 document.getElementById("year").textContent = new Date().getFullYear();
 
 let allProfiles = [];
-
-function clean(v){ return v || ""; }
 
 function getImage(p){
   return p.photo_url || p.image_url || p.profile_photo || p.avatar_url || p.photo || "assets/logo/logo-badge.png";
@@ -358,7 +352,8 @@ async function trackEvent(profileId,eventType){
 async function addView(profileId){
   try{
     await sb.rpc("increment_profile_views",{p_profile_id:profileId});
-    const p = allProfiles.find(x => x.id === profileId);
+
+    const p = allProfiles.find(x => Number(x.id) === Number(profileId));
     if(p){
       p.views_count = Number(p.views_count || 0) + 1;
       renderProfiles();
@@ -373,13 +368,13 @@ async function likeProfile(profileId){
     await sb.rpc("increment_profile_likes",{p_profile_id:profileId});
     await trackEvent(profileId,"like_click");
 
-    const p = allProfiles.find(x => x.id === profileId);
+    const p = allProfiles.find(x => Number(x.id) === Number(profileId));
     if(p){
       p.likes_count = Number(p.likes_count || 0) + 1;
       renderProfiles();
     }
   }catch(e){
-    alert("Could not like profile. Check Supabase function.");
+    alert("Could not like profile. Run the likes SQL patch first.");
     console.error(e);
   }
 }
@@ -431,7 +426,7 @@ function renderProfiles(){
     const tier = getTier(p);
     const phone = p.phone || p.whatsapp || p.phone_number || "";
     const whatsappNumber = phoneToWhatsapp(phone);
-    const bio = clean(p.bio || p.description || `Get amazing escort services with ${name}`);
+    const bio = p.bio || p.description || `Get amazing services with ${name}`;
 
     return `
       <article class="card" onclick="trackEvent(${id}, 'profile_view'); addView(${id});">
