@@ -3,288 +3,310 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Premium Nairobi Escorts | Nairobi Sweets</title>
-  <meta name="description" content="Verified premium Nairobi profiles with real photos, direct WhatsApp access, VIP listings, and location-based discovery." />
-  <meta name="keywords" content="Nairobi escorts, Nairobi sweets, VIP Nairobi profiles, Nairobi spa listings, Westlands escorts, Kilimani escorts" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://nairobi-sweets.com/" />
 
-  <meta property="og:title" content="Nairobi Sweets | Premium Nairobi Profiles" />
-  <meta property="og:description" content="Explore verified premium Nairobi profiles by location." />
-  <meta property="og:url" content="https://nairobi-sweets.com/" />
+  <title>Nairobi Sweets | Premium Nairobi Profiles</title>
+
+  <meta name="description" content="Discover approved Nairobi Sweets profiles with real photos, WhatsApp access, VIP listings, and location-based discovery." />
+  <meta name="keywords" content="Nairobi Sweets, Nairobi profiles, Nairobi VIP, Nairobi directory, Nairobi models" />
+
+  <meta property="og:title" content="Nairobi Sweets" />
+  <meta property="og:description" content="Premium Nairobi profile discovery platform with verified listings and WhatsApp access." />
   <meta property="og:type" content="website" />
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Nairobi Sweets",
-    "url": "https://nairobi-sweets.com/"
-  }
-  </script>
+  <meta property="og:url" content="https://nairobi-sweets.com" />
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(180deg,#020617,#000814);
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #050814;
       color: white;
     }
 
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
     header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255, 216, 75, 0.12);
+      padding: 24px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px;
-      background: rgba(0,0,0,0.85);
-      position: sticky;
-      top: 0;
-      z-index: 100;
     }
 
-    .logo {
-      font-size: 2rem;
-      font-weight: bold;
+    .brand {
+      font-size: 36px;
+      font-weight: 900;
       color: #ffd84b;
+      letter-spacing: -1px;
     }
 
     .join-btn {
       background: #ffd84b;
-      color: black;
-      padding: 14px 28px;
+      color: #000;
+      padding: 16px 34px;
       border-radius: 999px;
-      text-decoration: none;
-      font-weight: bold;
+      font-weight: 900;
+      font-size: 18px;
+      transition: 0.25s ease;
+    }
+
+    .join-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 45px rgba(255, 216, 75, 0.3);
     }
 
     .hero {
       text-align: center;
-      padding: 80px 20px 40px;
+      padding: 55px 22px 35px;
+      background:
+        radial-gradient(circle at top, rgba(255, 216, 75, 0.12), transparent 35%),
+        linear-gradient(180deg, #050814, #070b1d);
     }
 
     .hero h1 {
-      font-size: 4rem;
-      margin-bottom: 20px;
+      margin: 0 auto 14px;
+      max-width: 900px;
+      font-size: clamp(32px, 5vw, 70px);
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .hero span {
+      color: #ffd84b;
     }
 
     .hero p {
-      max-width: 800px;
-      margin: auto;
-      font-size: 1.2rem;
-      color: #ddd;
+      max-width: 760px;
+      margin: 0 auto;
+      color: #b7bfd6;
+      font-size: 19px;
+      line-height: 1.5;
     }
 
-    .filters {
-      display: flex;
-      gap: 12px;
-      max-width: 1200px;
-      margin: 30px auto;
-      padding: 0 20px;
+    .controls {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 40px 28px 20px;
+      display: grid;
+      grid-template-columns: 1fr 190px;
+      gap: 18px;
     }
 
-    .filters input,
-    .filters select {
-      padding: 16px;
-      border-radius: 12px;
-      border: 1px solid #333;
+    input,
+    select {
+      width: 100%;
       background: #111827;
       color: white;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 16px;
+      padding: 18px 20px;
+      font-size: 17px;
+      outline: none;
     }
 
-    .filters input { flex: 1; }
+    input:focus,
+    select:focus {
+      border-color: #ffd84b;
+      box-shadow: 0 0 0 4px rgba(255, 216, 75, 0.12);
+    }
 
-    .profiles-grid {
+    .grid {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 28px;
       display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-      gap: 24px;
-      padding: 20px;
-      max-width: 1400px;
-      margin: auto;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 30px;
     }
 
     .card {
       position: relative;
-      min-height: 650px;
-      background: linear-gradient(180deg,#111827,#0f172a);
-      border-radius: 24px;
       overflow: hidden;
-      border: 1px solid rgba(255,216,75,0.15);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      transition: transform .3s ease, box-shadow .3s ease;
+      border-radius: 28px;
+      background: #0b1020;
+      border: 2px solid rgba(255, 216, 75, 0.18);
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.38);
+      transition: 0.3s ease;
+      min-height: 520px;
     }
 
     .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 18px 45px rgba(255,216,75,0.18);
-    }
-
-    .card.signature,
-    .card.vvip,
-    .card.vvip-signature {
-      border: 2px solid #facc15;
-      box-shadow: 0 0 35px rgba(250,204,21,.35);
-    }
-
-    .card.vip {
-      border: 2px solid #cbd5e1;
-      box-shadow: 0 0 30px rgba(203,213,225,.18);
+      transform: translateY(-8px) scale(1.015);
+      box-shadow: 0 30px 90px rgba(255, 216, 75, 0.18);
     }
 
     .card.featured {
-      border: 2px solid #fb923c;
-      box-shadow: 0 0 24px rgba(251,146,60,.20);
+      border-color: #ffd84b;
     }
 
-    .card img {
+    .card.vip {
+      border-color: #ff9800;
+    }
+
+    .card.vvip,
+    .card.signature {
+      border-color: #ff3d7f;
+      box-shadow: 0 20px 80px rgba(255, 61, 127, 0.2);
+    }
+
+    .photo-wrap {
+      height: 350px;
+      background: #111827;
+      overflow: hidden;
+    }
+
+    .photo-wrap img {
       width: 100%;
-      height: 360px;
+      height: 100%;
       object-fit: cover;
       display: block;
-      background: #111827;
+      transition: 0.4s ease;
     }
 
-    .rank-badge {
+    .card:hover img {
+      transform: scale(1.06);
+    }
+
+    .tier-badge {
       position: absolute;
-      top: 310px;
-      right: 16px;
-      background: rgba(0,0,0,.72);
-      color: #ffd84b;
-      padding: 8px 14px;
+      top: 18px;
+      right: 18px;
+      padding: 9px 15px;
       border-radius: 999px;
-      font-size: 12px;
-      font-weight: bold;
+      font-size: 13px;
+      font-weight: 900;
+      color: #000;
+      background: #ffd84b;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      z-index: 2;
     }
 
-    .card-content {
-      padding: 18px;
+    .tier-badge.vip {
+      background: linear-gradient(135deg, #ffd84b, #ff9800);
     }
 
-    .card h3 {
-      font-size: 2rem;
+    .tier-badge.vvip,
+    .tier-badge.signature {
+      color: #fff;
+      background: linear-gradient(135deg, #ff3d7f, #8b5cf6);
+    }
+
+    .content {
+      padding: 22px;
+      background:
+        linear-gradient(180deg, rgba(12, 18, 38, 0.96), rgba(7, 11, 26, 1));
+    }
+
+    .name {
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 900;
       margin-bottom: 10px;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid #ffd84b;
-      color: #ffd84b;
-      font-size: 0.8rem;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: .04em;
+      letter-spacing: -1px;
     }
 
     .meta {
-      margin-bottom: 10px;
-      color: #ddd;
+      color: #ffd84b;
+      font-weight: 800;
+      margin-bottom: 12px;
     }
 
     .bio {
-      margin-bottom: 10px;
-      color: #ddd;
-      display: -webkit-box;
-      -webkit-line-clamp: 4;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      min-height: 95px;
+      color: #cbd5e1;
       line-height: 1.45;
-    }
-
-    .status-online {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(34,197,94,.16);
-      color: #86efac;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-top: 8px;
-    }
-
-    .status-online::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      background: #22c55e;
-      border-radius: 50%;
-      box-shadow: 0 0 10px #22c55e;
+      min-height: 52px;
+      font-size: 15px;
     }
 
     .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .actions a {
-      flex: 1;
-      text-align: center;
-      padding: 14px;
-      border-radius: 12px;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    .whatsapp { background: #22c55e; color: black; }
-    .call { background: #ffd84b; color: black; }
-
-    .seo-links {
-      max-width: 1200px;
-      margin: 80px auto;
-      padding: 40px 20px;
-    }
-
-    .seo-links h2 {
-      color: #ffd84b;
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-    }
-
-    .seo-links p {
-      color: #ddd;
-      line-height: 1.6;
-    }
-
-    .seo-buttons {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-top: 20px;
+      margin-top: 18px;
     }
 
-    .seo-buttons a {
-      padding: 12px 18px;
-      border: 1px solid #ffd84b;
-      border-radius: 999px;
-      color: #ffd84b;
-      text-decoration: none;
-    }
-
-    .empty {
-      grid-column: 1 / -1;
+    .action-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 12px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: 0.2s ease;
       text-align: center;
-      color: #ddd;
-      padding: 50px;
+    }
+
+    .whatsapp {
+      background: #25d366;
+      color: #061b0d;
+    }
+
+    .call {
+      background: #ffd84b;
+      color: #000;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    .empty,
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #94a3b8;
+      font-size: 20px;
     }
 
     footer {
       text-align: center;
-      padding: 30px;
-      color: #999;
+      color: #64748b;
+      padding: 50px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: 40px;
     }
 
-    @media(max-width:768px) {
-      .hero h1 { font-size: 2.5rem; }
-      .filters { flex-direction: column; }
-      .card img { height: 390px; }
-      .rank-badge { top: 340px; }
+    @media (max-width: 760px) {
+      header {
+        padding: 18px;
+      }
+
+      .brand {
+        font-size: 28px;
+      }
+
+      .join-btn {
+        padding: 13px 22px;
+        font-size: 15px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+        padding: 28px 18px 10px;
+      }
+
+      .grid {
+        padding: 18px;
+        gap: 22px;
+      }
+
+      .photo-wrap {
+        height: 330px;
+      }
     }
   </style>
 </head>
@@ -292,253 +314,250 @@
 <body>
 
 <header>
-  <div class="logo">Nairobi Sweets</div>
-  <a href="/public-signup-payment-page.html" class="join-btn">Join Now</a>
+  <div class="brand">Nairobi Sweets</div>
+  <a class="join-btn" href="join.html">Join Now</a>
 </header>
 
 <section class="hero">
-  <h1>Premium Profiles</h1>
+  <h1>Discover Nairobi’s <span>Premium Profiles</span></h1>
   <p>
-    Discover approved Nairobi Sweets profiles with real photos,
-    WhatsApp access, VIP listings, and location-based discovery.
+    Approved listings, real photos, VIP discovery, WhatsApp access, and location-based browsing across Nairobi.
   </p>
 </section>
 
-<section class="filters">
-  <input type="text" id="searchInput" placeholder="Search by name, location, bio..." />
+<section class="controls">
+  <input id="searchInput" type="text" placeholder="Search by name, location, bio..." />
+
   <select id="sortSelect">
     <option value="featured">Featured first</option>
-    <option value="latest">Latest</option>
-    <option value="likes">Most liked</option>
-    <option value="views">Most viewed</option>
+    <option value="newest">Newest first</option>
+    <option value="vip">VIP first</option>
+    <option value="vvip">VVIP first</option>
   </select>
 </section>
 
-<section class="profiles-grid" id="profilesGrid">
-  <div class="empty">Loading premium profiles...</div>
-</section>
-
-<section class="seo-links">
-  <h2>Premium Nairobi Profiles by Location</h2>
-  <p>
-    Explore premium Nairobi profiles across Westlands, Kilimani,
-    Ruaka, Thika Road, Kileleshwa, Syokimau, Runda, Thika, and Rongai.
-  </p>
-
-  <div class="seo-buttons">
-    <a href="/seo/locations/westlands.html">Westlands Profiles</a>
-    <a href="/seo/locations/kilimani.html">Kilimani Listings</a>
-    <a href="/seo/locations/ruaka.html">Ruaka Profiles</a>
-    <a href="/seo/locations/thika-road.html">Thika Road Listings</a>
-    <a href="/seo/categories/vip.html">VIP Nairobi Profiles</a>
-  </div>
-</section>
+<div id="status" class="loading">Loading premium profiles...</div>
+<main id="profilesGrid" class="grid"></main>
 
 <footer>
-  © Nairobi Sweets
+  © <span id="year"></span> Nairobi Sweets. Premium profile discovery platform.
 </footer>
 
 <script>
-const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
-const STORAGE_BUCKET = 'profile-images';
+  const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const grid = document.getElementById('profilesGrid');
-const searchInput = document.getElementById('searchInput');
-const sortSelect = document.getElementById('sortSelect');
+  const grid = document.getElementById("profilesGrid");
+  const statusBox = document.getElementById("status");
+  const searchInput = document.getElementById("searchInput");
+  const sortSelect = document.getElementById("sortSelect");
 
-let profiles = [];
+  document.getElementById("year").textContent = new Date().getFullYear();
 
-function cleanPhone(phone) {
-  return String(phone || '').replace(/\D/g, '');
-}
+  let allProfiles = [];
 
-function normalizeKenyanPhone(phone) {
-  let p = cleanPhone(phone);
-  if (!p) return '';
-  if (p.startsWith('0')) return '254' + p.slice(1);
-  if (p.startsWith('7') || p.startsWith('1')) return '254' + p;
-  return p;
-}
-
-function whatsappLink(phone) {
-  const p = normalizeKenyanPhone(phone);
-  return p ? `https://wa.me/${p}` : '#';
-}
-
-function packageClass(pkg) {
-  const p = String(pkg || 'featured').toLowerCase();
-
-  if (p.includes('signature')) return 'signature';
-  if (p.includes('vvip')) return 'vvip';
-  if (p.includes('vip')) return 'vip';
-  if (p.includes('featured')) return 'featured';
-
-  return 'featured';
-}
-
-function packageRank(pkg) {
-  const p = String(pkg || '').toLowerCase();
-
-  if (p.includes('signature') || p.includes('vvip')) return 4;
-  if (p.includes('vip')) return 3;
-  if (p.includes('featured')) return 2;
-
-  return 1;
-}
-
-function imageUrl(profile) {
-  let raw = String(
-    profile.photo_url ||
-    profile.image_url ||
-    profile.profile_photo ||
-    profile.profile_image ||
-    profile.avatar_url ||
-    profile.image ||
-    profile.photo ||
-    ''
-  ).trim();
-
-  if (!raw || raw.toLowerCase().includes('logo') || raw.toLowerCase().includes('default')) {
-    return '/assets/logo/logo-badge.png';
+  function clean(value) {
+    return value || "";
   }
 
-  if (raw.startsWith('http')) return raw;
-
-  raw = raw.replace(/^\/+/, '').split('/').pop();
-
-  return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
-}
-
-async function loadProfiles() {
-  let { data, error } = await sb
-    .from('profiles')
-    .select('*')
-    .eq('approved', true)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    ({ data, error } = await sb
-      .from('profiles')
-      .select('*')
-      .eq('status', 'approved')
-      .order('created_at', { ascending: false }));
+  function getImage(profile) {
+    return (
+      profile.photo_url ||
+      profile.image_url ||
+      profile.profile_photo ||
+      profile.avatar_url ||
+      profile.photo ||
+      "assets/logo/logo-badge.png"
+    );
   }
 
-  if (error) {
-    console.error(error);
-    grid.innerHTML = '<div class="empty">Could not load profiles. Check Supabase policies.</div>';
-    return;
+  function getName(profile) {
+    return profile.stage_name || profile.name || profile.full_name || "Nairobi Sweet";
   }
 
-  profiles = data || [];
-  applyFilters();
-}
-
-function renderProfiles(items) {
-  if (!items.length) {
-    grid.innerHTML = '<div class="empty">No profiles found.</div>';
-    return;
+  function getLocation(profile) {
+    return profile.area || profile.location || profile.city || "Nairobi";
   }
 
-  grid.innerHTML = items.map(profile => {
-    const name = profile.stage_name || profile.name || 'Nairobi Sweet';
-    const pkg = profile.package || profile.plan || 'Featured';
-    const location = profile.location || 'Nairobi';
-    const phone = profile.phone || profile.phone_number || profile.whatsapp || '';
-    const whatsapp = profile.whatsapp || profile.phone || profile.phone_number || '';
-    const bio = profile.bio || 'Premium Nairobi profile.';
-    const photo = imageUrl(profile);
-    const tier = packageClass(pkg);
-    const likes = Number(profile.likes || 0);
-    const views = Number(profile.views || 0);
+  function getTier(profile) {
+    const tier = (profile.tier || "").toLowerCase();
 
-    return `
-      <div class="card ${tier}">
-        <img
-          src="${photo}"
-          loading="lazy"
-          alt="${name} premium Nairobi profile in ${location}"
-          onerror="this.onerror=null;this.src='/assets/logo/logo-badge.png';"
-        />
+    if (profile.is_vvip || tier === "vvip" || tier === "signature") return "vvip";
+    if (profile.is_vip || tier === "vip") return "vip";
+    if (profile.is_featured || tier === "featured") return "featured";
 
-        <div class="rank-badge">
-          ${pkg}
-        </div>
+    return "featured";
+  }
 
-        <div class="card-content">
-          <h3>${name}</h3>
+  function tierLabel(tier) {
+    if (tier === "vvip") return "✦ VVIP / Signature";
+    if (tier === "vip") return "◆ VIP";
+    return "Featured";
+  }
 
-          <div class="badge">${pkg}</div>
+  async function trackEvent(profileId, eventType) {
+    try {
+      await sb.from("analytics_events").insert({
+        profile_id: profileId,
+        event_type: eventType,
+        page: "homepage",
+        user_agent: navigator.userAgent
+      });
 
-          <div class="meta">📍 ${location}</div>
-          <div class="meta">📞 ${phone || 'Contact available'}</div>
-          <div class="meta">❤️ ${likes} likes · 👁️ ${views} views</div>
+      if (eventType === "profile_view") {
+        await sb.rpc("increment_profile_views", { p_profile_id: profileId });
+      }
+    } catch (error) {
+      console.warn("Analytics skipped:", error.message);
+    }
+  }
 
-          <div class="bio">${bio}</div>
+  function phoneToWhatsapp(phone) {
+    if (!phone) return "";
+    let cleaned = String(phone).replace(/\D/g, "");
 
-          <div class="status-online">Online</div>
+    if (cleaned.startsWith("0")) {
+      cleaned = "254" + cleaned.slice(1);
+    }
 
-          <div class="actions">
-            <a
-              class="whatsapp"
-              href="${whatsappLink(whatsapp)}"
-              target="_blank"
-            >
-              WhatsApp
-            </a>
+    if (cleaned.startsWith("7") || cleaned.startsWith("1")) {
+      cleaned = "254" + cleaned;
+    }
 
-            <a
-              class="call"
-              href="tel:${phone}"
-            >
-              Call
-            </a>
+    return cleaned;
+  }
+
+  function renderProfiles() {
+    const q = searchInput.value.toLowerCase().trim();
+    const sort = sortSelect.value;
+
+    let profiles = [...allProfiles];
+
+    if (q) {
+      profiles = profiles.filter((p) => {
+        const blob = [
+          getName(p),
+          getLocation(p),
+          p.bio,
+          p.description,
+          p.area,
+          p.city
+        ].join(" ").toLowerCase();
+
+        return blob.includes(q);
+      });
+    }
+
+    profiles.sort((a, b) => {
+      const tierRank = { vvip: 4, vip: 3, featured: 2 };
+
+      if (sort === "newest") {
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      }
+
+      if (sort === "vip") {
+        return (getTier(b) === "vip") - (getTier(a) === "vip");
+      }
+
+      if (sort === "vvip") {
+        return (getTier(b) === "vvip") - (getTier(a) === "vvip");
+      }
+
+      return (tierRank[getTier(b)] || 0) - (tierRank[getTier(a)] || 0);
+    });
+
+    if (!profiles.length) {
+      grid.innerHTML = "";
+      statusBox.className = "empty";
+      statusBox.textContent = "No approved profiles found.";
+      return;
+    }
+
+    statusBox.style.display = "none";
+
+    grid.innerHTML = profiles.map((p) => {
+      const tier = getTier(p);
+      const name = getName(p);
+      const location = getLocation(p);
+      const image = getImage(p);
+      const phone = p.phone || p.whatsapp || p.phone_number || "";
+      const whatsappNumber = phoneToWhatsapp(phone);
+      const bio = clean(p.bio || p.description || "Premium Nairobi profile available now.");
+
+      return `
+        <article class="card ${tier}" onclick="trackEvent(${p.id}, 'profile_view')">
+          <div class="tier-badge ${tier}">${tierLabel(tier)}</div>
+
+          <div class="photo-wrap">
+            <img
+              src="${image}"
+              alt="${name}"
+              loading="lazy"
+              onerror="this.src='assets/logo/logo-badge.png'"
+            />
           </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
 
-function applyFilters() {
-  const q = searchInput.value.toLowerCase().trim();
+          <div class="content">
+            <div class="name">${name}</div>
+            <div class="meta">${location}</div>
+            <div class="bio">${bio}</div>
 
-  let filtered = profiles.filter(p =>
-    (p.stage_name || p.name || '').toLowerCase().includes(q) ||
-    (p.location || '').toLowerCase().includes(q) ||
-    (p.bio || '').toLowerCase().includes(q)
-  );
+            <div class="actions">
+              ${
+                whatsappNumber
+                  ? `<a class="action-btn whatsapp"
+                       href="https://wa.me/${whatsappNumber}"
+                       target="_blank"
+                       onclick="event.stopPropagation(); trackEvent(${p.id}, 'whatsapp_click')">
+                       WhatsApp
+                     </a>`
+                  : `<button class="action-btn whatsapp" disabled>WhatsApp</button>`
+              }
 
-  if (sortSelect.value === 'featured') {
-    filtered.sort((a, b) =>
-      packageRank(b.package || b.plan) - packageRank(a.package || a.plan)
-    );
+              ${
+                phone
+                  ? `<a class="action-btn call"
+                       href="tel:${phone}"
+                       onclick="event.stopPropagation(); trackEvent(${p.id}, 'phone_click')">
+                       Call
+                     </a>`
+                  : `<button class="action-btn call" disabled>Call</button>`
+              }
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
   }
 
-  if (sortSelect.value === 'latest') {
-    filtered.sort((a, b) =>
-      new Date(b.created_at || 0) - new Date(a.created_at || 0)
-    );
+  async function loadProfiles() {
+    statusBox.style.display = "block";
+    statusBox.className = "loading";
+    statusBox.textContent = "Loading premium profiles...";
+
+    const { data, error } = await sb
+      .from("profiles")
+      .select("*")
+      .eq("approved", true)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      statusBox.className = "empty";
+      statusBox.textContent = "Could not load profiles. Check Supabase table permissions.";
+      return;
+    }
+
+    allProfiles = data || [];
+    renderProfiles();
   }
 
-  if (sortSelect.value === 'likes') {
-    filtered.sort((a, b) => Number(b.likes || 0) - Number(a.likes || 0));
-  }
+  searchInput.addEventListener("input", renderProfiles);
+  sortSelect.addEventListener("change", renderProfiles);
 
-  if (sortSelect.value === 'views') {
-    filtered.sort((a, b) => Number(b.views || 0) - Number(a.views || 0));
-  }
-
-  renderProfiles(filtered);
-}
-
-searchInput.addEventListener('input', applyFilters);
-sortSelect.addEventListener('change', applyFilters);
-
-loadProfiles();
+  loadProfiles();
 </script>
 
 </body>
