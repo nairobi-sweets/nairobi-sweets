@@ -8,42 +8,33 @@ const supabase = createClient(
 exports.handler = async (event) => {
   try {
     if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method not allowed" };
+      return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
     }
 
     const body = JSON.parse(event.body || "{}");
 
-    const {
-      stage_name,
-      phone,
-      whatsapp,
-      location,
-      area,
-      city,
-      bio,
-      photo_url,
-      tier
-    } = body;
-
-    if (!stage_name || !phone) {
+    if (!body.stage_name || !body.phone) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "Name and phone are required" })
+        body: JSON.stringify({ error: "Stage name and phone are required" })
       };
     }
+
+    const tier = body.tier || "featured";
 
     const { data, error } = await supabase
       .from("profiles")
       .insert({
-        stage_name,
-        phone,
-        whatsapp: whatsapp || phone,
-        location,
-        area,
-        city: city || "Nairobi",
-        bio,
-        photo_url,
-        tier: tier || "featured",
+        stage_name: body.stage_name,
+        phone: body.phone,
+        whatsapp: body.whatsapp || body.phone,
+        location: body.location || body.area || "Nairobi",
+        area: body.area || body.location || "Nairobi",
+        city: body.city || "Nairobi",
+        bio: body.bio || "",
+        photo_url: body.photo_url || "",
+        image_url: body.photo_url || "",
+        tier,
         approved: true,
         subscription_status: "active",
         views_count: 0,
@@ -62,6 +53,7 @@ exports.handler = async (event) => {
       statusCode: 200,
       body: JSON.stringify({ success: true, profile: data })
     };
+
   } catch (err) {
     return {
       statusCode: 500,
