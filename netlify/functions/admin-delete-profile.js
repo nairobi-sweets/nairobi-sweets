@@ -8,7 +8,7 @@ const supabase = createClient(
 exports.handler = async (event) => {
   try {
     if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method not allowed" };
+      return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
     }
 
     const { id } = JSON.parse(event.body || "{}");
@@ -31,6 +31,7 @@ exports.handler = async (event) => {
       statusCode: 200,
       body: JSON.stringify({ success: true })
     };
+
   } catch (err) {
     return {
       statusCode: 500,
