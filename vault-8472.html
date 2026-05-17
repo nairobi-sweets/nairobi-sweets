@@ -3,371 +3,367 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nairobi Sweets Vault</title>
+<title>Nairobi Sweets Admin Vault</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#070713;color:#fff}
-.hidden{display:none!important}
-
-.lock{
-  max-width:430px;
-  margin:100px auto;
-  background:#111225;
-  padding:26px;
-  border-radius:24px;
-}
-.lock h1{color:#ffd84b;margin-top:0}
-.lock input{
-  width:100%;
-  padding:14px;
-  border-radius:14px;
-  border:0;
-  background:#191a2c;
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#070a18;
   color:white;
-  margin:12px 0;
 }
-button{
-  border:0;
-  border-radius:14px;
-  padding:12px;
-  font-weight:900;
-  cursor:pointer;
-  background:#ffd84b;
-  color:#111;
-}
-
 header{
-  padding:18px 24px;
-  background:#03030a;
+  padding:25px;
+  background:#000;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  border-bottom:1px solid rgba(255,255,255,.1);
+  border-bottom:1px solid rgba(255,216,75,.2);
 }
-header h1{color:#ffd84b;margin:0}
-
-.wrap{max-width:1300px;margin:25px auto;padding:0 18px}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-  gap:14px;
-  margin-bottom:20px;
+h1{color:#ffd84b;margin:0}
+button,input,select,textarea{
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  font-weight:800;
 }
-.stat{
-  background:#111225;
-  border:1px solid #292a40;
-  border-radius:20px;
-  padding:18px;
-}
-.stat b{font-size:30px;color:#ffd84b}
-
-.tools{
-  display:grid;
-  grid-template-columns:1fr 180px 160px;
-  gap:12px;
-  margin-bottom:20px;
-}
-.tools input,.tools select{
-  padding:13px;
-  border-radius:14px;
-  border:1px solid #33354c;
-  background:#151629;
+input,select,textarea{
+  width:100%;
+  background:#111827;
   color:white;
+  border:1px solid rgba(255,255,255,.15);
 }
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:18px;
-}
-
-.card{
-  background:#111225;
-  border:1px solid #292a40;
+.admin-box{
+  max-width:1400px;
+  margin:25px auto;
+  padding:20px;
+  background:#0d1226;
   border-radius:22px;
+  border:1px solid rgba(255,216,75,.18);
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+}
+.add-btn{background:#22c55e;color:#001b09}
+.grid{
+  max-width:1500px;
+  margin:auto;
+  padding:25px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+  gap:24px;
+}
+.card{
+  background:#101326;
+  border:1px solid rgba(255,216,75,.2);
+  border-radius:24px;
   overflow:hidden;
 }
 .card img{
   width:100%;
   height:260px;
   object-fit:cover;
-  background:#18192b;
+  background:#111;
 }
-.content{padding:15px}
-.name{font-size:22px;font-weight:900}
+.content{padding:18px}
+.name{
+  font-size:28px;
+  font-weight:900;
+  margin-bottom:10px;
+}
 .badge{
   display:inline-block;
-  margin:7px 0;
-  padding:5px 10px;
+  padding:7px 12px;
   border-radius:999px;
   background:rgba(255,216,75,.14);
-  border:1px solid rgba(255,216,75,.35);
   color:#ffd84b;
-  font-size:12px;
+  border:1px solid rgba(255,216,75,.35);
+  margin-bottom:12px;
 }
-.small{font-size:13px;color:#d8d8ee;line-height:1.5}
-textarea{
-  width:100%;
-  height:72px;
-  margin-top:10px;
-  border-radius:13px;
-  background:#17182a;
-  color:white;
-  border:1px solid #33354c;
-  padding:10px;
-}
+.info{line-height:1.6;color:#e5e7eb}
 .actions{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:10px;
+  gap:10px;
+  margin-top:14px;
 }
-.good{background:#25D366;color:#06130a}
-.danger{background:#ff4d6d;color:white}
-.blue{background:#4db8ff;color:#06101a}
-
-@media(max-width:700px){
-  .tools{grid-template-columns:1fr}
+.approve{background:#22c55e;color:#001b09}
+.hide{background:#ff4770;color:white}
+.save{background:#38bdf8;color:#00111f}
+.reset{background:#ffd84b;color:#000}
+.delete{background:#ef4444;color:white;grid-column:1/3}
+.vip{background:#fb923c;color:#000}
+.vvip{background:linear-gradient(135deg,#ff3d7f,#8b5cf6);color:white}
+textarea{height:80px;font-family:monospace}
+.status{
+  max-width:1400px;
+  margin:10px auto;
+  color:#ffd84b;
+  padding:0 25px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="lockBox" class="lock">
-  <h1>Vault Login</h1>
-  <p>Enter admin code.</p>
-  <input id="adminCode" type="password" placeholder="Admin code" />
-  <button onclick="unlock()" style="width:100%">Unlock Vault</button>
-</div>
+<header>
+  <h1>Nairobi Sweets Vault</h1>
+  <button onclick="loadProfiles()" class="reset">Refresh</button>
+</header>
 
-<div id="app" class="hidden">
-  <header>
-    <h1>Nairobi Sweets Vault</h1>
-    <button onclick="logout()">Lock Vault</button>
-  </header>
+<section class="admin-box">
+  <h2>Add New Profile</h2>
 
-  <div class="wrap">
-    <div class="stats">
-      <div class="stat">Total<br><b id="totalCount">0</b></div>
-      <div class="stat">Approved<br><b id="approvedCount">0</b></div>
-      <div class="stat">Missing Photos<br><b id="missingCount">0</b></div>
-      <div class="stat">Likes<br><b id="likesCount">0</b></div>
-      <div class="stat">Views<br><b id="viewsCount">0</b></div>
-    </div>
-
-    <div class="tools">
-      <input id="search" placeholder="Search name, phone, location..." oninput="render()" />
-      <select id="filter" onchange="render()">
-        <option value="all">All</option>
-        <option value="approved">Approved</option>
-        <option value="pending">Pending</option>
-        <option value="missing">Missing photos</option>
-        <option value="top">Top viewed</option>
-      </select>
-      <button onclick="loadProfiles()">Reload</button>
-    </div>
-
-    <div id="list" class="grid">Loading...</div>
+  <div class="form-grid">
+    <input id="newName" placeholder="Stage name">
+    <input id="newPhone" placeholder="Phone">
+    <input id="newLocation" placeholder="Location / Area">
+    <input id="newCity" placeholder="City" value="Nairobi">
+    <input id="newPhoto" placeholder="Photo URL">
+    <select id="newTier">
+      <option value="featured">Featured</option>
+      <option value="vip">VIP</option>
+      <option value="vvip">VVIP / Signature</option>
+    </select>
   </div>
-</div>
+
+  <br>
+  <textarea id="newBio" placeholder="Bio / description"></textarea>
+  <br><br>
+  <button onclick="addProfile()" class="add-btn">Add Profile</button>
+</section>
+
+<section class="admin-box">
+  <h2>Search Profiles</h2>
+  <input id="searchBox" placeholder="Search by name, phone, location..." oninput="renderProfiles()">
+</section>
+
+<div id="status" class="status">Loading profiles...</div>
+<main id="profilesGrid" class="grid"></main>
 
 <script>
-const ADMIN_CODE = "8472";
-
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
-const STORAGE_BUCKET = "profile-images";
+const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let profiles = [];
 
-function unlock(){
-  const code = document.getElementById("adminCode").value.trim();
+const grid = document.getElementById("profilesGrid");
+const statusBox = document.getElementById("status");
 
-  if(code !== ADMIN_CODE){
-    alert("Wrong code");
-    return;
-  }
-
-  localStorage.setItem("vault_ok","yes");
-  document.getElementById("lockBox").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
-  loadProfiles();
+function img(p){
+  return p.photo_url || p.image_url || p.profile_photo || p.avatar_url || p.photo || "assets/logo/logo-badge.png";
 }
 
-function logout(){
-  localStorage.removeItem("vault_ok");
-  location.reload();
+function nameOf(p){
+  return p.stage_name || p.name || p.full_name || "Unnamed Profile";
 }
 
-if(localStorage.getItem("vault_ok") === "yes"){
-  document.getElementById("lockBox").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
-  loadProfiles();
-}
-
-function getImage(p){
-  let raw = String(
-    p.photo_url ||
-    p.image_url ||
-    p.profile_photo ||
-    p.profile_image ||
-    p.avatar_url ||
-    p.image ||
-    p.photo ||
-    ""
-  ).trim();
-
-  if(!raw || raw.toLowerCase().includes("logo") || raw.toLowerCase().includes("badge") || raw.toLowerCase().includes("default")){
-    return "assets/logo/logo-badge.png";
-  }
-
-  if(raw.startsWith("http")) return raw;
-
-  raw = raw.replace(/^\/+/,"").split("/").pop();
-
-  return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${raw}`;
-}
-
-function missingPhoto(p){
-  const raw = String(p.photo_url || "").toLowerCase();
-  return !raw || raw.includes("logo") || raw.includes("badge") || raw.includes("default");
+function tierOf(p){
+  const t = String(p.tier || "").toLowerCase();
+  if(p.is_vvip || t === "vvip" || t === "signature") return "VVIP / Signature";
+  if(p.is_vip || t === "vip") return "VIP";
+  return "Featured";
 }
 
 async function loadProfiles(){
-  const {data,error} = await sb
+  statusBox.textContent = "Loading profiles...";
+
+  const { data, error } = await sb
     .from("profiles")
     .select("*")
-    .order("created_at",{ascending:false});
+    .order("created_at", { ascending:false });
 
   if(error){
-    console.error(error);
-    document.getElementById("list").innerHTML = "Could not load profiles.";
+    statusBox.textContent = error.message;
     return;
   }
 
   profiles = data || [];
-  renderStats();
-  render();
+  statusBox.textContent = `${profiles.length} profiles loaded`;
+  renderProfiles();
 }
 
-function renderStats(){
-  totalCount.textContent = profiles.length;
-  approvedCount.textContent = profiles.filter(p => p.approved === true || p.status === "approved").length;
-  missingCount.textContent = profiles.filter(missingPhoto).length;
-  likesCount.textContent = profiles.reduce((s,p)=>s+Number(p.likes||0),0);
-  viewsCount.textContent = profiles.reduce((s,p)=>s+Number(p.views||0),0);
-}
+function renderProfiles(){
+  const q = document.getElementById("searchBox").value.toLowerCase().trim();
 
-function render(){
-  const q = document.getElementById("search").value.toLowerCase();
-  const f = document.getElementById("filter").value;
-
-  let rows = [...profiles];
+  let list = [...profiles];
 
   if(q){
-    rows = rows.filter(p => `
-      ${p.stage_name || ""}
-      ${p.name || ""}
-      ${p.phone || ""}
-      ${p.location || ""}
-    `.toLowerCase().includes(q));
+    list = list.filter(p => {
+      return [
+        nameOf(p),
+        p.phone,
+        p.whatsapp,
+        p.location,
+        p.area,
+        p.city,
+        p.bio
+      ].join(" ").toLowerCase().includes(q);
+    });
   }
 
-  if(f === "approved") rows = rows.filter(p => p.approved === true || p.status === "approved");
-  if(f === "pending") rows = rows.filter(p => !(p.approved === true || p.status === "approved"));
-  if(f === "missing") rows = rows.filter(missingPhoto);
-  if(f === "top") rows.sort((a,b)=>Number(b.views||0)-Number(a.views||0));
+  grid.innerHTML = list.map(p => `
+    <article class="card">
+      <img src="${img(p)}" onerror="this.src='assets/logo/logo-badge.png'">
 
-  if(!rows.length){
-    list.innerHTML = "<div>No profiles found.</div>";
-    return;
-  }
+      <div class="content">
+        <div class="name">${nameOf(p)}</div>
+        <div class="badge">${tierOf(p)}</div>
 
-  list.innerHTML = rows.map(p => {
-    const id = p.id;
-    const name = p.stage_name || p.name || "Unnamed";
-    const phone = p.phone || p.phone_number || p.whatsapp || "";
-    const location = p.location || "No location";
-    const plan = p.plan || p.package || "featured";
-    const status = p.approved ? "Approved" : (p.status || "Pending");
+        <div class="info">
+          📍 ${p.location || p.area || p.city || "Nairobi"}<br>
+          📞 ${p.phone || p.whatsapp || "No phone"}<br>
+          ❤️ ${p.likes_count || 0} likes · 👁️ ${p.views_count || 0} views<br>
+          Status: ${p.approved ? "Approved" : "Pending/Hidden"}
+        </div>
 
-    return `
-      <div class="card">
-        <img src="${getImage(p)}" onerror="this.onerror=null;this.src='assets/logo/logo-badge.png';">
+        <br>
+        <textarea id="photo-${p.id}">${img(p)}</textarea>
 
-        <div class="content">
-          <div class="name">${name}</div>
-          <span class="badge">${plan}</span>
-
-          <div class="small">
-            📍 ${location}<br>
-            📞 ${phone || "No phone"}<br>
-            ❤️ ${p.likes || 0} likes · 👁️ ${p.views || 0} views<br>
-            Status: ${status}
-          </div>
-
-          <textarea id="photo_${id}" placeholder="Paste full image URL here">${p.photo_url || ""}</textarea>
-
-          <div class="actions">
-            <button class="good" onclick="approve('${id}')">Approve</button>
-            <button class="danger" onclick="hideProfile('${id}')">Hide</button>
-            <button class="blue" onclick="savePhoto('${id}')">Save Photo</button>
-            <button onclick="resetStats('${id}')">Reset Stats</button>
-          </div>
+        <div class="actions">
+          <button class="approve" onclick="approveProfile(${p.id})">Approve</button>
+          <button class="hide" onclick="hideProfile(${p.id})">Hide</button>
+          <button class="save" onclick="savePhoto(${p.id})">Save Photo</button>
+          <button class="reset" onclick="resetStats(${p.id})">Reset Stats</button>
+          <button class="vip" onclick="upgradeVIP(${p.id})">VIP</button>
+          <button class="vvip" onclick="upgradeVVIP(${p.id})">VVIP</button>
+          <button class="delete" onclick="deleteProfile(${p.id})">Delete Profile</button>
         </div>
       </div>
-    `;
-  }).join("");
+    </article>
+  `).join("");
 }
 
-async function approve(id){
-  await sb.from("profiles").update({
+async function approveProfile(id){
+  const { error } = await sb.from("profiles").update({
     approved:true,
-    status:"approved"
+    subscription_status:"active"
   }).eq("id",id);
 
-  loadProfiles();
+  if(error) return alert(error.message);
+  await loadProfiles();
 }
 
 async function hideProfile(id){
-  await sb.from("profiles").update({
-    approved:false,
-    status:"pending"
+  const { error } = await sb.from("profiles").update({
+    approved:false
   }).eq("id",id);
 
-  loadProfiles();
+  if(error) return alert(error.message);
+  await loadProfiles();
 }
 
 async function savePhoto(id){
-  const value = document.getElementById(`photo_${id}`).value.trim();
+  const photo = document.getElementById(`photo-${id}`).value.trim();
 
-  if(!value){
-    alert("Paste photo URL first");
-    return;
-  }
-
-  await sb.from("profiles").update({
-    photo_url:value
+  const { error } = await sb.from("profiles").update({
+    photo_url:photo,
+    image_url:photo
   }).eq("id",id);
 
-  loadProfiles();
+  if(error) return alert(error.message);
+  alert("Photo saved");
+  await loadProfiles();
 }
 
 async function resetStats(id){
-  await sb.from("profiles").update({
-    likes:0,
-    views:0
+  const { error } = await sb.from("profiles").update({
+    views_count:0,
+    likes_count:0
   }).eq("id",id);
 
-  loadProfiles();
+  if(error) return alert(error.message);
+  await loadProfiles();
 }
+
+async function upgradeVIP(id){
+  const { error } = await sb.from("profiles").update({
+    tier:"vip",
+    is_vip:true,
+    is_vvip:false,
+    is_featured:false
+  }).eq("id",id);
+
+  if(error) return alert(error.message);
+  await loadProfiles();
+}
+
+async function upgradeVVIP(id){
+  const { error } = await sb.from("profiles").update({
+    tier:"vvip",
+    is_vvip:true,
+    is_vip:false,
+    is_featured:false
+  }).eq("id",id);
+
+  if(error) return alert(error.message);
+  await loadProfiles();
+}
+
+async function addProfile(){
+  const payload = {
+    stage_name:document.getElementById("newName").value.trim(),
+    phone:document.getElementById("newPhone").value.trim(),
+    whatsapp:document.getElementById("newPhone").value.trim(),
+    location:document.getElementById("newLocation").value.trim(),
+    area:document.getElementById("newLocation").value.trim(),
+    city:document.getElementById("newCity").value.trim() || "Nairobi",
+    photo_url:document.getElementById("newPhoto").value.trim(),
+    bio:document.getElementById("newBio").value.trim(),
+    tier:document.getElementById("newTier").value
+  };
+
+  const res = await fetch("/.netlify/functions/admin-add-profile",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+
+  if(!data.success){
+    alert(data.error || "Add failed");
+    return;
+  }
+
+  alert("Profile added");
+  document.getElementById("newName").value = "";
+  document.getElementById("newPhone").value = "";
+  document.getElementById("newLocation").value = "";
+  document.getElementById("newPhoto").value = "";
+  document.getElementById("newBio").value = "";
+
+  await loadProfiles();
+}
+
+async function deleteProfile(id){
+  if(!confirm("Delete this profile permanently?")) return;
+
+  const res = await fetch("/.netlify/functions/admin-delete-profile",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ id })
+  });
+
+  const data = await res.json();
+
+  if(!data.success){
+    alert(data.error || "Delete failed");
+    return;
+  }
+
+  alert("Profile deleted");
+  await loadProfiles();
+}
+
+loadProfiles();
 </script>
 
 </body>
