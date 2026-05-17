@@ -9,47 +9,68 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
   background:#070a18;
   color:white;
 }
+
 header{
-  padding:25px;
+  padding:35px;
   background:#000;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  border-bottom:1px solid rgba(255,216,75,.2);
+  border-bottom:1px solid rgba(255,216,75,.25);
 }
-h1{color:#ffd84b;margin:0}
+
+h1{
+  color:#ffd84b;
+  margin:0;
+  font-size:42px;
+}
+
 button,input,select,textarea{
-  padding:12px;
-  border-radius:12px;
+  padding:16px;
+  border-radius:14px;
   border:none;
-  font-weight:800;
+  font-weight:900;
+  font-size:16px;
 }
+
 input,select,textarea{
   width:100%;
   background:#111827;
   color:white;
-  border:1px solid rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.18);
 }
+
+textarea{
+  min-height:95px;
+  font-family:monospace;
+}
+
 .admin-box{
-  max-width:1400px;
-  margin:25px auto;
-  padding:20px;
+  max-width:1500px;
+  margin:32px auto;
+  padding:25px;
   background:#0d1226;
-  border-radius:22px;
-  border:1px solid rgba(255,216,75,.18);
+  border-radius:26px;
+  border:1px solid rgba(255,216,75,.2);
 }
+
 .form-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:12px;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:14px;
 }
+
 .add-btn{background:#22c55e;color:#001b09}
+.refresh{background:#ffd84b;color:#000}
+.upload-btn{background:#38bdf8;color:#00111f}
+
 .grid{
   max-width:1500px;
   margin:auto;
@@ -58,24 +79,29 @@ input,select,textarea{
   grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
   gap:24px;
 }
+
 .card{
   background:#101326;
   border:1px solid rgba(255,216,75,.2);
   border-radius:24px;
   overflow:hidden;
 }
+
 .card img{
   width:100%;
   height:260px;
   object-fit:cover;
   background:#111;
 }
+
 .content{padding:18px}
+
 .name{
   font-size:28px;
   font-weight:900;
   margin-bottom:10px;
 }
+
 .badge{
   display:inline-block;
   padding:7px 12px;
@@ -85,13 +111,19 @@ input,select,textarea{
   border:1px solid rgba(255,216,75,.35);
   margin-bottom:12px;
 }
-.info{line-height:1.6;color:#e5e7eb}
+
+.info{
+  line-height:1.6;
+  color:#e5e7eb;
+}
+
 .actions{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
   margin-top:14px;
 }
+
 .approve{background:#22c55e;color:#001b09}
 .hide{background:#ff4770;color:white}
 .save{background:#38bdf8;color:#00111f}
@@ -99,12 +131,23 @@ input,select,textarea{
 .delete{background:#ef4444;color:white;grid-column:1/3}
 .vip{background:#fb923c;color:#000}
 .vvip{background:linear-gradient(135deg,#ff3d7f,#8b5cf6);color:white}
-textarea{height:80px;font-family:monospace}
+
 .status{
-  max-width:1400px;
+  max-width:1500px;
   margin:10px auto;
   color:#ffd84b;
   padding:0 25px;
+  font-weight:900;
+}
+
+.preview{
+  margin-top:12px;
+  width:120px;
+  height:120px;
+  border-radius:18px;
+  object-fit:cover;
+  display:none;
+  border:2px solid #ffd84b;
 }
 </style>
 </head>
@@ -113,7 +156,7 @@ textarea{height:80px;font-family:monospace}
 
 <header>
   <h1>Nairobi Sweets Vault</h1>
-  <button onclick="loadProfiles()" class="reset">Refresh</button>
+  <button onclick="loadProfiles()" class="refresh">Refresh</button>
 </header>
 
 <section class="admin-box">
@@ -124,7 +167,14 @@ textarea{height:80px;font-family:monospace}
     <input id="newPhone" placeholder="Phone">
     <input id="newLocation" placeholder="Location / Area">
     <input id="newCity" placeholder="City" value="Nairobi">
-    <input id="newPhoto" placeholder="Photo URL">
+
+    <div>
+      <input id="newPhoto" placeholder="Photo URL will appear here">
+      <br><br>
+      <input type="file" id="photoUpload" accept="image/*" onchange="uploadAdminPhoto()">
+      <img id="photoPreview" class="preview">
+    </div>
+
     <select id="newTier">
       <option value="featured">Featured</option>
       <option value="vip">VIP</option>
@@ -135,6 +185,7 @@ textarea{height:80px;font-family:monospace}
   <br>
   <textarea id="newBio" placeholder="Bio / description"></textarea>
   <br><br>
+
   <button onclick="addProfile()" class="add-btn">Add Profile</button>
 </section>
 
@@ -170,6 +221,44 @@ function tierOf(p){
   if(p.is_vvip || t === "vvip" || t === "signature") return "VVIP / Signature";
   if(p.is_vip || t === "vip") return "VIP";
   return "Featured";
+}
+
+async function uploadAdminPhoto(){
+  const fileInput = document.getElementById("photoUpload");
+  const preview = document.getElementById("photoPreview");
+
+  if(!fileInput.files.length) return;
+
+  const file = fileInput.files[0];
+  const fileExt = file.name.split(".").pop();
+  const fileName = Date.now() + "-" + Math.random().toString(36).substring(2) + "." + fileExt;
+  const filePath = fileName;
+
+  statusBox.textContent = "Uploading photo...";
+
+  const { error: uploadError } = await sb.storage
+    .from("profile-images")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false
+    });
+
+  if(uploadError){
+    alert(uploadError.message);
+    statusBox.textContent = "Upload failed";
+    return;
+  }
+
+  const { data } = sb.storage
+    .from("profile-images")
+    .getPublicUrl(filePath);
+
+  document.getElementById("newPhoto").value = data.publicUrl;
+
+  preview.src = data.publicUrl;
+  preview.style.display = "block";
+
+  statusBox.textContent = "Photo uploaded successfully";
 }
 
 async function loadProfiles(){
@@ -334,11 +423,14 @@ async function addProfile(){
   }
 
   alert("Profile added");
+
   document.getElementById("newName").value = "";
   document.getElementById("newPhone").value = "";
   document.getElementById("newLocation").value = "";
   document.getElementById("newPhoto").value = "";
   document.getElementById("newBio").value = "";
+  document.getElementById("photoUpload").value = "";
+  document.getElementById("photoPreview").style.display = "none";
 
   await loadProfiles();
 }
