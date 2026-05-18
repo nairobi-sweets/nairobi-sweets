@@ -1,30 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-  name="viewport"
-  content="
-  width=device-width,
-  initial-scale=1.0
-  "
-/>
-
-<title>
-Nairobi Sweets Vault
-</title>
+<title>Nairobi Sweets Vault</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box}
 
 body{
   background:#050814;
@@ -32,1409 +17,643 @@ body{
   font-family:Arial,Helvetica,sans-serif;
 }
 
-/* =========================
-HEADER
-========================= */
-
 header{
-
   background:#000;
-
   padding:28px;
-
   display:flex;
-
   justify-content:space-between;
-
   align-items:center;
-
-  border-bottom:
-  1px solid
-  rgba(255,216,75,.18);
+  border-bottom:1px solid rgba(255,216,75,.18);
 }
 
 header h1{
-
   color:#ffd84b;
-
   font-size:42px;
-
   font-weight:900;
 }
 
-.refresh-btn{
-
-  background:#ffd84b;
-
-  color:#000;
-
+button{
   border:none;
-
-  padding:15px 24px;
-
-  border-radius:16px;
-
-  font-weight:900;
-
   cursor:pointer;
+  font-weight:900;
 }
 
-/* =========================
-SECTION
-========================= */
+.refresh-btn,.gold-btn{
+  background:#ffd84b;
+  color:#000;
+  padding:15px 24px;
+  border-radius:16px;
+}
 
 .section{
-
   max-width:1800px;
-
   margin:26px auto;
-
   background:#0b1230;
-
-  border:
-  1px solid
-  rgba(255,216,75,.18);
-
+  border:1px solid rgba(255,216,75,.18);
   border-radius:28px;
-
   padding:28px;
 }
 
 .section h2{
-
   font-size:30px;
-
   margin-bottom:22px;
 }
 
-/* =========================
-FORM
-========================= */
-
 .form-grid{
-
   display:grid;
-
-  grid-template-columns:
-  repeat(auto-fit,minmax(220px,1fr));
-
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:14px;
 }
 
-input,
-select,
-textarea{
-
+input,select,textarea{
   width:100%;
-
   background:#101936;
-
-  border:
-  1px solid
-  rgba(255,255,255,.12);
-
+  border:1px solid rgba(255,255,255,.12);
   color:white;
-
   padding:16px;
-
   border-radius:16px;
-
   font-size:16px;
 }
 
 textarea{
-
   min-height:110px;
-
   margin-top:16px;
-
   resize:vertical;
-
   font-family:monospace;
 }
 
 .upload-preview{
-
   width:120px;
-
   height:120px;
-
   object-fit:cover;
-
   border-radius:18px;
-
   border:2px solid #ffd84b;
-
   margin-top:12px;
-
   display:none;
 }
 
 .add-btn{
-
   background:#22c55e;
-
   color:#001b09;
-
-  border:none;
-
   padding:16px 26px;
-
   border-radius:16px;
-
-  font-weight:900;
-
-  cursor:pointer;
-
   margin-top:18px;
 }
 
-/* =========================
-STATUS
-========================= */
-
 .status{
-
   max-width:1800px;
-
   margin:auto;
-
   padding:0 18px;
-
   color:#ffd84b;
-
   font-weight:900;
 }
 
-/* =========================
-TOP STATS
-========================= */
-
 .vault-stats{
-
   max-width:1800px;
-
   margin:18px auto;
-
   padding:0 18px;
-
   display:grid;
-
-  grid-template-columns:
-  repeat(4,1fr);
-
+  grid-template-columns:repeat(4,1fr);
   gap:18px;
 }
 
 .stat-box{
-
   background:#0b1230;
-
-  border:
-  1px solid
-  rgba(255,216,75,.18);
-
+  border:1px solid rgba(255,216,75,.18);
   border-radius:22px;
-
   padding:24px;
 }
 
 .stat-box span{
-
   display:block;
-
   color:#94a3b8;
-
   margin-bottom:10px;
-
   font-weight:700;
 }
 
 .stat-box strong{
-
   font-size:42px;
-
   color:#ffd84b;
-
   font-weight:900;
 }
 
-/* =========================
-4 COLUMN GRID
-========================= */
-
 .grid{
-
   max-width:1800px;
-
   margin:22px auto;
-
   padding:0 18px 50px;
-
   display:grid;
-
-  grid-template-columns:
-  repeat(4,minmax(0,1fr));
-
+  grid-template-columns:repeat(4,minmax(0,1fr));
   gap:24px;
-
   align-items:start;
 }
 
-/* =========================
-CARD
-========================= */
-
 .card{
-
   min-width:0;
-
   background:#0d1533;
-
   border-radius:28px;
-
   overflow:hidden;
-
-  border:
-  1px solid
-  rgba(255,216,75,.18);
-
+  border:1px solid rgba(255,216,75,.18);
   transition:.3s ease;
 }
 
 .card:hover{
-
   transform:translateY(-4px);
-
   border-color:#ffd84b;
 }
 
-/* =========================
-IMAGE
-========================= */
-
-.image-wrap{
-
+.image-wrap,.video-wrap{
   width:100%;
-
   height:320px;
-
   background:#000;
-
   display:flex;
-
   align-items:center;
-
   justify-content:center;
-
   overflow:hidden;
 }
 
-.image-wrap img{
-
+.image-wrap img,.video-wrap video{
   width:100%;
-
   height:100%;
-
   object-fit:contain;
-
   object-position:center;
-
   background:#000;
 }
 
-/* =========================
-CONTENT
-========================= */
-
-.card-content{
-  padding:18px;
-}
+.card-content{padding:18px}
 
 .name{
-
   font-size:28px;
-
   font-weight:900;
-
   line-height:1.05;
-
   margin-bottom:12px;
 }
 
 .badge{
-
   display:inline-flex;
-
   padding:8px 14px;
-
   border-radius:999px;
-
-  background:
-  rgba(255,216,75,.12);
-
-  border:
-  1px solid
-  rgba(255,216,75,.35);
-
+  background:rgba(255,216,75,.12);
+  border:1px solid rgba(255,216,75,.35);
   color:#ffd84b;
-
   font-size:13px;
-
   font-weight:900;
-
   margin-bottom:14px;
 }
 
 .info{
-
   color:#e5e7eb;
-
   line-height:1.7;
-
   font-size:15px;
-
   margin-bottom:14px;
 }
 
-/* =========================
-PHOTO EDIT
-========================= */
-
 .photo-edit{
-
   width:100%;
-
   min-height:70px;
-
   background:#101936;
-
-  border:
-  1px solid
-  rgba(255,255,255,.12);
-
+  border:1px solid rgba(255,255,255,.12);
   color:white;
-
   border-radius:14px;
-
   padding:12px;
-
   font-family:monospace;
-
   resize:vertical;
-
   font-size:13px;
-
   margin-bottom:10px;
 }
 
-/* =========================
-BUTTONS
-========================= */
-
 .actions{
-
   display:grid;
-
-  grid-template-columns:
-  1fr 1fr;
-
+  grid-template-columns:1fr 1fr;
   gap:10px;
 }
 
 .actions button{
-
-  border:none;
-
   padding:13px;
-
   border-radius:14px;
-
   font-size:14px;
-
-  font-weight:900;
-
-  cursor:pointer;
-
   transition:.25s ease;
 }
 
-.actions button:hover{
-  transform:translateY(-2px);
-}
+.actions button:hover{transform:translateY(-2px)}
 
-.approve{
-  background:#22c55e;
-  color:#001b09;
-}
+.approve{background:#22c55e;color:#001b09}
+.hide{background:#ff4770;color:white}
+.save{background:#38bdf8;color:#00111f}
+.reset{background:#ffd84b;color:#000}
+.vip{background:#fb923c;color:#000}
+.vvip{background:linear-gradient(135deg,#ff3d7f,#8b5cf6);color:white}
+.delete{background:#ef4444;color:white;grid-column:1/3}
 
-.hide{
-  background:#ff4770;
-  color:white;
+.divider{
+  max-width:1800px;
+  margin:34px auto 18px;
+  padding:0 18px;
+  color:#ffd84b;
+  font-size:34px;
+  font-weight:900;
 }
-
-.save{
-  background:#38bdf8;
-  color:#00111f;
-}
-
-.reset{
-  background:#ffd84b;
-  color:#000;
-}
-
-.vip{
-  background:#fb923c;
-  color:#000;
-}
-
-.vvip{
-  background:
-  linear-gradient(
-    135deg,
-    #ff3d7f,
-    #8b5cf6
-  );
-  color:white;
-}
-
-.delete{
-  background:#ef4444;
-  color:white;
-  grid-column:1/3;
-}
-
-/* =========================
-RESPONSIVE
-========================= */
 
 @media(max-width:1400px){
-
-  .grid{
-    grid-template-columns:
-    repeat(3,minmax(0,1fr));
-  }
-
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 
 @media(max-width:1000px){
-
-  .grid{
-    grid-template-columns:
-    repeat(2,minmax(0,1fr));
-  }
-
-  .vault-stats{
-    grid-template-columns:
-    repeat(2,1fr);
-  }
-
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .vault-stats{grid-template-columns:repeat(2,1fr)}
 }
 
 @media(max-width:650px){
-
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .vault-stats{
-    grid-template-columns:1fr;
-  }
-
-  header{
-    padding:18px;
-  }
-
-  header h1{
-    font-size:30px;
-  }
-
+  .grid{grid-template-columns:1fr}
+  .vault-stats{grid-template-columns:1fr}
+  header{padding:18px}
+  header h1{font-size:30px}
 }
-
-/* =========================
-SCROLLBAR
-========================= */
-
-::-webkit-scrollbar{
-  width:10px;
-}
-
-::-webkit-scrollbar-thumb{
-  background:#ffd84b;
-  border-radius:999px;
-}
-
 </style>
 </head>
 
 <body>
 
 <header>
-
-  <h1>
-    Nairobi Sweets Vault
-  </h1>
-
-  <button
-    class="refresh-btn"
-    onclick="loadProfiles()"
-  >
-    Refresh
-  </button>
-
+  <h1>Nairobi Sweets Vault</h1>
+  <button class="refresh-btn" onclick="loadAll()">Refresh</button>
 </header>
 
 <section class="section">
-
-  <h2>
-    Add New Profile
-  </h2>
+  <h2>Add New Profile</h2>
 
   <div class="form-grid">
-
-    <input
-      id="newName"
-      placeholder="Stage name"
-    >
-
-    <input
-      id="newPhone"
-      placeholder="Phone"
-    >
-
-    <input
-      id="newLocation"
-      placeholder="Location / Area"
-    >
-
-    <input
-      id="newCity"
-      value="Nairobi"
-      placeholder="City"
-    >
+    <input id="newName" placeholder="Stage name">
+    <input id="newPhone" placeholder="Phone">
+    <input id="newLocation" placeholder="Location / Area">
+    <input id="newCity" value="Nairobi" placeholder="City">
 
     <div>
-
-      <input
-        id="newPhoto"
-        placeholder="Photo URL"
-      >
-
+      <input id="newPhoto" placeholder="Photo URL">
       <br><br>
-
-      <input
-        type="file"
-        id="photoUpload"
-        accept="image/*"
-        onchange="uploadAdminPhoto()"
-      >
-
-      <img
-        id="photoPreview"
-        class="upload-preview"
-      >
-
+      <input type="file" id="photoUpload" accept="image/*" onchange="uploadAdminPhoto()">
+      <img id="photoPreview" class="upload-preview">
     </div>
 
     <select id="newTier">
-
-      <option value="featured">
-        Featured
-      </option>
-
-      <option value="vip">
-        VIP
-      </option>
-
-      <option value="vvip">
-        VVIP / Signature
-      </option>
-
+      <option value="featured">Featured</option>
+      <option value="vip">VIP</option>
+      <option value="vvip">VVIP / Signature</option>
     </select>
 
-    <input
-      id="newViews"
-      type="number"
-      value="0"
-      placeholder="Starting views"
-    >
-
-    <input
-      id="newLikes"
-      type="number"
-      value="0"
-      placeholder="Starting likes"
-    >
-
+    <input id="newViews" type="number" value="0" placeholder="Starting views">
+    <input id="newLikes" type="number" value="0" placeholder="Starting likes">
   </div>
 
-  <textarea
-    id="newBio"
-    placeholder="Bio / description"
-  ></textarea>
-
-  <button
-    class="add-btn"
-    onclick="addProfile()"
-  >
-    Add Profile
-  </button>
-
+  <textarea id="newBio" placeholder="Bio / description"></textarea>
+  <button class="add-btn" onclick="addProfile()">Add Profile</button>
 </section>
 
 <section class="section">
+  <h2>Add New Short</h2>
 
-  <h2>
-    Search Profiles
-  </h2>
+  <div class="form-grid">
+    <input id="shortTitle" placeholder="Short title">
+    <input id="shortVideoUrl" placeholder="Video URL">
+    <input id="shortThumbUrl" placeholder="Thumbnail URL optional">
 
-  <input
-    id="searchBox"
-    placeholder="
-    Search by name,
-    phone,
-    location...
-    "
-    oninput="renderProfiles()"
-  >
+    <input
+      type="file"
+      id="shortVideoUpload"
+      accept="video/*"
+      onchange="uploadShortVideo()"
+    >
+  </div>
 
+  <button class="add-btn" onclick="addShort()">Add Short</button>
 </section>
 
-<div
-  class="status"
-  id="status"
->
-  Loading...
-</div>
+<section class="section">
+  <h2>Search Profiles</h2>
+  <input id="searchBox" placeholder="Search by name, phone, location..." oninput="renderProfiles()">
+</section>
+
+<div class="status" id="status">Loading...</div>
 
 <div class="vault-stats">
-
   <div class="stat-box">
-
     <span>Total Profiles</span>
-
-    <strong id="totalProfiles">
-      0
-    </strong>
-
+    <strong id="totalProfiles">0</strong>
   </div>
 
   <div class="stat-box">
-
     <span>Total Views</span>
-
-    <strong id="totalViews">
-      0
-    </strong>
-
+    <strong id="totalViews">0</strong>
   </div>
 
   <div class="stat-box">
-
     <span>Total Likes</span>
-
-    <strong id="totalLikes">
-      0
-    </strong>
-
+    <strong id="totalLikes">0</strong>
   </div>
 
   <div class="stat-box">
-
     <span>Approved Profiles</span>
-
-    <strong id="approvedProfiles">
-      0
-    </strong>
-
+    <strong id="approvedProfiles">0</strong>
   </div>
-
 </div>
 
-<main
-  class="grid"
-  id="profilesGrid"
-></main>
+<div class="divider">Profiles</div>
+<main class="grid" id="profilesGrid"></main>
+
+<div class="divider">Shorts</div>
+<main class="grid" id="shortsGrid"></main>
 
 <script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-const SUPABASE_URL =
-"https://dkjlvyynvgtijccitvvd.supabase.co";
-
-const SUPABASE_ANON_KEY =
-"sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
-
-const sb =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let profiles = [];
+let shorts = [];
 
-const grid =
-document.getElementById(
-  "profilesGrid"
-);
-
-const statusBox =
-document.getElementById(
-  "status"
-);
-
-/* =========================
-HELPERS
-========================= */
+const profilesGrid = document.getElementById("profilesGrid");
+const shortsGrid = document.getElementById("shortsGrid");
+const statusBox = document.getElementById("status");
 
 function getImage(p){
-
-  return (
-    p.photo_url ||
-    p.image_url ||
-    p.profile_photo ||
-    p.avatar_url ||
-    p.photo ||
-    "assets/logo/logo-badge.png"
-  );
-
+  return p.photo_url || p.image_url || p.profile_photo || p.avatar_url || p.photo || "assets/logo/logo-badge.png";
 }
 
 function getName(p){
-
-  return (
-    p.stage_name ||
-    p.name ||
-    "Unnamed"
-  );
-
+  return p.stage_name || p.name || "Unnamed";
 }
 
 function getTier(p){
-
-  const tier =
-  String(
-    p.tier || ""
-  ).toLowerCase();
-
-  if(
-    tier === "vvip" ||
-    tier === "signature"
-  ){
-    return "VVIP";
-  }
-
-  if(tier === "vip"){
-    return "VIP";
-  }
-
+  const tier = String(p.tier || "").toLowerCase();
+  if(tier === "vvip" || tier === "signature") return "VVIP";
+  if(tier === "vip") return "VIP";
   return "Featured";
 }
 
-/* =========================
-UPLOAD PHOTO
-========================= */
-
-async function uploadAdminPhoto(){
-
-  const fileInput =
-  document.getElementById(
-    "photoUpload"
-  );
-
-  const preview =
-  document.getElementById(
-    "photoPreview"
-  );
-
-  if(
-    !fileInput.files.length
-  ) return;
-
-  const file =
-  fileInput.files[0];
-
-  const ext =
-  file.name
-  .split(".")
-  .pop();
+async function uploadToBucket(file, prefix){
+  const ext = file.name.split(".").pop();
 
   const fileName =
-  "admin-" +
-  Date.now() +
-  "." +
-  ext;
+    prefix +
+    "-" +
+    Date.now() +
+    "-" +
+    Math.random().toString(36).substring(2) +
+    "." +
+    ext;
 
-  statusBox.textContent =
-  "Uploading photo...";
-
-  const { error } =
-  await sb.storage
+  const { error } = await sb.storage
     .from("profile-images")
-    .upload(
-      fileName,
-      file,
-      {
-        upsert:true
-      }
-    );
+    .upload(fileName, file, { upsert:true });
 
-  if(error){
+  if(error) throw error;
 
-    alert(error.message);
-
-    return;
-  }
-
-  const { data } =
-  sb.storage
+  const { data } = sb.storage
     .from("profile-images")
     .getPublicUrl(fileName);
 
-  document.getElementById(
-    "newPhoto"
-  ).value =
-  data.publicUrl;
-
-  preview.src =
-  data.publicUrl;
-
-  preview.style.display =
-  "block";
-
-  statusBox.textContent =
-  "Photo uploaded";
-
+  return data.publicUrl;
 }
 
-/* =========================
-LOAD PROFILES
-========================= */
+async function uploadAdminPhoto(){
+  const fileInput = document.getElementById("photoUpload");
+  const preview = document.getElementById("photoPreview");
+
+  if(!fileInput.files.length) return;
+
+  try{
+    statusBox.textContent = "Uploading photo...";
+    const url = await uploadToBucket(fileInput.files[0], "admin-photo");
+
+    document.getElementById("newPhoto").value = url;
+    preview.src = url;
+    preview.style.display = "block";
+    statusBox.textContent = "Photo uploaded";
+  }catch(error){
+    alert(error.message);
+  }
+}
+
+async function uploadShortVideo(){
+  const fileInput = document.getElementById("shortVideoUpload");
+
+  if(!fileInput.files.length) return;
+
+  try{
+    statusBox.textContent = "Uploading short video...";
+    const url = await uploadToBucket(fileInput.files[0], "short");
+
+    document.getElementById("shortVideoUrl").value = url;
+    statusBox.textContent = "Short uploaded";
+  }catch(error){
+    alert(error.message);
+  }
+}
 
 async function loadProfiles(){
-
-  statusBox.textContent =
-  "Loading profiles...";
-
-  const {
-    data,
-    error
-  } =
-  await sb
+  const { data, error } = await sb
     .from("profiles")
     .select("*")
-    .order(
-      "created_at",
-      {
-        ascending:false
-      }
-    );
+    .order("created_at",{ascending:false});
 
   if(error){
-
-    statusBox.textContent =
-    error.message;
-
+    statusBox.textContent = error.message;
     return;
   }
 
-  profiles =
-  data || [];
-
+  profiles = data || [];
   updateStats();
-
   renderProfiles();
-
-  statusBox.textContent =
-  profiles.length +
-  " profiles loaded";
-
 }
 
-/* =========================
-TOP STATS
-========================= */
+async function loadShorts(){
+  const { data, error } = await sb
+    .from("shorts")
+    .select("*")
+    .order("created_at",{ascending:false});
 
-function updateStats(){
-
-  const totalViews =
-  profiles.reduce(
-    (sum,p)=>
-    sum +
-    Number(
-      p.views_count || 0
-    ),
-    0
-  );
-
-  const totalLikes =
-  profiles.reduce(
-    (sum,p)=>
-    sum +
-    Number(
-      p.likes_count || 0
-    ),
-    0
-  );
-
-  const approved =
-  profiles.filter(
-    p => p.approved
-  ).length;
-
-  document.getElementById(
-    "totalProfiles"
-  ).textContent =
-  profiles.length;
-
-  document.getElementById(
-    "totalViews"
-  ).textContent =
-  totalViews.toLocaleString();
-
-  document.getElementById(
-    "totalLikes"
-  ).textContent =
-  totalLikes.toLocaleString();
-
-  document.getElementById(
-    "approvedProfiles"
-  ).textContent =
-  approved;
-
-}
-
-/* =========================
-RENDER
-========================= */
-
-function renderProfiles(){
-
-  const q =
-  document
-  .getElementById(
-    "searchBox"
-  )
-  .value
-  .toLowerCase();
-
-  let list =
-  [...profiles];
-
-  if(q){
-
-    list =
-    list.filter(p => {
-
-      return [
-
-        getName(p),
-
-        p.phone,
-
-        p.location,
-
-        p.bio
-
-      ]
-      .join(" ")
-      .toLowerCase()
-      .includes(q);
-
-    });
-
+  if(error){
+    shortsGrid.innerHTML = `<div class="status">${error.message}</div>`;
+    return;
   }
 
-  grid.innerHTML =
-  list.map(p => `
+  shorts = data || [];
+  renderShorts();
+}
 
+async function loadAll(){
+  statusBox.textContent = "Loading...";
+  await loadProfiles();
+  await loadShorts();
+  statusBox.textContent = profiles.length + " profiles loaded · " + shorts.length + " shorts loaded";
+}
+
+function updateStats(){
+  const totalViews = profiles.reduce((sum,p) => sum + Number(p.views_count || 0),0);
+  const totalLikes = profiles.reduce((sum,p) => sum + Number(p.likes_count || 0),0);
+  const approved = profiles.filter(p => p.approved).length;
+
+  document.getElementById("totalProfiles").textContent = profiles.length;
+  document.getElementById("totalViews").textContent = totalViews.toLocaleString();
+  document.getElementById("totalLikes").textContent = totalLikes.toLocaleString();
+  document.getElementById("approvedProfiles").textContent = approved;
+}
+
+function renderProfiles(){
+  const q = document.getElementById("searchBox").value.toLowerCase();
+
+  let list = [...profiles];
+
+  if(q){
+    list = list.filter(p => {
+      return [getName(p),p.phone,p.location,p.bio]
+        .join(" ")
+        .toLowerCase()
+        .includes(q);
+    });
+  }
+
+  profilesGrid.innerHTML = list.map(p => `
     <article class="card">
-
       <div class="image-wrap">
-
-        <img
-          src="${getImage(p)}"
-
-          loading="lazy"
-
-          onerror="
-            this.src=
-            'assets/logo/logo-badge.png'
-          "
-        >
-
+        <img src="${getImage(p)}" loading="lazy" onerror="this.src='assets/logo/logo-badge.png'">
       </div>
 
       <div class="card-content">
-
-        <div class="name">
-
-          ${getName(p)}
-
-        </div>
-
-        <div class="badge">
-
-          ${getTier(p)}
-
-        </div>
+        <div class="name">${getName(p)}</div>
+        <div class="badge">${getTier(p)}</div>
 
         <div class="info">
-
-          📍 ${
-            p.location ||
-            "Nairobi"
-          }
-
-          <br>
-
-          📞 ${
-            p.phone || "-"
-          }
-
-          <br>
-
-          ❤️ ${
-            p.likes_count || 0
-          } likes
-
-          ·
-
-          👁️ ${
-            p.views_count || 0
-          } views
-
+          📍 ${p.location || "Nairobi"}<br>
+          📞 ${p.phone || "-"}<br>
+          ❤️ ${p.likes_count || 0} likes · 👁️ ${p.views_count || 0} views<br>
+          ${p.approved ? "Approved" : "Hidden"}
         </div>
 
-        <textarea
-          class="photo-edit"
-
-          id="photo-${p.id}"
-        >${getImage(p)}</textarea>
+        <textarea class="photo-edit" id="photo-${p.id}">${getImage(p)}</textarea>
 
         <div class="actions">
-
-          <button
-            class="approve"
-
-            onclick="
-              approveProfile(
-                ${p.id}
-              )
-            "
-          >
-            Approve
-          </button>
-
-          <button
-            class="hide"
-
-            onclick="
-              hideProfile(
-                ${p.id}
-              )
-            "
-          >
-            Hide
-          </button>
-
-          <button
-            class="save"
-
-            onclick="
-              savePhoto(
-                ${p.id}
-              )
-            "
-          >
-            Save Photo
-          </button>
-
-          <button
-            class="reset"
-
-            onclick="
-              resetStats(
-                ${p.id}
-              )
-            "
-          >
-            Reset Stats
-          </button>
-
-          <button
-            class="vip"
-
-            onclick="
-              setVIP(
-                ${p.id}
-              )
-            "
-          >
-            VIP
-          </button>
-
-          <button
-            class="vvip"
-
-            onclick="
-              setVVIP(
-                ${p.id}
-              )
-            "
-          >
-            VVIP
-          </button>
-
-          <button
-            class="delete"
-
-            onclick="
-              deleteProfile(
-                ${p.id}
-              )
-            "
-          >
-            Delete Profile
-          </button>
-
+          <button class="approve" onclick="approveProfile(${p.id})">Approve</button>
+          <button class="hide" onclick="hideProfile(${p.id})">Hide</button>
+          <button class="save" onclick="savePhoto(${p.id})">Save Photo</button>
+          <button class="reset" onclick="resetStats(${p.id})">Reset Stats</button>
+          <button class="vip" onclick="setVIP(${p.id})">VIP</button>
+          <button class="vvip" onclick="setVVIP(${p.id})">VVIP</button>
+          <button class="delete" onclick="deleteProfile(${p.id})">Delete Profile</button>
         </div>
-
       </div>
-
     </article>
-
   `).join("");
-
 }
 
-/* =========================
-ADD PROFILE
-========================= */
+function renderShorts(){
+  shortsGrid.innerHTML = shorts.map(s => `
+    <article class="card">
+      <div class="video-wrap">
+        <video src="${s.video_url}" poster="${s.thumbnail_url || ""}" controls playsinline preload="metadata"></video>
+      </div>
+
+      <div class="card-content">
+        <div class="name">${s.title || "Short"}</div>
+
+        <div class="info">
+          ❤️ ${s.likes_count || 0} likes · 👁️ ${s.views_count || 0} views<br>
+          ${s.approved ? "Approved" : "Hidden"}
+        </div>
+
+        <textarea class="photo-edit" id="short-video-${s.id}">${s.video_url}</textarea>
+
+        <div class="actions">
+          <button class="approve" onclick="approveShort(${s.id})">Approve</button>
+          <button class="hide" onclick="hideShort(${s.id})">Hide</button>
+          <button class="save" onclick="saveShortVideo(${s.id})">Save Video</button>
+          <button class="reset" onclick="resetShortStats(${s.id})">Reset Stats</button>
+          <button class="delete" onclick="deleteShort(${s.id})">Delete Short</button>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
 
 async function addProfile(){
-
   const payload = {
-
-    stage_name:
-    document
-    .getElementById(
-      "newName"
-    ).value,
-
-    phone:
-    document
-    .getElementById(
-      "newPhone"
-    ).value,
-
-    location:
-    document
-    .getElementById(
-      "newLocation"
-    ).value,
-
-    city:
-    document
-    .getElementById(
-      "newCity"
-    ).value,
-
-    photo_url:
-    document
-    .getElementById(
-      "newPhoto"
-    ).value,
-
-    bio:
-    document
-    .getElementById(
-      "newBio"
-    ).value,
-
-    tier:
-    document
-    .getElementById(
-      "newTier"
-    ).value,
-
-    views_count:
-    Number(
-      document
-      .getElementById(
-        "newViews"
-      ).value
-    ),
-
-    likes_count:
-    Number(
-      document
-      .getElementById(
-        "newLikes"
-      ).value
-    ),
-
+    stage_name:document.getElementById("newName").value,
+    phone:document.getElementById("newPhone").value,
+    whatsapp:document.getElementById("newPhone").value,
+    location:document.getElementById("newLocation").value,
+    area:document.getElementById("newLocation").value,
+    city:document.getElementById("newCity").value || "Nairobi",
+    photo_url:document.getElementById("newPhoto").value,
+    image_url:document.getElementById("newPhoto").value,
+    bio:document.getElementById("newBio").value,
+    tier:document.getElementById("newTier").value,
+    views_count:Number(document.getElementById("newViews").value || 0),
+    likes_count:Number(document.getElementById("newLikes").value || 0),
     approved:true
-
   };
 
-  const {
-    error
-  } =
-  await sb
-    .from("profiles")
-    .insert([payload]);
+  const { error } = await sb.from("profiles").insert([payload]);
 
-  if(error){
+  if(error) return alert(error.message);
 
-    alert(error.message);
+  alert("Profile added");
+  loadProfiles();
+}
 
+async function addShort(){
+  const payload = {
+    title:document.getElementById("shortTitle").value.trim(),
+    video_url:document.getElementById("shortVideoUrl").value.trim(),
+    thumbnail_url:document.getElementById("shortThumbUrl").value.trim(),
+    approved:true,
+    views_count:0,
+    likes_count:0
+  };
+
+  if(!payload.video_url){
+    alert("Upload or paste a video URL first");
     return;
   }
 
-  alert("Profile added");
+  const { error } = await sb.from("shorts").insert([payload]);
 
-  loadProfiles();
+  if(error) return alert(error.message);
 
+  alert("Short added");
+  loadShorts();
 }
 
-/* =========================
-APPROVE
-========================= */
-
-async function approveProfile(id){
-
-  await sb
-    .from("profiles")
-    .update({
-      approved:true
-    })
-    .eq("id",id);
-
-  loadProfiles();
-
-}
-
-/* =========================
-HIDE
-========================= */
-
-async function hideProfile(id){
-
-  await sb
-    .from("profiles")
-    .update({
-      approved:false
-    })
-    .eq("id",id);
-
-  loadProfiles();
-
-}
-
-/* =========================
-SAVE PHOTO
-========================= */
-
+async function approveProfile(id){ await sb.from("profiles").update({approved:true}).eq("id",id); loadProfiles(); }
+async function hideProfile(id){ await sb.from("profiles").update({approved:false}).eq("id",id); loadProfiles(); }
 async function savePhoto(id){
-
-  const photo =
-  document
-  .getElementById(
-    `photo-${id}`
-  )
-  .value;
-
-  await sb
-    .from("profiles")
-    .update({
-      photo_url:photo
-    })
-    .eq("id",id);
-
+  const photo = document.getElementById(`photo-${id}`).value;
+  await sb.from("profiles").update({photo_url:photo,image_url:photo}).eq("id",id);
   loadProfiles();
-
 }
-
-/* =========================
-RESET STATS
-========================= */
-
-async function resetStats(id){
-
-  await sb
-    .from("profiles")
-    .update({
-      views_count:0,
-      likes_count:0
-    })
-    .eq("id",id);
-
-  loadProfiles();
-
-}
-
-/* =========================
-VIP
-========================= */
-
-async function setVIP(id){
-
-  await sb
-    .from("profiles")
-    .update({
-      tier:"vip"
-    })
-    .eq("id",id);
-
-  loadProfiles();
-
-}
-
-/* =========================
-VVIP
-========================= */
-
-async function setVVIP(id){
-
-  await sb
-    .from("profiles")
-    .update({
-      tier:"vvip"
-    })
-    .eq("id",id);
-
-  loadProfiles();
-
-}
-
-/* =========================
-DELETE
-========================= */
-
+async function resetStats(id){ await sb.from("profiles").update({views_count:0,likes_count:0}).eq("id",id); loadProfiles(); }
+async function setVIP(id){ await sb.from("profiles").update({tier:"vip",is_vip:true,is_vvip:false}).eq("id",id); loadProfiles(); }
+async function setVVIP(id){ await sb.from("profiles").update({tier:"vvip",is_vvip:true,is_vip:false}).eq("id",id); loadProfiles(); }
 async function deleteProfile(id){
-
-  const ok =
-  confirm(
-    "Delete this profile?"
-  );
-
-  if(!ok) return;
-
-  await sb
-    .from("profiles")
-    .delete()
-    .eq("id",id);
-
+  if(!confirm("Delete this profile?")) return;
+  await sb.from("profiles").delete().eq("id",id);
   loadProfiles();
-
 }
 
-/* =========================
-START
-========================= */
+async function approveShort(id){ await sb.from("shorts").update({approved:true}).eq("id",id); loadShorts(); }
+async function hideShort(id){ await sb.from("shorts").update({approved:false}).eq("id",id); loadShorts(); }
+async function saveShortVideo(id){
+  const video = document.getElementById(`short-video-${id}`).value;
+  await sb.from("shorts").update({video_url:video}).eq("id",id);
+  loadShorts();
+}
+async function resetShortStats(id){ await sb.from("shorts").update({views_count:0,likes_count:0}).eq("id",id); loadShorts(); }
+async function deleteShort(id){
+  if(!confirm("Delete this short?")) return;
+  await sb.from("shorts").delete().eq("id",id);
+  loadShorts();
+}
 
-loadProfiles();
-
+loadAll();
 </script>
 
 </body>
