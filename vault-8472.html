@@ -150,7 +150,7 @@ textarea{
 .card{
   min-width:0;
   background:#0d1533;
-  border-radius:28px;
+  border-radius:24px;
   overflow:hidden;
   border:1px solid rgba(255,216,75,.18);
   transition:.3s ease;
@@ -163,7 +163,7 @@ textarea{
 
 .image-wrap,.video-wrap{
   width:100%;
-  height:320px;
+  height:280px;
   background:#000;
   display:flex;
   align-items:center;
@@ -179,10 +179,10 @@ textarea{
   background:#000;
 }
 
-.card-content{padding:18px}
+.card-content{padding:16px}
 
 .name{
-  font-size:28px;
+  font-size:25px;
   font-weight:900;
   line-height:1.05;
   margin-bottom:12px;
@@ -202,8 +202,8 @@ textarea{
 
 .info{
   color:#e5e7eb;
-  line-height:1.7;
-  font-size:15px;
+  line-height:1.6;
+  font-size:14px;
   margin-bottom:14px;
 }
 
@@ -228,9 +228,9 @@ textarea{
 }
 
 .actions button{
-  padding:13px;
+  padding:12px;
   border-radius:14px;
-  font-size:14px;
+  font-size:13px;
   transition:.25s ease;
 }
 
@@ -254,15 +254,19 @@ textarea{
 }
 
 @media(max-width:1400px){
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
+@media(max-width:1100px){
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 
-@media(max-width:1000px){
+@media(max-width:800px){
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .vault-stats{grid-template-columns:repeat(2,1fr)}
 }
 
-@media(max-width:650px){
+@media(max-width:560px){
   .grid{grid-template-columns:1fr}
   .vault-stats{grid-template-columns:1fr}
   header{padding:18px}
@@ -316,12 +320,7 @@ textarea{
     <input id="shortVideoUrl" placeholder="Video URL">
     <input id="shortThumbUrl" placeholder="Thumbnail URL optional">
 
-    <input
-      type="file"
-      id="shortVideoUpload"
-      accept="video/*"
-      onchange="uploadShortVideo()"
-    >
+    <input type="file" id="shortVideoUpload" accept="video/*" onchange="uploadShortVideo()">
   </div>
 
   <button class="add-btn" onclick="addShort()">Add Short</button>
@@ -376,7 +375,7 @@ const shortsGrid = document.getElementById("shortsGrid");
 const statusBox = document.getElementById("status");
 
 function getImage(p){
-  return p.photo_url || p.image_url || p.profile_photo || p.avatar_url || p.photo || "assets/logo/logo-badge.png";
+  return p.photo_url || p.image_url || p.profile_photo || p.avatar_url || p.photo || "./assets/logo/logo-badge.png";
 }
 
 function getName(p){
@@ -385,6 +384,7 @@ function getName(p){
 
 function getTier(p){
   const tier = String(p.tier || "").toLowerCase();
+
   if(tier === "vvip" || tier === "signature") return "VVIP";
   if(tier === "vip") return "VIP";
   return "Featured";
@@ -394,13 +394,8 @@ async function uploadToBucket(file, prefix){
   const ext = file.name.split(".").pop();
 
   const fileName =
-    prefix +
-    "-" +
-    Date.now() +
-    "-" +
-    Math.random().toString(36).substring(2) +
-    "." +
-    ext;
+    prefix + "-" + Date.now() + "-" +
+    Math.random().toString(36).substring(2) + "." + ext;
 
   const { error } = await sb.storage
     .from("profile-images")
@@ -506,7 +501,7 @@ function renderProfiles(){
 
   if(q){
     list = list.filter(p => {
-      return [getName(p),p.phone,p.location,p.bio]
+      return [getName(p),p.phone,p.location,p.area,p.bio]
         .join(" ")
         .toLowerCase()
         .includes(q);
@@ -516,7 +511,7 @@ function renderProfiles(){
   profilesGrid.innerHTML = list.map(p => `
     <article class="card">
       <div class="image-wrap">
-        <img src="${getImage(p)}" loading="lazy" onerror="this.src='assets/logo/logo-badge.png'">
+        <img src="${getImage(p)}" loading="lazy" onerror="this.src='./assets/logo/logo-badge.png'">
       </div>
 
       <div class="card-content">
@@ -524,7 +519,7 @@ function renderProfiles(){
         <div class="badge">${getTier(p)}</div>
 
         <div class="info">
-          📍 ${p.location || "Nairobi"}<br>
+          📍 ${p.location || p.area || p.city || "Nairobi"}<br>
           📞 ${p.phone || "-"}<br>
           ❤️ ${p.likes_count || 0} likes · 👁️ ${p.views_count || 0} views<br>
           ${p.approved ? "Approved" : "Hidden"}
@@ -625,14 +620,17 @@ async function addShort(){
 
 async function approveProfile(id){ await sb.from("profiles").update({approved:true}).eq("id",id); loadProfiles(); }
 async function hideProfile(id){ await sb.from("profiles").update({approved:false}).eq("id",id); loadProfiles(); }
+
 async function savePhoto(id){
   const photo = document.getElementById(`photo-${id}`).value;
   await sb.from("profiles").update({photo_url:photo,image_url:photo}).eq("id",id);
   loadProfiles();
 }
+
 async function resetStats(id){ await sb.from("profiles").update({views_count:0,likes_count:0}).eq("id",id); loadProfiles(); }
 async function setVIP(id){ await sb.from("profiles").update({tier:"vip",is_vip:true,is_vvip:false}).eq("id",id); loadProfiles(); }
 async function setVVIP(id){ await sb.from("profiles").update({tier:"vvip",is_vvip:true,is_vip:false}).eq("id",id); loadProfiles(); }
+
 async function deleteProfile(id){
   if(!confirm("Delete this profile?")) return;
   await sb.from("profiles").delete().eq("id",id);
@@ -641,12 +639,15 @@ async function deleteProfile(id){
 
 async function approveShort(id){ await sb.from("shorts").update({approved:true}).eq("id",id); loadShorts(); }
 async function hideShort(id){ await sb.from("shorts").update({approved:false}).eq("id",id); loadShorts(); }
+
 async function saveShortVideo(id){
   const video = document.getElementById(`short-video-${id}`).value;
   await sb.from("shorts").update({video_url:video}).eq("id",id);
   loadShorts();
 }
+
 async function resetShortStats(id){ await sb.from("shorts").update({views_count:0,likes_count:0}).eq("id",id); loadShorts(); }
+
 async function deleteShort(id){
   if(!confirm("Delete this short?")) return;
   await sb.from("shorts").delete().eq("id",id);
