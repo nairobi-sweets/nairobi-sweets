@@ -1,746 +1,270 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ========================= -->
+<!-- ADD NEW PROFILE SECTION -->
+<!-- FULL FIXED VERSION -->
+<!-- ========================= -->
 
-<title>Nairobi Sweets Vault</title>
+<section class="admin-add-profile">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <h2>Add New Profile</h2>
+
+  <div class="admin-form-grid">
+
+    <input
+      id="newName"
+      type="text"
+      placeholder="Stage Name"
+    >
+
+    <input
+      id="newPhone"
+      type="text"
+      placeholder="Phone Number"
+    >
+
+    <input
+      id="newLocation"
+      type="text"
+      placeholder="Location"
+    >
+
+    <input
+      id="newPhoto"
+      type="text"
+      placeholder="Photo URL"
+    >
+
+    <input
+      id="newViews"
+      type="number"
+      placeholder="Starting Views"
+      value="0"
+    >
+
+    <input
+      id="newLikes"
+      type="number"
+      placeholder="Starting Likes"
+      value="0"
+    >
+
+    <select id="newTier">
+      <option value="Featured">Featured</option>
+      <option value="VIP">VIP</option>
+      <option value="VVIP">VVIP</option>
+    </select>
+
+    <textarea
+      id="newBio"
+      placeholder="Bio / Description"
+    ></textarea>
+
+  </div>
+
+  <button onclick="addProfile()" class="add-btn">
+    Add Profile
+  </button>
+
+</section>
+
+<script>
+
+async function addProfile(){
+
+  const stage_name =
+    document.getElementById("newName").value.trim();
+
+  const phone =
+    document.getElementById("newPhone").value.trim();
+
+  const location =
+    document.getElementById("newLocation").value.trim();
+
+  const photo =
+    document.getElementById("newPhoto").value.trim();
+
+  const tier =
+    document.getElementById("newTier").value;
+
+  const bio =
+    document.getElementById("newBio").value.trim();
+
+  const views =
+    Number(document.getElementById("newViews").value || 0);
+
+  const likes =
+    Number(document.getElementById("newLikes").value || 0);
+
+  if(!stage_name || !phone || !location || !photo){
+
+    alert("Fill all required fields");
+    return;
+
+  }
+
+  const payload = {
+
+    stage_name: stage_name,
+
+    phone: phone,
+
+    whatsapp: phone,
+
+    location: location,
+
+    photo_url: photo,
+
+    image_url: photo,
+
+    bio: bio,
+
+    tier: tier,
+
+    views_count: views,
+
+    likes_count: likes,
+
+    approved: true
+
+  };
+
+  const { error } = await sb
+    .from("profiles")
+    .insert([payload]);
+
+  if(error){
+
+    console.error(error);
+
+    alert(error.message);
+
+    return;
+
+  }
+
+  alert("✅ Profile Added");
+
+  location.reload();
+
+}
+
+</script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
 
-body{
-  background:#050814;
+.admin-add-profile{
+
+  background:#07113a;
+
+  border:1px solid rgba(255,215,0,.25);
+
+  border-radius:30px;
+
+  padding:30px;
+
+  margin-bottom:40px;
+
+}
+
+.admin-add-profile h2{
+
   color:white;
-  font-family:Arial,Helvetica,sans-serif;
-}
 
-header{
-  background:#000;
-  padding:28px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid rgba(255,216,75,.18);
-}
-
-header h1{
-  color:#ffd84b;
   font-size:42px;
-  font-weight:900;
+
+  margin-bottom:30px;
+
+  font-weight:800;
+
 }
 
-button{
-  border:none;
-  cursor:pointer;
-  font-weight:900;
-}
+.admin-form-grid{
 
-.refresh-btn{
-  background:#ffd84b;
-  color:#000;
-  padding:15px 24px;
-  border-radius:16px;
-}
-
-.section{
-  max-width:1800px;
-  margin:26px auto;
-  background:#0b1230;
-  border:1px solid rgba(255,216,75,.18);
-  border-radius:28px;
-  padding:28px;
-}
-
-.section h2{
-  font-size:30px;
-  margin-bottom:22px;
-}
-
-.form-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:14px;
+
+  grid-template-columns:repeat(4,1fr);
+
+  gap:18px;
+
 }
 
-input,select,textarea{
+.admin-form-grid input,
+.admin-form-grid select,
+.admin-form-grid textarea{
+
   width:100%;
-  background:#101936;
+
+  background:#0d1845;
+
   border:1px solid rgba(255,255,255,.12);
+
   color:white;
-  padding:16px;
-  border-radius:16px;
-  font-size:16px;
+
+  border-radius:22px;
+
+  padding:20px;
+
+  font-size:18px;
+
+  outline:none;
+
 }
 
-textarea{
-  min-height:110px;
-  margin-top:16px;
-  resize:vertical;
-  font-family:monospace;
-}
+.admin-form-grid textarea{
 
-.upload-preview{
-  width:120px;
-  height:120px;
-  object-fit:cover;
-  border-radius:18px;
-  border:2px solid #ffd84b;
-  margin-top:12px;
-  display:none;
+  min-height:140px;
+
+  grid-column:1/-1;
+
+  resize:none;
+
 }
 
 .add-btn{
-  background:#22c55e;
-  color:#001b09;
-  padding:16px 26px;
-  border-radius:16px;
-  margin-top:18px;
+
+  margin-top:25px;
+
+  background:#16d45c;
+
+  color:black;
+
+  border:none;
+
+  padding:18px 40px;
+
+  border-radius:18px;
+
+  font-size:20px;
+
+  font-weight:800;
+
+  cursor:pointer;
+
 }
 
-.status{
-  max-width:1800px;
-  margin:auto;
-  padding:0 18px;
-  color:#ffd84b;
-  font-weight:900;
-}
+.add-btn:hover{
 
-.vault-stats{
-  max-width:1800px;
-  margin:18px auto;
-  padding:0 18px;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px;
-}
-
-.stat-box{
-  background:#0b1230;
-  border:1px solid rgba(255,216,75,.18);
-  border-radius:22px;
-  padding:24px;
-}
-
-.stat-box span{
-  display:block;
-  color:#94a3b8;
-  margin-bottom:10px;
-  font-weight:700;
-}
-
-.stat-box strong{
-  font-size:42px;
-  color:#ffd84b;
-  font-weight:900;
-}
-
-.grid{
-  max-width:1800px;
-  margin:22px auto;
-  padding:0 18px 50px;
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:24px;
-  align-items:start;
-}
-
-.card{
-  min-width:0;
-  background:#0d1533;
-  border-radius:24px;
-  overflow:hidden;
-  border:1px solid rgba(255,216,75,.18);
-  transition:.3s ease;
-}
-
-.card:hover{
-  transform:translateY(-4px);
-  border-color:#ffd84b;
-}
-
-.image-wrap,.video-wrap{
-  width:100%;
-  height:280px;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-
-.image-wrap img,.video-wrap video{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  object-position:center;
-  background:#000;
-}
-
-.card-content{
-  padding:16px;
-}
-
-.name{
-  font-size:25px;
-  font-weight:900;
-  line-height:1.05;
-  margin-bottom:12px;
-}
-
-.badge{
-  display:inline-flex;
-  padding:8px 14px;
-  border-radius:999px;
-  background:rgba(255,216,75,.12);
-  border:1px solid rgba(255,216,75,.35);
-  color:#ffd84b;
-  font-size:13px;
-  font-weight:900;
-  margin-bottom:14px;
-}
-
-.info{
-  color:#e5e7eb;
-  line-height:1.6;
-  font-size:14px;
-  margin-bottom:14px;
-}
-
-.photo-edit{
-  width:100%;
-  min-height:70px;
-  background:#101936;
-  border:1px solid rgba(255,255,255,.12);
-  color:white;
-  border-radius:14px;
-  padding:12px;
-  font-family:monospace;
-  resize:vertical;
-  font-size:13px;
-  margin-bottom:10px;
-}
-
-.card-file{
-  width:100%;
-  margin-bottom:10px;
-  padding:12px;
-  background:#101936;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:14px;
-  color:white;
-}
-
-.actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.actions button{
-  padding:12px;
-  border-radius:14px;
-  font-size:13px;
-  transition:.25s ease;
-}
-
-.actions button:hover{
   transform:translateY(-2px);
+
 }
 
-.approve{background:#22c55e;color:#001b09}
-.hide{background:#ff4770;color:white}
-.save{background:#38bdf8;color:#00111f}
-.reset{background:#ffd84b;color:#000}
-.vip{background:#fb923c;color:#000}
-.vvip{background:linear-gradient(135deg,#ff3d7f,#8b5cf6);color:white}
-.delete{background:#ef4444;color:white;grid-column:1/3}
+@media(max-width:1200px){
 
-.divider{
-  max-width:1800px;
-  margin:34px auto 18px;
-  padding:0 18px;
-  color:#ffd84b;
-  font-size:34px;
-  font-weight:900;
+  .admin-form-grid{
+
+    grid-template-columns:repeat(2,1fr);
+
+  }
+
 }
 
-@media(max-width:1400px){
-  .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:700px){
+
+  .admin-form-grid{
+
+    grid-template-columns:1fr;
+
+  }
+
 }
 
-@media(max-width:1100px){
-  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-}
-
-@media(max-width:800px){
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .vault-stats{grid-template-columns:repeat(2,1fr)}
-}
-
-@media(max-width:560px){
-  .grid{grid-template-columns:1fr}
-  .vault-stats{grid-template-columns:1fr}
-  header{padding:18px}
-  header h1{font-size:30px}
-}
 </style>
-</head>
-
-<body>
-
-<header>
-  <h1>Nairobi Sweets Vault</h1>
-  <button class="refresh-btn" onclick="loadAll()">Refresh</button>
-</header>
-
-<section class="section">
-  <h2>Add New Profile</h2>
-
-  <div class="form-grid">
-    <input id="newName" placeholder="Stage name">
-    <input id="newPhone" placeholder="Phone">
-    <input id="newLocation" placeholder="Location">
-    <input id="newCity" value="Nairobi" placeholder="City">
-
-    <div>
-      <input id="newPhoto" placeholder="Photo URL">
-      <br><br>
-      <input type="file" id="photoUpload" accept="image/*" onchange="uploadAdminPhoto()">
-      <img id="photoPreview" class="upload-preview">
-    </div>
-
-    <select id="newTier">
-      <option value="featured">Featured</option>
-      <option value="vip">VIP</option>
-      <option value="vvip">VVIP / Signature</option>
-    </select>
-
-    <input id="newViews" type="number" value="0" placeholder="Starting views">
-    <input id="newLikes" type="number" value="0" placeholder="Starting likes">
-  </div>
-
-  <textarea id="newBio" placeholder="Bio / description"></textarea>
-  <button class="add-btn" onclick="addProfile()">Add Profile</button>
-</section>
-
-<section class="section">
-  <h2>Add New Short</h2>
-
-  <div class="form-grid">
-    <input id="shortTitle" placeholder="Short title">
-    <input id="shortVideoUrl" placeholder="Video URL">
-    <input id="shortThumbUrl" placeholder="Thumbnail URL optional">
-    <input type="file" id="shortVideoUpload" accept="video/*" onchange="uploadShortVideo()">
-  </div>
-
-  <button class="add-btn" onclick="addShort()">Add Short</button>
-</section>
-
-<section class="section">
-  <h2>Search Profiles</h2>
-  <input id="searchBox" placeholder="Search by name, phone, location..." oninput="renderProfiles()">
-</section>
-
-<div class="status" id="status">Loading...</div>
-
-<div class="vault-stats">
-  <div class="stat-box">
-    <span>Total Profiles</span>
-    <strong id="totalProfiles">0</strong>
-  </div>
-
-  <div class="stat-box">
-    <span>Total Views</span>
-    <strong id="totalViews">0</strong>
-  </div>
-
-  <div class="stat-box">
-    <span>Total Likes</span>
-    <strong id="totalLikes">0</strong>
-  </div>
-
-  <div class="stat-box">
-    <span>Approved Profiles</span>
-    <strong id="approvedProfiles">0</strong>
-  </div>
-</div>
-
-<div class="divider">Profiles</div>
-<main class="grid" id="profilesGrid"></main>
-
-<div class="divider">Shorts</div>
-<main class="grid" id="shortsGrid"></main>
-
-<script>
-const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
-
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-let profiles = [];
-let shorts = [];
-
-const profilesGrid = document.getElementById("profilesGrid");
-const shortsGrid = document.getElementById("shortsGrid");
-const statusBox = document.getElementById("status");
-
-function getImage(p){
-  return p.photo_url || p.image_url || p.profile_photo || p.avatar_url || p.photo || "./assets/logo/logo-badge.png";
-}
-
-function getName(p){
-  return p.stage_name || p.name || "Unnamed";
-}
-
-function getTier(p){
-  const tier = String(p.tier || "").toLowerCase();
-
-  if(tier === "vvip" || tier === "signature") return "VVIP";
-  if(tier === "vip") return "VIP";
-  return "Featured";
-}
-
-async function uploadToBucket(file, prefix){
-  const ext = file.name.split(".").pop();
-
-  const fileName =
-    prefix + "-" + Date.now() + "-" +
-    Math.random().toString(36).substring(2) + "." + ext;
-
-  const { error } = await sb.storage
-    .from("profile-images")
-    .upload(fileName, file, { upsert:true });
-
-  if(error) throw error;
-
-  const { data } = sb.storage
-    .from("profile-images")
-    .getPublicUrl(fileName);
-
-  return data.publicUrl;
-}
-
-async function uploadAdminPhoto(){
-  const fileInput = document.getElementById("photoUpload");
-  const preview = document.getElementById("photoPreview");
-
-  if(!fileInput.files.length) return;
-
-  try{
-    statusBox.textContent = "Uploading photo...";
-    const url = await uploadToBucket(fileInput.files[0], "admin-photo");
-
-    document.getElementById("newPhoto").value = url;
-    preview.src = url;
-    preview.style.display = "block";
-    statusBox.textContent = "Photo uploaded";
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-async function uploadShortVideo(){
-  const fileInput = document.getElementById("shortVideoUpload");
-
-  if(!fileInput.files.length) return;
-
-  try{
-    statusBox.textContent = "Uploading short video...";
-    const url = await uploadToBucket(fileInput.files[0], "short");
-
-    document.getElementById("shortVideoUrl").value = url;
-    statusBox.textContent = "Short uploaded";
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-async function replaceProfilePhoto(event,id){
-  const file = event.target.files[0];
-
-  if(!file) return;
-
-  try{
-    statusBox.textContent = "Uploading new profile photo...";
-
-    const imageUrl = await uploadToBucket(file, "profile-" + id);
-
-    const { error } = await sb
-      .from("profiles")
-      .update({
-        photo_url:imageUrl,
-        image_url:imageUrl
-      })
-      .eq("id",id);
-
-    if(error){
-      alert(error.message);
-      return;
-    }
-
-    alert("Profile photo updated");
-    await loadProfiles();
-
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-async function loadProfiles(){
-  const { data, error } = await sb
-    .from("profiles")
-    .select("*")
-    .order("created_at",{ascending:false});
-
-  if(error){
-    statusBox.textContent = error.message;
-    return;
-  }
-
-  profiles = data || [];
-  updateStats();
-  renderProfiles();
-}
-
-async function loadShorts(){
-  const { data, error } = await sb
-    .from("shorts")
-    .select("*")
-    .order("created_at",{ascending:false});
-
-  if(error){
-    shortsGrid.innerHTML = `<div class="status">${error.message}</div>`;
-    return;
-  }
-
-  shorts = data || [];
-  renderShorts();
-}
-
-async function loadAll(){
-  statusBox.textContent = "Loading...";
-  await loadProfiles();
-  await loadShorts();
-  statusBox.textContent = profiles.length + " profiles loaded · " + shorts.length + " shorts loaded";
-}
-
-function updateStats(){
-  const totalViews = profiles.reduce((sum,p) => sum + Number(p.views_count || 0),0);
-  const totalLikes = profiles.reduce((sum,p) => sum + Number(p.likes_count || 0),0);
-  const approved = profiles.filter(p => p.approved).length;
-
-  document.getElementById("totalProfiles").textContent = profiles.length;
-  document.getElementById("totalViews").textContent = totalViews.toLocaleString();
-  document.getElementById("totalLikes").textContent = totalLikes.toLocaleString();
-  document.getElementById("approvedProfiles").textContent = approved;
-}
-
-function renderProfiles(){
-  const q = document.getElementById("searchBox").value.toLowerCase();
-
-  let list = [...profiles];
-
-  if(q){
-    list = list.filter(p => {
-      return [
-        getName(p),
-        p.phone,
-        p.whatsapp,
-        p.location,
-        p.city,
-        p.bio
-      ]
-      .join(" ")
-      .toLowerCase()
-      .includes(q);
-    });
-  }
-
-  profilesGrid.innerHTML = list.map(p => `
-    <article class="card">
-      <div class="image-wrap">
-        <img src="${getImage(p)}" loading="lazy" onerror="this.src='./assets/logo/logo-badge.png'">
-      </div>
-
-      <div class="card-content">
-        <div class="name">${getName(p)}</div>
-        <div class="badge">${getTier(p)}</div>
-
-        <div class="info">
-          📍 ${p.location || p.city || "Nairobi"}<br>
-          📞 ${p.phone || "-"}<br>
-          ❤️ ${p.likes_count || 0} likes · 👁️ ${p.views_count || 0} views<br>
-          ${p.approved ? "Approved" : "Hidden"}
-        </div>
-
-        <textarea class="photo-edit" id="photo-${p.id}">${getImage(p)}</textarea>
-
-        <input
-          class="card-file"
-          type="file"
-          accept="image/*"
-          onchange="replaceProfilePhoto(event, ${p.id})"
-        >
-
-        <div class="actions">
-          <button class="approve" onclick="approveProfile(${p.id})">Approve</button>
-          <button class="hide" onclick="hideProfile(${p.id})">Hide</button>
-          <button class="save" onclick="savePhoto(${p.id})">Save Photo</button>
-          <button class="reset" onclick="resetStats(${p.id})">Reset Stats</button>
-          <button class="vip" onclick="setVIP(${p.id})">VIP</button>
-          <button class="vvip" onclick="setVVIP(${p.id})">VVIP</button>
-          <button class="delete" onclick="deleteProfile(${p.id})">Delete Profile</button>
-        </div>
-      </div>
-    </article>
-  `).join("");
-}
-
-function renderShorts(){
-  shortsGrid.innerHTML = shorts.map(s => `
-    <article class="card">
-      <div class="video-wrap">
-        <video src="${s.video_url}" poster="${s.thumbnail_url || ""}" controls playsinline preload="metadata"></video>
-      </div>
-
-      <div class="card-content">
-        <div class="name">${s.title || "Short"}</div>
-
-        <div class="info">
-          ❤️ ${s.likes_count || 0} likes · 👁️ ${s.views_count || 0} views<br>
-          ${s.approved ? "Approved" : "Hidden"}
-        </div>
-
-        <textarea class="photo-edit" id="short-video-${s.id}">${s.video_url}</textarea>
-
-        <div class="actions">
-          <button class="approve" onclick="approveShort(${s.id})">Approve</button>
-          <button class="hide" onclick="hideShort(${s.id})">Hide</button>
-          <button class="save" onclick="saveShortVideo(${s.id})">Save Video</button>
-          <button class="reset" onclick="resetShortStats(${s.id})">Reset Stats</button>
-          <button class="delete" onclick="deleteShort(${s.id})">Delete Short</button>
-        </div>
-      </div>
-    </article>
-  `).join("");
-}
-
-async function addProfile(){
-  const payload = {
-    stage_name:document.getElementById("newName").value,
-    phone:document.getElementById("newPhone").value,
-    whatsapp:document.getElementById("newPhone").value,
-    location:document.getElementById("newLocation").value,
-    city:document.getElementById("newCity").value || "Nairobi",
-    photo_url:document.getElementById("newPhoto").value,
-    image_url:document.getElementById("newPhoto").value,
-    bio:document.getElementById("newBio").value,
-    tier:document.getElementById("newTier").value,
-    views_count:Number(document.getElementById("newViews").value || 0),
-    likes_count:Number(document.getElementById("newLikes").value || 0),
-    approved:true
-  };
-
-  const { error } = await sb.from("profiles").insert([payload]);
-
-  if(error) return alert(error.message);
-
-  alert("Profile added");
-  loadProfiles();
-}
-
-async function addShort(){
-  const payload = {
-    title:document.getElementById("shortTitle").value.trim(),
-    video_url:document.getElementById("shortVideoUrl").value.trim(),
-    thumbnail_url:document.getElementById("shortThumbUrl").value.trim(),
-    approved:true,
-    views_count:0,
-    likes_count:0
-  };
-
-  if(!payload.video_url){
-    alert("Upload or paste a video URL first");
-    return;
-  }
-
-  const { error } = await sb.from("shorts").insert([payload]);
-
-  if(error) return alert(error.message);
-
-  alert("Short added");
-  loadShorts();
-}
-
-async function approveProfile(id){
-  await sb.from("profiles").update({approved:true}).eq("id",id);
-  loadProfiles();
-}
-
-async function hideProfile(id){
-  await sb.from("profiles").update({approved:false}).eq("id",id);
-  loadProfiles();
-}
-
-async function savePhoto(id){
-  const photo = document.getElementById(`photo-${id}`).value;
-  await sb.from("profiles").update({photo_url:photo,image_url:photo}).eq("id",id);
-  loadProfiles();
-}
-
-async function resetStats(id){
-  await sb.from("profiles").update({views_count:0,likes_count:0}).eq("id",id);
-  loadProfiles();
-}
-
-async function setVIP(id){
-  await sb.from("profiles").update({tier:"vip",is_vip:true,is_vvip:false}).eq("id",id);
-  loadProfiles();
-}
-
-async function setVVIP(id){
-  await sb.from("profiles").update({tier:"vvip",is_vvip:true,is_vip:false}).eq("id",id);
-  loadProfiles();
-}
-
-async function deleteProfile(id){
-  if(!confirm("Delete this profile?")) return;
-  await sb.from("profiles").delete().eq("id",id);
-  loadProfiles();
-}
-
-async function approveShort(id){
-  await sb.from("shorts").update({approved:true}).eq("id",id);
-  loadShorts();
-}
-
-async function hideShort(id){
-  await sb.from("shorts").update({approved:false}).eq("id",id);
-  loadShorts();
-}
-
-async function saveShortVideo(id){
-  const video = document.getElementById(`short-video-${id}`).value;
-  await sb.from("shorts").update({video_url:video}).eq("id",id);
-  loadShorts();
-}
-
-async function resetShortStats(id){
-  await sb.from("shorts").update({views_count:0,likes_count:0}).eq("id",id);
-  loadShorts();
-}
-
-async function deleteShort(id){
-  if(!confirm("Delete this short?")) return;
-  await sb.from("shorts").delete().eq("id",id);
-  loadShorts();
-}
-
-loadAll();
-</script>
-
-</body>
-</html>
