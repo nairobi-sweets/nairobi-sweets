@@ -7,32 +7,27 @@
 <title>Nairobi Sweets | Verified Nairobi Profiles</title>
 
 <meta name="description" content="Discover verified Nairobi profiles with real photos, WhatsApp access, likes, views, luxury discovery and VIP listings.">
-
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://nairobi-sweets.com/">
 <link rel="icon" href="./assets/logo/logo-badge.png">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box}
 
 body{
   background:#020617;
   color:white;
-  font-family:Inter,Arial,sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
-/* HEADER */
+a{text-decoration:none;color:inherit}
 
 header{
-  background:black;
+  background:#000;
   padding:24px 40px;
-  border-bottom:1px solid #2f2f2f;
-
+  border-bottom:1px solid rgba(255,216,75,.18);
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -70,20 +65,17 @@ header{
 .top-btn{
   background:#0b1742;
   color:#ffd84b;
-  border:1px solid #3b3b3b;
+  border:1px solid rgba(255,216,75,.25);
   padding:18px 34px;
   border-radius:22px;
-  font-weight:800;
-  text-decoration:none;
+  font-weight:900;
   font-size:20px;
 }
 
 .join-btn{
   background:#ffd84b;
-  color:black;
+  color:#000;
 }
-
-/* HERO */
 
 .hero{
   padding:50px 20px 20px;
@@ -102,8 +94,6 @@ header{
   font-size:22px;
 }
 
-/* SEARCH */
-
 .controls{
   display:flex;
   gap:20px;
@@ -116,33 +106,21 @@ header{
   min-width:260px;
 }
 
-.search input{
+.search input,
+.sort select{
   width:100%;
-  height:78px;
+  height:72px;
   border-radius:24px;
   border:1px solid #27314d;
   background:#081233;
   color:white;
   padding:0 26px;
-  font-size:22px;
+  font-size:20px;
 }
 
 .sort{
   width:280px;
 }
-
-.sort select{
-  width:100%;
-  height:78px;
-  border-radius:24px;
-  border:1px solid #27314d;
-  background:#081233;
-  color:white;
-  padding:0 24px;
-  font-size:22px;
-}
-
-/* STATS */
 
 .stats{
   display:grid;
@@ -165,34 +143,39 @@ header{
 }
 
 .stat span{
-  font-size:66px;
+  font-size:56px;
   font-weight:900;
   color:#ffd84b;
 }
 
-/* GRID */
-
 .grid{
   padding:20px;
-
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:26px;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:24px;
+  align-items:start;
 }
 
 .card{
   background:#071038;
-  border-radius:34px;
+  border-radius:26px;
   overflow:hidden;
-  border:2px solid #ffbf00;
+  border:1px solid #ffbf00;
   position:relative;
+  min-width:0;
+  transition:.25s ease;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 20px 40px rgba(0,0,0,.45);
 }
 
 .card-image{
   width:100%;
-  aspect-ratio:4/5;
+  aspect-ratio:3/4;
   overflow:hidden;
-  background:black;
+  background:#000;
 }
 
 .card-image img{
@@ -204,31 +187,26 @@ header{
 
 .badge{
   position:absolute;
-  top:18px;
-  right:18px;
-
-  background:#4d463d;
+  top:16px;
+  right:16px;
+  background:rgba(0,0,0,.65);
   color:#ffd84b;
-
-  padding:12px 22px;
+  border:1px solid rgba(255,216,75,.28);
+  padding:10px 18px;
   border-radius:999px;
-  font-weight:800;
-  font-size:18px;
+  font-weight:900;
+  font-size:14px;
 }
 
 .card-body{
-  padding:24px;
+  padding:20px;
 }
 
 .card-name{
-  font-size:30px;
+  font-size:26px;
   font-weight:900;
-  margin-bottom:16px;
-}
-
-.card-name a{
-  color:white;
-  text-decoration:none;
+  margin-bottom:14px;
+  line-height:1.1;
 }
 
 .card-name a:hover{
@@ -237,44 +215,58 @@ header{
 
 .meta{
   color:#d8dced;
-  font-size:18px;
-  line-height:1.7;
-}
-
-.meta div{
-  margin-bottom:10px;
+  font-size:16px;
+  line-height:1.6;
 }
 
 .stats-line{
-  margin-top:18px;
-  font-size:18px;
+  margin-top:14px;
+  font-size:16px;
   color:#ffdb70;
+  font-weight:900;
+}
+
+.bio{
+  margin-top:14px;
+  color:#cbd5e1;
+  font-size:15px;
+  line-height:1.5;
+  min-height:65px;
 }
 
 .actions{
-  margin-top:24px;
-  display:flex;
-  gap:14px;
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
 }
 
 .action-btn{
-  flex:1;
   border:none;
-  height:56px;
+  height:52px;
   border-radius:16px;
-  font-weight:800;
+  font-weight:900;
   cursor:pointer;
-  font-size:17px;
+  font-size:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .like-btn{
   background:#ff3f86;
   color:white;
+  grid-column:1/3;
 }
 
 .whatsapp-btn{
   background:#25D366;
-  color:white;
+  color:#001b09;
+}
+
+.call-btn{
+  background:#ffd84b;
+  color:#000;
 }
 
 footer{
@@ -284,109 +276,79 @@ footer{
 }
 
 @media(max-width:1400px){
-
-  .grid{
-    grid-template-columns:repeat(3,1fr);
-  }
-
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 
-@media(max-width:1050px){
-
-  .grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .stats{
-    grid-template-columns:1fr;
-  }
-
-  .hero h1{
-    font-size:62px;
-  }
-
+@media(max-width:1100px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 
-@media(max-width:700px){
-
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .brand span{
-    font-size:30px;
-  }
-
-  .brand img{
-    width:56px;
-    height:56px;
-  }
-
-  .hero h1{
-    font-size:48px;
-  }
-
+@media(max-width:800px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats{grid-template-columns:1fr}
 }
 
+@media(max-width:560px){
+  .grid{grid-template-columns:1fr}
+  header{padding:18px}
+  .brand span{font-size:30px}
+  .brand img{width:56px;height:56px}
+  .hero h1{font-size:48px}
+  .header-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .top-btn{text-align:center;padding:14px;font-size:15px}
+}
 </style>
 </head>
+
 <body>
 
 <header>
+  <a href="index.html" class="brand">
+    <img src="./assets/logo/logo-navbar.png" alt="Nairobi Sweets">
+    <span>Nairobi Sweets</span>
+  </a>
 
-<a href="index.html" class="brand">
-  <img src="./assets/logo/logo-navbar.png" alt="Nairobi Sweets">
-  <span>Nairobi Sweets</span>
-</a>
-
-<div class="header-actions">
-  <a href="shorts.html" class="top-btn">Shorts</a>
-  <a href="join.html" class="top-btn join-btn">Join Now</a>
-</div>
-
+  <div class="header-actions">
+    <a href="shorts.html" class="top-btn">Shorts</a>
+    <a href="join.html" class="top-btn join-btn">Join Now</a>
+  </div>
 </header>
 
 <section class="hero">
   <h1>Profiles</h1>
-  <p>
-    Verified profiles, WhatsApp access, VIP listings,
-    likes, views, luxury discovery and real photos.
-  </p>
+  <p>Verified profiles, WhatsApp access, VIP listings, likes, views, luxury discovery and real photos.</p>
 </section>
 
 <section class="controls">
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="Search by name, bio, location...">
+  </div>
 
-<div class="search">
-  <input type="text" id="searchInput" placeholder="Search by name, bio, location...">
-</div>
-
-<div class="sort">
-  <select id="sortSelect">
-    <option value="featured">Featured First</option>
-    <option value="views">Most Views</option>
-    <option value="likes">Most Likes</option>
-  </select>
-</div>
-
+  <div class="sort">
+    <select id="sortSelect">
+      <option value="featured">Featured First</option>
+      <option value="views">Most Views</option>
+      <option value="likes">Most Likes</option>
+      <option value="newest">Newest First</option>
+    </select>
+  </div>
 </section>
 
 <section class="stats">
+  <div class="stat">
+    <h3>Total Profiles</h3>
+    <span id="totalProfiles">0</span>
+  </div>
 
-<div class="stat">
-  <h3>Total Profiles</h3>
-  <span id="totalProfiles">0</span>
-</div>
+  <div class="stat">
+    <h3>Total Views</h3>
+    <span id="totalViews">0</span>
+  </div>
 
-<div class="stat">
-  <h3>Total Views</h3>
-  <span id="totalViews">0</span>
-</div>
-
-<div class="stat">
-  <h3>Total Likes</h3>
-  <span id="totalLikes">0</span>
-</div>
-
+  <div class="stat">
+    <h3>Total Likes</h3>
+    <span id="totalLikes">0</span>
+  </div>
 </section>
 
 <section class="grid" id="profilesGrid"></section>
@@ -396,239 +358,193 @@ footer{
 </footer>
 
 <script>
-
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-const sb = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let profiles = [];
 
-async function loadProfiles(){
+function getImage(p){
+  return p.photo_url || p.image_url || p.profile_photo || p.avatar_url || p.photo || "./assets/logo/logo-badge.png";
+}
 
+function getName(p){
+  return p.stage_name || p.name || p.full_name || "Profile";
+}
+
+function getTier(p){
+  const tier = String(p.tier || "").toLowerCase();
+
+  if(p.is_vvip || tier === "vvip" || tier === "signature") return "👑 VVIP";
+  if(p.is_vip || tier === "vip") return "⭐ VIP";
+  return "✨ Featured";
+}
+
+function cleanPhone(phone){
+  let n = String(phone || "").replace(/\D/g,"");
+
+  if(n.startsWith("0")) n = "254" + n.slice(1);
+  if(n.startsWith("7") || n.startsWith("1")) n = "254" + n;
+
+  return n;
+}
+
+async function loadProfiles(){
   const { data, error } = await sb
     .from("profiles")
     .select("*")
-    .eq("approved", true);
+    .eq("approved", true)
+    .order("created_at", { ascending:false });
 
   if(error){
     console.error(error);
+    document.getElementById("profilesGrid").innerHTML = error.message;
     return;
   }
 
   profiles = data || [];
-
   renderStats(profiles);
   renderProfiles(profiles);
-
 }
 
 function renderStats(list){
-
   const totalProfiles = list.length;
 
   const totalViews = list.reduce((sum,p)=>
-    sum + (p.views || 0),0);
+    sum + Number(p.views_count || 0),0);
 
   const totalLikes = list.reduce((sum,p)=>
-    sum + (p.likes || 0),0);
+    sum + Number(p.likes_count || 0),0);
 
-  document.getElementById("totalProfiles").innerText =
-    totalProfiles;
-
-  document.getElementById("totalViews").innerText =
-    totalViews.toLocaleString();
-
-  document.getElementById("totalLikes").innerText =
-    totalLikes.toLocaleString();
-
+  document.getElementById("totalProfiles").innerText = totalProfiles;
+  document.getElementById("totalViews").innerText = totalViews.toLocaleString();
+  document.getElementById("totalLikes").innerText = totalLikes.toLocaleString();
 }
 
 function renderProfiles(list){
-
   const grid = document.getElementById("profilesGrid");
 
   grid.innerHTML = "";
 
   list.forEach(profile=>{
+    const rawPhone = profile.phone || profile.whatsapp || "";
+    const phone = cleanPhone(rawPhone);
 
     const card = document.createElement("div");
-
     card.className = "card";
 
     card.innerHTML = `
-
-      <div class="badge">
-        ${profile.plan || "Featured"}
-      </div>
+      <div class="badge">${getTier(profile)}</div>
 
       <div class="card-image">
-        <img src="${profile.photo_url}" loading="lazy">
+        <a href="profile.html?id=${profile.id}">
+          <img src="${getImage(profile)}" loading="lazy" onerror="this.src='./assets/logo/logo-badge.png'">
+        </a>
       </div>
 
       <div class="card-body">
-
         <div class="card-name">
           <a href="profile.html?id=${profile.id}">
-            ${profile.stage_name || "Profile"}
+            ${getName(profile)}
           </a>
         </div>
 
         <div class="meta">
-
-          <div>
-            📍 ${profile.location || "Nairobi"}
-          </div>
-
-          <div>
-            📞 ${profile.phone || ""}
-          </div>
-
+          <div>📍 ${profile.location || profile.area || profile.city || "Nairobi"}</div>
+          <div>📞 ${rawPhone}</div>
         </div>
 
         <div class="stats-line">
-          ❤️ ${profile.likes || 0} likes
-          •
-          👁️ ${profile.views || 0} views
+          ❤️ ${profile.likes_count || 0} likes • 👁️ ${profile.views_count || 0} views
+        </div>
+
+        <div class="bio">
+          ${profile.bio || "Premium Nairobi profile."}
         </div>
 
         <div class="actions">
-
-          <button class="action-btn like-btn"
-            onclick="likeProfile(${profile.id})">
-            ❤️ Like
-          </button>
-
-          <a
-            class="action-btn whatsapp-btn"
-            style="
-              display:flex;
-              align-items:center;
-              justify-content:center;
-              text-decoration:none;
-            "
-            href="https://wa.me/${(profile.phone || '').replace(/\+/g,'')}"
-            target="_blank"
-          >
+          <a class="action-btn whatsapp-btn" href="https://wa.me/${phone}" target="_blank">
             WhatsApp
           </a>
 
+          <a class="action-btn call-btn" href="tel:${rawPhone}">
+            Call
+          </a>
+
+          <button class="action-btn like-btn" onclick="likeProfile(${profile.id})">
+            ❤️ Like
+          </button>
         </div>
-
       </div>
-
     `;
 
     grid.appendChild(card);
-
   });
-
 }
-
-/* LIKE */
 
 async function likeProfile(id){
+  try{
+    await sb.rpc("increment_profile_likes", { p_profile_id:id });
 
-  const profile = profiles.find(p=>p.id === id);
+    const profile = profiles.find(p => Number(p.id) === Number(id));
 
-  if(!profile) return;
-
-  const newLikes = (profile.likes || 0) + 1;
-
-  await sb
-    .from("profiles")
-    .update({
-      likes:newLikes
-    })
-    .eq("id",id);
-
-  loadProfiles();
-
+    if(profile){
+      profile.likes_count = Number(profile.likes_count || 0) + 1;
+      renderStats(profiles);
+      renderProfiles(profiles);
+    }
+  }catch(error){
+    alert("Like failed. Check Supabase function.");
+  }
 }
 
-/* SEARCH */
-
-document.getElementById("searchInput")
-.addEventListener("input",(e)=>{
-
+document.getElementById("searchInput").addEventListener("input",(e)=>{
   const value = e.target.value.toLowerCase();
 
-  const filtered = profiles.filter(p=>
-
-    (p.stage_name || "")
-    .toLowerCase()
-    .includes(value)
-
-    ||
-
-    (p.location || "")
-    .toLowerCase()
-    .includes(value)
-
-    ||
-
-    (p.bio || "")
-    .toLowerCase()
-    .includes(value)
-
+  const filtered = profiles.filter(p =>
+    getName(p).toLowerCase().includes(value) ||
+    String(p.location || "").toLowerCase().includes(value) ||
+    String(p.area || "").toLowerCase().includes(value) ||
+    String(p.bio || "").toLowerCase().includes(value)
   );
 
   renderProfiles(filtered);
-
 });
 
-/* SORT */
-
-document.getElementById("sortSelect")
-.addEventListener("change",(e)=>{
-
+document.getElementById("sortSelect").addEventListener("change",(e)=>{
   const value = e.target.value;
-
   let sorted = [...profiles];
 
   if(value === "views"){
-
-    sorted.sort((a,b)=>
-      (b.views || 0) - (a.views || 0)
-    );
-
+    sorted.sort((a,b)=>Number(b.views_count || 0) - Number(a.views_count || 0));
   }
 
   if(value === "likes"){
+    sorted.sort((a,b)=>Number(b.likes_count || 0) - Number(a.likes_count || 0));
+  }
 
-    sorted.sort((a,b)=>
-      (b.likes || 0) - (a.likes || 0)
-    );
-
+  if(value === "newest"){
+    sorted.sort((a,b)=>new Date(b.created_at || 0) - new Date(a.created_at || 0));
   }
 
   if(value === "featured"){
-
     sorted.sort((a,b)=>{
-
-      const order = {
-        "VVIP":3,
-        "VIP":2,
-        "Featured":1
+      const rank = p => {
+        const tier = String(p.tier || "").toLowerCase();
+        if(p.is_vvip || tier === "vvip" || tier === "signature") return 3;
+        if(p.is_vip || tier === "vip") return 2;
+        return 1;
       };
 
-      return (order[b.plan] || 0)
-      -
-      (order[a.plan] || 0);
-
+      return rank(b) - rank(a);
     });
-
   }
 
   renderProfiles(sorted);
-
 });
 
 loadProfiles();
-
 </script>
 
 </body>
