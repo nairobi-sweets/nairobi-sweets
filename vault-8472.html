@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <title>Nairobi Sweets Vault</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 *{
   margin:0;
   padding:0;
@@ -33,7 +32,7 @@ header{
 
 header h1{
   color:#ffd84b;
-  font-size:46px;
+  font-size:44px;
   font-weight:900;
 }
 
@@ -48,7 +47,7 @@ header h1{
 }
 
 .section{
-  max-width:1550px;
+  max-width:1700px;
   margin:28px auto;
   background:#0b1230;
   border:1px solid rgba(255,216,75,.18);
@@ -107,7 +106,7 @@ textarea{
 }
 
 .status{
-  max-width:1550px;
+  max-width:1700px;
   margin:0 auto;
   color:#ffd84b;
   padding:0 18px;
@@ -115,11 +114,11 @@ textarea{
 }
 
 .vault-stats{
-  max-width:1550px;
+  max-width:1700px;
   margin:18px auto;
   padding:0 18px;
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  grid-template-columns:repeat(4,1fr);
   gap:18px;
 }
 
@@ -143,18 +142,19 @@ textarea{
   font-weight:900;
 }
 
+/* ADMIN GRID: 4 PER ROW */
 .grid{
-  max-width:1550px;
+  max-width:1700px;
   margin:22px auto;
   padding:0 18px 40px;
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  grid-template-columns:repeat(4,1fr);
   gap:24px;
 }
 
 .card{
   background:#0e1430;
-  border-radius:28px;
+  border-radius:24px;
   overflow:hidden;
   border:1px solid rgba(255,216,75,.18);
   position:relative;
@@ -169,13 +169,12 @@ textarea{
 
 .image-wrap{
   width:100%;
-  height:420px;
+  height:300px;
   background:#050814;
   display:flex;
   align-items:center;
   justify-content:center;
   overflow:hidden;
-  position:relative;
 }
 
 .card img{
@@ -184,57 +183,53 @@ textarea{
   object-fit:contain;
   object-position:center;
   background:#050814;
-  transition:.4s ease;
-}
-
-.card:hover img{
-  transform:scale(1.02);
 }
 
 .card-content{
-  padding:20px;
+  padding:16px;
 }
 
 .name{
-  font-size:38px;
+  font-size:28px;
   font-weight:900;
   margin-bottom:10px;
+  line-height:1.05;
 }
 
 .badge{
   display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 16px;
+  padding:7px 13px;
   border-radius:999px;
   background:rgba(255,216,75,.12);
   border:1px solid rgba(255,216,75,.35);
   color:#ffd84b;
   font-weight:900;
-  margin-bottom:14px;
+  margin-bottom:12px;
+  font-size:13px;
 }
 
 .info{
   color:#e5e7eb;
-  line-height:1.7;
-  font-size:18px;
-  margin-bottom:16px;
+  line-height:1.6;
+  font-size:15px;
+  margin-bottom:14px;
 }
 
 .photo-manager{
-  margin-bottom:14px;
+  margin-bottom:12px;
 }
 
 .photo-edit{
   width:100%;
-  min-height:70px;
+  min-height:68px;
   background:#101936;
   border:1px solid rgba(255,255,255,.12);
   color:white;
   border-radius:14px;
-  padding:14px;
+  padding:12px;
   font-family:monospace;
   resize:vertical;
+  font-size:13px;
 }
 
 .photo-manager input{
@@ -249,79 +244,68 @@ textarea{
 .actions{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:12px;
+  gap:10px;
 }
 
 .actions button{
   border:none;
-  padding:14px;
+  padding:13px;
   border-radius:14px;
   font-weight:900;
   cursor:pointer;
   transition:.25s ease;
-  font-size:16px;
+  font-size:14px;
 }
 
 .actions button:hover{
   transform:translateY(-2px);
 }
 
-.approve{
-  background:#22c55e;
-  color:#001b09;
+.approve{background:#22c55e;color:#001b09}
+.hide{background:#ff4770;color:white}
+.save{background:#38bdf8;color:#00111f}
+.reset{background:#ffd84b;color:#000}
+.vip{background:#fb923c;color:#000}
+.vvip{background:linear-gradient(135deg,#ff3d7f,#8b5cf6);color:white}
+.delete{background:#ef4444;color:white;grid-column:1/3}
+
+@media(max-width:1300px){
+  .grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .vault-stats{
+    grid-template-columns:repeat(2,1fr);
+  }
 }
 
-.hide{
-  background:#ff4770;
-  color:white;
+@media(max-width:950px){
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
 }
 
-.save{
-  background:#38bdf8;
-  color:#00111f;
-}
-
-.reset{
-  background:#ffd84b;
-  color:#000;
-}
-
-.vip{
-  background:#fb923c;
-  color:#000;
-}
-
-.vvip{
-  background:linear-gradient(
-    135deg,
-    #ff3d7f,
-    #8b5cf6
-  );
-  color:white;
-}
-
-.delete{
-  background:#ef4444;
-  color:white;
-  grid-column:1/3;
-}
-
-@media(max-width:768px){
-
+@media(max-width:650px){
   header{
     padding:20px;
   }
 
   header h1{
-    font-size:32px;
+    font-size:30px;
   }
 
   .grid{
     grid-template-columns:1fr;
   }
 
-}
+  .vault-stats{
+    grid-template-columns:1fr;
+  }
 
+  .image-wrap{
+    height:360px;
+  }
+}
 </style>
 </head>
 
@@ -329,130 +313,48 @@ textarea{
 
 <header>
   <h1>Nairobi Sweets Vault</h1>
-
-  <button
-    class="refresh-btn"
-    onclick="loadProfiles()"
-  >
-    Refresh
-  </button>
+  <button class="refresh-btn" onclick="loadProfiles()">Refresh</button>
 </header>
 
 <section class="section">
-
   <h2>Add New Profile</h2>
 
   <div class="form-grid">
-
-    <input
-      id="newName"
-      placeholder="Stage name"
-    >
-
-    <input
-      id="newPhone"
-      placeholder="Phone"
-    >
-
-    <input
-      id="newLocation"
-      placeholder="Location / Area"
-    >
-
-    <input
-      id="newCity"
-      value="Nairobi"
-      placeholder="City"
-    >
+    <input id="newName" placeholder="Stage name">
+    <input id="newPhone" placeholder="Phone">
+    <input id="newLocation" placeholder="Location / Area">
+    <input id="newCity" value="Nairobi" placeholder="City">
 
     <div>
-
-      <input
-        id="newPhoto"
-        placeholder="Photo URL"
-      >
-
+      <input id="newPhoto" placeholder="Photo URL">
       <br><br>
-
-      <input
-        type="file"
-        id="photoUpload"
-        accept="image/*"
-        onchange="uploadAdminPhoto()"
-      >
-
-      <img
-        id="photoPreview"
-        class="upload-preview"
-      >
-
+      <input type="file" id="photoUpload" accept="image/*" onchange="uploadAdminPhoto()">
+      <img id="photoPreview" class="upload-preview">
     </div>
 
     <select id="newTier">
-      <option value="featured">
-        Featured
-      </option>
-
-      <option value="vip">
-        VIP
-      </option>
-
-      <option value="vvip">
-        VVIP / Signature
-      </option>
+      <option value="featured">Featured</option>
+      <option value="vip">VIP</option>
+      <option value="vvip">VVIP / Signature</option>
     </select>
 
-    <input
-      id="newViews"
-      type="number"
-      placeholder="Starting views"
-      value="0"
-    >
-
-    <input
-      id="newLikes"
-      type="number"
-      placeholder="Starting likes"
-      value="0"
-    >
-
+    <input id="newViews" type="number" placeholder="Starting views" value="0">
+    <input id="newLikes" type="number" placeholder="Starting likes" value="0">
   </div>
 
-  <textarea
-    id="newBio"
-    placeholder="Bio / description"
-  ></textarea>
+  <textarea id="newBio" placeholder="Bio / description"></textarea>
 
-  <button
-    class="add-btn"
-    onclick="addProfile()"
-  >
-    Add Profile
-  </button>
-
+  <button class="add-btn" onclick="addProfile()">Add Profile</button>
 </section>
 
 <section class="section">
-
   <h2>Search Profiles</h2>
-
-  <input
-    id="searchBox"
-    placeholder="Search by name, phone, location..."
-    oninput="renderProfiles()"
-  >
-
+  <input id="searchBox" placeholder="Search by name, phone, location..." oninput="renderProfiles()">
 </section>
 
-<div
-  class="status"
-  id="status"
->
-  Loading profiles...
-</div>
+<div class="status" id="status">Loading profiles...</div>
 
 <div class="vault-stats">
-
   <div class="stat-box">
     <span>Total Profiles</span>
     <strong id="totalProfiles">0</strong>
@@ -472,38 +374,22 @@ textarea{
     <span>Approved Profiles</span>
     <strong id="approvedProfiles">0</strong>
   </div>
-
 </div>
 
-<main
-  class="grid"
-  id="profilesGrid"
-></main>
+<main class="grid" id="profilesGrid"></main>
 
 <script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-const SUPABASE_URL =
-"https://dkjlvyynvgtijccitvvd.supabase.co";
-
-const SUPABASE_ANON_KEY =
-"sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
-
-const sb =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let profiles = [];
 
-const grid =
-document.getElementById("profilesGrid");
-
-const statusBox =
-document.getElementById("status");
+const grid = document.getElementById("profilesGrid");
+const statusBox = document.getElementById("status");
 
 function getImage(p){
-
   return (
     p.photo_url ||
     p.image_url ||
@@ -512,38 +398,25 @@ function getImage(p){
     p.photo ||
     "assets/logo/logo-badge.png"
   );
-
 }
 
 function getName(p){
-
   return (
     p.stage_name ||
     p.name ||
     p.full_name ||
     "Unnamed Profile"
   );
-
 }
 
 function getTier(p){
+  const tier = String(p.tier || "").toLowerCase();
 
-  const tier =
-  String(p.tier || "")
-  .toLowerCase();
-
-  if(
-    p.is_vvip ||
-    tier === "vvip" ||
-    tier === "signature"
-  ){
+  if(p.is_vvip || tier === "vvip" || tier === "signature"){
     return "VVIP / Signature";
   }
 
-  if(
-    p.is_vip ||
-    tier === "vip"
-  ){
+  if(p.is_vip || tier === "vip"){
     return "VIP";
   }
 
@@ -551,139 +424,77 @@ function getTier(p){
 }
 
 function updateVaultStats(){
-
-  const totalViews =
-  profiles.reduce(
-    (sum,p)=>
-      sum +
-      Number(p.views_count || 0),
+  const totalViews = profiles.reduce(
+    (sum,p) => sum + Number(p.views_count || 0),
     0
   );
 
-  const totalLikes =
-  profiles.reduce(
-    (sum,p)=>
-      sum +
-      Number(p.likes_count || 0),
+  const totalLikes = profiles.reduce(
+    (sum,p) => sum + Number(p.likes_count || 0),
     0
   );
 
-  const approved =
-  profiles.filter(
-    p => p.approved
-  ).length;
+  const approved = profiles.filter(p => p.approved).length;
 
-  document.getElementById(
-    "totalProfiles"
-  ).textContent =
-  profiles.length.toLocaleString();
+  document.getElementById("totalProfiles").textContent =
+    profiles.length.toLocaleString();
 
-  document.getElementById(
-    "totalViews"
-  ).textContent =
-  totalViews.toLocaleString();
+  document.getElementById("totalViews").textContent =
+    totalViews.toLocaleString();
 
-  document.getElementById(
-    "totalLikes"
-  ).textContent =
-  totalLikes.toLocaleString();
+  document.getElementById("totalLikes").textContent =
+    totalLikes.toLocaleString();
 
-  document.getElementById(
-    "approvedProfiles"
-  ).textContent =
-  approved.toLocaleString();
-
+  document.getElementById("approvedProfiles").textContent =
+    approved.toLocaleString();
 }
 
 async function uploadAdminPhoto(){
+  const fileInput = document.getElementById("photoUpload");
+  const preview = document.getElementById("photoPreview");
 
-  const fileInput =
-  document.getElementById(
-    "photoUpload"
-  );
+  if(!fileInput.files.length) return;
 
-  const preview =
-  document.getElementById(
-    "photoPreview"
-  );
-
-  if(!fileInput.files.length){
-    return;
-  }
-
-  const file =
-  fileInput.files[0];
-
-  const ext =
-  file.name.split(".").pop();
+  const file = fileInput.files[0];
+  const ext = file.name.split(".").pop();
 
   const fileName =
     "admin-" +
     Date.now() +
+    "-" +
+    Math.random().toString(36).substring(2) +
     "." +
     ext;
 
-  statusBox.textContent =
-  "Uploading photo...";
+  statusBox.textContent = "Uploading photo...";
 
-  const { error } =
-  await sb.storage
+  const { error } = await sb.storage
     .from("profile-images")
-    .upload(
-      fileName,
-      file,
-      {
-        upsert:true
-      }
-    );
+    .upload(fileName, file, { upsert:true });
 
   if(error){
-
     alert(error.message);
-
-    statusBox.textContent =
-    "Upload failed";
-
+    statusBox.textContent = "Upload failed";
     return;
-
   }
 
-  const { data } =
-  sb.storage
+  const { data } = sb.storage
     .from("profile-images")
     .getPublicUrl(fileName);
 
-  document.getElementById(
-    "newPhoto"
-  ).value =
-  data.publicUrl;
+  document.getElementById("newPhoto").value = data.publicUrl;
+  preview.src = data.publicUrl;
+  preview.style.display = "block";
 
-  preview.src =
-  data.publicUrl;
-
-  preview.style.display =
-  "block";
-
-  statusBox.textContent =
-  "Photo uploaded";
-
+  statusBox.textContent = "Photo uploaded";
 }
 
-async function replaceProfilePhoto(
-  event,
-  id
-){
-
-  const file =
-  event.target.files[0];
+async function replaceProfilePhoto(event,id){
+  const file = event.target.files[0];
 
   if(!file) return;
 
-  statusBox.textContent =
-  "Replacing photo...";
-
-  const ext =
-  file.name.split(".").pop();
+  const ext = file.name.split(".").pop();
 
   const fileName =
     "profile-" +
@@ -693,39 +504,25 @@ async function replaceProfilePhoto(
     "." +
     ext;
 
-  const {
-    error:uploadError
-  } =
-  await sb.storage
+  statusBox.textContent = "Replacing photo...";
+
+  const { error:uploadError } = await sb.storage
     .from("profile-images")
-    .upload(
-      fileName,
-      file,
-      {
-        upsert:true
-      }
-    );
+    .upload(fileName, file, { upsert:true });
 
   if(uploadError){
-
     alert(uploadError.message);
-
+    statusBox.textContent = "Upload failed";
     return;
-
   }
 
-  const { data } =
-  sb.storage
+  const { data } = sb.storage
     .from("profile-images")
     .getPublicUrl(fileName);
 
-  const imageUrl =
-  data.publicUrl;
+  const imageUrl = data.publicUrl;
 
-  const {
-    error:updateError
-  } =
-  await sb
+  const { error:updateError } = await sb
     .from("profiles")
     .update({
       photo_url:imageUrl,
@@ -734,315 +531,143 @@ async function replaceProfilePhoto(
     .eq("id",id);
 
   if(updateError){
-
     alert(updateError.message);
-
+    statusBox.textContent = "Photo update failed";
     return;
-
   }
 
-  statusBox.textContent =
-  "Photo updated";
-
+  statusBox.textContent = "Photo updated";
   loadProfiles();
-
 }
 
 async function loadProfiles(){
+  statusBox.textContent = "Loading profiles...";
 
-  statusBox.textContent =
-  "Loading profiles...";
-
-  const { data, error } =
-  await sb
+  const { data, error } = await sb
     .from("profiles")
     .select("*")
-    .order(
-      "created_at",
-      {
-        ascending:false
-      }
-    );
+    .order("created_at",{ ascending:false });
 
   if(error){
-
-    statusBox.textContent =
-    error.message;
-
+    statusBox.textContent = error.message;
     return;
-
   }
 
   profiles = data || [];
 
   statusBox.textContent =
-  profiles.length +
-  " profiles loaded";
+    profiles.length + " profiles loaded";
 
   updateVaultStats();
-
   renderProfiles();
-
 }
 
 function renderProfiles(){
-
-  const q =
-  document.getElementById(
-    "searchBox"
-  )
-  .value
-  .toLowerCase()
-  .trim();
+  const q = document
+    .getElementById("searchBox")
+    .value
+    .toLowerCase()
+    .trim();
 
   let list = [...profiles];
 
   if(q){
-
-    list =
-    list.filter(p => {
-
+    list = list.filter(p => {
       return [
-
         getName(p),
-
         p.phone,
-
         p.whatsapp,
-
         p.location,
-
         p.area,
-
         p.city,
-
         p.bio
-
       ]
       .join(" ")
       .toLowerCase()
       .includes(q);
-
     });
-
   }
 
-  grid.innerHTML =
-  list.map(p => `
-
+  grid.innerHTML = list.map(p => `
     <article class="card">
-
       <div class="image-wrap">
-
         <img
           src="${getImage(p)}"
           loading="lazy"
-          onerror="
-            this.src=
-            'assets/logo/logo-badge.png'
-          "
+          onerror="this.src='assets/logo/logo-badge.png'"
         >
-
       </div>
 
       <div class="card-content">
+        <div class="name">${getName(p)}</div>
 
-        <div class="name">
-          ${getName(p)}
-        </div>
-
-        <div class="badge">
-          ${getTier(p)}
-        </div>
+        <div class="badge">${getTier(p)}</div>
 
         <div class="info">
-
-          📍 ${
-            p.location ||
-            p.area ||
-            p.city ||
-            "Nairobi"
-          }
-
-          <br>
-
-          📞 ${
-            p.phone ||
-            p.whatsapp ||
-            "No phone"
-          }
-
-          <br>
-
-          ❤️ ${
-            p.likes_count || 0
-          } likes
-
-          ·
-
-          👁️ ${
-            p.views_count || 0
-          } views
-
-          <br>
-
-          Status:
-          ${
-            p.approved
-            ? "Approved"
-            : "Pending/Hidden"
-          }
-
+          📍 ${p.location || p.area || p.city || "Nairobi"}<br>
+          📞 ${p.phone || p.whatsapp || "No phone"}<br>
+          ❤️ ${p.likes_count || 0} likes · 👁️ ${p.views_count || 0} views<br>
+          Status: ${p.approved ? "Approved" : "Pending/Hidden"}
         </div>
 
         <div class="photo-manager">
-
-          <textarea
-            class="photo-edit"
-            id="photo-${p.id}"
-          >${getImage(p)}</textarea>
+          <textarea class="photo-edit" id="photo-${p.id}">${getImage(p)}</textarea>
 
           <input
             type="file"
             accept="image/*"
-            onchange="
-              replaceProfilePhoto(
-                event,
-                ${p.id}
-              )
-            "
+            onchange="replaceProfilePhoto(event, ${p.id})"
           >
-
         </div>
 
         <div class="actions">
-
-          <button
-            class="approve"
-            onclick="
-              approveProfile(
-                ${p.id}
-              )
-            "
-          >
-            Approve
-          </button>
-
-          <button
-            class="hide"
-            onclick="
-              hideProfile(
-                ${p.id}
-              )
-            "
-          >
-            Hide
-          </button>
-
-          <button
-            class="save"
-            onclick="
-              savePhoto(
-                ${p.id}
-              )
-            "
-          >
-            Save Photo
-          </button>
-
-          <button
-            class="reset"
-            onclick="
-              resetStats(
-                ${p.id}
-              )
-            "
-          >
-            Reset Stats
-          </button>
-
-          <button
-            class="vip"
-            onclick="
-              upgradeVIP(
-                ${p.id}
-              )
-            "
-          >
-            VIP
-          </button>
-
-          <button
-            class="vvip"
-            onclick="
-              upgradeVVIP(
-                ${p.id}
-              )
-            "
-          >
-            VVIP
-          </button>
-
-          <button
-            class="delete"
-            onclick="
-              deleteProfile(
-                ${p.id}
-              )
-            "
-          >
-            Delete Profile
-          </button>
-
+          <button class="approve" onclick="approveProfile(${p.id})">Approve</button>
+          <button class="hide" onclick="hideProfile(${p.id})">Hide</button>
+          <button class="save" onclick="savePhoto(${p.id})">Save Photo</button>
+          <button class="reset" onclick="resetStats(${p.id})">Reset Stats</button>
+          <button class="vip" onclick="upgradeVIP(${p.id})">VIP</button>
+          <button class="vvip" onclick="upgradeVVIP(${p.id})">VVIP</button>
+          <button class="delete" onclick="deleteProfile(${p.id})">Delete Profile</button>
         </div>
-
       </div>
-
     </article>
-
   `).join("");
-
 }
 
 async function approveProfile(id){
-
-  await sb
+  const { error } = await sb
     .from("profiles")
     .update({
       approved:true,
-      subscription_status:
-      "active"
+      subscription_status:"active"
     })
     .eq("id",id);
 
-  loadProfiles();
+  if(error) return alert(error.message);
 
+  loadProfiles();
 }
 
 async function hideProfile(id){
-
-  await sb
+  const { error } = await sb
     .from("profiles")
     .update({
       approved:false
     })
     .eq("id",id);
 
-  loadProfiles();
+  if(error) return alert(error.message);
 
+  loadProfiles();
 }
 
 async function savePhoto(id){
-
-  const photo =
-  document
-    .getElementById(
-      `photo-${id}`
-    )
+  const photo = document
+    .getElementById(`photo-${id}`)
     .value
     .trim();
 
-  await sb
+  const { error } = await sb
     .from("profiles")
     .update({
       photo_url:photo,
@@ -1050,15 +675,14 @@ async function savePhoto(id){
     })
     .eq("id",id);
 
+  if(error) return alert(error.message);
+
   alert("Photo saved");
-
   loadProfiles();
-
 }
 
 async function resetStats(id){
-
-  await sb
+  const { error } = await sb
     .from("profiles")
     .update({
       views_count:0,
@@ -1066,185 +690,111 @@ async function resetStats(id){
     })
     .eq("id",id);
 
-  loadProfiles();
+  if(error) return alert(error.message);
 
+  loadProfiles();
 }
 
 async function upgradeVIP(id){
-
-  await sb
+  const { error } = await sb
     .from("profiles")
     .update({
       tier:"vip",
       is_vip:true,
-      is_vvip:false
+      is_vvip:false,
+      is_featured:false
     })
     .eq("id",id);
 
-  loadProfiles();
+  if(error) return alert(error.message);
 
+  loadProfiles();
 }
 
 async function upgradeVVIP(id){
-
-  await sb
+  const { error } = await sb
     .from("profiles")
     .update({
       tier:"vvip",
       is_vvip:true,
-      is_vip:false
+      is_vip:false,
+      is_featured:false
     })
     .eq("id",id);
 
-  loadProfiles();
+  if(error) return alert(error.message);
 
+  loadProfiles();
 }
 
 async function addProfile(){
-
   const payload = {
-
-    stage_name:
-    document.getElementById(
-      "newName"
-    ).value.trim(),
-
-    phone:
-    document.getElementById(
-      "newPhone"
-    ).value.trim(),
-
-    whatsapp:
-    document.getElementById(
-      "newPhone"
-    ).value.trim(),
-
-    location:
-    document.getElementById(
-      "newLocation"
-    ).value.trim(),
-
-    area:
-    document.getElementById(
-      "newLocation"
-    ).value.trim(),
-
-    city:
-    document.getElementById(
-      "newCity"
-    ).value.trim(),
-
-    photo_url:
-    document.getElementById(
-      "newPhoto"
-    ).value.trim(),
-
-    bio:
-    document.getElementById(
-      "newBio"
-    ).value.trim(),
-
-    tier:
-    document.getElementById(
-      "newTier"
-    ).value,
-
-    views_count:
-    Number(
-      document.getElementById(
-        "newViews"
-      ).value || 0
-    ),
-
-    likes_count:
-    Number(
-      document.getElementById(
-        "newLikes"
-      ).value || 0
-    )
-
+    stage_name:document.getElementById("newName").value.trim(),
+    phone:document.getElementById("newPhone").value.trim(),
+    whatsapp:document.getElementById("newPhone").value.trim(),
+    location:document.getElementById("newLocation").value.trim(),
+    area:document.getElementById("newLocation").value.trim(),
+    city:document.getElementById("newCity").value.trim() || "Nairobi",
+    photo_url:document.getElementById("newPhoto").value.trim(),
+    bio:document.getElementById("newBio").value.trim(),
+    tier:document.getElementById("newTier").value,
+    views_count:Number(document.getElementById("newViews").value || 0),
+    likes_count:Number(document.getElementById("newLikes").value || 0)
   };
 
-  const res =
-  await fetch(
-    "/.netlify/functions/admin-add-profile",
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":
-        "application/json"
-      },
-      body:JSON.stringify(
-        payload
-      )
-    }
-  );
+  const res = await fetch("/.netlify/functions/admin-add-profile",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify(payload)
+  });
 
-  const data =
-  await res.json();
+  const data = await res.json();
 
   if(!data.success){
-
-    alert(
-      data.error ||
-      "Add failed"
-    );
-
+    alert(data.error || "Add failed");
     return;
-
   }
 
   alert("Profile added");
 
-  loadProfiles();
+  document.getElementById("newName").value = "";
+  document.getElementById("newPhone").value = "";
+  document.getElementById("newLocation").value = "";
+  document.getElementById("newPhoto").value = "";
+  document.getElementById("newBio").value = "";
+  document.getElementById("newViews").value = 0;
+  document.getElementById("newLikes").value = 0;
+  document.getElementById("photoUpload").value = "";
+  document.getElementById("photoPreview").style.display = "none";
 
+  loadProfiles();
 }
 
 async function deleteProfile(id){
+  if(!confirm("Delete this profile permanently?")) return;
 
-  if(
-    !confirm(
-      "Delete this profile?"
-    )
-  ){
-    return;
-  }
+  const res = await fetch("/.netlify/functions/admin-delete-profile",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({ id })
+  });
 
-  const res =
-  await fetch(
-    "/.netlify/functions/admin-delete-profile",
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":
-        "application/json"
-      },
-      body:JSON.stringify({ id })
-    }
-  );
-
-  const data =
-  await res.json();
+  const data = await res.json();
 
   if(!data.success){
-
-    alert(
-      data.error ||
-      "Delete failed"
-    );
-
+    alert(data.error || "Delete failed");
     return;
-
   }
 
   alert("Profile deleted");
-
   loadProfiles();
-
 }
 
 loadProfiles();
-
 </script>
 
 </body>
