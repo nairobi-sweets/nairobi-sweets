@@ -1,14 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Nairobi Sweets | Premium Nairobi Profiles</title>
+<title>
+Nairobi Sweets | Premium Nairobi Profiles
+</title>
 
 <meta
-  name="description"
-  content="Discover premium Nairobi profiles with WhatsApp access, likes, views, VIP discovery and real photos."
+name="description"
+content="
+Discover premium Nairobi profiles
+with WhatsApp access,
+VIP listings,
+real photos,
+likes and views.
+">
+
+<meta
+name="keywords"
+content="
+Nairobi escorts,
+Nairobi profiles,
+VIP Nairobi girls,
+Nairobi nightlife,
+Nairobi directory,
+Nairobi sweets
+">
+
+<meta
+name="robots"
+content="index, follow"
+>
+
+<link
+rel="canonical"
+href="https://nairobi-sweets.com/"
+>
+
+<meta
+property="og:title"
+content="Nairobi Sweets"
+>
+
+<meta
+property="og:description"
+content="
+Premium Nairobi profile discovery platform
+"
+>
+
+<meta
+property="og:image"
+content="
+https://nairobi-sweets.com/assets/logo/logo-badge.png
+"
+>
+
+<meta
+property="og:url"
+content="https://nairobi-sweets.com"
+>
+
+<meta
+property="og:type"
+content="website"
 >
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -33,47 +91,75 @@ a{
 }
 
 header{
+
   position:sticky;
+
   top:0;
+
   z-index:100;
-  background:rgba(0,0,0,.92);
+
+  background:
+  rgba(0,0,0,.92);
+
   backdrop-filter:blur(18px);
-  border-bottom:1px solid rgba(255,216,75,.15);
+
+  border-bottom:
+  1px solid
+  rgba(255,216,75,.15);
+
   padding:24px 34px;
+
   display:flex;
+
   justify-content:space-between;
+
   align-items:center;
 }
 
 .logo{
+
   font-size:42px;
+
   font-weight:900;
+
   color:#ffd84b;
 }
 
 .join-btn{
+
   background:#ffd84b;
+
   color:#000;
+
   padding:16px 28px;
+
   border-radius:999px;
+
   font-weight:900;
 }
 
 .hero{
+
   padding:70px 22px 40px;
+
   text-align:center;
+
   background:
-    radial-gradient(
-      circle at top,
-      rgba(255,216,75,.12),
-      transparent 35%
-    ),
-    #050814;
+  radial-gradient(
+    circle at top,
+    rgba(255,216,75,.12),
+    transparent 35%
+  ),
+  #050814;
 }
 
 .hero h1{
-  font-size:clamp(38px,6vw,78px);
+
+  font-size:
+  clamp(38px,6vw,78px);
+
   line-height:1;
+
   margin-bottom:18px;
 }
 
@@ -82,110 +168,195 @@ header{
 }
 
 .hero p{
+
   max-width:820px;
+
   margin:auto;
+
   color:#b7bfd6;
+
   font-size:20px;
+
   line-height:1.6;
 }
 
 .controls{
-  max-width:1550px;
+
+  max-width:1700px;
+
   margin:auto;
+
   padding:32px 18px 14px;
+
   display:grid;
-  grid-template-columns:1fr 220px;
+
+  grid-template-columns:
+  1fr 220px;
+
   gap:16px;
 }
 
 input,
 select{
+
   width:100%;
+
   background:#101936;
-  border:1px solid rgba(255,255,255,.12);
+
+  border:
+  1px solid
+  rgba(255,255,255,.12);
+
   color:white;
+
   padding:18px;
+
   border-radius:18px;
+
   font-size:16px;
 }
 
 .stats-bar{
-  max-width:1550px;
+
+  max-width:1700px;
+
   margin:10px auto 0;
+
   padding:0 18px;
+
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+  grid-template-columns:
+  repeat(auto-fit,minmax(220px,1fr));
+
   gap:18px;
 }
 
 .stat-box{
+
   background:#0b1230;
-  border:1px solid rgba(255,216,75,.18);
+
+  border:
+  1px solid
+  rgba(255,216,75,.18);
+
   border-radius:22px;
+
   padding:22px;
 }
 
 .stat-box span{
+
   display:block;
+
   color:#94a3b8;
+
   margin-bottom:10px;
+
   font-weight:700;
 }
 
 .stat-box strong{
+
   font-size:36px;
+
   color:#ffd84b;
+
   font-weight:900;
 }
 
 .loading{
+
   text-align:center;
+
   color:#ffd84b;
+
   padding:40px;
+
   font-size:20px;
+
   font-weight:900;
 }
 
+/* ======================
+4 CARDS PER ROW
+====================== */
+
 .grid{
-  max-width:1550px;
+
+  max-width:1700px;
+
   margin:20px auto;
+
   padding:0 18px 60px;
+
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
-  gap:26px;
+
+  grid-template-columns:
+  repeat(4,1fr);
+
+  gap:24px;
 }
 
 .profile-card{
+
   background:#08112b;
+
   border-radius:28px;
+
   overflow:hidden;
-  border:1px solid rgba(255,216,75,.18);
+
+  border:
+  1px solid
+  rgba(255,216,75,.18);
+
   transition:.35s ease;
+
   position:relative;
 }
 
 .profile-card:hover{
+
   transform:translateY(-4px);
+
   border-color:#ffd84b;
-  box-shadow:0 20px 40px rgba(0,0,0,.45);
+
+  box-shadow:
+  0 20px 40px
+  rgba(0,0,0,.45);
 }
 
 .photo-wrap{
+
   width:100%;
-  height:420px;
+
+  height:340px;
+
   background:#050814;
+
   display:flex;
+
   align-items:center;
+
   justify-content:center;
+
   overflow:hidden;
+
+  position:relative;
 }
 
 .photo-wrap img{
+
   width:100%;
+
   height:100%;
+
   object-fit:contain;
+
   object-position:center;
+
   background:#050814;
+
   transition:.4s ease;
 }
 
@@ -194,75 +365,133 @@ select{
 }
 
 .tier-badge{
+
   position:absolute;
-  top:18px;
-  right:18px;
+
+  top:16px;
+  right:16px;
+
   z-index:5;
-  padding:10px 18px;
+
+  padding:10px 16px;
+
   border-radius:999px;
-  font-size:14px;
+
+  font-size:13px;
+
   font-weight:900;
+
   backdrop-filter:blur(18px);
-  background:rgba(0,0,0,.65);
-  border:1px solid rgba(255,216,75,.25);
+
+  background:
+  rgba(0,0,0,.65);
+
+  border:
+  1px solid
+  rgba(255,216,75,.25);
+
   color:#ffd84b;
 }
 
 .card-content{
-  padding:20px;
+  padding:18px;
 }
 
 .name{
-  font-size:38px;
+
+  font-size:28px;
+
   font-weight:900;
-  margin-bottom:10px;
+
   line-height:1.05;
+
+  margin-bottom:10px;
+
+  color:white;
 }
 
 .location{
+
   color:#ffd84b;
+
   font-weight:900;
+
   margin-bottom:12px;
+
+  font-size:16px;
 }
 
 .stats{
+
   display:flex;
+
   flex-wrap:wrap;
+
   gap:10px;
+
   margin-bottom:14px;
 }
 
 .stat-pill{
-  background:rgba(255,216,75,.12);
-  border:1px solid rgba(255,216,75,.25);
+
+  background:
+  rgba(255,216,75,.12);
+
+  border:
+  1px solid
+  rgba(255,216,75,.25);
+
   color:#ffd84b;
-  padding:8px 12px;
+
+  padding:7px 12px;
+
   border-radius:999px;
-  font-size:14px;
+
+  font-size:13px;
+
   font-weight:900;
 }
 
 .bio{
+
   color:#d1d5db;
+
   line-height:1.6;
+
   margin-bottom:18px;
-  font-size:16px;
+
+  font-size:15px;
+
+  min-height:72px;
 }
 
 .actions{
+
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
+
+  grid-template-columns:
+  1fr 1fr;
+
+  gap:10px;
 }
 
 .action-btn{
+
   border:none;
-  padding:15px;
+
+  padding:14px;
+
   border-radius:16px;
+
   font-weight:900;
+
   cursor:pointer;
+
   transition:.25s ease;
+
   text-align:center;
+
+  font-size:14px;
 }
 
 .action-btn:hover{
@@ -280,23 +509,50 @@ select{
 }
 
 .like{
-  background:linear-gradient(
+
+  background:
+  linear-gradient(
     135deg,
     #ff3d7f,
     #8b5cf6
   );
+
   color:white;
+
   grid-column:1/3;
 }
 
 footer{
+
   text-align:center;
+
   color:#64748b;
+
   padding:45px 20px;
-  border-top:1px solid rgba(255,255,255,.08);
+
+  border-top:
+  1px solid
+  rgba(255,255,255,.08);
 }
 
-@media(max-width:768px){
+/* ======================
+TABLET
+====================== */
+
+@media(max-width:1100px){
+
+  .grid{
+    grid-template-columns:
+    repeat(2,1fr);
+  }
+
+}
+
+/* ======================
+MOBILE
+====================== */
+
+@media(max-width:650px){
 
   header{
     padding:18px;
@@ -352,14 +608,25 @@ footer{
 <section class="hero">
 
   <h1>
+
     Discover Nairobi’s
-    <span>Premium Profiles</span>
+
+    <span>
+      Premium Profiles
+    </span>
+
   </h1>
 
   <p>
-    Verified profiles, luxury discovery,
-    WhatsApp access, VIP listings,
-    real photos, likes and views.
+
+    Verified profiles,
+    WhatsApp access,
+    luxury discovery,
+    likes,
+    views,
+    VIP listings
+    and real photos.
+
   </p>
 
 </section>
@@ -368,7 +635,11 @@ footer{
 
   <input
     id="searchInput"
-    placeholder="Search by name, bio, location..."
+    placeholder="
+    Search by name,
+    bio,
+    location...
+    "
   >
 
   <select id="sortSelect">
@@ -396,18 +667,33 @@ footer{
 <div class="stats-bar">
 
   <div class="stat-box">
+
     <span>Total Profiles</span>
-    <strong id="totalProfiles">0</strong>
+
+    <strong id="totalProfiles">
+      0
+    </strong>
+
   </div>
 
   <div class="stat-box">
+
     <span>Total Views</span>
-    <strong id="totalViews">0</strong>
+
+    <strong id="totalViews">
+      0
+    </strong>
+
   </div>
 
   <div class="stat-box">
+
     <span>Total Likes</span>
-    <strong id="totalLikes">0</strong>
+
+    <strong id="totalLikes">
+      0
+    </strong>
+
   </div>
 
 </div>
@@ -508,7 +794,9 @@ function updateStats(){
   profiles.reduce(
     (sum,p)=>
       sum +
-      Number(p.views_count || 0),
+      Number(
+        p.views_count || 0
+      ),
     0
   );
 
@@ -516,7 +804,9 @@ function updateStats(){
   profiles.reduce(
     (sum,p)=>
       sum +
-      Number(p.likes_count || 0),
+      Number(
+        p.likes_count || 0
+      ),
     0
   );
 
@@ -537,17 +827,6 @@ function updateStats(){
 
 }
 
-async function incrementView(id){
-
-  await sb.rpc(
-    "increment_profile_views",
-    {
-      p_profile_id:id
-    }
-  );
-
-}
-
 async function likeProfile(id){
 
   await sb.rpc(
@@ -565,9 +844,9 @@ async function likeProfile(id){
   if(profile){
 
     profile.likes_count =
-      Number(
-        profile.likes_count || 0
-      ) + 1;
+    Number(
+      profile.likes_count || 0
+    ) + 1;
 
     updateStats();
 
@@ -623,9 +902,9 @@ function renderProfiles(){
 
     list.sort(
       (a,b)=>
-        Number(b.likes_count || 0)
-        -
-        Number(a.likes_count || 0)
+      Number(b.likes_count||0)
+      -
+      Number(a.likes_count||0)
     );
 
   }
@@ -634,20 +913,9 @@ function renderProfiles(){
 
     list.sort(
       (a,b)=>
-        Number(b.views_count || 0)
-        -
-        Number(a.views_count || 0)
-    );
-
-  }
-
-  if(sort === "newest"){
-
-    list.sort(
-      (a,b)=>
-        new Date(b.created_at)
-        -
-        new Date(a.created_at)
+      Number(b.views_count||0)
+      -
+      Number(a.views_count||0)
     );
 
   }
@@ -656,113 +924,134 @@ function renderProfiles(){
   list.map(p => {
 
     const phone =
-      p.phone ||
-      p.whatsapp ||
-      "";
+    p.phone ||
+    p.whatsapp ||
+    "";
 
     return `
 
-      <article class="profile-card">
+    <article class="profile-card">
 
-        <div class="tier-badge">
-          ${getTier(p)}
+      <div class="tier-badge">
+
+        ${getTier(p)}
+
+      </div>
+
+      <div class="photo-wrap">
+
+        <img
+          src="${getImage(p)}"
+          loading="lazy"
+
+          onerror="
+            this.src=
+            'assets/logo/logo-badge.png'
+          "
+        >
+
+      </div>
+
+      <div class="card-content">
+
+        <div class="name">
+
+          ${getName(p)}
+
         </div>
 
-        <div class="photo-wrap">
+        <div class="location">
 
-          <img
-            src="${getImage(p)}"
-            loading="lazy"
-            onerror="
-              this.src=
-              'assets/logo/logo-badge.png'
+          📍 ${
+            p.location ||
+            p.area ||
+            p.city ||
+            "Nairobi"
+          }
+
+        </div>
+
+        <div class="stats">
+
+          <div class="stat-pill">
+
+            👁️ ${
+              p.views_count || 0
+            } views
+
+          </div>
+
+          <div class="stat-pill">
+
+            ❤️ ${
+              p.likes_count || 0
+            } likes
+
+          </div>
+
+        </div>
+
+        <div class="bio">
+
+          ${
+            p.bio ||
+            "Premium Nairobi profile."
+          }
+
+        </div>
+
+        <div class="actions">
+
+          <a
+            class="
+            action-btn
+            whatsapp
+            "
+
+            target="_blank"
+
+            href="
+            https://wa.me/${
+              phone.replace(/\D/g,"")
+            }
             "
           >
+            WhatsApp
+          </a>
+
+          <a
+            class="
+            action-btn
+            call
+            "
+
+            href="
+            tel:${phone}
+            "
+          >
+            Call
+          </a>
+
+          <button
+            class="
+            action-btn
+            like
+            "
+
+            onclick="
+              likeProfile(
+                ${p.id}
+              )
+            "
+          >
+            ❤️ Like
+          </button>
 
         </div>
 
-        <div class="card-content">
+      </div>
 
-          <div class="name">
-            ${getName(p)}
-          </div>
-
-          <div class="location">
-            📍 ${
-              p.location ||
-              p.area ||
-              p.city ||
-              "Nairobi"
-            }
-          </div>
-
-          <div class="stats">
-
-            <div class="stat-pill">
-              👁️ ${
-                p.views_count || 0
-              } views
-            </div>
-
-            <div class="stat-pill">
-              ❤️ ${
-                p.likes_count || 0
-              } likes
-            </div>
-
-          </div>
-
-          <div class="bio">
-
-            ${
-              p.bio ||
-              "Premium Nairobi profile available now."
-            }
-
-          </div>
-
-          <div class="actions">
-
-            <a
-              class="action-btn whatsapp"
-              target="_blank"
-              href="
-                https://wa.me/${
-                  phone.replace(/\D/g,"")
-                }
-              "
-              onclick="
-                incrementView(
-                  ${p.id}
-                )
-              "
-            >
-              WhatsApp
-            </a>
-
-            <a
-              class="action-btn call"
-              href="tel:${phone}"
-            >
-              Call
-            </a>
-
-            <button
-              class="action-btn like"
-              onclick="
-                likeProfile(
-                  ${p.id}
-                )
-              "
-            >
-              ❤️ Like
-            </button>
-
-          </div>
-
-        </div>
-
-      </article>
+    </article>
 
     `;
 
@@ -771,9 +1060,6 @@ function renderProfiles(){
 }
 
 async function loadProfiles(){
-
-  loading.style.display =
-  "block";
 
   const { data, error } =
   await sb
