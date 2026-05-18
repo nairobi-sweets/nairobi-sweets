@@ -307,12 +307,7 @@ textarea{
     <div>
       <input id="newPhoto" placeholder="Photo URL">
       <br><br>
-      <input
-        type="file"
-        id="photoUpload"
-        accept="image/*"
-        onchange="uploadAdminPhoto()"
-      >
+      <input type="file" id="photoUpload" accept="image/*" onchange="uploadAdminPhoto()">
       <img id="photoPreview" class="upload-preview">
     </div>
 
@@ -338,13 +333,7 @@ textarea{
     <input id="shortTitle" placeholder="Short title">
     <input id="shortVideoUrl" placeholder="Video URL">
     <input id="shortThumbUrl" placeholder="Thumbnail URL optional">
-
-    <input
-      type="file"
-      id="shortVideoUpload"
-      accept="video/*"
-      onchange="uploadShortVideo()"
-    >
+    <input type="file" id="shortVideoUpload" accept="video/*" onchange="uploadShortVideo()">
   </div>
 
   <button class="add-btn" onclick="addShort()">Add Short</button>
@@ -407,10 +396,11 @@ function getName(p){
 }
 
 function getTier(p){
-  const tier = String(p.tier || "").toLowerCase();
+  const plan = String(p.plan || "").toLowerCase();
 
-  if(tier === "vvip" || tier === "signature") return "VVIP";
-  if(tier === "vip") return "VIP";
+  if(plan === "vvip" || plan === "signature") return "VVIP";
+  if(plan === "vip") return "VIP";
+
   return "Featured";
 }
 
@@ -418,13 +408,8 @@ async function uploadToBucket(file,prefix){
   const ext = file.name.split(".").pop();
 
   const fileName =
-    prefix +
-    "-" +
-    Date.now() +
-    "-" +
-    Math.random().toString(36).substring(2) +
-    "." +
-    ext;
+    prefix + "-" + Date.now() + "-" +
+    Math.random().toString(36).substring(2) + "." + ext;
 
   const { error } = await sb.storage
     .from("profile-images")
@@ -471,6 +456,7 @@ async function uploadShortVideo(){
     const url = await uploadToBucket(fileInput.files[0],"short");
 
     document.getElementById("shortVideoUrl").value = url;
+
     statusBox.textContent = "Short uploaded";
   }catch(error){
     alert(error.message);
@@ -547,10 +533,8 @@ async function loadAll(){
   await loadShorts();
 
   statusBox.textContent =
-    profiles.length +
-    " profiles loaded · " +
-    shorts.length +
-    " shorts loaded";
+    profiles.length + " profiles loaded · " +
+    shorts.length + " shorts loaded";
 }
 
 function updateStats(){
@@ -672,7 +656,7 @@ async function addProfile(){
     photo_url:document.getElementById("newPhoto").value.trim(),
     image_url:document.getElementById("newPhoto").value.trim(),
     bio:document.getElementById("newBio").value.trim(),
-    tier:document.getElementById("newTier").value,
+    plan:document.getElementById("newTier").value,
     views_count:Number(document.getElementById("newViews").value || 0),
     likes_count:Number(document.getElementById("newLikes").value || 0),
     approved:true
@@ -780,11 +764,7 @@ async function resetStats(id){
 async function setVIP(id){
   await sb
     .from("profiles")
-    .update({
-      tier:"vip",
-      is_vip:true,
-      is_vvip:false
-    })
+    .update({plan:"vip"})
     .eq("id",id);
 
   loadProfiles();
@@ -793,11 +773,7 @@ async function setVIP(id){
 async function setVVIP(id){
   await sb
     .from("profiles")
-    .update({
-      tier:"vvip",
-      is_vvip:true,
-      is_vip:false
-    })
+    .update({plan:"vvip"})
     .eq("id",id);
 
   loadProfiles();
