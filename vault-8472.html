@@ -302,7 +302,7 @@ textarea{
   <div class="form-grid">
     <input id="newName" placeholder="Stage name">
     <input id="newPhone" placeholder="Phone">
-    <input id="newLocation" placeholder="Location / Area">
+    <input id="newLocation" placeholder="Location">
     <input id="newCity" value="Nairobi" placeholder="City">
 
     <div>
@@ -333,7 +333,6 @@ textarea{
     <input id="shortTitle" placeholder="Short title">
     <input id="shortVideoUrl" placeholder="Video URL">
     <input id="shortThumbUrl" placeholder="Thumbnail URL optional">
-
     <input type="file" id="shortVideoUpload" accept="video/*" onchange="uploadShortVideo()">
   </div>
 
@@ -546,10 +545,17 @@ function renderProfiles(){
 
   if(q){
     list = list.filter(p => {
-      return [getName(p),p.phone,p.location,p.area,p.bio]
-        .join(" ")
-        .toLowerCase()
-        .includes(q);
+      return [
+        getName(p),
+        p.phone,
+        p.whatsapp,
+        p.location,
+        p.city,
+        p.bio
+      ]
+      .join(" ")
+      .toLowerCase()
+      .includes(q);
     });
   }
 
@@ -564,7 +570,7 @@ function renderProfiles(){
         <div class="badge">${getTier(p)}</div>
 
         <div class="info">
-          📍 ${p.location || p.area || p.city || "Nairobi"}<br>
+          📍 ${p.location || p.city || "Nairobi"}<br>
           📞 ${p.phone || "-"}<br>
           ❤️ ${p.likes_count || 0} likes · 👁️ ${p.views_count || 0} views<br>
           ${p.approved ? "Approved" : "Hidden"}
@@ -628,7 +634,6 @@ async function addProfile(){
     phone:document.getElementById("newPhone").value,
     whatsapp:document.getElementById("newPhone").value,
     location:document.getElementById("newLocation").value,
-    area:document.getElementById("newLocation").value,
     city:document.getElementById("newCity").value || "Nairobi",
     photo_url:document.getElementById("newPhoto").value,
     image_url:document.getElementById("newPhoto").value,
