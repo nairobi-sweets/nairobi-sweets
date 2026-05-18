@@ -38,7 +38,7 @@ button{
   font-weight:900;
 }
 
-.refresh-btn,.gold-btn{
+.refresh-btn{
   background:#ffd84b;
   color:#000;
   padding:15px 24px;
@@ -179,7 +179,9 @@ textarea{
   background:#000;
 }
 
-.card-content{padding:16px}
+.card-content{
+  padding:16px;
+}
 
 .name{
   font-size:25px;
@@ -221,6 +223,16 @@ textarea{
   margin-bottom:10px;
 }
 
+.card-file{
+  width:100%;
+  margin-bottom:10px;
+  padding:12px;
+  background:#101936;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  color:white;
+}
+
 .actions{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -234,7 +246,9 @@ textarea{
   transition:.25s ease;
 }
 
-.actions button:hover{transform:translateY(-2px)}
+.actions button:hover{
+  transform:translateY(-2px);
+}
 
 .approve{background:#22c55e;color:#001b09}
 .hide{background:#ff4770;color:white}
@@ -445,6 +459,37 @@ async function uploadShortVideo(){
   }
 }
 
+async function replaceProfilePhoto(event,id){
+  const file = event.target.files[0];
+
+  if(!file) return;
+
+  try{
+    statusBox.textContent = "Uploading new profile photo...";
+
+    const imageUrl = await uploadToBucket(file, "profile-" + id);
+
+    const { error } = await sb
+      .from("profiles")
+      .update({
+        photo_url:imageUrl,
+        image_url:imageUrl
+      })
+      .eq("id",id);
+
+    if(error){
+      alert(error.message);
+      return;
+    }
+
+    alert("Profile photo updated");
+    await loadProfiles();
+
+  }catch(error){
+    alert(error.message);
+  }
+}
+
 async function loadProfiles(){
   const { data, error } = await sb
     .from("profiles")
@@ -526,6 +571,13 @@ function renderProfiles(){
         </div>
 
         <textarea class="photo-edit" id="photo-${p.id}">${getImage(p)}</textarea>
+
+        <input
+          class="card-file"
+          type="file"
+          accept="image/*"
+          onchange="replaceProfilePhoto(event, ${p.id})"
+        >
 
         <div class="actions">
           <button class="approve" onclick="approveProfile(${p.id})">Approve</button>
@@ -618,8 +670,15 @@ async function addShort(){
   loadShorts();
 }
 
-async function approveProfile(id){ await sb.from("profiles").update({approved:true}).eq("id",id); loadProfiles(); }
-async function hideProfile(id){ await sb.from("profiles").update({approved:false}).eq("id",id); loadProfiles(); }
+async function approveProfile(id){
+  await sb.from("profiles").update({approved:true}).eq("id",id);
+  loadProfiles();
+}
+
+async function hideProfile(id){
+  await sb.from("profiles").update({approved:false}).eq("id",id);
+  loadProfiles();
+}
 
 async function savePhoto(id){
   const photo = document.getElementById(`photo-${id}`).value;
@@ -627,9 +686,20 @@ async function savePhoto(id){
   loadProfiles();
 }
 
-async function resetStats(id){ await sb.from("profiles").update({views_count:0,likes_count:0}).eq("id",id); loadProfiles(); }
-async function setVIP(id){ await sb.from("profiles").update({tier:"vip",is_vip:true,is_vvip:false}).eq("id",id); loadProfiles(); }
-async function setVVIP(id){ await sb.from("profiles").update({tier:"vvip",is_vvip:true,is_vip:false}).eq("id",id); loadProfiles(); }
+async function resetStats(id){
+  await sb.from("profiles").update({views_count:0,likes_count:0}).eq("id",id);
+  loadProfiles();
+}
+
+async function setVIP(id){
+  await sb.from("profiles").update({tier:"vip",is_vip:true,is_vvip:false}).eq("id",id);
+  loadProfiles();
+}
+
+async function setVVIP(id){
+  await sb.from("profiles").update({tier:"vvip",is_vvip:true,is_vip:false}).eq("id",id);
+  loadProfiles();
+}
 
 async function deleteProfile(id){
   if(!confirm("Delete this profile?")) return;
@@ -637,8 +707,15 @@ async function deleteProfile(id){
   loadProfiles();
 }
 
-async function approveShort(id){ await sb.from("shorts").update({approved:true}).eq("id",id); loadShorts(); }
-async function hideShort(id){ await sb.from("shorts").update({approved:false}).eq("id",id); loadShorts(); }
+async function approveShort(id){
+  await sb.from("shorts").update({approved:true}).eq("id",id);
+  loadShorts();
+}
+
+async function hideShort(id){
+  await sb.from("shorts").update({approved:false}).eq("id",id);
+  loadShorts();
+}
 
 async function saveShortVideo(id){
   const video = document.getElementById(`short-video-${id}`).value;
@@ -646,7 +723,10 @@ async function saveShortVideo(id){
   loadShorts();
 }
 
-async function resetShortStats(id){ await sb.from("shorts").update({views_count:0,likes_count:0}).eq("id",id); loadShorts(); }
+async function resetShortStats(id){
+  await sb.from("shorts").update({views_count:0,likes_count:0}).eq("id",id);
+  loadShorts();
+}
 
 async function deleteShort(id){
   if(!confirm("Delete this short?")) return;
