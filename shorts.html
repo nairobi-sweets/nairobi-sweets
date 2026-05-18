@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nairobi Sweets Shorts</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  background:#050814;
+  color:white;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+header{
+  background:#000;
+  padding:24px 34px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid rgba(255,216,75,.18);
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+
+.logo{
+  color:#ffd84b;
+  font-size:38px;
+  font-weight:900;
+  text-decoration:none;
+}
+
+.nav a{
+  color:#000;
+  background:#ffd84b;
+  padding:13px 22px;
+  border-radius:999px;
+  font-weight:900;
+  text-decoration:none;
+}
+
+.hero{
+  text-align:center;
+  padding:50px 20px 25px;
+}
+
+.hero h1{
+  font-size:clamp(38px,6vw,72px);
+  color:#ffd84b;
+}
+
+.hero p{
+  color:#b7bfd6;
+  font-size:19px;
+  margin-top:12px;
+}
+
+.grid{
+  max-width:1500px;
+  margin:20px auto;
+  padding:0 18px 60px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+}
+
+.short-card{
+  background:#0b1230;
+  border:1px solid rgba(255,216,75,.18);
+  border-radius:26px;
+  overflow:hidden;
+}
+
+.video-wrap{
+  height:520px;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+video{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:#000;
+}
+
+.content{
+  padding:16px;
+}
+
+.title{
+  font-size:22px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+
+.stats{
+  color:#ffd84b;
+  font-weight:900;
+  margin-bottom:14px;
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+button,a.btn{
+  border:none;
+  padding:13px;
+  border-radius:14px;
+  font-weight:900;
+  cursor:pointer;
+  text-align:center;
+  text-decoration:none;
+}
+
+.like{
+  background:linear-gradient(135deg,#ff3d7f,#8b5cf6);
+  color:white;
+}
+
+.watch{
+  background:#ffd84b;
+  color:#000;
+}
+
+.loading{
+  text-align:center;
+  color:#ffd84b;
+  padding:40px;
+  font-weight:900;
+  font-size:22px;
+}
+
+@media(max-width:1200px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+}
+
+@media(max-width:900px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:650px){
+  header{padding:18px}
+  .logo{font-size:28px}
+  .grid{grid-template-columns:1fr}
+  .video-wrap{height:520px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a href="index.html" class="logo">Nairobi Sweets</a>
+
+  <div class="nav">
+    <a href="index.html">Profiles</a>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Shorts</h1>
+  <p>Watch premium Nairobi Sweets short videos.</p>
+</section>
+
+<div id="loading" class="loading">Loading shorts...</div>
+
+<main id="shortsGrid" class="grid"></main>
+
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const grid = document.getElementById("shortsGrid");
+const loading = document.getElementById("loading");
+
+let shorts = [];
+
+async function viewShort(id){
+  await sb.rpc("increment_short_views",{
+    p_short_id:id
+  });
+}
+
+async function likeShort(id){
+  await sb.rpc("increment_short_likes",{
+    p_short_id:id
+  });
+
+  const item = shorts.find(s => s.id === id);
+
+  if(item){
+    item.likes_count = Number(item.likes_count || 0) + 1;
+    renderShorts();
+  }
+}
+
+function renderShorts(){
+  if(!shorts.length){
+    loading.style.display = "block";
+    loading.textContent = "No shorts yet.";
+    return;
+  }
+
+  loading.style.display = "none";
+
+  grid.innerHTML = shorts.map(s => `
+    <article class="short-card">
+
+      <div class="video-wrap">
+        <video
+          src="${s.video_url}"
+          poster="${s.thumbnail_url || ''}"
+          controls
+          playsinline
+          preload="metadata"
+          onplay="viewShort(${s.id})"
+        ></video>
+      </div>
+
+      <div class="content">
+        <div class="title">${s.title || "Nairobi Sweets Short"}</div>
+
+        <div class="stats">
+          👁️ ${s.views_count || 0} views · ❤️ ${s.likes_count || 0} likes
+        </div>
+
+        <div class="actions">
+          <button class="like" onclick="likeShort(${s.id})">❤️ Like</button>
+          <a class="btn watch" href="${s.video_url}" target="_blank">Open</a>
+        </div>
+      </div>
+
+    </article>
+  `).join("");
+}
+
+async function loadShorts(){
+  const { data, error } = await sb
+    .from("shorts")
+    .select("*")
+    .eq("approved",true)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    loading.textContent = error.message;
+    return;
+  }
+
+  shorts = data || [];
+  renderShorts();
+}
+
+loadShorts();
+</script>
+
+</body>
+</html>
