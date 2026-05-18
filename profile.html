@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="
+  width=device-width,
+  initial-scale=1.0
+  "
+/>
+
+<title>
+Profile | Nairobi Sweets
+</title>
+
+<meta
+  name="description"
+  content="
+  Premium Nairobi profile
+  with WhatsApp access,
+  likes,
+  views,
+  and real photos.
+  "
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#050814;
+  color:white;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+/* =========================
+HEADER
+========================= */
+
+header{
+
+  position:sticky;
+
+  top:0;
+
+  z-index:999;
+
+  background:
+  rgba(0,0,0,.92);
+
+  backdrop-filter:blur(18px);
+
+  border-bottom:
+  1px solid
+  rgba(255,216,75,.15);
+
+  padding:22px 30px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+}
+
+.logo{
+
+  font-size:36px;
+
+  font-weight:900;
+
+  color:#ffd84b;
+
+  text-decoration:none;
+}
+
+.back-btn{
+
+  background:#ffd84b;
+
+  color:#000;
+
+  padding:14px 22px;
+
+  border-radius:999px;
+
+  font-weight:900;
+
+  text-decoration:none;
+}
+
+/* =========================
+CONTAINER
+========================= */
+
+.container{
+
+  max-width:1500px;
+
+  margin:auto;
+
+  padding:40px 20px;
+}
+
+.profile-layout{
+
+  display:grid;
+
+  grid-template-columns:
+  1fr 1fr;
+
+  gap:30px;
+}
+
+/* =========================
+IMAGE
+========================= */
+
+.image-card{
+
+  background:#08112b;
+
+  border:
+  1px solid
+  rgba(255,216,75,.18);
+
+  border-radius:28px;
+
+  overflow:hidden;
+
+  padding:20px;
+}
+
+.image-wrap{
+
+  width:100%;
+
+  height:760px;
+
+  background:#000;
+
+  border-radius:22px;
+
+  overflow:hidden;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+}
+
+.image-wrap img{
+
+  width:100%;
+
+  height:100%;
+
+  object-fit:contain;
+
+  background:#000;
+}
+
+/* =========================
+INFO
+========================= */
+
+.info-card{
+
+  background:#08112b;
+
+  border:
+  1px solid
+  rgba(255,216,75,.18);
+
+  border-radius:28px;
+
+  padding:30px;
+}
+
+.badge{
+
+  display:inline-block;
+
+  padding:10px 18px;
+
+  border-radius:999px;
+
+  background:
+  rgba(255,216,75,.12);
+
+  border:
+  1px solid
+  rgba(255,216,75,.25);
+
+  color:#ffd84b;
+
+  font-weight:900;
+
+  margin-bottom:20px;
+}
+
+.name{
+
+  font-size:64px;
+
+  line-height:1;
+
+  font-weight:900;
+
+  margin-bottom:18px;
+}
+
+.location{
+
+  color:#ffd84b;
+
+  font-size:22px;
+
+  font-weight:900;
+
+  margin-bottom:20px;
+}
+
+.stats{
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:12px;
+
+  margin-bottom:24px;
+}
+
+.stat{
+
+  background:
+  rgba(255,216,75,.12);
+
+  border:
+  1px solid
+  rgba(255,216,75,.25);
+
+  color:#ffd84b;
+
+  padding:12px 18px;
+
+  border-radius:999px;
+
+  font-size:15px;
+
+  font-weight:900;
+}
+
+.bio{
+
+  color:#d1d5db;
+
+  line-height:1.9;
+
+  font-size:18px;
+
+  margin-bottom:30px;
+}
+
+.info-grid{
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(2,1fr);
+
+  gap:18px;
+
+  margin-bottom:30px;
+}
+
+.info-box{
+
+  background:#101936;
+
+  border:
+  1px solid
+  rgba(255,255,255,.08);
+
+  border-radius:18px;
+
+  padding:18px;
+}
+
+.info-box span{
+
+  display:block;
+
+  color:#94a3b8;
+
+  font-size:14px;
+
+  margin-bottom:8px;
+}
+
+.info-box strong{
+
+  font-size:18px;
+
+  color:white;
+}
+
+/* =========================
+BUTTONS
+========================= */
+
+.actions{
+
+  display:grid;
+
+  grid-template-columns:
+  1fr 1fr;
+
+  gap:16px;
+}
+
+.btn{
+
+  border:none;
+
+  padding:18px;
+
+  border-radius:18px;
+
+  font-size:18px;
+
+  font-weight:900;
+
+  text-align:center;
+
+  text-decoration:none;
+
+  cursor:pointer;
+
+  transition:.25s ease;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+.whatsapp{
+  background:#25d366;
+  color:#001b09;
+}
+
+.call{
+  background:#ffd84b;
+  color:#000;
+}
+
+.like-btn{
+
+  margin-top:18px;
+
+  width:100%;
+
+  background:
+  linear-gradient(
+    135deg,
+    #ff3d7f,
+    #8b5cf6
+  );
+
+  color:white;
+}
+
+/* =========================
+LOADING
+========================= */
+
+.loading{
+
+  text-align:center;
+
+  padding:120px 20px;
+
+  color:#ffd84b;
+
+  font-size:28px;
+
+  font-weight:900;
+}
+
+/* =========================
+MOBILE
+========================= */
+
+@media(max-width:1000px){
+
+  .profile-layout{
+    grid-template-columns:1fr;
+  }
+
+  .image-wrap{
+    height:500px;
+  }
+
+  .name{
+    font-size:42px;
+  }
+
+}
+
+@media(max-width:650px){
+
+  header{
+    padding:18px;
+  }
+
+  .logo{
+    font-size:28px;
+  }
+
+  .back-btn{
+    padding:10px 16px;
+    font-size:14px;
+  }
+
+  .info-grid{
+    grid-template-columns:1fr;
+  }
+
+  .actions{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <a
+    href="index.html"
+    class="logo"
+  >
+    Nairobi Sweets
+  </a>
+
+  <a
+    href="index.html"
+    class="back-btn"
+  >
+    ← Back
+  </a>
+
+</header>
+
+<div
+  class="loading"
+  id="loading"
+>
+  Loading profile...
+</div>
+
+<div
+  class="container"
+  id="container"
+  style="display:none;"
+>
+
+  <div
+    class="profile-layout"
+    id="profileLayout"
+  ></div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://dkjlvyynvgtijccitvvd.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+
+const sb =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+/* =========================
+GET URL ID
+========================= */
+
+const params =
+new URLSearchParams(
+  window.location.search
+);
+
+const profileId =
+params.get("id");
+
+/* =========================
+LOAD PROFILE
+========================= */
+
+async function loadProfile(){
+
+  const { data, error } =
+  await sb
+    .from("profiles")
+    .select("*")
+    .eq("id", profileId)
+    .single();
+
+  if(error || !data){
+
+    loading.innerHTML =
+    "Profile not found";
+
+    return;
+  }
+
+  document.title =
+  data.stage_name +
+  " | Nairobi Sweets";
+
+  document.getElementById(
+    "loading"
+  ).style.display = "none";
+
+  document.getElementById(
+    "container"
+  ).style.display = "block";
+
+  const image =
+    data.photo_url ||
+    data.image_url ||
+    data.profile_photo ||
+    data.avatar_url ||
+    data.photo ||
+    "assets/logo/logo-badge.png";
+
+  const tier =
+    data.tier ||
+    "Featured";
+
+  const phone =
+    data.phone ||
+    "";
+
+  profileLayout.innerHTML = `
+
+  <!-- ======================
+  IMAGE SIDE
+  ======================= -->
+
+  <div class="image-card">
+
+    <div class="image-wrap">
+
+      <img
+        src="${image}"
+
+        onerror="
+          this.src=
+          'assets/logo/logo-badge.png'
+        "
+      >
+
+    </div>
+
+  </div>
+
+  <!-- ======================
+  INFO SIDE
+  ======================= -->
+
+  <div class="info-card">
+
+    <div class="badge">
+
+      ${tier}
+
+    </div>
+
+    <div class="name">
+
+      ${
+        data.stage_name ||
+        "Unnamed"
+      }
+
+    </div>
+
+    <div class="location">
+
+      📍 ${
+        data.location ||
+        data.area ||
+        data.city ||
+        "Nairobi"
+      }
+
+    </div>
+
+    <div class="stats">
+
+      <div class="stat">
+
+        👁️ ${
+          data.views_count || 0
+        } views
+
+      </div>
+
+      <div class="stat">
+
+        ❤️ ${
+          data.likes_count || 0
+        } likes
+
+      </div>
+
+      <div class="stat">
+
+        ⭐ ${
+          tier
+        }
+
+      </div>
+
+    </div>
+
+    <div class="bio">
+
+      ${
+        data.bio ||
+        "Premium Nairobi profile."
+      }
+
+    </div>
+
+    <div class="info-grid">
+
+      <div class="info-box">
+
+        <span>Phone</span>
+
+        <strong>
+          ${phone}
+        </strong>
+
+      </div>
+
+      <div class="info-box">
+
+        <span>Location</span>
+
+        <strong>
+          ${
+            data.location ||
+            "Nairobi"
+          }
+        </strong>
+
+      </div>
+
+      <div class="info-box">
+
+        <span>Status</span>
+
+        <strong>
+          ${
+            data.approved
+            ? "Approved"
+            : "Pending"
+          }
+        </strong>
+
+      </div>
+
+      <div class="info-box">
+
+        <span>Profile ID</span>
+
+        <strong>
+          #${data.id}
+        </strong>
+
+      </div>
+
+    </div>
+
+    <div class="actions">
+
+      <a
+        class="
+        btn
+        whatsapp
+        "
+
+        target="_blank"
+
+        href="
+        https://wa.me/${
+          phone.replace(/\D/g,"")
+        }
+        "
+      >
+        WhatsApp
+      </a>
+
+      <a
+        class="
+        btn
+        call
+        "
+
+        href="
+        tel:${phone}
+        "
+      >
+        Call
+      </a>
+
+    </div>
+
+    <button
+      class="
+      btn
+      like-btn
+      "
+
+      onclick="
+        likeProfile()
+      "
+    >
+      ❤️ Like Profile
+    </button>
+
+  </div>
+
+  `;
+
+  incrementViews();
+
+}
+
+/* =========================
+INCREMENT VIEWS
+========================= */
+
+async function incrementViews(){
+
+  await sb.rpc(
+    "increment_profile_views",
+    {
+      p_profile_id:profileId
+    }
+  );
+
+}
+
+/* =========================
+LIKE PROFILE
+========================= */
+
+async function likeProfile(){
+
+  await sb.rpc(
+    "increment_profile_likes",
+    {
+      p_profile_id:profileId
+    }
+  );
+
+  location.reload();
+
+}
+
+/* =========================
+START
+========================= */
+
+loadProfile();
+
+</script>
+
+</body>
+</html>
