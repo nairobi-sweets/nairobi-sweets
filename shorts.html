@@ -5,263 +5,421 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Nairobi Sweets Shorts</title>
+<meta name="description" content="Watch Nairobi Sweets short videos in a vertical reels-style feed.">
 
+<link rel="icon" href="/assets/logo/logo-badge.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
 body{
-  background:#050814;
+  background:#000;
   color:white;
   font-family:Arial,Helvetica,sans-serif;
-}
-
-header{
-  background:#000;
-  padding:24px 34px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid rgba(255,216,75,.18);
-  position:sticky;
-  top:0;
-  z-index:50;
-}
-
-.logo{
-  color:#ffd84b;
-  font-size:38px;
-  font-weight:900;
-  text-decoration:none;
-}
-
-.nav a{
-  color:#000;
-  background:#ffd84b;
-  padding:13px 22px;
-  border-radius:999px;
-  font-weight:900;
-  text-decoration:none;
-}
-
-.hero{
-  text-align:center;
-  padding:50px 20px 25px;
-}
-
-.hero h1{
-  font-size:clamp(38px,6vw,72px);
-  color:#ffd84b;
-}
-
-.hero p{
-  color:#b7bfd6;
-  font-size:19px;
-  margin-top:12px;
-}
-
-.grid{
-  max-width:1500px;
-  margin:20px auto;
-  padding:0 18px 60px;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:24px;
-}
-
-.short-card{
-  background:#0b1230;
-  border:1px solid rgba(255,216,75,.18);
-  border-radius:26px;
   overflow:hidden;
 }
 
-.video-wrap{
-  height:520px;
-  background:#000;
+.topbar{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:86px;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 26px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.85),rgba(0,0,0,0));
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+  color:#ffd84b;
+  font-size:28px;
+  font-weight:900;
+}
+
+.brand img{
+  width:48px;
+  height:48px;
+  object-fit:contain;
+}
+
+.nav{
+  display:flex;
+  gap:12px;
+}
+
+.nav a{
+  text-decoration:none;
+  background:#101936;
+  color:white;
+  border:1px solid rgba(255,216,75,.25);
+  padding:12px 18px;
+  border-radius:999px;
+  font-weight:900;
+}
+
+.nav a.join{
+  background:#ffd84b;
+  color:#000;
+}
+
+.feed{
+  height:100vh;
+  overflow-y:scroll;
+  scroll-snap-type:y mandatory;
+}
+
+.short{
+  height:100vh;
+  width:100%;
+  scroll-snap-align:start;
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
+  background:#050505;
+}
+
+.video-wrap{
+  height:100vh;
+  width:min(520px,100%);
+  position:relative;
+  background:#000;
+  overflow:hidden;
 }
 
 video{
   width:100%;
   height:100%;
-  object-fit:contain;
+  object-fit:cover;
   background:#000;
 }
 
-.content{
-  padding:16px;
+.gradient{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,0) 45%),
+    linear-gradient(to bottom,rgba(0,0,0,.55),rgba(0,0,0,0) 25%);
+  pointer-events:none;
+}
+
+.info{
+  position:absolute;
+  left:18px;
+  right:96px;
+  bottom:34px;
+  z-index:5;
 }
 
 .title{
-  font-size:22px;
+  font-size:24px;
   font-weight:900;
   margin-bottom:10px;
 }
 
-.stats{
-  color:#ffd84b;
-  font-weight:900;
-  margin-bottom:14px;
+.meta{
+  color:#dbe3ff;
+  font-size:16px;
+  margin-bottom:10px;
 }
 
-.actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
+.desc{
+  color:#f1f5ff;
+  font-size:15px;
+  line-height:1.5;
 }
 
-button,a.btn{
+.side-actions{
+  position:absolute;
+  right:16px;
+  bottom:120px;
+  z-index:6;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  align-items:center;
+}
+
+.action{
   border:none;
-  padding:13px;
-  border-radius:14px;
+  background:rgba(7,16,56,.78);
+  color:white;
+  width:64px;
+  min-height:64px;
+  border-radius:22px;
   font-weight:900;
   cursor:pointer;
-  text-align:center;
-  text-decoration:none;
+  border:1px solid rgba(255,216,75,.22);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+
+.action span{
+  font-size:13px;
+  color:#ffd84b;
 }
 
 .like{
-  background:linear-gradient(135deg,#ff3d7f,#8b5cf6);
-  color:white;
+  font-size:26px;
 }
 
-.watch{
-  background:#ffd84b;
-  color:#000;
+.whatsapp{
+  background:#25D366;
+  color:#001b09;
 }
 
-.loading{
-  text-align:center;
+.whatsapp span{
+  color:#001b09;
+}
+
+.center-message{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   color:#ffd84b;
-  padding:40px;
+  font-size:28px;
   font-weight:900;
-  font-size:22px;
+  text-align:center;
+  padding:30px;
 }
 
-@media(max-width:1200px){
-  .grid{grid-template-columns:repeat(3,1fr)}
+.sound-tip{
+  position:absolute;
+  top:100px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:6;
+  background:rgba(0,0,0,.6);
+  border:1px solid rgba(255,216,75,.25);
+  color:#ffd84b;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:14px;
 }
 
-@media(max-width:900px){
-  .grid{grid-template-columns:repeat(2,1fr)}
-}
-
-@media(max-width:650px){
-  header{padding:18px}
-  .logo{font-size:28px}
-  .grid{grid-template-columns:1fr}
-  .video-wrap{height:520px}
+@media(max-width:600px){
+  .topbar{height:72px;padding:14px}
+  .brand{font-size:20px}
+  .brand img{width:38px;height:38px}
+  .nav a{padding:10px 12px;font-size:13px}
+  .video-wrap{width:100%}
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <a href="index.html" class="logo">Nairobi Sweets</a>
+<header class="topbar">
+  <a href="/" class="brand">
+    <img src="/assets/logo/logo-navbar.png" alt="Nairobi Sweets">
+    Nairobi Sweets Shorts
+  </a>
 
-  <div class="nav">
-    <a href="index.html">Profiles</a>
-  </div>
+  <nav class="nav">
+    <a href="/">Home</a>
+    <a href="/join.html" class="join">Join Now</a>
+  </nav>
 </header>
 
-<section class="hero">
-  <h1>Shorts</h1>
-  <p>Watch premium Nairobi Sweets short videos.</p>
-</section>
-
-<div id="loading" class="loading">Loading shorts...</div>
-
-<main id="shortsGrid" class="grid"></main>
+<main class="feed" id="feed">
+  <div class="center-message">Loading Shorts...</div>
+</main>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const grid = document.getElementById("shortsGrid");
-const loading = document.getElementById("loading");
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let shorts = [];
 
-async function viewShort(id){
-  await sb.rpc("increment_short_views",{
-    p_short_id:id
-  });
-}
-
-async function likeShort(id){
-  await sb.rpc("increment_short_likes",{
-    p_short_id:id
-  });
-
-  const item = shorts.find(s => s.id === id);
-
-  if(item){
-    item.likes_count = Number(item.likes_count || 0) + 1;
-    renderShorts();
-  }
-}
-
-function renderShorts(){
-  if(!shorts.length){
-    loading.style.display = "block";
-    loading.textContent = "No shorts yet.";
-    return;
-  }
-
-  loading.style.display = "none";
-
-  grid.innerHTML = shorts.map(s => `
-    <article class="short-card">
-
-      <div class="video-wrap">
-        <video
-          src="${s.video_url}"
-          poster="${s.thumbnail_url || ''}"
-          controls
-          playsinline
-          preload="metadata"
-          onplay="viewShort(${s.id})"
-        ></video>
-      </div>
-
-      <div class="content">
-        <div class="title">${s.title || "Nairobi Sweets Short"}</div>
-
-        <div class="stats">
-          👁️ ${s.views_count || 0} views · ❤️ ${s.likes_count || 0} likes
-        </div>
-
-        <div class="actions">
-          <button class="like" onclick="likeShort(${s.id})">❤️ Like</button>
-          <a class="btn watch" href="${s.video_url}" target="_blank">Open</a>
-        </div>
-      </div>
-
-    </article>
-  `).join("");
+function cleanPhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
 }
 
 async function loadShorts(){
-  const { data, error } = await sb
+  const { data,error } = await sb
     .from("shorts")
     .select("*")
     .eq("approved",true)
     .order("created_at",{ascending:false});
 
   if(error){
-    loading.textContent = error.message;
+    document.getElementById("feed").innerHTML =
+      `<div class="center-message">${error.message}</div>`;
     return;
   }
 
   shorts = data || [];
+
+  if(!shorts.length){
+    document.getElementById("feed").innerHTML =
+      `<div class="center-message">No shorts uploaded yet.</div>`;
+    return;
+  }
+
   renderShorts();
+  setupAutoPlay();
+}
+
+function renderShorts(){
+  const feed = document.getElementById("feed");
+
+  feed.innerHTML = shorts.map(short=>{
+    const phone = cleanPhone(short.phone || short.whatsapp || "");
+
+    return `
+      <section class="short" data-id="${short.id}">
+        <div class="video-wrap">
+
+          <video
+            src="${short.video_url}"
+            poster="${short.thumbnail_url || ""}"
+            playsinline
+            loop
+            preload="metadata"
+            onclick="togglePlay(this)"
+          ></video>
+
+          <div class="gradient"></div>
+          <div class="sound-tip">Tap video for sound / pause</div>
+
+          <div class="side-actions">
+            <button class="action" onclick="likeShort('${short.id}')">
+              <div class="like">❤️</div>
+              <span id="likes-${short.id}">${short.likes_count || 0}</span>
+            </button>
+
+            <button class="action" onclick="viewShort('${short.id}')">
+              <div>👁️</div>
+              <span id="views-${short.id}">${short.views_count || 0}</span>
+            </button>
+
+            ${
+              phone
+              ? `<a class="action whatsapp" href="https://wa.me/${phone}" target="_blank">
+                  <div>💬</div>
+                  <span>Chat</span>
+                </a>`
+              : ""
+            }
+          </div>
+
+          <div class="info">
+            <div class="title">${short.title || "Nairobi Sweets Short"}</div>
+            <div class="meta">
+              ${short.profile_name ? "@" + short.profile_name : "Nairobi Sweets"}
+              ${short.location ? " • " + short.location : ""}
+            </div>
+            <div class="desc">
+              Swipe up for more. Tap the video to pause or play.
+            </div>
+          </div>
+
+        </div>
+      </section>
+    `;
+  }).join("");
+}
+
+function setupAutoPlay(){
+  const videos = document.querySelectorAll("video");
+
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      const video = entry.target;
+
+      if(entry.isIntersecting){
+        video.muted = false;
+        video.play().catch(()=>{
+          video.muted = true;
+          video.play().catch(()=>{});
+        });
+
+        const section = video.closest(".short");
+        if(section && !section.dataset.viewed){
+          section.dataset.viewed = "true";
+          viewShort(section.dataset.id);
+        }
+      }else{
+        video.pause();
+      }
+    });
+  },{
+    threshold:.65
+  });
+
+  videos.forEach(video=>observer.observe(video));
+}
+
+function togglePlay(video){
+  if(video.paused){
+    video.muted = false;
+    video.play();
+  }else{
+    video.pause();
+  }
+}
+
+async function likeShort(id){
+  const item = shorts.find(s => String(s.id) === String(id));
+  if(!item) return;
+
+  const newLikes = Number(item.likes_count || 0) + 1;
+
+  const { error } = await sb
+    .from("shorts")
+    .update({likes_count:newLikes})
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  item.likes_count = newLikes;
+
+  const el = document.getElementById(`likes-${id}`);
+  if(el) el.textContent = newLikes;
+}
+
+async function viewShort(id){
+  const item = shorts.find(s => String(s.id) === String(id));
+  if(!item) return;
+
+  const newViews = Number(item.views_count || 0) + 1;
+
+  const { error } = await sb
+    .from("shorts")
+    .update({views_count:newViews})
+    .eq("id",id);
+
+  if(error){
+    console.error(error.message);
+    return;
+  }
+
+  item.views_count = newViews;
+
+  const el = document.getElementById(`views-${id}`);
+  if(el) el.textContent = newViews;
 }
 
 loadShorts();
