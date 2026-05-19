@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <title>Nairobi Sweets | Verified Nairobi Profiles</title>
-<meta name="description" content="Verified Nairobi profiles, WhatsApp access, VIP listings, luxury discovery and real photos." />
+<meta name="description" content="Verified Nairobi profiles, WhatsApp access, VIP listings, location discovery, likes, views and real photos.">
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
@@ -22,6 +22,8 @@ body{
 }
 
 a{text-decoration:none;color:inherit}
+
+/* ================= HEADER ================= */
 
 .topbar{
   position:sticky;
@@ -62,7 +64,8 @@ a{text-decoration:none;color:inherit}
   flex-wrap:wrap;
 }
 
-.menu a,.dropbtn{
+.menu a,
+.dropbtn{
   background:#101936;
   color:#fff;
   border:1px solid rgba(255,216,75,.2);
@@ -73,19 +76,22 @@ a{text-decoration:none;color:inherit}
   cursor:pointer;
 }
 
-.menu a:hover,.dropbtn:hover{
+.menu a:hover,
+.dropbtn:hover{
   background:#ffd84b;
   color:#000;
 }
 
-.dropdown{position:relative}
+.dropdown{
+  position:relative;
+}
 
 .dropdown-content{
   display:none;
   position:absolute;
   top:75px;
   left:0;
-  min-width:270px;
+  min-width:280px;
   background:#071038;
   border-radius:24px;
   overflow:hidden;
@@ -100,7 +106,9 @@ a{text-decoration:none;color:inherit}
   padding:18px 24px;
 }
 
-.dropdown:hover .dropdown-content{display:block}
+.dropdown:hover .dropdown-content{
+  display:block;
+}
 
 .shorts-btn{
   background:#ff008c!important;
@@ -119,6 +127,8 @@ a{text-decoration:none;color:inherit}
   background:#ffd84b!important;
   color:#000!important;
 }
+
+/* ================= HERO ================= */
 
 .hero{
   text-align:center;
@@ -139,6 +149,8 @@ a{text-decoration:none;color:inherit}
   line-height:1.6;
 }
 
+/* ================= CONTROLS ================= */
+
 .top-controls{
   width:min(1500px,95%);
   margin:auto;
@@ -148,7 +160,8 @@ a{text-decoration:none;color:inherit}
   margin-bottom:30px;
 }
 
-.search,.sort{
+.search,
+.sort{
   height:72px;
   border-radius:22px;
   border:1px solid rgba(255,216,75,.15);
@@ -158,6 +171,8 @@ a{text-decoration:none;color:inherit}
   font-size:18px;
   outline:none;
 }
+
+/* ================= STATS ================= */
 
 .stats{
   width:min(1500px,95%);
@@ -187,6 +202,8 @@ a{text-decoration:none;color:inherit}
   font-size:58px;
   font-weight:900;
 }
+
+/* ================= MAP ================= */
 
 .map-section{
   width:min(1500px,95%);
@@ -236,6 +253,8 @@ a{text-decoration:none;color:inherit}
   font-weight:900;
 }
 
+/* ================= GRID ================= */
+
 .grid{
   width:min(1500px,95%);
   margin:auto;
@@ -254,7 +273,9 @@ a{text-decoration:none;color:inherit}
   transition:.3s;
 }
 
-.card:hover{transform:translateY(-6px)}
+.card:hover{
+  transform:translateY(-6px);
+}
 
 .image-wrap{
   width:100%;
@@ -281,7 +302,9 @@ a{text-decoration:none;color:inherit}
   font-weight:900;
 }
 
-.card-body{padding:22px}
+.card-body{
+  padding:22px;
+}
 
 .name{
   font-size:28px;
@@ -289,7 +312,9 @@ a{text-decoration:none;color:inherit}
   margin-bottom:12px;
 }
 
-.name a:hover{color:#ffd84b}
+.name a:hover{
+  color:#ffd84b;
+}
 
 .location{
   color:#d7deef;
@@ -314,13 +339,43 @@ a{text-decoration:none;color:inherit}
   margin-top:14px;
   color:#ffdb70;
   font-weight:900;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.mini-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:16px;
+}
+
+.mini-btn{
+  height:50px;
+  border:none;
+  border-radius:16px;
+  font-weight:900;
+  cursor:pointer;
+  font-size:15px;
+}
+
+.like-action{
+  background:#ff005c;
+  color:#fff;
+}
+
+.view-action{
+  background:#18244f;
+  color:#ffd84b;
 }
 
 .actions{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
-  margin-top:20px;
+  margin-top:16px;
 }
 
 .btn{
@@ -334,8 +389,15 @@ a{text-decoration:none;color:inherit}
   justify-content:center;
 }
 
-.whatsapp{background:#25D366;color:#001b09}
-.call{background:#ffd84b;color:#000}
+.whatsapp{
+  background:#25D366;
+  color:#001b09;
+}
+
+.call{
+  background:#ffd84b;
+  color:#000;
+}
 
 .empty{
   grid-column:1/-1;
@@ -449,6 +511,7 @@ footer{
     <h3>Nairobi Coverage Map</h3>
     <p>Explore profiles by popular Nairobi locations and nearby areas.</p>
   </div>
+
   <div id="nairobiMap"></div>
 </section>
 
@@ -508,8 +571,10 @@ function initMap(){
 
 function cleanPhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
+
   if(p.startsWith("0")) p = "254" + p.slice(1);
   if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+
   return p;
 }
 
@@ -523,8 +588,10 @@ function getName(p){
 
 function getTier(p){
   const plan = String(p.plan || "").toLowerCase();
+
   if(plan === "vvip" || plan === "signature") return "👑 VVIP";
   if(plan === "vip") return "⭐ VIP";
+
   return "✨ Featured";
 }
 
@@ -559,14 +626,14 @@ function renderProfiles(profiles){
         <div class="badge">${getTier(profile)}</div>
 
         <div class="image-wrap">
-          <a href="/profile.html?id=${profile.id}">
+          <a href="/profile.html?id=${profile.id}" onclick="viewProfile('${profile.id}')">
             <img src="${getPhoto(profile)}" loading="lazy" onerror="this.src='/assets/logo/logo-badge.png'">
           </a>
         </div>
 
         <div class="card-body">
           <div class="name">
-            <a href="/profile.html?id=${profile.id}">
+            <a href="/profile.html?id=${profile.id}" onclick="viewProfile('${profile.id}')">
               ${getName(profile)}
             </a>
           </div>
@@ -577,12 +644,29 @@ function renderProfiles(profiles){
           <div class="bio">${profile.bio || "Premium Nairobi profile"}</div>
 
           <div class="stats-line">
-            ❤️ ${profile.likes_count || 0} • 👁️ ${profile.views_count || 0}
+            <span id="likes-${profile.id}">❤️ ${profile.likes_count || 0} likes</span>
+            <span>•</span>
+            <span id="views-${profile.id}">👁️ ${profile.views_count || 0} views</span>
+          </div>
+
+          <div class="mini-actions">
+            <button class="mini-btn like-action" onclick="likeProfile('${profile.id}')">
+              ❤️ Like
+            </button>
+
+            <button class="mini-btn view-action" onclick="viewProfile('${profile.id}')">
+              👁️ View
+            </button>
           </div>
 
           <div class="actions">
-            <a class="btn whatsapp" target="_blank" href="https://wa.me/${whatsapp}">WhatsApp</a>
-            <a class="btn call" href="tel:${rawPhone}">Call</a>
+            <a class="btn whatsapp" target="_blank" href="https://wa.me/${whatsapp}">
+              WhatsApp
+            </a>
+
+            <a class="btn call" href="tel:${rawPhone}">
+              Call
+            </a>
           </div>
         </div>
       </article>
@@ -605,6 +689,62 @@ async function loadProfiles(){
 
   allProfiles = data || [];
   renderProfiles(allProfiles);
+}
+
+async function likeProfile(id){
+  const card = allProfiles.find(p => String(p.id) === String(id));
+
+  if(!card) return;
+
+  const newLikes = Number(card.likes_count || 0) + 1;
+
+  const { error } = await sb
+    .from("profiles")
+    .update({likes_count:newLikes})
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  card.likes_count = newLikes;
+
+  const el = document.getElementById(`likes-${id}`);
+
+  if(el){
+    el.innerHTML = `❤️ ${newLikes} likes`;
+  }
+
+  updateStats(allProfiles);
+}
+
+async function viewProfile(id){
+  const card = allProfiles.find(p => String(p.id) === String(id));
+
+  if(!card) return;
+
+  const newViews = Number(card.views_count || 0) + 1;
+
+  const { error } = await sb
+    .from("profiles")
+    .update({views_count:newViews})
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  card.views_count = newViews;
+
+  const el = document.getElementById(`views-${id}`);
+
+  if(el){
+    el.innerHTML = `👁️ ${newViews} views`;
+  }
+
+  updateStats(allProfiles);
 }
 
 document.getElementById("searchInput").addEventListener("input",e=>{
