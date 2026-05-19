@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Nairobi Sweets | Verified Nairobi Profiles</title>
 
-<meta name="description" content="Discover verified Nairobi profiles with real photos, WhatsApp access, likes, views, luxury discovery and VIP listings.">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://nairobi-sweets.com/">
+<meta name="description" content="Discover verified Nairobi profiles by location with real photos, WhatsApp access, likes, views and VIP listings.">
 <link rel="icon" href="./assets/logo/logo-badge.png">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -26,70 +24,74 @@ a{text-decoration:none;color:inherit}
 
 header{
   background:#000;
-  padding:24px 40px;
+  padding:22px 34px;
   border-bottom:1px solid rgba(255,216,75,.18);
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:22px;
   flex-wrap:wrap;
-  gap:20px;
 }
 
 .brand{
   display:flex;
   align-items:center;
-  gap:16px;
-  text-decoration:none;
+  gap:14px;
 }
 
 .brand img{
-  width:72px;
-  height:72px;
+  width:70px;
+  height:70px;
   object-fit:contain;
-  display:block;
 }
 
 .brand span{
-  font-size:42px;
-  font-weight:900;
   color:#ffd84b;
-  letter-spacing:-1px;
+  font-size:38px;
+  font-weight:900;
 }
 
-.header-actions{
+.menu{
   display:flex;
-  gap:14px;
   align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
 }
 
-.top-btn{
-  background:#0b1742;
-  color:#ffd84b;
-  border:1px solid rgba(255,216,75,.25);
-  padding:18px 34px;
-  border-radius:22px;
-  font-weight:900;
-  font-size:20px;
+.menu a{
+  background:#101936;
+  color:#fff;
+  border:1px solid rgba(255,216,75,.2);
+  padding:12px 16px;
+  border-radius:999px;
+  font-weight:800;
+  transition:.25s;
 }
 
-.join-btn{
+.menu a:hover{
+  background:#ffd84b;
+  color:#000;
+  transform:translateY(-2px);
+}
+
+.menu .join{
   background:#ffd84b;
   color:#000;
 }
 
 .hero{
-  padding:50px 20px 20px;
+  padding:55px 20px 25px;
   text-align:center;
 }
 
 .hero h1{
-  font-size:88px;
+  font-size:clamp(46px,7vw,90px);
   color:#ffd84b;
   font-weight:900;
 }
 
 .hero p{
-  margin-top:20px;
+  margin-top:18px;
   color:#b7bdd1;
   font-size:22px;
 }
@@ -118,9 +120,7 @@ header{
   font-size:20px;
 }
 
-.sort{
-  width:280px;
-}
+.sort{width:280px}
 
 .stats{
   display:grid;
@@ -139,7 +139,6 @@ header{
 .stat h3{
   color:#95a0c3;
   margin-bottom:18px;
-  font-size:18px;
 }
 
 .stat span{
@@ -153,7 +152,6 @@ header{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
   gap:24px;
-  align-items:start;
 }
 
 .card{
@@ -163,55 +161,42 @@ header{
   border:1px solid #ffbf00;
   position:relative;
   min-width:0;
-  transition:.25s ease;
-}
-
-.card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 20px 40px rgba(0,0,0,.45);
 }
 
 .card-image{
   width:100%;
   aspect-ratio:3/4;
-  overflow:hidden;
   background:#000;
+  overflow:hidden;
 }
 
 .card-image img{
   width:100%;
   height:100%;
   object-fit:cover;
-  display:block;
 }
 
 .badge{
   position:absolute;
   top:16px;
   right:16px;
-  background:rgba(0,0,0,.65);
+  background:rgba(0,0,0,.7);
   color:#ffd84b;
-  border:1px solid rgba(255,216,75,.28);
+  border:1px solid rgba(255,216,75,.3);
   padding:10px 18px;
   border-radius:999px;
   font-weight:900;
-  font-size:14px;
 }
 
-.card-body{
-  padding:20px;
-}
+.card-body{padding:20px}
 
 .card-name{
   font-size:26px;
   font-weight:900;
   margin-bottom:14px;
-  line-height:1.1;
 }
 
-.card-name a:hover{
-  color:#ffd84b;
-}
+.card-name a:hover{color:#ffd84b}
 
 .meta{
   color:#d8dced;
@@ -221,7 +206,6 @@ header{
 
 .stats-line{
   margin-top:14px;
-  font-size:16px;
   color:#ffdb70;
   font-weight:900;
 }
@@ -247,55 +231,36 @@ header{
   border-radius:16px;
   font-weight:900;
   cursor:pointer;
-  font-size:15px;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-.like-btn{
-  background:#ff3f86;
-  color:white;
-  grid-column:1/3;
-}
-
-.whatsapp-btn{
-  background:#25D366;
-  color:#001b09;
-}
-
-.call-btn{
-  background:#ffd84b;
-  color:#000;
-}
+.whatsapp-btn{background:#25D366;color:#001b09}
+.call-btn{background:#ffd84b;color:#000}
+.like-btn{background:#ff3f86;color:white;grid-column:1/3}
 
 footer{
-  padding:70px 20px;
+  padding:60px 20px;
   text-align:center;
   color:#7f8bb0;
 }
 
-@media(max-width:1400px){
-  .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-}
-
 @media(max-width:1100px){
-  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid{grid-template-columns:repeat(3,1fr)}
 }
 
 @media(max-width:800px){
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid{grid-template-columns:repeat(2,1fr)}
   .stats{grid-template-columns:1fr}
 }
 
 @media(max-width:560px){
-  .grid{grid-template-columns:1fr}
   header{padding:18px}
-  .brand span{font-size:30px}
-  .brand img{width:56px;height:56px}
-  .hero h1{font-size:48px}
-  .header-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}
-  .top-btn{text-align:center;padding:14px;font-size:15px}
+  .brand span{font-size:28px}
+  .brand img{width:54px;height:54px}
+  .grid{grid-template-columns:1fr}
+  .menu a{font-size:13px;padding:10px 12px}
 }
 </style>
 </head>
@@ -308,15 +273,22 @@ footer{
     <span>Nairobi Sweets</span>
   </a>
 
-  <div class="header-actions">
-    <a href="shorts.html" class="top-btn">Shorts</a>
-    <a href="join.html" class="top-btn join-btn">Join Now</a>
-  </div>
+  <nav class="menu">
+    <a href="index.html">Home</a>
+    <a href="locations/nairobi.html">Nairobi</a>
+    <a href="locations/kilimani.html">Kilimani</a>
+    <a href="locations/westlands.html">Westlands</a>
+    <a href="locations/ruaka.html">Ruaka</a>
+    <a href="locations/kasarani.html">Kasarani</a>
+    <a href="locations/south-b.html">South B</a>
+    <a href="shorts.html">Shorts</a>
+    <a href="join.html" class="join">Join Now</a>
+  </nav>
 </header>
 
 <section class="hero">
   <h1>Profiles</h1>
-  <p>Verified profiles, WhatsApp access, VIP listings, likes, views, luxury discovery and real photos.</p>
+  <p>Verified profiles, WhatsApp access, VIP listings, likes, views, location discovery and real photos.</p>
 </section>
 
 <section class="controls">
@@ -354,7 +326,7 @@ footer{
 <section class="grid" id="profilesGrid"></section>
 
 <footer>
-  © Nairobi Sweets • Luxury Discovery Platform
+  © Nairobi Sweets
 </footer>
 
 <script>
@@ -374,19 +346,16 @@ function getName(p){
 }
 
 function getTier(p){
-  const tier = String(p.tier || "").toLowerCase();
-
-  if(p.is_vvip || tier === "vvip" || tier === "signature") return "👑 VVIP";
-  if(p.is_vip || tier === "vip") return "⭐ VIP";
+  const plan = String(p.plan || "").toLowerCase();
+  if(plan === "vvip" || plan === "signature") return "👑 VVIP";
+  if(plan === "vip") return "⭐ VIP";
   return "✨ Featured";
 }
 
 function cleanPhone(phone){
   let n = String(phone || "").replace(/\D/g,"");
-
   if(n.startsWith("0")) n = "254" + n.slice(1);
   if(n.startsWith("7") || n.startsWith("1")) n = "254" + n;
-
   return n;
 }
 
@@ -398,7 +367,6 @@ async function loadProfiles(){
     .order("created_at", { ascending:false });
 
   if(error){
-    console.error(error);
     document.getElementById("profilesGrid").innerHTML = error.message;
     return;
   }
@@ -409,22 +377,17 @@ async function loadProfiles(){
 }
 
 function renderStats(list){
-  const totalProfiles = list.length;
+  document.getElementById("totalProfiles").innerText = list.length;
 
-  const totalViews = list.reduce((sum,p)=>
-    sum + Number(p.views_count || 0),0);
+  document.getElementById("totalViews").innerText =
+    list.reduce((sum,p)=>sum + Number(p.views_count || 0),0).toLocaleString();
 
-  const totalLikes = list.reduce((sum,p)=>
-    sum + Number(p.likes_count || 0),0);
-
-  document.getElementById("totalProfiles").innerText = totalProfiles;
-  document.getElementById("totalViews").innerText = totalViews.toLocaleString();
-  document.getElementById("totalLikes").innerText = totalLikes.toLocaleString();
+  document.getElementById("totalLikes").innerText =
+    list.reduce((sum,p)=>sum + Number(p.likes_count || 0),0).toLocaleString();
 }
 
 function renderProfiles(list){
   const grid = document.getElementById("profilesGrid");
-
   grid.innerHTML = "";
 
   list.forEach(profile=>{
@@ -451,7 +414,7 @@ function renderProfiles(list){
         </div>
 
         <div class="meta">
-          <div>📍 ${profile.location || profile.area || profile.city || "Nairobi"}</div>
+          <div>📍 ${profile.location || "Nairobi"}</div>
           <div>📞 ${rawPhone}</div>
         </div>
 
@@ -464,17 +427,9 @@ function renderProfiles(list){
         </div>
 
         <div class="actions">
-          <a class="action-btn whatsapp-btn" href="https://wa.me/${phone}" target="_blank">
-            WhatsApp
-          </a>
-
-          <a class="action-btn call-btn" href="tel:${rawPhone}">
-            Call
-          </a>
-
-          <button class="action-btn like-btn" onclick="likeProfile(${profile.id})">
-            ❤️ Like
-          </button>
+          <a class="action-btn whatsapp-btn" href="https://wa.me/${phone}" target="_blank">WhatsApp</a>
+          <a class="action-btn call-btn" href="tel:${rawPhone}">Call</a>
+          <button class="action-btn like-btn" onclick="likeProfile(${profile.id})">❤️ Like</button>
         </div>
       </div>
     `;
@@ -484,18 +439,14 @@ function renderProfiles(list){
 }
 
 async function likeProfile(id){
-  try{
-    await sb.rpc("increment_profile_likes", { p_profile_id:id });
+  await sb.rpc("increment_profile_likes", { p_profile_id:id });
 
-    const profile = profiles.find(p => Number(p.id) === Number(id));
+  const profile = profiles.find(p => Number(p.id) === Number(id));
 
-    if(profile){
-      profile.likes_count = Number(profile.likes_count || 0) + 1;
-      renderStats(profiles);
-      renderProfiles(profiles);
-    }
-  }catch(error){
-    alert("Like failed. Check Supabase function.");
+  if(profile){
+    profile.likes_count = Number(profile.likes_count || 0) + 1;
+    renderStats(profiles);
+    renderProfiles(profiles);
   }
 }
 
@@ -505,7 +456,6 @@ document.getElementById("searchInput").addEventListener("input",(e)=>{
   const filtered = profiles.filter(p =>
     getName(p).toLowerCase().includes(value) ||
     String(p.location || "").toLowerCase().includes(value) ||
-    String(p.area || "").toLowerCase().includes(value) ||
     String(p.bio || "").toLowerCase().includes(value)
   );
 
@@ -526,19 +476,6 @@ document.getElementById("sortSelect").addEventListener("change",(e)=>{
 
   if(value === "newest"){
     sorted.sort((a,b)=>new Date(b.created_at || 0) - new Date(a.created_at || 0));
-  }
-
-  if(value === "featured"){
-    sorted.sort((a,b)=>{
-      const rank = p => {
-        const tier = String(p.tier || "").toLowerCase();
-        if(p.is_vvip || tier === "vvip" || tier === "signature") return 3;
-        if(p.is_vip || tier === "vip") return 2;
-        return 1;
-      };
-
-      return rank(b) - rank(a);
-    });
   }
 
   renderProfiles(sorted);
