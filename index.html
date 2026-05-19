@@ -7,6 +7,11 @@
 <title>Nairobi Sweets | Verified Nairobi Profiles</title>
 <meta name="description" content="Verified Nairobi profiles, WhatsApp access, VIP listings, luxury discovery and real photos." />
 
+<link rel="icon" href="/assets/logo/logo-badge.png">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
@@ -17,8 +22,6 @@ body{
 }
 
 a{text-decoration:none;color:inherit}
-
-/* HEADER */
 
 .topbar{
   position:sticky;
@@ -59,8 +62,7 @@ a{text-decoration:none;color:inherit}
   flex-wrap:wrap;
 }
 
-.menu a,
-.dropbtn{
+.menu a,.dropbtn{
   background:#101936;
   color:#fff;
   border:1px solid rgba(255,216,75,.2);
@@ -69,11 +71,9 @@ a{text-decoration:none;color:inherit}
   font-size:20px;
   font-weight:800;
   cursor:pointer;
-  transition:.25s;
 }
 
-.menu a:hover,
-.dropbtn:hover{
+.menu a:hover,.dropbtn:hover{
   background:#ffd84b;
   color:#000;
 }
@@ -120,8 +120,6 @@ a{text-decoration:none;color:inherit}
   color:#000!important;
 }
 
-/* HERO */
-
 .hero{
   text-align:center;
   padding:70px 20px 40px;
@@ -141,8 +139,6 @@ a{text-decoration:none;color:inherit}
   line-height:1.6;
 }
 
-/* CONTROLS */
-
 .top-controls{
   width:min(1500px,95%);
   margin:auto;
@@ -152,8 +148,7 @@ a{text-decoration:none;color:inherit}
   margin-bottom:30px;
 }
 
-.search,
-.sort{
+.search,.sort{
   height:72px;
   border-radius:22px;
   border:1px solid rgba(255,216,75,.15);
@@ -163,8 +158,6 @@ a{text-decoration:none;color:inherit}
   font-size:18px;
   outline:none;
 }
-
-/* STATS */
 
 .stats{
   width:min(1500px,95%);
@@ -195,7 +188,53 @@ a{text-decoration:none;color:inherit}
   font-weight:900;
 }
 
-/* GRID */
+.map-section{
+  width:min(1500px,95%);
+  margin:35px auto;
+  border:1px solid rgba(255,216,75,.2);
+  border-radius:28px;
+  overflow:hidden;
+  background:#071038;
+}
+
+.map-header{
+  padding:26px;
+  border-bottom:1px solid rgba(255,216,75,.15);
+}
+
+.map-header h3{
+  color:#ffd84b;
+  font-size:36px;
+  font-weight:900;
+}
+
+.map-header p{
+  color:#b8c1d8;
+  margin-top:8px;
+  font-size:18px;
+}
+
+#nairobiMap{
+  width:100%;
+  height:520px;
+}
+
+.map-note{
+  width:min(1500px,95%);
+  margin:0 auto 35px;
+  background:#fff;
+  color:#111;
+  padding:30px;
+  border-radius:24px;
+  font-size:22px;
+  line-height:1.6;
+  box-shadow:0 0 35px rgba(255,0,140,.25);
+}
+
+.map-note a{
+  color:#ff008c;
+  font-weight:900;
+}
 
 .grid{
   width:min(1500px,95%);
@@ -293,10 +332,7 @@ a{text-decoration:none;color:inherit}
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:.25s;
 }
-
-.btn:hover{transform:scale(1.03)}
 
 .whatsapp{background:#25D366;color:#001b09}
 .call{background:#ffd84b;color:#000}
@@ -334,6 +370,7 @@ footer{
   .logo{width:54px;height:54px}
   .logo-wrap h1{font-size:28px}
   .topbar{padding:18px}
+  #nairobiMap{height:420px}
 }
 </style>
 </head>
@@ -341,7 +378,6 @@ footer{
 <body>
 
 <header class="topbar">
-
   <a href="/" class="logo-wrap">
     <img src="/assets/logo/logo-navbar.png" class="logo" alt="Nairobi Sweets">
     <h1>Nairobi Sweets</h1>
@@ -368,7 +404,6 @@ footer{
     <a href="/shorts.html" class="shorts-btn">🔥 Shorts</a>
     <a href="/join.html" class="join-btn">Join Now</a>
   </nav>
-
 </header>
 
 <section class="hero">
@@ -409,6 +444,23 @@ footer{
   </div>
 </section>
 
+<section class="map-section">
+  <div class="map-header">
+    <h3>Nairobi Coverage Map</h3>
+    <p>Explore profiles by popular Nairobi locations and nearby areas.</p>
+  </div>
+  <div id="nairobiMap"></div>
+</section>
+
+<div class="map-note">
+  Looking for nearby options? Explore
+  <a href="/seo/locations/kilimani.html">Kilimani</a>,
+  <a href="/seo/locations/westlands.html">Westlands</a>,
+  <a href="/seo/locations/kasarani-equity-kasarani.html">Kasarani</a>,
+  and
+  <a href="/seo/locations/kiambu-ruiru-membley.html">Ruiru</a>.
+</div>
+
 <section class="grid" id="profilesGrid"></section>
 
 <footer>
@@ -425,12 +477,39 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let allProfiles = [];
 
+function initMap(){
+  const map = L.map("nairobiMap").setView([-1.286389,36.817223],12);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+    maxZoom:19,
+    attribution:"© OpenStreetMap contributors"
+  }).addTo(map);
+
+  L.circle([-1.286389,36.817223],{
+    color:"#ff005c",
+    fillColor:"#ff005c",
+    fillOpacity:0.18,
+    radius:6500
+  }).addTo(map);
+
+  const spots = [
+    ["Nairobi CBD",-1.286389,36.817223],
+    ["Kilimani",-1.2921,36.7856],
+    ["Westlands",-1.2676,36.8108],
+    ["Kasarani",-1.2257,36.8951],
+    ["Ruiru",-1.1466,36.9615],
+    ["Kikuyu",-1.2450,36.6630]
+  ];
+
+  spots.forEach(([name,lat,lng])=>{
+    L.marker([lat,lng]).addTo(map).bindPopup(name);
+  });
+}
+
 function cleanPhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
-
   if(p.startsWith("0")) p = "254" + p.slice(1);
   if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
-
   return p;
 }
 
@@ -444,10 +523,8 @@ function getName(p){
 
 function getTier(p){
   const plan = String(p.plan || "").toLowerCase();
-
   if(plan === "vvip" || plan === "signature") return "👑 VVIP";
   if(plan === "vip") return "⭐ VIP";
-
   return "✨ Featured";
 }
 
@@ -473,7 +550,7 @@ function renderProfiles(profiles){
     return;
   }
 
-  grid.innerHTML = profiles.map(profile => {
+  grid.innerHTML = profiles.map(profile=>{
     const rawPhone = profile.phone || profile.whatsapp || "";
     const whatsapp = cleanPhone(rawPhone);
 
@@ -483,11 +560,7 @@ function renderProfiles(profiles){
 
         <div class="image-wrap">
           <a href="/profile.html?id=${profile.id}">
-            <img
-              src="${getPhoto(profile)}"
-              loading="lazy"
-              onerror="this.src='/assets/logo/logo-badge.png'"
-            >
+            <img src="${getPhoto(profile)}" loading="lazy" onerror="this.src='/assets/logo/logo-badge.png'">
           </a>
         </div>
 
@@ -501,9 +574,7 @@ function renderProfiles(profiles){
           <div class="location">📍 ${profile.location || "Nairobi"}</div>
           <div class="phone">📞 ${rawPhone}</div>
 
-          <div class="bio">
-            ${profile.bio || "Premium Nairobi profile"}
-          </div>
+          <div class="bio">${profile.bio || "Premium Nairobi profile"}</div>
 
           <div class="stats-line">
             ❤️ ${profile.likes_count || 0} • 👁️ ${profile.views_count || 0}
@@ -520,11 +591,11 @@ function renderProfiles(profiles){
 }
 
 async function loadProfiles(){
-  const { data, error } = await sb
+  const { data,error } = await sb
     .from("profiles")
     .select("*")
-    .eq("approved", true)
-    .order("created_at", { ascending:false });
+    .eq("approved",true)
+    .order("created_at",{ascending:false});
 
   if(error){
     document.getElementById("profilesGrid").innerHTML =
@@ -536,24 +607,22 @@ async function loadProfiles(){
   renderProfiles(allProfiles);
 }
 
-document.getElementById("searchInput").addEventListener("input", e => {
+document.getElementById("searchInput").addEventListener("input",e=>{
   const q = e.target.value.toLowerCase();
 
-  const filtered = allProfiles.filter(p => {
+  const filtered = allProfiles.filter(p=>{
     return `
       ${p.stage_name || ""}
       ${p.name || ""}
       ${p.bio || ""}
       ${p.location || ""}
-    `
-    .toLowerCase()
-    .includes(q);
+    `.toLowerCase().includes(q);
   });
 
   renderProfiles(filtered);
 });
 
-document.getElementById("sortSelect").addEventListener("change", e => {
+document.getElementById("sortSelect").addEventListener("change",e=>{
   let profiles = [...allProfiles];
 
   if(e.target.value === "likes"){
@@ -571,6 +640,7 @@ document.getElementById("sortSelect").addEventListener("change", e => {
   renderProfiles(profiles);
 });
 
+initMap();
 loadProfiles();
 </script>
 
