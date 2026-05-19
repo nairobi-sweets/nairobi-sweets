@@ -1,303 +1,349 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>Premium Nairobi Profiles | Nairobi Sweets</title>
-<meta name="description" content="Browse premium Nairobi Sweets profiles with verified photos, WhatsApp access, direct calls, and VIP listings." />
-<meta name="keywords" content="Nairobi escorts, premium profiles, Nairobi sweets, VIP listings, verified profiles" />
-<meta name="robots" content="index, follow" />
-<link rel="canonical" href="https://nairobi-sweets.com/" />
-
-<meta property="og:title" content="Premium Nairobi Profiles | Nairobi Sweets" />
-<meta property="og:description" content="Verified premium Nairobi listings with direct WhatsApp and booking." />
-<meta property="og:type" content="website" />
-<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png" />
-
-<script type="application/ld+json">
-{
-  "@context":"https://schema.org",
-  "@type":"CollectionPage",
-  "name":"Premium Nairobi Profiles",
-  "url":"https://nairobi-sweets.com/",
-  "description":"Verified premium Nairobi profiles directory"
-}
-</script>
+<title>Nairobi Sweets Locations</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
 body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#020617;
-  color:white;
+background:#020b24;
+font-family:Arial,Helvetica,sans-serif;
+color:white;
 }
 
 .container{
-  max-width:1400px;
-  margin:auto;
-  padding:40px 20px;
+width:min(1500px,95%);
+margin:auto;
+padding:40px 0;
 }
 
 .hero{
-  background:linear-gradient(135deg,#0f172a,#1e293b);
-  padding:40px;
-  border-radius:24px;
-  margin-bottom:40px;
-  box-shadow:0 0 25px rgba(255,215,0,.08);
+background:#101936;
+border-radius:30px;
+padding:50px;
+border:1px solid rgba(255,215,0,.15);
+margin-bottom:30px;
 }
 
-h1{
-  font-size:52px;
-  color:#facc15;
-  margin-bottom:15px;
+.hero h1{
+font-size:58px;
+color:#ffd84b;
+margin-bottom:18px;
+font-weight:900;
 }
 
 .hero p{
-  color:#e2e8f0;
-  font-size:18px;
+font-size:22px;
+color:#b7c2df;
+line-height:1.6;
 }
 
 .grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:24px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:24px;
+margin-top:30px;
 }
 
 .card{
-  background:#0f172a;
-  border:1px solid rgba(255,215,0,.12);
-  border-radius:22px;
-  overflow:hidden;
-  transition:.3s;
+background:#081433;
+border-radius:24px;
+overflow:hidden;
+border:1px solid rgba(255,215,0,.15);
+transition:.3s;
 }
 
 .card:hover{
-  transform:translateY(-6px);
-  box-shadow:0 12px 35px rgba(255,215,0,.12);
+transform:translateY(-6px);
 }
 
 .card img{
-  width:100%;
-  height:320px;
-  object-fit:cover;
-  background:#111827;
+width:100%;
+height:420px;
+object-fit:cover;
+background:#000;
 }
 
-.card-body{
-  padding:18px;
+.content{
+padding:20px;
 }
 
-.card h2{
-  font-size:28px;
-  margin:0 0 10px;
-  color:white;
+.name{
+font-size:32px;
+font-weight:900;
+margin-bottom:10px;
 }
 
-.meta{
-  color:#cbd5e1;
-  margin-bottom:8px;
-  font-size:15px;
+.location{
+color:#c2cee8;
+margin-bottom:12px;
 }
 
 .bio{
-  color:#e2e8f0;
-  line-height:1.5;
-  min-height:72px;
+color:#9eb0d4;
+line-height:1.6;
+margin-bottom:18px;
 }
 
-.buttons{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
+.actions{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
 }
 
 .btn{
-  flex:1;
-  text-align:center;
-  padding:12px;
-  border-radius:12px;
-  text-decoration:none;
-  font-weight:bold;
+height:52px;
+border:none;
+border-radius:14px;
+font-weight:900;
+cursor:pointer;
+font-size:16px;
+display:flex;
+align-items:center;
+justify-content:center;
+text-decoration:none;
 }
 
-.wa{
-  background:#22c55e;
-  color:black;
+.whatsapp{
+background:#25D366;
+color:#001b07;
 }
 
 .call{
-  background:#facc15;
-  color:black;
+background:#ffd84b;
+color:black;
 }
 
-footer{
-  margin-top:60px;
-  text-align:center;
-  color:#94a3b8;
+.footer{
+margin-top:60px;
+padding:30px 0;
+border-top:1px solid rgba(255,215,0,.1);
+color:#9ca9cb;
 }
 
-footer a{
-  color:#facc15;
-  text-decoration:none;
-  margin:0 8px;
+.loading{
+text-align:center;
+font-size:26px;
+padding:80px;
+color:#ffd84b;
+font-weight:900;
 }
 
-.empty{
-  text-align:center;
-  font-size:18px;
-  color:#cbd5e1;
-  padding:50px 0;
+@media(max-width:1200px){
+
+.grid{
+grid-template-columns:repeat(3,1fr);
 }
+
+}
+
+@media(max-width:900px){
+
+.grid{
+grid-template-columns:repeat(2,1fr);
+}
+
+.hero h1{
+font-size:42px;
+}
+
+}
+
+@media(max-width:600px){
+
+.grid{
+grid-template-columns:1fr;
+}
+
+.hero{
+padding:30px;
+}
+
+.hero h1{
+font-size:34px;
+}
+
+}
+
 </style>
 </head>
-
 <body>
 
 <div class="container">
 
-<section class="hero">
-  <h1 id="pageTitle">Premium Profiles</h1>
-  <p id="pageIntro">Browse verified premium Nairobi Sweets listings with real photos, VIP upgrades, direct WhatsApp, and private booking.</p>
-</section>
+<div class="hero">
 
-<section class="grid" id="profilesGrid"></section>
+<h1 id="title">
+Premium Profiles
+</h1>
 
-<footer>
-  <a href="/">Home</a> |
-  <a href="/public-signup-payment-page.html">Join</a> |
-  <a href="/seo/locations/westlands.html">Westlands</a> |
-  <a href="/seo/locations/ruaka.html">Ruaka</a> |
-  <a href="/seo/locations/kilimani.html">Kilimani</a> |
-  <a href="/seo/locations/thika-road.html">Thika Road</a>
-</footer>
+<p id="desc">
+Verified luxury profiles on Nairobi Sweets.
+</p>
+
+</div>
+
+<div id="grid" class="grid">
+
+<div class="loading">
+Loading profiles...
+</div>
+
+</div>
+
+<div class="footer">
+
+<a href="/" style="color:#ffd84b;text-decoration:none;">
+Home
+</a>
+
+</div>
 
 </div>
 
 <script>
-const PAGE_LOCATION = "Westlands";
 
-const LOCATION_QUERY =
-"location.ilike.%westlands%,location.ilike.%parklands%,location.ilike.%waiyaki%,location.ilike.%kangemi%,location.ilike.%westy%";
+const SUPABASE_URL =
+"https://dkjlvyynvgtijccitvvd.supabase.co";
 
-const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const SUPABASE_KEY =
+"sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
-document.title = `${PAGE_LOCATION} Premium Nairobi Profiles | Nairobi Sweets`;
+const path =
+window.location.pathname;
 
-document.getElementById("pageTitle").textContent =
-`Premium Profiles in ${PAGE_LOCATION}`;
+const slug =
+path
+.split("/")
+.pop()
+.replace(".html","")
+.replaceAll("-"," ");
 
-document.getElementById("pageIntro").textContent =
-`Browse verified premium Nairobi Sweets listings in ${PAGE_LOCATION} with real photos, VIP upgrades, direct WhatsApp, and private booking.`;
+document.getElementById("title").innerText =
+`Premium Profiles in ${slug}`;
 
-function cleanPhone(phone){
-  return String(phone || "").replace(/\D/g,"");
-}
-
-function makeWhatsApp(phone){
-  let p = cleanPhone(phone);
-  if(!p) return "#";
-
-  if(p.startsWith("0")) p = "254" + p.slice(1);
-  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
-
-  return `https://wa.me/${p}`;
-}
+document.getElementById("desc").innerText =
+`Browse verified profiles in ${slug} on Nairobi Sweets.`;
 
 async function loadProfiles(){
-  const {data,error} = await sb
-    .from("profiles")
-    .select("*")
-    .eq("approved", true)
-    .or(LOCATION_QUERY)
-    .order("created_at",{ascending:false});
 
-  const grid = document.getElementById("profilesGrid");
+const grid =
+document.getElementById("grid");
 
-  if(error || !data || !data.length){
-    grid.innerHTML = `<div class="empty">No ${PAGE_LOCATION} profiles available yet.</div>`;
-    return;
-  }
+const { data, error } =
+await sb
+.from("profiles")
+.select("*")
+.eq("approved", true)
+.ilike("location", `%${slug}%`)
+.limit(24);
 
-  grid.innerHTML = data.map(profile => {
-    const name =
-      profile.stage_name ||
-      profile.name ||
-      "Premium Profile";
+if(error){
 
-    const phone =
-      profile.phone ||
-      profile.phone_number ||
-      profile.whatsapp ||
-      "";
+grid.innerHTML = `
+<div class="loading">
+${error.message}
+</div>
+`;
 
-    const whatsapp =
-      profile.whatsapp ||
-      profile.phone ||
-      profile.phone_number ||
-      "";
+return;
+}
 
-    const photo =
-      profile.photo_url ||
-      "/assets/logo/logo-badge.png";
+if(!data || !data.length){
 
-    const bio =
-      profile.bio
-      ? profile.bio.substring(0,140)
-      : "Premium Nairobi profile.";
+grid.innerHTML = `
+<div class="loading">
+No profiles found in ${slug}
+</div>
+`;
 
-    const packageType =
-      profile.package ||
-      profile.plan ||
-      "Featured";
+return;
+}
 
-    const location =
-      profile.location ||
-      PAGE_LOCATION;
+grid.innerHTML =
+data.map(profile => {
 
-    return `
-      <article class="card">
-        <img
-          src="${photo}"
-          alt="${name} premium profile in ${location}"
-          loading="lazy"
-          onerror="this.onerror=null;this.src='/assets/logo/logo-badge.png';"
-        />
+const phone =
+(profile.phone || "")
+.replace(/\D/g,"");
 
-        <div class="card-body">
-          <h2>${name}</h2>
+return `
 
-          <div class="meta">📍 ${location}</div>
-          <div class="meta">${packageType}</div>
+<div class="card">
 
-          <p class="bio">${bio}</p>
+<img
+src="${
+profile.photo_url ||
+profile.image_url ||
+'../../assets/logo/logo-badge.png'
+}"
+onerror="
+this.src='../../assets/logo/logo-badge.png'
+"
+/>
 
-          <div class="buttons">
-            <a class="btn wa"
-               href="${makeWhatsApp(whatsapp)}"
-               target="_blank">
-               WhatsApp
-            </a>
+<div class="content">
 
-            <a class="btn call"
-               href="tel:${phone}">
-               Call
-            </a>
-          </div>
-        </div>
-      </article>
-    `;
-  }).join("");
+<div class="name">
+${profile.stage_name || 'Profile'}
+</div>
+
+<div class="location">
+📍 ${profile.location || 'Nairobi'}
+</div>
+
+<div class="bio">
+${profile.bio || 'Premium Nairobi profile'}
+</div>
+
+<div class="actions">
+
+<a
+class="btn whatsapp"
+target="_blank"
+href="https://wa.me/${phone}"
+>
+WhatsApp
+</a>
+
+<a
+class="btn call"
+href="tel:${phone}"
+>
+Call
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
 }
 
 loadProfiles();
+
 </script>
 
 </body>
