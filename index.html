@@ -5,18 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <title>Nairobi Sweets | Verified Nairobi Profiles</title>
-
 <meta name="description" content="Verified Nairobi profiles, WhatsApp access, VIP listings, luxury discovery and real photos." />
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box}
 
 body{
   background:#020617;
@@ -24,70 +16,111 @@ body{
   font-family:Arial,Helvetica,sans-serif;
 }
 
-a{
-  text-decoration:none;
-  color:inherit;
-}
+a{text-decoration:none;color:inherit}
 
-header{
+/* HEADER */
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:999;
   background:#000;
-  padding:20px 34px;
+  padding:22px 40px;
   border-bottom:1px solid rgba(255,216,75,.18);
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:20px;
   flex-wrap:wrap;
-  position:sticky;
-  top:0;
-  z-index:999;
+  gap:20px;
 }
 
-.brand{
+.logo-wrap{
   display:flex;
   align-items:center;
-  gap:14px;
+  gap:16px;
 }
 
-.brand img{
-  width:72px;
-  height:72px;
+.logo{
+  width:70px;
+  height:70px;
   object-fit:contain;
 }
 
-.brand h1{
+.logo-wrap h1{
   color:#ffd84b;
-  font-size:54px;
+  font-size:64px;
   font-weight:900;
-  line-height:1;
 }
 
 .menu{
   display:flex;
-  gap:10px;
-  flex-wrap:wrap;
   align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
 }
 
-.menu a{
+.menu a,
+.dropbtn{
   background:#101936;
   color:#fff;
   border:1px solid rgba(255,216,75,.2);
-  padding:12px 18px;
   border-radius:999px;
+  padding:18px 28px;
+  font-size:20px;
   font-weight:800;
+  cursor:pointer;
   transition:.25s;
 }
 
-.menu a:hover{
+.menu a:hover,
+.dropbtn:hover{
   background:#ffd84b;
   color:#000;
 }
 
-.join-btn{
-  background:#ffd84b !important;
-  color:#000 !important;
+.dropdown{position:relative}
+
+.dropdown-content{
+  display:none;
+  position:absolute;
+  top:75px;
+  left:0;
+  min-width:270px;
+  background:#071038;
+  border-radius:24px;
+  overflow:hidden;
+  border:1px solid rgba(255,216,75,.2);
+  box-shadow:0 10px 40px rgba(0,0,0,.45);
 }
+
+.dropdown-content a{
+  display:block;
+  border-radius:0!important;
+  border:none!important;
+  padding:18px 24px;
+}
+
+.dropdown:hover .dropdown-content{display:block}
+
+.shorts-btn{
+  background:#ff008c!important;
+  color:white!important;
+  box-shadow:0 0 20px rgba(255,0,140,.7),0 0 50px rgba(255,0,140,.35);
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.06)}
+  100%{transform:scale(1)}
+}
+
+.join-btn{
+  background:#ffd84b!important;
+  color:#000!important;
+}
+
+/* HERO */
 
 .hero{
   text-align:center;
@@ -108,6 +141,8 @@ header{
   line-height:1.6;
 }
 
+/* CONTROLS */
+
 .top-controls{
   width:min(1500px,95%);
   margin:auto;
@@ -117,7 +152,8 @@ header{
   margin-bottom:30px;
 }
 
-.search{
+.search,
+.sort{
   height:72px;
   border-radius:22px;
   border:1px solid rgba(255,216,75,.15);
@@ -128,16 +164,7 @@ header{
   outline:none;
 }
 
-.sort{
-  height:72px;
-  border-radius:22px;
-  border:1px solid rgba(255,216,75,.15);
-  background:#101936;
-  color:white;
-  padding:0 20px;
-  font-size:18px;
-  outline:none;
-}
+/* STATS */
 
 .stats{
   width:min(1500px,95%);
@@ -168,6 +195,8 @@ header{
   font-weight:900;
 }
 
+/* GRID */
+
 .grid{
   width:min(1500px,95%);
   margin:auto;
@@ -186,9 +215,7 @@ header{
   transition:.3s;
 }
 
-.card:hover{
-  transform:translateY(-6px);
-}
+.card:hover{transform:translateY(-6px)}
 
 .image-wrap{
   width:100%;
@@ -215,9 +242,7 @@ header{
   font-weight:900;
 }
 
-.card-body{
-  padding:22px;
-}
+.card-body{padding:22px}
 
 .name{
   font-size:28px;
@@ -225,9 +250,7 @@ header{
   margin-bottom:12px;
 }
 
-.name a:hover{
-  color:#ffd84b;
-}
+.name a:hover{color:#ffd84b}
 
 .location{
   color:#d7deef;
@@ -273,19 +296,10 @@ header{
   transition:.25s;
 }
 
-.btn:hover{
-  transform:scale(1.03);
-}
+.btn:hover{transform:scale(1.03)}
 
-.whatsapp{
-  background:#25D366;
-  color:#001b09;
-}
-
-.call{
-  background:#ffd84b;
-  color:#000;
-}
+.whatsapp{background:#25D366;color:#001b09}
+.call{background:#ffd84b;color:#000}
 
 .empty{
   grid-column:1/-1;
@@ -304,97 +318,66 @@ footer{
 }
 
 @media(max-width:1200px){
-  .grid{
-    grid-template-columns:repeat(3,1fr);
-  }
-
-  .stats{
-    grid-template-columns:repeat(2,1fr);
-  }
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .stats{grid-template-columns:repeat(2,1fr)}
 }
 
 @media(max-width:850px){
-  .grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .top-controls{
-    grid-template-columns:1fr;
-  }
-
-  .brand h1{
-    font-size:38px;
-  }
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .top-controls{grid-template-columns:1fr}
+  .logo-wrap h1{font-size:38px}
 }
 
 @media(max-width:560px){
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .stats{
-    grid-template-columns:1fr;
-  }
-
-  .brand img{
-    width:54px;
-    height:54px;
-  }
-
-  .brand h1{
-    font-size:28px;
-  }
+  .grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr}
+  .logo{width:54px;height:54px}
+  .logo-wrap h1{font-size:28px}
+  .topbar{padding:18px}
 }
 </style>
 </head>
+
 <body>
 
-<header>
+<header class="topbar">
 
-  <a href="index.html" class="brand">
-    <img src="assets/logo/logo-navbar.png" alt="Nairobi Sweets Logo">
+  <a href="/" class="logo-wrap">
+    <img src="/assets/logo/logo-navbar.png" class="logo" alt="Nairobi Sweets">
     <h1>Nairobi Sweets</h1>
   </a>
 
   <nav class="menu">
-    <a href="index.html">Home</a>
+    <a href="/">Home</a>
 
-    <a href="seo/locations/nairobi.html">Nairobi</a>
+    <div class="dropdown">
+      <button class="dropbtn">Locations ▼</button>
 
-    <a href="seo/locations/kilimani.html">Kilimani</a>
+      <div class="dropdown-content">
+        <a href="/seo/locations/nairobi.html">Nairobi</a>
+        <a href="/seo/locations/kilimani.html">Kilimani</a>
+        <a href="/seo/locations/westlands.html">Westlands</a>
+        <a href="/seo/locations/kasarani-equity-kasarani.html">Kasarani</a>
+        <a href="/seo/locations/kikuyu.html">Kikuyu</a>
+        <a href="/seo/locations/kiambu-ruiru-membley.html">Ruiru</a>
+        <a href="/seo/locations/kisumu-town-milimani-kisumu.html">Kisumu</a>
+        <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">Mombasa</a>
+      </div>
+    </div>
 
-    <a href="seo/locations/westlands.html">Westlands</a>
-
-    <a href="seo/locations/kasarani-equity-kasarani.html">Kasarani</a>
-
-    <a href="seo/locations/kikuyu.html">Kikuyu</a>
-
-    <a href="seo/locations/kiambu-ruiru-membley.html">Ruiru</a>
-
-    <a href="shorts.html">Shorts</a>
-
-    <a href="join.html" class="join-btn">Join Now</a>
+    <a href="/shorts.html" class="shorts-btn">🔥 Shorts</a>
+    <a href="/join.html" class="join-btn">Join Now</a>
   </nav>
 
 </header>
 
 <section class="hero">
   <h2>Profiles</h2>
-
-  <p>
-    Verified profiles, WhatsApp access, VIP listings,
-    likes, views, luxury discovery and real photos.
-  </p>
+  <p>Verified profiles, WhatsApp access, VIP listings, likes, views, luxury discovery and real photos.</p>
 </section>
 
 <section class="top-controls">
-
-  <input
-    type="text"
-    id="searchInput"
-    class="search"
-    placeholder="Search by name, bio, location..."
-  />
+  <input type="text" id="searchInput" class="search" placeholder="Search by name, bio, location...">
 
   <select id="sortSelect" class="sort">
     <option value="featured">Featured First</option>
@@ -402,11 +385,9 @@ footer{
     <option value="views">Most Views</option>
     <option value="newest">Newest</option>
   </select>
-
 </section>
 
 <section class="stats">
-
   <div class="stat-card">
     <div class="stat-title">Total Profiles</div>
     <div class="stat-value" id="totalProfiles">0</div>
@@ -426,7 +407,6 @@ footer{
     <div class="stat-title">VIP Profiles</div>
     <div class="stat-value" id="vipProfiles">0</div>
   </div>
-
 </section>
 
 <section class="grid" id="profilesGrid"></section>
@@ -438,271 +418,157 @@ footer{
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const SUPABASE_URL =
-"https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-const SUPABASE_KEY =
-"sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
-
-const sb = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let allProfiles = [];
 
 function cleanPhone(phone){
-  let p = String(phone || "").replace(/\\D/g,"");
+  let p = String(phone || "").replace(/\D/g,"");
 
-  if(p.startsWith("0")){
-    p = "254" + p.slice(1);
-  }
-
-  if(p.startsWith("7") || p.startsWith("1")){
-    p = "254" + p;
-  }
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
 
   return p;
 }
 
 function getPhoto(p){
-  return (
-    p.photo_url ||
-    p.image_url ||
-    p.profile_photo ||
-    p.avatar_url ||
-    p.photo ||
-    "assets/logo/logo-badge.png"
-  );
+  return p.photo_url || p.image_url || p.profile_photo || p.avatar_url || p.photo || "/assets/logo/logo-badge.png";
 }
 
 function getName(p){
-  return (
-    p.stage_name ||
-    p.name ||
-    p.full_name ||
-    "Profile"
-  );
+  return p.stage_name || p.name || p.full_name || "Profile";
 }
 
 function getTier(p){
   const plan = String(p.plan || "").toLowerCase();
 
-  if(plan === "vvip" || plan === "signature"){
-    return "👑 VVIP";
-  }
-
-  if(plan === "vip"){
-    return "⭐ VIP";
-  }
+  if(plan === "vvip" || plan === "signature") return "👑 VVIP";
+  if(plan === "vip") return "⭐ VIP";
 
   return "✨ Featured";
 }
 
 function updateStats(profiles){
+  document.getElementById("totalProfiles").innerText = profiles.length;
 
-  document.getElementById("totalProfiles").innerText =
-    profiles.length;
+  const views = profiles.reduce((a,b)=>a + Number(b.views_count || 0),0);
+  const likes = profiles.reduce((a,b)=>a + Number(b.likes_count || 0),0);
+  const vip = profiles.filter(p => String(p.plan || "").toLowerCase() === "vip").length;
 
-  const views = profiles.reduce(
-    (a,b)=>a + Number(b.views_count || 0),0
-  );
-
-  const likes = profiles.reduce(
-    (a,b)=>a + Number(b.likes_count || 0),0
-  );
-
-  const vip = profiles.filter(p =>
-    String(p.plan || "").toLowerCase() === "vip"
-  ).length;
-
-  document.getElementById("totalViews").innerText =
-    views.toLocaleString();
-
-  document.getElementById("totalLikes").innerText =
-    likes.toLocaleString();
-
-  document.getElementById("vipProfiles").innerText =
-    vip;
+  document.getElementById("totalViews").innerText = views.toLocaleString();
+  document.getElementById("totalLikes").innerText = likes.toLocaleString();
+  document.getElementById("vipProfiles").innerText = vip;
 }
 
 function renderProfiles(profiles){
-
   updateStats(profiles);
 
   const grid = document.getElementById("profilesGrid");
 
   if(!profiles.length){
-    grid.innerHTML = `
-      <div class="empty">
-        No profiles found
-      </div>
-    `;
+    grid.innerHTML = `<div class="empty">No profiles found</div>`;
     return;
   }
 
   grid.innerHTML = profiles.map(profile => {
-
-    const rawPhone =
-      profile.phone ||
-      profile.whatsapp ||
-      "";
-
-    const whatsapp =
-      cleanPhone(rawPhone);
+    const rawPhone = profile.phone || profile.whatsapp || "";
+    const whatsapp = cleanPhone(rawPhone);
 
     return `
       <article class="card">
-
-        <div class="badge">
-          ${getTier(profile)}
-        </div>
+        <div class="badge">${getTier(profile)}</div>
 
         <div class="image-wrap">
-
-          <a href="profile.html?id=${profile.id}">
+          <a href="/profile.html?id=${profile.id}">
             <img
               src="${getPhoto(profile)}"
               loading="lazy"
-              onerror="this.src='assets/logo/logo-badge.png'"
+              onerror="this.src='/assets/logo/logo-badge.png'"
             >
           </a>
-
         </div>
 
         <div class="card-body">
-
           <div class="name">
-            <a href="profile.html?id=${profile.id}">
+            <a href="/profile.html?id=${profile.id}">
               ${getName(profile)}
             </a>
           </div>
 
-          <div class="location">
-            📍 ${profile.location || "Nairobi"}
-          </div>
-
-          <div class="phone">
-            📞 ${rawPhone}
-          </div>
+          <div class="location">📍 ${profile.location || "Nairobi"}</div>
+          <div class="phone">📞 ${rawPhone}</div>
 
           <div class="bio">
             ${profile.bio || "Premium Nairobi profile"}
           </div>
 
           <div class="stats-line">
-            ❤️ ${profile.likes_count || 0}
-            •
-            👁️ ${profile.views_count || 0}
+            ❤️ ${profile.likes_count || 0} • 👁️ ${profile.views_count || 0}
           </div>
 
           <div class="actions">
-
-            <a
-              class="btn whatsapp"
-              target="_blank"
-              href="https://wa.me/${whatsapp}"
-            >
-              WhatsApp
-            </a>
-
-            <a
-              class="btn call"
-              href="tel:${rawPhone}"
-            >
-              Call
-            </a>
-
+            <a class="btn whatsapp" target="_blank" href="https://wa.me/${whatsapp}">WhatsApp</a>
+            <a class="btn call" href="tel:${rawPhone}">Call</a>
           </div>
-
         </div>
-
       </article>
     `;
-
   }).join("");
 }
 
 async function loadProfiles(){
-
   const { data, error } = await sb
     .from("profiles")
     .select("*")
     .eq("approved", true)
-    .order("created_at", {
-      ascending:false
-    });
+    .order("created_at", { ascending:false });
 
   if(error){
-
-    document.getElementById(
-      "profilesGrid"
-    ).innerHTML = `
-      <div class="empty">
-        ${error.message}
-      </div>
-    `;
-
+    document.getElementById("profilesGrid").innerHTML =
+      `<div class="empty">${error.message}</div>`;
     return;
   }
 
   allProfiles = data || [];
-
   renderProfiles(allProfiles);
 }
 
-document.getElementById(
-  "searchInput"
-).addEventListener("input", e => {
-
+document.getElementById("searchInput").addEventListener("input", e => {
   const q = e.target.value.toLowerCase();
 
   const filtered = allProfiles.filter(p => {
-
     return `
       ${p.stage_name || ""}
+      ${p.name || ""}
       ${p.bio || ""}
       ${p.location || ""}
     `
     .toLowerCase()
     .includes(q);
-
   });
 
   renderProfiles(filtered);
-
 });
 
-document.getElementById(
-  "sortSelect"
-).addEventListener("change", e => {
-
+document.getElementById("sortSelect").addEventListener("change", e => {
   let profiles = [...allProfiles];
 
   if(e.target.value === "likes"){
-    profiles.sort(
-      (a,b)=>
-      (b.likes_count||0)-(a.likes_count||0)
-    );
+    profiles.sort((a,b)=>(b.likes_count || 0) - (a.likes_count || 0));
   }
 
   if(e.target.value === "views"){
-    profiles.sort(
-      (a,b)=>
-      (b.views_count||0)-(a.views_count||0)
-    );
+    profiles.sort((a,b)=>(b.views_count || 0) - (a.views_count || 0));
   }
 
   if(e.target.value === "newest"){
-    profiles.sort(
-      (a,b)=>
-      new Date(b.created_at) -
-      new Date(a.created_at)
-    );
+    profiles.sort((a,b)=>new Date(b.created_at) - new Date(a.created_at));
   }
 
   renderProfiles(profiles);
-
 });
 
 loadProfiles();
