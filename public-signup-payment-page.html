@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Create Profile & Pay | Nairobi Sweets</title>
+<title>Join Nairobi Sweets</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
 body{
   background:#000;
@@ -17,118 +21,266 @@ body{
   font-family:Arial,Helvetica,sans-serif;
 }
 
-.wrap{
-  max-width:760px;
+.container{
+  width:95%;
+  max-width:900px;
   margin:40px auto;
-  padding:30px;
   background:#111;
-  border:1px solid rgba(255,216,75,.35);
+  border:1px solid rgba(255,215,0,.25);
   border-radius:28px;
+  padding:35px;
+  box-shadow:0 0 35px rgba(255,0,140,.15);
 }
 
-h1{
+.logo{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.logo h1{
   color:#ffd84b;
-  font-size:42px;
-  margin-bottom:20px;
+  font-size:48px;
+  font-weight:900;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+@media(max-width:768px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+.field{
+  margin-bottom:18px;
 }
 
 label{
   display:block;
+  margin-bottom:10px;
   color:#ffd84b;
-  font-weight:900;
-  margin:18px 0 8px;
-  font-size:20px;
+  font-size:18px;
+  font-weight:800;
 }
 
-input,textarea,select{
+input,
+select,
+textarea{
   width:100%;
   padding:18px;
-  border-radius:16px;
-  border:1px solid #444;
+  border-radius:18px;
+  border:1px solid #333;
   background:#000;
   color:#fff;
-  font-size:18px;
+  font-size:17px;
 }
 
 textarea{
   min-height:120px;
+  resize:none;
 }
 
-.amount{
-  margin-top:22px;
-  padding:22px;
+.uploadBox{
+  border:2px dashed #444;
+  padding:18px;
   border-radius:18px;
-  background:rgba(255,216,75,.14);
+  background:#050505;
+}
+
+.preview{
+  width:100%;
+  height:250px;
+  object-fit:cover;
+  border-radius:18px;
+  margin-top:12px;
+  display:none;
+}
+
+.packageBox{
+  background:rgba(255,216,75,.1);
+  padding:22px;
+  border-radius:20px;
+  margin-top:20px;
+  margin-bottom:10px;
+}
+
+.packagePrice{
   color:#ffd84b;
-  font-size:26px;
+  font-size:30px;
   font-weight:900;
 }
 
 button{
   width:100%;
-  margin-top:24px;
   padding:22px;
   border:none;
   border-radius:999px;
   background:#ffd84b;
   color:#000;
-  font-size:22px;
+  font-size:24px;
   font-weight:900;
   cursor:pointer;
-}
-
-button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-.msg{
   margin-top:20px;
-  color:#ff5c8a;
-  font-size:20px;
-  font-weight:900;
+}
+
+button:hover{
+  transform:scale(1.01);
+}
+
+.message{
+  margin-top:20px;
+  font-size:18px;
+  font-weight:800;
+  color:#ff4d88;
 }
 
 .success{
-  color:#22c55e;
+  color:#33d17a;
 }
 </style>
 </head>
 
 <body>
 
-<div class="wrap">
-  <h1>Create Profile & Pay</h1>
+<div class="container">
 
-  <label>Stage Name</label>
-  <input id="stageName" placeholder="Your name">
+  <div class="logo">
+    <h1>Nairobi Sweets</h1>
+  </div>
 
-  <label>Phone</label>
-  <input id="phone" placeholder="07XXXXXXXX">
+  <div class="grid">
 
-  <label>Location</label>
-  <input id="location" placeholder="Nairobi">
+    <div class="field">
+      <label>Stage Name</label>
+      <input type="text" id="stage_name" placeholder="Your profile name">
+    </div>
 
-  <label>Photo URL</label>
-  <input id="photoUrl" placeholder="Paste photo URL">
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="you@example.com">
+    </div>
 
-  <label>Bio</label>
-  <textarea id="bio" placeholder="Short profile description"></textarea>
+    <div class="field">
+      <label>Phone Number</label>
+      <input type="text" id="phone" placeholder="07XXXXXXXX">
+    </div>
 
-  <label>Package</label>
-  <select id="package" onchange="updateAmount()">
-    <option value="featured" data-amount="1000">Featured - KES 1000 / week</option>
-    <option value="vip" data-amount="1500" selected>VIP - KES 1500 / week</option>
-    <option value="vvip" data-amount="3000">VVIP / Signature - KES 3000 / week</option>
-  </select>
+    <div class="field">
+      <label>Age</label>
+      <input type="number" id="age" placeholder="22">
+    </div>
 
-  <div class="amount" id="amountBox">Amount: KES 1500</div>
+    <div class="field">
+      <label>Location</label>
+      <input type="text" id="location" placeholder="Westlands">
+    </div>
 
-  <button id="payBtn" onclick="createProfileAndPay()">
+    <div class="field">
+      <label>Body Type</label>
+      <select id="body_type">
+        <option>Petite</option>
+        <option>Curvy</option>
+        <option>Slim</option>
+        <option>Thick</option>
+        <option>Athletic</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Meeting Place</label>
+      <select id="meeting_place">
+        <option>In Call</option>
+        <option>Out Call</option>
+        <option>Both</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Rate (Optional)</label>
+      <input type="text" id="rate" placeholder="KES 10,000">
+    </div>
+
+  </div>
+
+  <div class="field">
+    <label>Services You Offer</label>
+    <textarea id="services" placeholder="Massage, companionship, dinner dates..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>Bio</label>
+    <textarea id="bio" placeholder="Tell clients about yourself"></textarea>
+  </div>
+
+  <div class="grid">
+
+    <div class="field">
+      <label>Upload Picture 1</label>
+      <div class="uploadBox">
+        <input type="file" id="pic1" accept="image/*">
+        <img id="preview1" class="preview">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Upload Picture 2</label>
+      <div class="uploadBox">
+        <input type="file" id="pic2" accept="image/*">
+        <img id="preview2" class="preview">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Upload Picture 3</label>
+      <div class="uploadBox">
+        <input type="file" id="pic3" accept="image/*">
+        <img id="preview3" class="preview">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Upload Short Video</label>
+      <div class="uploadBox">
+        <input type="file" id="short_video" accept="video/*">
+      </div>
+    </div>
+
+  </div>
+
+  <div class="field">
+    <label>Choose Package</label>
+
+    <select id="package" onchange="updatePrice()">
+      <option value="featured" data-price="1000">
+        Featured - KES 1000 / week
+      </option>
+
+      <option value="vip" data-price="1500">
+        VIP - KES 1500 / week
+      </option>
+
+      <option value="vvip" data-price="3000">
+        VVIP / Signature - KES 3000 / week
+      </option>
+    </select>
+  </div>
+
+  <div class="packageBox">
+    <div class="packagePrice" id="priceText">
+      Amount: KES 1000
+    </div>
+  </div>
+
+  <button onclick="submitProfile()">
     Create Profile & Pay
   </button>
 
-  <div class="msg" id="message"></div>
+  <div class="message" id="message"></div>
+
 </div>
 
 <script>
@@ -137,140 +289,121 @@ const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function getSelectedPackage(){
+function updatePrice(){
   const select = document.getElementById("package");
   const option = select.options[select.selectedIndex];
+  const price = option.dataset.price;
 
-  return {
-    plan: select.value,
-    amount: Number(option.dataset.amount)
-  };
+  document.getElementById("priceText").innerText =
+    "Amount: KES " + price;
 }
 
-function updateAmount(){
-  const pkg = getSelectedPackage();
-  document.getElementById("amountBox").innerText =
-    "Amount: KES " + pkg.amount;
+function previewImage(inputId, previewId){
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+
+  input.addEventListener("change", () => {
+    const file = input.files[0];
+
+    if(file){
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = "block";
+    }
+  });
 }
 
-function normalizePhone(phone){
-  let p = String(phone || "").replace(/\D/g,"");
+previewImage("pic1","preview1");
+previewImage("pic2","preview2");
+previewImage("pic3","preview3");
 
-  if(p.startsWith("0")){
-    p = "254" + p.slice(1);
+async function uploadFile(file, folder){
+  if(!file) return "";
+
+  const fileName = Date.now() + "-" + file.name;
+
+  const { error } = await sb.storage
+    .from("profile-images")
+    .upload(`${folder}/${fileName}`, file);
+
+  if(error){
+    throw error;
   }
 
-  if(p.startsWith("7") || p.startsWith("1")){
-    p = "254" + p;
-  }
-
-  return p;
+  return `${SUPABASE_URL}/storage/v1/object/public/profile-images/${folder}/${fileName}`;
 }
 
-async function safeJsonResponse(response){
-  const rawText = await response.text();
+async function submitProfile(){
 
-  let result = {};
+  const message = document.getElementById("message");
+
+  message.innerHTML = "Uploading media...";
 
   try{
-    result = rawText ? JSON.parse(rawText) : {};
-  }catch(err){
-    throw new Error("Payment server returned invalid response: " + rawText);
-  }
 
-  if(!response.ok){
-    throw new Error(
-      result.error ||
-      result.message ||
-      "Payment request failed"
-    );
-  }
+    const pic1 = document.getElementById("pic1").files[0];
+    const pic2 = document.getElementById("pic2").files[0];
+    const pic3 = document.getElementById("pic3").files[0];
+    const video = document.getElementById("short_video").files[0];
 
-  return result;
-}
+    const image1 = await uploadFile(pic1,"photos");
+    const image2 = await uploadFile(pic2,"photos");
+    const image3 = await uploadFile(pic3,"photos");
+    const shortVideo = await uploadFile(video,"shorts");
 
-async function createProfileAndPay(){
-  const btn = document.getElementById("payBtn");
-  const msg = document.getElementById("message");
+    const packageSelect = document.getElementById("package");
+    const packageOption = packageSelect.options[packageSelect.selectedIndex];
 
-  msg.className = "msg";
-  msg.innerText = "";
+    const amount = packageOption.dataset.price;
 
-  const stageName = document.getElementById("stageName").value.trim();
-  const rawPhone = document.getElementById("phone").value.trim();
-  const phone = normalizePhone(rawPhone);
-  const location = document.getElementById("location").value.trim();
-  const photoUrl = document.getElementById("photoUrl").value.trim();
-  const bio = document.getElementById("bio").value.trim();
-  const pkg = getSelectedPackage();
+    const profileData = {
+      stage_name: document.getElementById("stage_name").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      age: document.getElementById("age").value,
+      location: document.getElementById("location").value,
+      body_type: document.getElementById("body_type").value,
+      meeting_place: document.getElementById("meeting_place").value,
+      rate: document.getElementById("rate").value,
+      services: document.getElementById("services").value,
+      bio: document.getElementById("bio").value,
 
-  if(!stageName || !phone || !location){
-    msg.innerText = "Please fill name, phone and location.";
-    return;
-  }
+      image_url: image1,
+      image2_url: image2,
+      image3_url: image3,
 
-  btn.disabled = true;
-  btn.innerText = "Creating profile...";
+      short_video_url: shortVideo,
 
-  try{
-    const profilePayload = {
-      stage_name: stageName,
-      phone: phone,
-      whatsapp: phone,
-      location: location,
-      bio: bio,
-      photo_url: photoUrl,
-      image_url: photoUrl,
-      plan: pkg.plan,
+      package: packageSelect.value,
+      amount: amount,
+
       approved: false,
-      views_count: 0,
-      likes_count: 0,
-      payment_status: "pending"
+      likes_count: 3,
+      views_count: 20
     };
 
-    const { data:profile, error:profileError } = await sb
+    const { data, error } = await sb
       .from("profiles")
-      .insert([profilePayload])
+      .insert([profileData])
       .select()
       .single();
 
-    if(profileError){
-      throw new Error(profileError.message);
+    if(error){
+      throw error;
     }
 
-    btn.innerText = "Sending M-Pesa prompt...";
+    message.classList.add("success");
+    message.innerHTML =
+      "Profile created successfully. Payment prompt coming soon.";
 
-    const response = await fetch("/.netlify/functions/mpesa-stk-push", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        phone: phone,
-        amount: pkg.amount,
-        profile_id: profile.id,
-        plan: pkg.plan
-      })
-    });
+  }catch(err){
 
-    const result = await safeJsonResponse(response);
+    console.log(err);
 
-    msg.className = "msg success";
-    msg.innerText =
-      result.message ||
-      "Profile created. Check your phone for the M-Pesa prompt.";
+    message.innerHTML =
+      err.message || "Upload failed.";
 
-    btn.innerText = "Payment Prompt Sent";
-
-  }catch(error){
-    msg.className = "msg";
-    msg.innerText = error.message || "Something went wrong.";
-    btn.disabled = false;
-    btn.innerText = "Create Profile & Pay";
   }
 }
-
-updateAmount();
 </script>
 
 </body>
