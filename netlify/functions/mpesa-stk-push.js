@@ -1,27 +1,17 @@
-const MPESA_ENV = process.env.MPESA_ENV || "sandbox";
-
-const BASE_URL =
-  MPESA_ENV === "production"
-    ? "https://api.safaricom.co.ke"
-    : "https://sandbox.safaricom.co.ke";
-
 function json(statusCode, data) {
   return {
     statusCode,
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   };
 }
 
-function timestamp() {
+function getTimestamp() {
   const d = new Date();
-
   const pad = n => String(n).padStart(2, "0");
 
   return (
-    d.getFullYear().toString() +
+    d.getFullYear() +
     pad(d.getMonth() + 1) +
     pad(d.getDate()) +
     pad(d.getHours()) +
@@ -39,87 +29,74 @@ function normalizePhone(phone) {
   return p;
 }
 
-async function getAccessToken() {
-  const consumerKey = process.env.MPESA_CONSUMER_KEY;
-  const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
-
-  if (!consumerKey || !consumerSecret) {
-    throw new Error("Missing MPESA_CONSUMER_KEY or MPESA_CONSUMER_SECRET");
-  }
-
-  const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString("base64");
-
-  const response = await fetch(
-    `${BASE_URL}/oauth/v1/generate?grant_type=client_credentials`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Basic ${auth}`
-      }
-    }
-  );
-
-  const text = await response.text();
-
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error("Invalid token response: " + text);
-  }
-
-  if (!response.ok || !data.access_token) {
-    throw new Error(data.errorMessage || data.error || "Failed to get M-Pesa token");
-  }
-
-  return data.access_token;
-}
-
-exports.handler = async function(event) {
+exports.handler = async function (event) {
   try {
     if (event.httpMethod !== "POST") {
       return json(405, { error: "Method not allowed" });
     }
 
-    let body = {};
-    try {
-      body = JSON.parse(event.body || "{}");
-    } catch {
-      return json(400, { error: "Invalid JSON body" });
-    }
+    const body = JSON.parse(event.body || "{}");
 
     const phone = normalizePhone(body.phone);
     const amount = Math.round(Number(body.amount || 0));
-    const profileId = body.profile_id;
-    const plan = body.plan || "profile";
+    const profileId = body.profile_id || "profile";
+    const plan = body.plan || "VIP";
 
-    if (!phone || !amount || !profileId) {
-      return json(400, {
-        error: "Missing phone, amount, or profile_id"
-      });
+    if (!phone || !amount) {
+      return json(400, { error: "Missing phone or amount" });
     }
 
-    const shortcode = process.env.MPESA_SHORTCODE;
+    const consumerKey = process.env.MPESA_CONSUMER_KEY;
+    const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
+    const shortcode = process.env.MPESA_SHORTCODE || "174379";
     const passkey = process.env.MPESA_PASSKEY;
     const callbackUrl = process.env.MPESA_CALLBACK_URL;
-    const transactionType =
-      process.env.MPESA_TRANSACTION_TYPE || "CustomerPayBillOnline";
 
-    if (!shortcode || !passkey || !callbackUrl) {
+    if (!consumerKey || !consumerSecret || !shortcode || !passkey || !callbackUrl) {
       return json(500, {
-        error: "Missing MPESA_SHORTCODE, MPESA_PASSKEY, or MPESA_CALLBACK_URL"
+        error: "Missing M-Pesa environment variables"
       });
     }
 
-    const time = timestamp();
-    const password = Buffer.from(`${shortcode}${passkey}${time}`).toString("base64");
-    const token = await getAccessToken();
+    const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString("base64");
 
-    const payload = {
+    const tokenRes = await fetch(
+      "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${auth}`
+        }
+      }
+    );
+
+    const tokenText = await tokenRes.text();
+
+    let tokenData;
+    try {
+      tokenData = JSON.parse(tokenText);
+    } catch {
+      return json(500, {
+        error: "Invalid token response",
+        raw: tokenText
+      });
+    }
+
+    if (!tokenRes.ok || !tokenData.access_token) {
+      return json(401, {
+        error: tokenData.errorMessage || tokenData.error || "Wrong credentials",
+        details: tokenData
+      });
+    }
+
+    const timestamp = getTimestamp();
+    const password = Buffer.from(`${shortcode}${passkey}${timestamp}`).toString("base64");
+
+    const stkPayload = {
       BusinessShortCode: shortcode,
       Password: password,
-      Timestamp: time,
-      TransactionType: transactionType,
+      Timestamp: timestamp,
+      TransactionType: "CustomerPayBillOnline",
       Amount: amount,
       PartyA: phone,
       PartyB: shortcode,
@@ -129,43 +106,43 @@ exports.handler = async function(event) {
       TransactionDesc: `Nairobi Sweets ${plan}`
     };
 
-    const response = await fetch(
-      `${BASE_URL}/mpesa/stkpush/v1/processrequest`,
+    const stkRes = await fetch(
+      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${tokenData.access_token}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(stkPayload)
       }
     );
 
-    const text = await response.text();
+    const stkText = await stkRes.text();
 
-    let result;
+    let stkData;
     try {
-      result = JSON.parse(text);
+      stkData = JSON.parse(stkText);
     } catch {
-      return json(502, {
+      return json(500, {
         error: "Invalid STK response",
-        raw: text
+        raw: stkText
       });
     }
 
-    if (!response.ok) {
-      return json(response.status, {
-        error: result.errorMessage || result.error || "STK Push failed",
-        details: result
+    if (!stkRes.ok || stkData.ResponseCode !== "0") {
+      return json(400, {
+        error: stkData.errorMessage || stkData.ResponseDescription || "STK Push failed",
+        details: stkData
       });
     }
 
     return json(200, {
       success: true,
       message: "M-Pesa prompt sent. Check your phone.",
-      checkoutRequestId: result.CheckoutRequestID,
-      merchantRequestId: result.MerchantRequestID,
-      response: result
+      checkoutRequestId: stkData.CheckoutRequestID,
+      merchantRequestId: stkData.MerchantRequestID,
+      response: stkData
     });
 
   } catch (error) {
