@@ -8,7 +8,7 @@ function json(statusCode, data) {
   };
 }
 
-function timestamp() {
+function makeTimestamp() {
   const d = new Date();
   const p = n => String(n).padStart(2, "0");
   return (
@@ -41,14 +41,16 @@ exports.handler = async function(event) {
 
     const body = JSON.parse(event.body || "{}");
 
+    const profileId = body.profile_id;
+    const profileName = body.profile_name || body.stage_name || "";
     const phone = normalizePhone(body.phone);
     const amount = Math.round(Number(body.amount || 0));
-    const profileId = body.profile_id;
     const plan = body.plan || "VIP";
 
-    if (!phone || !amount || !profileId) {
+    if (!profileId || !phone || !amount) {
       return json(400, {
-        error: "Missing phone, amount, or profile_id"
+        error: "Missing profile_id, phone, or amount",
+        received: { profileId, phone, amount, plan }
       });
     }
 
@@ -59,9 +61,7 @@ exports.handler = async function(event) {
     const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
 
     if (!shortcode || !passkey || !callbackUrl || !consumerKey || !consumerSecret) {
-      return json(500, {
-        error: "Missing M-Pesa environment variables"
-      });
+      return json(500, { error: "Missing M-Pesa environment variables" });
     }
 
     const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString("base64");
@@ -70,13 +70,12 @@ exports.handler = async function(event) {
       "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
       {
         method: "GET",
-        headers: {
-          Authorization: `Basic ${auth}`
-        }
+        headers: { Authorization: `Basic ${auth}` }
       }
     );
 
-    const tokenData = await tokenRes.json();
+    const tokenText = await tokenRes.text();
+    const tokenData = JSON.parse(tokenText || "{}");
 
     if (!tokenRes.ok || !tokenData.access_token) {
       return json(401, {
@@ -85,13 +84,13 @@ exports.handler = async function(event) {
       });
     }
 
-    const time = timestamp();
-    const password = Buffer.from(`${shortcode}${passkey}${time}`).toString("base64");
+    const timestamp = makeTimestamp();
+    const password = Buffer.from(`${shortcode}${passkey}${timestamp}`).toString("base64");
 
     const stkPayload = {
       BusinessShortCode: shortcode,
       Password: password,
-      Timestamp: time,
+      Timestamp: timestamp,
       TransactionType: "CustomerPayBillOnline",
       Amount: amount,
       PartyA: phone,
@@ -114,7 +113,8 @@ exports.handler = async function(event) {
       }
     );
 
-    const stkData = await stkRes.json();
+    const stkText = await stkRes.text();
+    const stkData = JSON.parse(stkText || "{}");
 
     if (!stkRes.ok || stkData.ResponseCode !== "0") {
       return json(400, {
@@ -123,8 +123,9 @@ exports.handler = async function(event) {
       });
     }
 
-    await supabase.from("payments").insert([{
+    const { error: payError } = await supabase.from("payments").insert([{
       profile_id: profileId,
+      profile_name: profileName,
       phone,
       amount,
       plan,
@@ -132,6 +133,13 @@ exports.handler = async function(event) {
       merchant_request_id: stkData.MerchantRequestID,
       status: "pending"
     }]);
+
+    if (payError) {
+      return json(500, {
+        error: "Payment row save failed",
+        details: payError.message
+      });
+    }
 
     return json(200, {
       success: true,
