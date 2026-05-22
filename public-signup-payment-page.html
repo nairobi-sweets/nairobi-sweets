@@ -1,428 +1,459 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create Profile & Pay | Nairobi Sweets</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Nairobi Sweets</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  background:#000;
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
-}
-
-.wrap{
-  max-width:900px;
-  margin:40px auto;
-  padding:35px;
-  background:#111;
-  border:1px solid rgba(255,216,75,.35);
-  border-radius:28px;
-}
-
-h1{
-  color:#ffd84b;
-  font-size:42px;
-  margin-bottom:25px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:18px;
-}
-
-label{
-  display:block;
-  color:#ffd84b;
-  font-weight:900;
-  margin:18px 0 8px;
-  font-size:18px;
-}
-
-input,textarea,select{
-  width:100%;
-  padding:18px;
-  border-radius:16px;
-  border:1px solid #444;
-  background:#000;
-  color:#fff;
-  font-size:17px;
-}
-
-textarea{min-height:120px}
-
-.preview{
-  width:100%;
-  height:230px;
-  object-fit:cover;
-  border-radius:18px;
-  margin-top:12px;
-  display:none;
-}
-
-.amount{
-  margin-top:22px;
-  padding:24px;
-  border-radius:18px;
-  background:rgba(255,216,75,.14);
-  color:#ffd84b;
-  font-size:30px;
-  font-weight:900;
-}
-
-button{
-  width:100%;
-  margin-top:24px;
-  padding:22px;
-  border:none;
-  border-radius:999px;
-  background:#ffd84b;
-  color:#000;
-  font-size:22px;
-  font-weight:900;
-  cursor:pointer;
-}
-
-button:disabled{opacity:.55}
-
-.msg{
-  margin-top:22px;
-  font-size:20px;
-  font-weight:900;
-  color:#ff5c8a;
-}
-
-.success{color:#22c55e}
-
-@media(max-width:700px){
-  .grid{grid-template-columns:1fr}
-}
-</style>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #050505;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      padding: 30px;
+      border-bottom: 1px solid #3b2f00;
+      background: #000;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .brand img {
+      width: 90px;
+      height: auto;
+    }
+    h1 {
+      color: #ffdb45;
+      font-size: 54px;
+      margin: 0;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 40px auto;
+      padding: 30px;
+      border: 1px solid #5b4700;
+      border-radius: 28px;
+      background: #111;
+    }
+    h2 {
+      color: #ffdb45;
+      font-size: 36px;
+    }
+    label {
+      display: block;
+      color: #ffdb45;
+      font-weight: 900;
+      margin: 18px 0 8px;
+      font-size: 20px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid #444;
+      background: #000;
+      color: white;
+      font-size: 18px;
+    }
+    textarea { min-height: 130px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+    .files {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 20px;
+    }
+    .preview {
+      margin-top: 14px;
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      border-radius: 18px;
+      border: 1px dashed #555;
+      display: none;
+    }
+    .amount {
+      margin-top: 26px;
+      padding: 25px;
+      border-radius: 18px;
+      background: #302a12;
+      color: #ffdb45;
+      font-size: 34px;
+      font-weight: 900;
+    }
+    button {
+      width: 100%;
+      margin-top: 28px;
+      padding: 24px;
+      border: none;
+      border-radius: 40px;
+      background: #ffdb45;
+      color: black;
+      font-size: 24px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+    .msg {
+      margin-top: 22px;
+      font-size: 22px;
+      font-weight: 900;
+    }
+    .success { color: #22c55e; }
+    .error { color: #ff4f86; }
+    .note {
+      color: #bbb;
+      line-height: 1.6;
+      margin-top: 20px;
+    }
+    footer {
+      text-align: center;
+      color: #888;
+      padding: 40px;
+    }
+    @media(max-width: 800px) {
+      h1 { font-size: 38px; }
+      .grid, .files { grid-template-columns: 1fr; }
+      .wrap { margin: 20px; padding: 22px; }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="wrap">
-  <h1>Create Profile & Pay</h1>
-
-  <div class="grid">
-    <div>
-      <label>Stage Name</label>
-      <input id="stageName" placeholder="Your profile name">
-    </div>
-
-    <div>
-      <label>Email</label>
-      <input id="email" type="email" placeholder="you@example.com">
-    </div>
-
-    <div>
-      <label>Phone</label>
-      <input id="phone" placeholder="07XXXXXXXX">
-    </div>
-
-    <div>
-      <label>Age</label>
-      <input id="age" type="number" placeholder="22">
-    </div>
-
-    <div>
-      <label>Location</label>
-      <input id="location" placeholder="Westlands">
-    </div>
-
-    <div>
-      <label>Body Type</label>
-      <select id="bodyType">
-        <option value="Petite">Petite</option>
-        <option value="Slim">Slim</option>
-        <option value="Curvy">Curvy</option>
-        <option value="Thick">Thick</option>
-        <option value="Athletic">Athletic</option>
-      </select>
-    </div>
-
-    <div>
-      <label>Meeting Place</label>
-      <select id="meetingPlace">
-        <option value="In Call">In Call</option>
-        <option value="Out Call">Out Call</option>
-        <option value="Both">Both</option>
-      </select>
-    </div>
-
-    <div>
-      <label>Rate Optional</label>
-      <input id="rate" placeholder="KES 10,000">
-    </div>
+<header>
+  <div class="brand">
+    <img src="/assets/logo/logo-navbar.png" alt="Nairobi Sweets Logo">
+    <h1>Nairobi Sweets</h1>
   </div>
+</header>
 
-  <label>Services You Offer</label>
-  <textarea id="services" placeholder="Write services offered"></textarea>
+<main class="wrap">
+  <h2>Create Profile & Pay</h2>
 
-  <label>Bio</label>
-  <textarea id="bio" placeholder="Short profile description"></textarea>
+  <p class="note">
+    Fill your profile details, upload at least 3 photos and 1 short video, then pay by M-Pesa.
+  </p>
 
-  <div class="grid">
-    <div>
-      <label>Main Picture</label>
-      <input id="pic1" type="file" accept="image/*">
-      <img id="preview1" class="preview">
+  <form id="joinForm">
+
+    <div class="grid">
+      <div>
+        <label>Stage Name *</label>
+        <input id="stageName" required placeholder="Sweet" />
+      </div>
+
+      <div>
+        <label>Email *</label>
+        <input id="email" type="email" required placeholder="you@email.com" />
+      </div>
+
+      <div>
+        <label>Phone *</label>
+        <input id="phone" required placeholder="2547XXXXXXXX" />
+      </div>
+
+      <div>
+        <label>Age *</label>
+        <input id="age" type="number" min="20" required placeholder="22" />
+      </div>
+
+      <div>
+        <label>Location *</label>
+        <input id="location" required placeholder="Westlands" />
+      </div>
+
+      <div>
+        <label>Body Type *</label>
+        <select id="bodyType" required>
+          <option value="">Select body type</option>
+          <option>Petite</option>
+          <option>Slim</option>
+          <option>Thick</option>
+          <option>Curvy</option>
+          <option>Athletic</option>
+          <option>BBW</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Meeting Place *</label>
+        <select id="meetingPlace" required>
+          <option value="">Select</option>
+          <option>In Call</option>
+          <option>Out Call</option>
+          <option>Both</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Rate Optional</label>
+        <input id="rate" placeholder="5,000" />
+      </div>
     </div>
 
-    <div>
-      <label>Second Picture</label>
-      <input id="pic2" type="file" accept="image/*">
-      <img id="preview2" class="preview">
+    <label>Services You Offer *</label>
+    <textarea id="services" required placeholder="Massage, dinner date, companionship..."></textarea>
+
+    <label>Bio *</label>
+    <textarea id="bio" required placeholder="Short profile description"></textarea>
+
+    <div class="files">
+      <div>
+        <label>Main Picture *</label>
+        <input id="photo1" type="file" accept="image/*" required />
+        <img id="preview1" class="preview">
+      </div>
+
+      <div>
+        <label>Second Picture *</label>
+        <input id="photo2" type="file" accept="image/*" required />
+        <img id="preview2" class="preview">
+      </div>
+
+      <div>
+        <label>Third Picture *</label>
+        <input id="photo3" type="file" accept="image/*" required />
+        <img id="preview3" class="preview">
+      </div>
+
+      <div>
+        <label>Short Video *</label>
+        <input id="shortVideo" type="file" accept="video/*" required />
+      </div>
     </div>
 
-    <div>
-      <label>Third Picture</label>
-      <input id="pic3" type="file" accept="image/*">
-      <img id="preview3" class="preview">
-    </div>
+    <label>Choose Package</label>
+    <select id="package">
+      <option value="Featured" data-amount="1000">Featured - KES 1000 / week</option>
+      <option value="VIP" data-amount="1500" selected>VIP - KES 1500 / week</option>
+      <option value="VVIP" data-amount="3000">VVIP - KES 3000 / week</option>
+    </select>
 
-    <div>
-      <label>Short Video</label>
-      <input id="shortVideo" type="file" accept="video/*">
-    </div>
-  </div>
+    <div class="amount" id="amountBox">Amount: KES 1500</div>
 
-  <label>Choose Package</label>
-  <select id="packageSelect" onchange="updateAmount()">
-    <option value="featured" data-amount="1000">Featured - KES 1000 / week</option>
-    <option value="vip" data-amount="1500" selected>VIP - KES 1500 / week</option>
-    <option value="vvip" data-amount="3000">VVIP / Signature - KES 3000 / week</option>
-  </select>
+    <button id="payBtn" type="submit">Create Profile & Pay</button>
 
-  <div class="amount" id="amountBox">Amount: KES 1500</div>
+    <div id="msg" class="msg"></div>
+  </form>
+</main>
 
-  <button id="submitBtn" onclick="createProfileAndPay()">
-    Create Profile & Pay
-  </button>
-
-  <div class="msg" id="message"></div>
-</div>
+<footer>
+  © Nairobi Sweets
+</footer>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1iaYXSg_Ynm8qym";
 
-function preview(inputId, previewId){
-  document.getElementById(inputId).addEventListener("change", function(){
-    const file = this.files[0];
-    const img = document.getElementById(previewId);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    if(file){
-      img.src = URL.createObjectURL(file);
-      img.style.display = "block";
-    }
+const form = document.getElementById("joinForm");
+const msg = document.getElementById("msg");
+const payBtn = document.getElementById("payBtn");
+const packageSelect = document.getElementById("package");
+const amountBox = document.getElementById("amountBox");
+
+packageSelect.addEventListener("change", () => {
+  const amount = packageSelect.selectedOptions[0].dataset.amount;
+  amountBox.innerText = `Amount: KES ${amount}`;
+});
+
+function preview(inputId, imgId) {
+  const input = document.getElementById(inputId);
+  const img = document.getElementById(imgId);
+
+  input.addEventListener("change", () => {
+    const file = input.files[0];
+    if (!file) return;
+
+    img.src = URL.createObjectURL(file);
+    img.style.display = "block";
   });
 }
 
-preview("pic1","preview1");
-preview("pic2","preview2");
-preview("pic3","preview3");
+preview("photo1", "preview1");
+preview("photo2", "preview2");
+preview("photo3", "preview3");
 
-function getPackage(){
-  const select = document.getElementById("packageSelect");
-  const option = select.options[select.selectedIndex];
+function cleanPhone(phone) {
+  let p = String(phone || "").replace(/\D/g, "");
 
-  return {
-    plan: select.value,
-    amount: Number(option.dataset.amount)
-  };
-}
-
-function updateAmount(){
-  const pkg = getPackage();
-  document.getElementById("amountBox").innerText = "Amount: KES " + pkg.amount;
-}
-
-function normalizePhone(phone){
-  let p = String(phone || "").replace(/\D/g,"");
-
-  if(p.startsWith("0")) p = "254" + p.slice(1);
-  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  if (p.startsWith("0")) p = "254" + p.slice(1);
+  if (p.startsWith("7") || p.startsWith("1")) p = "254" + p;
 
   return p;
 }
 
-async function uploadFile(file, folder){
-  if(!file) return "";
+async function uploadFile(bucket, file, folder) {
+  if (!file) return null;
 
   const ext = file.name.split(".").pop();
-  const fileName = folder + "/" + Date.now() + "-" + Math.random().toString(36).slice(2) + "." + ext;
+  const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error } = await sb.storage
-    .from("profile-images")
-    .upload(fileName, file, { upsert:true });
+    .from(bucket)
+    .upload(fileName, file, {
+      cacheControl: "3600",
+      upsert: false
+    });
 
-  if(error) throw error;
+  if (error) throw error;
 
   const { data } = sb.storage
-    .from("profile-images")
+    .from(bucket)
     .getPublicUrl(fileName);
 
   return data.publicUrl;
 }
 
-async function safeJsonResponse(response){
-  const rawText = await response.text();
-
-  let result = {};
-
-  try{
-    result = rawText ? JSON.parse(rawText) : {};
-  }catch(err){
-    throw new Error("Payment server returned invalid response: " + rawText);
-  }
-
-  if(!response.ok){
-    throw new Error(result.error || result.message || "Payment request failed");
-  }
-
-  return result;
-}
-
-async function createProfileAndPay(){
-  const btn = document.getElementById("submitBtn");
-  const msg = document.getElementById("message");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
   msg.className = "msg";
-  msg.innerText = "";
+  msg.innerText = "Creating profile...";
 
-  const stageName = document.getElementById("stageName").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const rawPhone = document.getElementById("phone").value.trim();
-  const phone = normalizePhone(rawPhone);
-  const age = Number(document.getElementById("age").value || 0);
-  const location = document.getElementById("location").value.trim();
-  const bodyType = document.getElementById("bodyType").value;
-  const meetingPlace = document.getElementById("meetingPlace").value;
-  const rate = document.getElementById("rate").value.trim();
-  const services = document.getElementById("services").value.trim();
-  const bio = document.getElementById("bio").value.trim();
-  const pkg = getPackage();
+  payBtn.disabled = true;
+  payBtn.innerText = "Processing...";
 
-  if(!stageName || !email || !phone || !age || !location){
-    msg.innerText = "Please fill stage name, email, phone, age and location.";
-    return;
-  }
+  try {
+    const stageName = document.getElementById("stageName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = cleanPhone(document.getElementById("phone").value);
+    const age = Number(document.getElementById("age").value);
+    const location = document.getElementById("location").value.trim();
+    const bodyType = document.getElementById("bodyType").value;
+    const meetingPlace = document.getElementById("meetingPlace").value;
+    const rate = document.getElementById("rate").value.trim();
+    const services = document.getElementById("services").value.trim();
+    const bio = document.getElementById("bio").value.trim();
 
-  if(age < 18){
-    msg.innerText = "You must be 18 years or older.";
-    return;
-  }
+    const plan = packageSelect.value;
+    const amount = Number(packageSelect.selectedOptions[0].dataset.amount);
 
-  btn.disabled = true;
-  btn.innerText = "Uploading media...";
-
-  try{
-    const pic1 = document.getElementById("pic1").files[0];
-    const pic2 = document.getElementById("pic2").files[0];
-    const pic3 = document.getElementById("pic3").files[0];
-    const shortVideo = document.getElementById("shortVideo").files[0];
-
-    if(!pic1 || !pic2 || !pic3){
-      throw new Error("Please upload at least 3 pictures.");
+    if (age < 20) {
+      throw new Error("You must be at least 20 years old.");
     }
 
-    const image1 = await uploadFile(pic1, "photos");
-    const image2 = await uploadFile(pic2, "photos");
-    const image3 = await uploadFile(pic3, "photos");
-    const shortVideoUrl = await uploadFile(shortVideo, "shorts");
+    const photo1 = document.getElementById("photo1").files[0];
+    const photo2 = document.getElementById("photo2").files[0];
+    const photo3 = document.getElementById("photo3").files[0];
+    const shortVideo = document.getElementById("shortVideo").files[0];
 
-    btn.innerText = "Creating profile...";
+    if (!photo1 || !photo2 || !photo3 || !shortVideo) {
+      throw new Error("Please upload at least 3 pictures and 1 short video.");
+    }
+
+    msg.innerText = "Uploading photos...";
+
+    const folder = `${stageName.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}`;
+
+    const imageUrl = await uploadFile("profile-images", photo1, folder);
+    const imageUrl2 = await uploadFile("profile-images", photo2, folder);
+    const imageUrl3 = await uploadFile("profile-images", photo3, folder);
+
+    msg.innerText = "Uploading short video...";
+
+    let shortUrl = null;
+
+    try {
+      shortUrl = await uploadFile("shorts", shortVideo, folder);
+    } catch {
+      shortUrl = await uploadFile("profile-images", shortVideo, folder);
+    }
+
+    msg.innerText = "Saving profile...";
 
     const profilePayload = {
       stage_name: stageName,
-      email: email,
-      phone: phone,
+      name: stageName,
+      email,
+      phone,
       whatsapp: phone,
-      age: age,
-      location: location,
+      age,
+      location,
       body_type: bodyType,
       meeting_place: meetingPlace,
-      rate: rate,
-      services: services,
-      bio: bio,
-
-      photo_url: image1,
-      image_url: image1,
-      image2_url: image2,
-      image3_url: image3,
-      short_video_url: shortVideoUrl,
-
-      plan: pkg.plan,
-      amount: pkg.amount,
-      approved: false,
+      rate,
+      services,
+      bio,
+      image_url: imageUrl,
+      photo_url: imageUrl,
+      image_url_2: imageUrl2,
+      image_url_3: imageUrl3,
+      short_url: shortUrl,
+      package: plan,
+      tier: plan,
+      plan,
       payment_status: "pending",
+      approved: false,
       likes_count: 0,
       views_count: 0
     };
 
-    const { data:profile, error:profileError } = await sb
+    const { data: profile, error: profileError } = await sb
       .from("profiles")
       .insert([profilePayload])
       .select()
       .single();
 
-    if(profileError) throw profileError;
+    if (profileError) throw profileError;
 
-    if(shortVideoUrl){
-      await sb.from("shorts").insert([{
-        title: stageName,
-        video_url: shortVideoUrl,
-        thumbnail_url: image1,
-        profile_name: stageName,
-        location: location,
-        likes_count: 0,
-        views_count: 0,
-        approved: false
-      }]);
-    }
+    msg.innerText = "Sending M-Pesa prompt...";
 
-    btn.innerText = "Sending M-Pesa prompt...";
-
-    const response = await fetch("/.netlify/functions/mpesa-stk-push", {
+    const payRes = await fetch("/.netlify/functions/mpesa-stk-push", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        phone: phone,
-        amount: pkg.amount,
         profile_id: profile.id,
-        plan: pkg.plan
+        profile_name: stageName,
+        phone,
+        amount,
+        plan
       })
     });
 
-    const result = await safeJsonResponse(response);
+    const payText = await payRes.text();
+
+    let payData = {};
+    try {
+      payData = payText ? JSON.parse(payText) : {};
+    } catch {
+      throw new Error(payText || "Invalid payment server response");
+    }
+
+    if (!payRes.ok) {
+      throw new Error(payData.error || "Payment failed");
+    }
 
     msg.className = "msg success";
-    msg.innerText =
-      result.message ||
-      "Profile created successfully. Check your phone for the M-Pesa prompt.";
+    msg.innerText = "M-Pesa prompt sent. Check your phone.";
+    payBtn.innerText = "Payment Prompt Sent";
 
-    btn.innerText = "Payment Prompt Sent";
-
-  }catch(error){
-    msg.className = "msg";
+  } catch (error) {
+    msg.className = "msg error";
     msg.innerText = error.message || "Something went wrong.";
-    btn.disabled = false;
-    btn.innerText = "Create Profile & Pay";
-  }
-}
 
-updateAmount();
+    payBtn.disabled = false;
+    payBtn.innerText = "Create Profile & Pay";
+  }
+});
 </script>
 
 </body>
