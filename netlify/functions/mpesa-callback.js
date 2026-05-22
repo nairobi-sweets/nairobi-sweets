@@ -3,9 +3,7 @@ const { createClient } = require("@supabase/supabase-js");
 function json(statusCode, data) {
   return {
     statusCode,
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   };
 }
@@ -17,87 +15,70 @@ const supabase = createClient(
 
 exports.handler = async function(event) {
   try {
-
     const body = JSON.parse(event.body || "{}");
 
     console.log("M-Pesa Callback:", JSON.stringify(body));
 
-    const callback = body.Body?.stkCallback;
+    const stkCallback = body.Body?.stkCallback;
 
-    if (!callback) {
-      return json(400, {
-        error: "Invalid callback payload"
-      });
+    if (!stkCallback) {
+      return json(400, { error: "Invalid callback payload" });
     }
 
-    const checkoutRequestId = callback.CheckoutRequestID;
-    const merchantRequestId = callback.MerchantRequestID;
-    const resultCode = callback.ResultCode;
-    const resultDesc = callback.ResultDesc;
+    const checkoutRequestID = stkCallback.CheckoutRequestID;
+    const merchantRequestID = stkCallback.MerchantRequestID;
+    const resultCode = Number(stkCallback.ResultCode);
+    const resultDesc = stkCallback.ResultDesc || "";
 
-    let mpesaReceipt = null;
-    let amount = null;
-    let phone = null;
-    let transactionDate = null;
+    const items = stkCallback.CallbackMetadata?.Item || [];
 
-    const items = callback.CallbackMetadata?.Item || [];
+    const amount =
+      items.find(i => i.Name === "Amount")?.Value || 0;
 
-    for (const item of items) {
+    const mpesaReceipt =
+      items.find(i => i.Name === "MpesaReceiptNumber")?.Value || null;
 
-      if (item.Name === "MpesaReceiptNumber") {
-        mpesaReceipt = item.Value;
-      }
+    const phone =
+      items.find(i => i.Name === "PhoneNumber")?.Value || null;
 
-      if (item.Name === "Amount") {
-        amount = item.Value;
-      }
+    const transactionDate =
+      items.find(i => i.Name === "TransactionDate")?.Value || null;
 
-      if (item.Name === "PhoneNumber") {
-        phone = item.Value;
-      }
+    const status = resultCode === 0 ? "paid" : "failed";
 
-      if (item.Name === "TransactionDate") {
-        transactionDate = item.Value;
-      }
-    }
-
-    const status = resultCode === 0
-      ? "paid"
-      : "failed";
-
-    // UPDATE PAYMENT
     const { data: payment, error: paymentError } = await supabase
       .from("payments")
       .update({
-        merchant_request_id: merchantRequestId,
+        status,
+        amount,
+        phone: phone ? String(phone) : null,
+        payer_phone: phone ? String(phone) : null,
+        merchant_request_id: merchantRequestID,
+        checkout_request_id: checkoutRequestID,
+        mpesa_receipt: mpesaReceipt,
+        mpesa_receipt_number: mpesaReceipt,
+        transaction_code: mpesaReceipt,
+        transaction_date: transactionDate ? String(transactionDate) : null,
         result_code: resultCode,
         result_desc: resultDesc,
-        mpesa_receipt: mpesaReceipt,
-        amount,
-        phone,
-        status,
         raw_callback: body,
-        paid_at: resultCode === 0
-          ? new Date().toISOString()
-          : null
+        paid_at: resultCode === 0 ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString()
       })
-      .eq("checkout_request_id", checkoutRequestId)
+      .eq("checkout_request_id", checkoutRequestID)
       .select()
       .single();
 
     if (paymentError) {
       console.log("Payment update error:", paymentError);
-
       return json(500, {
-        error: paymentError.message
+        ResultCode: 1,
+        ResultDesc: paymentError.message
       });
     }
 
-    // AUTO APPROVE PROFILE
     if (resultCode === 0 && payment?.profile_id) {
-
       const expiry = new Date();
-
       expiry.setDate(expiry.getDate() + 7);
 
       const { error: profileError } = await supabase
@@ -121,8 +102,7 @@ exports.handler = async function(event) {
     });
 
   } catch (error) {
-
-    console.log("Callback Fatal Error:", error);
+    console.log("Callback fatal error:", error);
 
     return json(500, {
       ResultCode: 1,
