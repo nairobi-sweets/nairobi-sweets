@@ -22,56 +22,66 @@ body{
   font-family:Arial,Helvetica,sans-serif;
 }
 
+body.menu-open{overflow:hidden}
+
 a{text-decoration:none;color:inherit}
 
 .header{
-  background:#000;
-  padding:28px 34px;
+  background:rgba(0,0,0,.94);
+  padding:18px 28px;
   border-bottom:1px solid rgba(255,216,75,.18);
   position:sticky;
   top:0;
   z-index:999;
+  backdrop-filter:blur(18px);
 }
 
-.logo-row{
+.header-inner{
+  width:min(1550px,96%);
+  margin:auto;
   display:flex;
   align-items:center;
+  justify-content:space-between;
   gap:18px;
-  flex-wrap:wrap;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
 }
 
 .logo{
-  width:78px;
-  height:78px;
+  width:64px;
+  height:64px;
   object-fit:contain;
 }
 
 .site-title{
   color:#ffd84b;
-  font-size:clamp(42px,7vw,92px);
+  font-size:clamp(28px,4vw,58px);
   font-weight:900;
+  letter-spacing:-1px;
 }
 
-.nav{
-  margin-top:26px;
+.desktop-nav{
   display:flex;
   align-items:center;
-  gap:16px;
-  flex-wrap:wrap;
+  gap:12px;
 }
 
-.nav a,.dropbtn{
+.desktop-nav a,.dropbtn{
   background:#101936;
   color:white;
   border:1px solid rgba(255,216,75,.25);
-  border-radius:28px;
-  padding:18px 34px;
-  font-size:20px;
+  border-radius:999px;
+  padding:14px 22px;
+  font-size:16px;
   font-weight:900;
   cursor:pointer;
 }
 
-.nav a:hover,.dropbtn:hover{
+.desktop-nav a:hover,.dropbtn:hover{
   background:#ffd84b;
   color:#000;
 }
@@ -81,8 +91,8 @@ a{text-decoration:none;color:inherit}
 .dropdown-content{
   display:none;
   position:absolute;
-  top:78px;
-  left:0;
+  top:58px;
+  right:0;
   min-width:280px;
   background:#071038;
   border:1px solid rgba(255,216,75,.22);
@@ -97,25 +107,112 @@ a{text-decoration:none;color:inherit}
   display:block;
   border-radius:0;
   border:none;
-  padding:18px 24px;
+  padding:16px 22px;
 }
 
 .shorts-btn{
   background:#ff008c!important;
   color:white!important;
-  box-shadow:0 0 22px rgba(255,0,140,.85),0 0 55px rgba(255,0,140,.4);
-  animation:glowPulse 2s infinite;
-}
-
-@keyframes glowPulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.05)}
-  100%{transform:scale(1)}
+  box-shadow:0 0 22px rgba(255,0,140,.65);
 }
 
 .join-btn{
   background:#ffd84b!important;
   color:#000!important;
+}
+
+.menu-toggle{
+  display:none;
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  border:1px solid rgba(255,216,75,.32);
+  background:#101936;
+  color:#ffd84b;
+  font-size:32px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.menu-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  z-index:1000;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s ease;
+}
+
+.menu-backdrop.active{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.side-menu{
+  position:fixed;
+  top:0;
+  right:-420px;
+  width:min(390px,92vw);
+  height:100vh;
+  background:linear-gradient(180deg,#050816,#071038);
+  border-left:1px solid rgba(255,216,75,.24);
+  z-index:1001;
+  padding:24px;
+  transition:.3s ease;
+  box-shadow:-20px 0 60px rgba(0,0,0,.7);
+  overflow-y:auto;
+}
+
+.side-menu.active{right:0}
+
+.menu-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:24px;
+}
+
+.menu-head strong{
+  color:#ffd84b;
+  font-size:26px;
+}
+
+.close-menu{
+  width:48px;
+  height:48px;
+  border-radius:16px;
+  border:1px solid rgba(255,216,75,.25);
+  background:#000;
+  color:#ffd84b;
+  font-size:30px;
+  cursor:pointer;
+}
+
+.menu-links{
+  display:grid;
+  gap:12px;
+}
+
+.menu-links a,
+.menu-section-title{
+  display:block;
+  background:#101936;
+  border:1px solid rgba(255,216,75,.18);
+  border-radius:20px;
+  padding:18px 20px;
+  font-weight:900;
+  color:white;
+}
+
+.menu-section-title{
+  color:#ffd84b;
+  margin-top:10px;
+}
+
+.menu-links a:hover{
+  background:#ffd84b;
+  color:#000;
 }
 
 .hero{
@@ -171,10 +268,7 @@ a{text-decoration:none;color:inherit}
   padding:28px;
 }
 
-.stat-card h3{
-  color:#93a0c7;
-  margin-bottom:14px;
-}
+.stat-card h3{color:#93a0c7;margin-bottom:14px}
 
 .stat-card p{
   color:#ffd84b;
@@ -208,10 +302,7 @@ a{text-decoration:none;color:inherit}
   font-size:18px;
 }
 
-#nairobiMap{
-  width:100%;
-  height:520px;
-}
+#nairobiMap{width:100%;height:520px}
 
 .map-note{
   width:min(1550px,95%);
@@ -225,10 +316,7 @@ a{text-decoration:none;color:inherit}
   box-shadow:0 0 35px rgba(255,0,140,.25);
 }
 
-.map-note a{
-  color:#ff008c;
-  font-weight:900;
-}
+.map-note a{color:#ff008c;font-weight:900}
 
 .grid{
   width:min(1550px,95%);
@@ -286,18 +374,9 @@ a{text-decoration:none;color:inherit}
   background:#22c55e;
   box-shadow:0 0 10px rgba(34,197,94,1),0 0 24px rgba(34,197,94,.75);
   border:2px solid white;
-  animation:onlinePulse 1.4s infinite;
 }
 
-@keyframes onlinePulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.16)}
-  100%{transform:scale(1)}
-}
-
-.card-body{
-  padding:22px;
-}
+.card-body{padding:22px}
 
 .name{
   font-size:30px;
@@ -405,9 +484,7 @@ a{text-decoration:none;color:inherit}
   margin-bottom:20px;
 }
 
-.disclaimer p{
-  margin-bottom:16px;
-}
+.disclaimer p{margin-bottom:16px}
 
 footer{
   border-top:1px solid rgba(255,216,75,.12);
@@ -421,16 +498,22 @@ footer{
   .stats{grid-template-columns:repeat(2,1fr)}
 }
 
+@media(max-width:950px){
+  .desktop-nav{display:none}
+  .menu-toggle{display:block}
+}
+
 @media(max-width:850px){
   .grid{grid-template-columns:repeat(2,1fr)}
   .controls{grid-template-columns:1fr}
 }
 
 @media(max-width:560px){
+  .header{padding:14px 16px}
+  .logo{width:52px;height:52px}
+  .site-title{font-size:30px}
   .grid{grid-template-columns:1fr}
   .stats{grid-template-columns:1fr}
-  .logo{width:56px;height:56px}
-  .nav a,.dropbtn{padding:14px 20px;font-size:16px}
   #nairobiMap{height:420px}
 }
 </style>
@@ -439,32 +522,64 @@ footer{
 <body>
 
 <header class="header">
-  <div class="logo-row">
-    <img src="/assets/logo/logo-navbar.png" class="logo" alt="Nairobi Sweets">
-    <div class="site-title">Nairobi Sweets</div>
+  <div class="header-inner">
+    <a href="/" class="brand">
+      <img src="/assets/logo/logo-navbar.png" class="logo" alt="Nairobi Sweets">
+      <div class="site-title">Nairobi Sweets</div>
+    </a>
+
+    <nav class="desktop-nav">
+      <a href="/">Home</a>
+
+      <div class="dropdown">
+        <button class="dropbtn">Locations ▼</button>
+        <div class="dropdown-content">
+          <a href="/seo/locations/nairobi.html">Nairobi</a>
+          <a href="/seo/locations/kilimani.html">Kilimani</a>
+          <a href="/seo/locations/westlands.html">Westlands</a>
+          <a href="/seo/locations/kasarani-equity-kasarani.html">Kasarani</a>
+          <a href="/seo/locations/kikuyu.html">Kikuyu</a>
+          <a href="/seo/locations/kiambu-ruiru-membley.html">Ruiru</a>
+          <a href="/seo/locations/kisumu-town-milimani-kisumu.html">Kisumu</a>
+          <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">Mombasa</a>
+        </div>
+      </div>
+
+      <a href="/shorts.html" class="shorts-btn">🔥 Shorts</a>
+      <a href="/join.html" class="join-btn">Join Now</a>
+    </nav>
+
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+  </div>
+</header>
+
+<div class="menu-backdrop" id="menuBackdrop"></div>
+
+<aside class="side-menu" id="sideMenu">
+  <div class="menu-head">
+    <strong>Menu</strong>
+    <button class="close-menu" id="closeMenu" aria-label="Close menu">×</button>
   </div>
 
-  <nav class="nav">
+  <div class="menu-links">
     <a href="/">Home</a>
+    <a href="/shorts.html">🔥 Shorts</a>
+    <a href="/join.html">Join Now</a>
+    <a href="/login.html">Login</a>
+    <a href="https://wa.me/254708374149" target="_blank">WhatsApp</a>
+    <a href="tel:254708374149">Call</a>
 
-    <div class="dropdown">
-      <button class="dropbtn">Locations ▼</button>
-      <div class="dropdown-content">
-        <a href="/seo/locations/nairobi.html">Nairobi</a>
-        <a href="/seo/locations/kilimani.html">Kilimani</a>
-        <a href="/seo/locations/westlands.html">Westlands</a>
-        <a href="/seo/locations/kasarani-equity-kasarani.html">Kasarani</a>
-        <a href="/seo/locations/kikuyu.html">Kikuyu</a>
-        <a href="/seo/locations/kiambu-ruiru-membley.html">Ruiru</a>
-        <a href="/seo/locations/kisumu-town-milimani-kisumu.html">Kisumu</a>
-        <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">Mombasa</a>
-      </div>
-    </div>
-
-    <a href="/shorts.html" class="shorts-btn">🔥 Shorts</a>
-    <a href="/join.html" class="join-btn">Join Now</a>
-  </nav>
-</header>
+    <div class="menu-section-title">Locations</div>
+    <a href="/seo/locations/nairobi.html">Nairobi</a>
+    <a href="/seo/locations/kilimani.html">Kilimani</a>
+    <a href="/seo/locations/westlands.html">Westlands</a>
+    <a href="/seo/locations/kasarani-equity-kasarani.html">Kasarani</a>
+    <a href="/seo/locations/kikuyu.html">Kikuyu</a>
+    <a href="/seo/locations/kiambu-ruiru-membley.html">Ruiru</a>
+    <a href="/seo/locations/kisumu-town-milimani-kisumu.html">Kisumu</a>
+    <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">Mombasa</a>
+  </div>
+</aside>
 
 <section class="hero">
   <h2>Profiles</h2>
@@ -483,25 +598,10 @@ footer{
 </section>
 
 <section class="stats">
-  <div class="stat-card">
-    <h3>Total Profiles</h3>
-    <p id="totalProfiles">0</p>
-  </div>
-
-  <div class="stat-card">
-    <h3>Total Views</h3>
-    <p id="totalViews">0</p>
-  </div>
-
-  <div class="stat-card">
-    <h3>Total Likes</h3>
-    <p id="totalLikes">0</p>
-  </div>
-
-  <div class="stat-card">
-    <h3>VIP Profiles</h3>
-    <p id="vipProfiles">0</p>
-  </div>
+  <div class="stat-card"><h3>Total Profiles</h3><p id="totalProfiles">0</p></div>
+  <div class="stat-card"><h3>Total Views</h3><p id="totalViews">0</p></div>
+  <div class="stat-card"><h3>Total Likes</h3><p id="totalLikes">0</p></div>
+  <div class="stat-card"><h3>VIP Profiles</h3><p id="vipProfiles">0</p></div>
 </section>
 
 <section class="map-section">
@@ -525,33 +625,13 @@ footer{
 
 <section class="disclaimer">
   <h3>Disclaimer</h3>
-
-  <p>
-    Nairobi Sweets is an advertising and discovery platform only.
-    We do not operate as an agency, escort service, or booking company.
-    All profiles are independently managed by the individuals who create them.
-  </p>
-
-  <p>
-    Users must be 18 years or older to access this website.
-    By using this platform, you confirm that you are legally allowed to view adult-oriented content in your region.
-  </p>
-
-  <p>
-    Nairobi Sweets does not guarantee the accuracy of profile information,
-    availability, pricing, or interactions between users and advertisers.
-    Users engage with profiles at their own discretion and responsibility.
-  </p>
-
-  <p>
-    Any illegal activity, trafficking, exploitation, abuse, or non-consensual conduct
-    is strictly prohibited and may result in immediate removal and reporting where necessary.
-  </p>
+  <p>Nairobi Sweets is an advertising and discovery platform only. We do not operate as an agency, escort service, or booking company. All profiles are independently managed by the individuals who create them.</p>
+  <p>Users must be 18 years or older to access this website. By using this platform, you confirm that you are legally allowed to view adult-oriented content in your region.</p>
+  <p>Nairobi Sweets does not guarantee the accuracy of profile information, availability, pricing, or interactions between users and advertisers. Users engage with profiles at their own discretion and responsibility.</p>
+  <p>Any illegal activity, trafficking, exploitation, abuse, or non-consensual conduct is strictly prohibited and may result in immediate removal and reporting where necessary.</p>
 </section>
 
-<footer>
-  © Nairobi Sweets
-</footer>
+<footer>© Nairobi Sweets</footer>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
@@ -559,6 +639,31 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let allProfiles = [];
+
+const menuToggle = document.getElementById("menuToggle");
+const closeMenu = document.getElementById("closeMenu");
+const sideMenu = document.getElementById("sideMenu");
+const menuBackdrop = document.getElementById("menuBackdrop");
+
+function openMenu(){
+  sideMenu.classList.add("active");
+  menuBackdrop.classList.add("active");
+  document.body.classList.add("menu-open");
+}
+
+function closeMenuPanel(){
+  sideMenu.classList.remove("active");
+  menuBackdrop.classList.remove("active");
+  document.body.classList.remove("menu-open");
+}
+
+menuToggle.addEventListener("click",openMenu);
+closeMenu.addEventListener("click",closeMenuPanel);
+menuBackdrop.addEventListener("click",closeMenuPanel);
+
+document.querySelectorAll(".side-menu a").forEach(link=>{
+  link.addEventListener("click",closeMenuPanel);
+});
 
 function initMap(){
   const map = L.map("nairobiMap").setView([-1.286389,36.817223],12);
@@ -684,29 +789,16 @@ function renderProfiles(list){
           </div>
 
           <span class="online-text">Online Now</span>
-
           <div class="location">📍 ${profile.location || "Nairobi"}</div>
           <div class="phone">📞 ${rawPhone}</div>
-
-          <div class="bio">
-            ${profile.bio || "Premium Nairobi profile."}
-          </div>
+          <div class="bio">${profile.bio || "Premium Nairobi profile."}</div>
 
           <div class="engagement">
-            <span
-              class="heart-like"
-              id="likes-${profile.id}"
-              onclick="likeProfile('${profile.id}')"
-              title="Like profile"
-            >
+            <span class="heart-like" id="likes-${profile.id}" onclick="likeProfile('${profile.id}')" title="Like profile">
               ❤️ ${likes} likes
             </span>
-
             <span>•</span>
-
-            <span id="views-${profile.id}">
-              👁️ ${views} views
-            </span>
+            <span id="views-${profile.id}">👁️ ${views} views</span>
           </div>
 
           <div class="actions">
@@ -802,15 +894,9 @@ document.getElementById("searchInput").addEventListener("input",e=>{
 document.getElementById("sortSelect").addEventListener("change",e=>{
   let list = [...allProfiles];
 
-  if(e.target.value === "likes"){
-    list.sort((a,b)=>getLikes(b)-getLikes(a));
-  }
-
-  if(e.target.value === "views"){
-    list.sort((a,b)=>getViews(b)-getViews(a));
-  }
-
-  if(e.target.value === "newest"){
+  if(e.target.value === "likes") list.sort((a,b)=>getLikes(b)-getLikes(a));
+  if(e.target.value === "views") list.sort((a,b)=>getViews(b)-getViews(a));
+  if(e.target.value === "newest") {
     list.sort((a,b)=>new Date(b.created_at || 0)-new Date(a.created_at || 0));
   }
 
