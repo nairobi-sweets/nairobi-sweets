@@ -5,16 +5,42 @@ const grid = document.querySelector(".profiles");
 const searchInput = document.querySelector(".search-box");
 const statsNumber = document.querySelector(".stats-number");
 
+/* =========================
+   MENU
+========================= */
+
+function toggleMenu() {
+  const menu = document.getElementById("mobileMenu");
+
+  if (menu) {
+    menu.classList.toggle("active");
+  }
+}
+
+window.toggleMenu = toggleMenu;
+
+/* =========================
+   HELPERS
+========================= */
+
 function safeText(value, fallback = "") {
-  return value && String(value).trim() ? String(value).trim() : fallback;
+  return value && String(value).trim()
+    ? String(value).trim()
+    : fallback;
 }
 
 function safePhone(phone) {
   const raw = String(phone || "").replace(/\D/g, "");
 
   if (!raw) return null;
-  if (raw.startsWith("0")) return "254" + raw.slice(1);
-  if (raw.startsWith("7") || raw.startsWith("1")) return "254" + raw;
+
+  if (raw.startsWith("0")) {
+    return "254" + raw.slice(1);
+  }
+
+  if (raw.startsWith("7") || raw.startsWith("1")) {
+    return "254" + raw;
+  }
 
   return raw;
 }
@@ -28,6 +54,8 @@ function safeImage(profile) {
     profile.main_photo ||
     profile.photo ||
     profile.image ||
+    profile.photo1 ||
+    profile.photo_1 ||
     "/assets/logo/logo-badge.png"
   );
 }
@@ -63,8 +91,13 @@ function getPlan(profile) {
 function getBadge(profile) {
   const plan = getPlan(profile);
 
-  if (plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP";
-  if (plan.includes("vip")) return "⭐ VIP";
+  if (plan.includes("vvip") || plan.includes("signature")) {
+    return "👑 VVIP";
+  }
+
+  if (plan.includes("vip")) {
+    return "⭐ VIP";
+  }
 
   return "✨ Featured";
 }
@@ -80,21 +113,53 @@ function getViews(profile) {
 function getBio(profile) {
   return safeText(
     profile.bio ||
-    profile.description,
+    profile.description ||
+    profile.about,
     `Meet ${getName(profile)} from ${getLocation(profile)}.`
   );
 }
 
 function compactBio(text, max = 130) {
   if (!text) return "";
-  return text.length > max ? text.slice(0, max).trim() + "..." : text;
+
+  return text.length > max
+    ? text.slice(0, max).trim() + "..."
+    : text;
 }
 
+function scoreProfile(profile) {
+  let score = 0;
+
+  const plan = getPlan(profile);
+
+  if (plan.includes("vvip") || plan.includes("signature")) score += 1000;
+  if (plan.includes("vip")) score += 700;
+  if (plan.includes("featured")) score += 300;
+
+  score += getLikes(profile) * 3;
+  score += getViews(profile);
+
+  if (safeImage(profile)) score += 60;
+  if (profile.phone || profile.whatsapp) score += 80;
+
+  return score;
+}
+
+/* =========================
+   LOADING
+========================= */
+
 function showSkeletons() {
+  if (!grid) return;
+
   grid.innerHTML = Array.from({ length: 5 })
     .map(() => `<div class="loading-card"></div>`)
     .join("");
 }
+
+/* =========================
+   STATS
+========================= */
 
 function updateStats(list) {
   if (statsNumber) {
@@ -102,7 +167,13 @@ function updateStats(list) {
   }
 }
 
+/* =========================
+   RENDER
+========================= */
+
 function renderProfiles(list) {
+  if (!grid) return;
+
   updateStats(list);
 
   if (!list.length) {
@@ -130,7 +201,10 @@ function renderProfiles(list) {
           ${getBadge(profile)}
         </div>
 
-        <a href="/profile.html?id=${profile.id}" onclick="viewProfile('${profile.id}')">
+        <a
+          href="/profile.html?id=${profile.id}"
+          onclick="viewProfile('${profile.id}')"
+        >
           <img
             src="${image}"
             class="card-image"
@@ -142,35 +216,82 @@ function renderProfiles(list) {
 
         <div class="card-body">
 
-          <div class="card-name">${name}</div>
+          <div class="card-name">
+            ${name}
+          </div>
 
-          <div class="online">Online Now</div>
+          <div class="online">
+            Online Now
+          </div>
 
-          <div class="location">📍 ${location}</div>
+          <div class="location">
+            📍 ${location}
+          </div>
 
-          <div class="phone">📞 ${phone || "Contact hidden"}</div>
+          <div class="phone">
+            📞 ${phone || "Contact hidden"}
+          </div>
 
-          <div class="bio">${bio}</div>
+          <div class="bio">
+            ${bio}
+          </div>
 
           <div class="engagement">
-            <span onclick="likeProfile('${profile.id}')" id="likes-${profile.id}">
+
+            <span
+              onclick="likeProfile('${profile.id}')"
+              id="likes-${profile.id}"
+              style="cursor:pointer;"
+            >
               ❤️ ${getLikes(profile)} likes
             </span>
+
             <span>•</span>
+
             <span id="views-${profile.id}">
               👁️ ${getViews(profile)} views
             </span>
+
           </div>
 
           <div class="action-row">
+
             ${
               phone
                 ? `
-                  <a class="call-btn" href="tel:${phone}">CALL</a>
-                  <a class="wa-btn" href="https://wa.me/${phone}" target="_blank">WHATSAPP</a>
+
+                  <a
+                    class="call-btn"
+                    href="tel:${phone}"
+                  >
+                    <i>☎</i>
+                    <span>CALL</span>
+                  </a>
+
+                  <a
+                    class="wa-btn"
+                    href="https://wa.me/${phone}"
+                    target="_blank"
+                  >
+                    <img
+                      src="/assets/icons/whatsapp.png"
+                      alt="WhatsApp"
+                      class="wa-real-icon"
+                      onerror="this.style.display='none';"
+                    >
+                    <span>WHATSAPP</span>
+                  </a>
+
                 `
-                : `<button class="disabled-contact">CONTACT HIDDEN</button>`
+                : `
+
+                  <button class="disabled-contact">
+                    CONTACT HIDDEN
+                  </button>
+
+                `
             }
+
           </div>
 
         </div>
@@ -180,8 +301,14 @@ function renderProfiles(list) {
   }).join("");
 }
 
+/* =========================
+   FILTERS
+========================= */
+
 function applyFilters() {
-  const search = searchInput ? searchInput.value.toLowerCase().trim() : "";
+  const search = searchInput
+    ? searchInput.value.toLowerCase().trim()
+    : "";
 
   let list = [...allProfiles];
 
@@ -196,9 +323,17 @@ function applyFilters() {
         ${profile.whatsapp || ""}
       `.toLowerCase();
 
-      if (activeFilter === "vip") return getPlan(profile).includes("vip");
-      if (activeFilter === "whatsapp") return Boolean(profile.phone || profile.whatsapp);
-      if (activeFilter === "online") return true;
+      if (activeFilter === "vip") {
+        return getPlan(profile).includes("vip");
+      }
+
+      if (activeFilter === "whatsapp") {
+        return Boolean(profile.phone || profile.whatsapp);
+      }
+
+      if (activeFilter === "online") {
+        return true;
+      }
 
       return text.includes(activeFilter);
     });
@@ -219,11 +354,7 @@ function applyFilters() {
     });
   }
 
-  list.sort((a, b) => {
-    const scoreA = getLikes(a) * 3 + getViews(a);
-    const scoreB = getLikes(b) * 3 + getViews(b);
-    return scoreB - scoreA;
-  });
+  list.sort((a, b) => scoreProfile(b) - scoreProfile(a));
 
   renderProfiles(list);
 }
@@ -253,13 +384,17 @@ function setupSearch() {
   searchInput.addEventListener("input", applyFilters);
 }
 
+/* =========================
+   SUPABASE LOAD
+========================= */
+
 async function loadProfiles() {
   showSkeletons();
 
   if (typeof sb === "undefined") {
     grid.innerHTML = `
       <div class="empty">
-        Supabase is not connected. Check config.js.
+        Supabase is not connected. Check assets/js/config.js.
       </div>
     `;
     return;
@@ -285,11 +420,18 @@ async function loadProfiles() {
 
   allProfiles = data || [];
 
-  renderProfiles(allProfiles);
+  applyFilters();
 }
 
+/* =========================
+   LIKES + VIEWS
+========================= */
+
 async function likeProfile(id) {
-  const profile = allProfiles.find(p => String(p.id) === String(id));
+  const profile = allProfiles.find(
+    p => String(p.id) === String(id)
+  );
+
   if (!profile) return;
 
   const newLikes = getLikes(profile) + 1;
@@ -299,28 +441,47 @@ async function likeProfile(id) {
     .update({ likes_count: newLikes })
     .eq("id", id);
 
-  if (error) return console.log(error);
+  if (error) {
+    console.log(error);
+    return;
+  }
 
   profile.likes_count = newLikes;
 
   const el = document.getElementById(`likes-${id}`);
-  if (el) el.innerHTML = `❤️ ${newLikes} likes`;
+
+  if (el) {
+    el.innerHTML = `❤️ ${newLikes} likes`;
+  }
+
+  updateStats(allProfiles);
 }
 
 async function viewProfile(id) {
-  const profile = allProfiles.find(p => String(p.id) === String(id));
+  const profile = allProfiles.find(
+    p => String(p.id) === String(id)
+  );
+
   if (!profile) return;
 
   const newViews = getViews(profile) + 1;
 
-  await sb
+  const { error } = await sb
     .from("profiles")
     .update({ views_count: newViews })
     .eq("id", id);
+
+  if (!error) {
+    profile.views_count = newViews;
+  }
 }
 
 window.likeProfile = likeProfile;
 window.viewProfile = viewProfile;
+
+/* =========================
+   START
+========================= */
 
 setupFilters();
 setupSearch();
