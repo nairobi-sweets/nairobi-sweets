@@ -1,98 +1,110 @@
-const aiOpen = document.getElementById("aiOpen");
-const aiClose = document.getElementById("aiClose");
-const aiPanel = document.getElementById("aiPanel");
-const aiInput = document.getElementById("aiInput");
-const aiSearchBtn = document.getElementById("aiSearchBtn");
-const aiAnswer = document.getElementById("aiAnswer");
-const aiResults = document.getElementById("aiResults");
+const sweetPanel = document.getElementById("sweetPanel");
+const sweetInput = document.getElementById("sweetInput");
+const sweetResults = document.getElementById("sweetResults");
 
-aiOpen.addEventListener("click", () => {
-  aiPanel.classList.add("active");
-});
-
-aiClose.addEventListener("click", () => {
-  aiPanel.classList.remove("active");
-});
-
-aiInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    runAISearch();
+function openSweet() {
+  if (sweetPanel) {
+    sweetPanel.classList.add("active");
   }
-});
+}
 
-aiSearchBtn.addEventListener("click", runAISearch);
+function closeSweet() {
+  if (sweetPanel) {
+    sweetPanel.classList.remove("active");
+  }
+}
 
-document.querySelectorAll(".ai-chip").forEach(chip => {
-  chip.addEventListener("click", () => {
-    aiInput.value = chip.dataset.query;
-    runAISearch();
-  });
-});
+function quickAsk(text) {
+  if (!sweetInput) return;
 
-async function runAISearch() {
-  const query = aiInput.value.trim();
+  sweetInput.value = text;
+  askSweet();
+}
 
-  if (!query) {
-    aiAnswer.innerHTML = `
+async function askSweet() {
+  if (!sweetInput || !sweetResults) return;
+
+  const message = sweetInput.value.trim();
+
+  if (!message) {
+    sweetResults.innerHTML = `
       Sweet needs a clue 💋<br><br>
       Try:<br>
       • VIP in Kilimani<br>
       • Westlands WhatsApp<br>
-      • Most liked
+      • Online now
     `;
     return;
   }
 
-  aiAnswer.innerHTML = "Sweet is searching... ✨";
-  aiResults.innerHTML = "";
+  sweetResults.innerHTML = "Sweet is searching... ✨";
 
   try {
-    const response = await fetch("/.netlify/functions/ai-search", {
+    const response = await fetch("/.netlify/functions/sweet-chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ query })
+      body: JSON.stringify({ message })
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || "Search failed");
+      throw new Error(data.error || "Sweet search failed");
     }
 
-    aiAnswer.innerHTML = data.answer || "Sweet found some matches 💋";
+    const profiles = data.results || data.profiles || [];
 
-    const results = data.results || [];
+    let profileCards = "";
 
-    if (!results.length) {
-      aiResults.innerHTML = "";
-      return;
-    }
-
-    aiResults.innerHTML = results.map(profile => `
-      <div
-        class="ai-result"
-        onclick="window.location.href='/profile.html?id=${profile.id}'"
-      >
-        <img
-          src="${profile.photo_url || "/assets/logo/logo-badge.png"}"
-          onerror="this.src='/assets/logo/logo-badge.png'"
+    if (profiles.length) {
+      profileCards = profiles.map(profile => `
+        <div
+          class="sweet-result-card"
+          onclick="window.location.href='/profile.html?id=${profile.id}'"
         >
+          <img
+            src="${profile.photo_url || "/assets/logo/logo-badge.png"}"
+            onerror="this.src='/assets/logo/logo-badge.png'"
+          >
 
-        <div>
-          <strong>${profile.stage_name || "Verified Profile"}</strong>
-          <span>📍 ${profile.location || "Nairobi"}</span><br>
-          <span>❤️ ${profile.likes_count || 0} · 👁️ ${profile.views_count || 0}</span>
+          <div>
+            <strong>${profile.stage_name || "Verified Profile"}</strong>
+            <span>📍 ${profile.location || "Nairobi"}</span>
+            <span>❤️ ${profile.likes_count || 0} · 👁️ ${profile.views_count || 0}</span>
+          </div>
         </div>
+      `).join("");
+    }
+
+    sweetResults.innerHTML = `
+      <div class="sweet-reply">
+        ${data.reply || data.answer || "Sweet found something interesting 💋"}
       </div>
-    `).join("");
+
+      ${profileCards}
+    `;
 
   } catch (error) {
-    aiAnswer.innerHTML = `
+    console.error(error);
+
+    sweetResults.innerHTML = `
       Sweet got distracted 💔<br><br>
       Please try again.
     `;
-    console.error(error);
   }
 }
+
+if (sweetInput) {
+  sweetInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      askSweet();
+    }
+  });
+}
+
+window.openSweet = openSweet;
+window.closeSweet = closeSweet;
+window.quickAsk = quickAsk;
+window.askSweet = askSweet;
