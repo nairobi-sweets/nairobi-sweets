@@ -119,7 +119,7 @@ function getBio(profile) {
   );
 }
 
-function compactBio(text, max = 130) {
+function compactBio(text, max = 135) {
   if (!text) return "";
 
   return text.length > max
@@ -263,8 +263,9 @@ function renderProfiles(list) {
                   <a
                     class="call-btn"
                     href="tel:${phone}"
+                    aria-label="Call ${name}"
                   >
-                    <i>☎</i>
+                    <i>📞</i>
                     <span>CALL</span>
                   </a>
 
@@ -272,6 +273,8 @@ function renderProfiles(list) {
                     class="wa-btn"
                     href="https://wa.me/${phone}"
                     target="_blank"
+                    rel="noopener"
+                    aria-label="WhatsApp ${name}"
                   >
                     <img
                       src="/assets/icons/whatsapp.png"
