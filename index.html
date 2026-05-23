@@ -15,527 +15,98 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-
-body{
-  background:#020617;
-  color:white;
-  font-family:Arial,Helvetica,sans-serif;
-}
-
+body{background:#020617;color:white;font-family:Arial,Helvetica,sans-serif}
 body.menu-open{overflow:hidden}
-
 a{text-decoration:none;color:inherit}
 
-.header{
-  background:rgba(0,0,0,.95);
-  padding:18px 28px;
-  border-bottom:1px solid rgba(255,216,75,.18);
-  position:sticky;
-  top:0;
-  z-index:999;
-  backdrop-filter:blur(18px);
-}
+.header{background:rgba(0,0,0,.95);padding:18px 28px;border-bottom:1px solid rgba(255,216,75,.18);position:sticky;top:0;z-index:999;backdrop-filter:blur(18px)}
+.header-inner{width:min(1550px,96%);margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:64px;height:64px;object-fit:contain}
+.site-title{color:#ffd84b;font-size:clamp(28px,4vw,58px);font-weight:900;letter-spacing:-1px}
 
-.header-inner{
-  width:min(1550px,96%);
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:18px;
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.logo{
-  width:64px;
-  height:64px;
-  object-fit:contain;
-}
-
-.site-title{
-  color:#ffd84b;
-  font-size:clamp(28px,4vw,58px);
-  font-weight:900;
-  letter-spacing:-1px;
-}
-
-.desktop-nav{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.desktop-nav a,.dropbtn{
-  background:#101936;
-  color:white;
-  border:1px solid rgba(255,216,75,.25);
-  border-radius:999px;
-  padding:14px 22px;
-  font-size:16px;
-  font-weight:900;
-  cursor:pointer;
-}
-
-.desktop-nav a:hover,.dropbtn:hover{
-  background:#ffd84b;
-  color:#000;
-}
-
+.desktop-nav{display:flex;align-items:center;gap:12px}
+.desktop-nav a,.dropbtn{background:#101936;color:white;border:1px solid rgba(255,216,75,.25);border-radius:999px;padding:14px 22px;font-size:16px;font-weight:900;cursor:pointer}
+.desktop-nav a:hover,.dropbtn:hover{background:#ffd84b;color:#000}
 .dropdown{position:relative}
-
-.dropdown-content{
-  display:none;
-  position:absolute;
-  top:58px;
-  right:0;
-  min-width:280px;
-  background:#071038;
-  border:1px solid rgba(255,216,75,.22);
-  border-radius:24px;
-  overflow:hidden;
-  box-shadow:0 12px 45px rgba(0,0,0,.55);
-}
-
+.dropdown-content{display:none;position:absolute;top:58px;right:0;min-width:280px;background:#071038;border:1px solid rgba(255,216,75,.22);border-radius:24px;overflow:hidden;box-shadow:0 12px 45px rgba(0,0,0,.55)}
 .dropdown:hover .dropdown-content{display:block}
+.dropdown-content a{display:block;border-radius:0;border:none;padding:16px 22px}
+.shorts-btn{background:#ff008c!important;color:white!important;box-shadow:0 0 22px rgba(255,0,140,.65)}
+.join-btn{background:#ffd84b!important;color:#000!important}
 
-.dropdown-content a{
-  display:block;
-  border-radius:0;
-  border:none;
-  padding:16px 22px;
-}
-
-.shorts-btn{
-  background:#ff008c!important;
-  color:white!important;
-  box-shadow:0 0 22px rgba(255,0,140,.65);
-}
-
-.join-btn{
-  background:#ffd84b!important;
-  color:#000!important;
-}
-
-.menu-toggle{
-  display:none;
-  width:56px;
-  height:56px;
-  border-radius:18px;
-  border:1px solid rgba(255,216,75,.32);
-  background:#101936;
-  color:#ffd84b;
-  font-size:32px;
-  font-weight:900;
-  cursor:pointer;
-}
-
-.menu-backdrop{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.72);
-  z-index:1000;
-  opacity:0;
-  pointer-events:none;
-  transition:.25s ease;
-}
-
-.menu-backdrop.active{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.side-menu{
-  position:fixed;
-  top:0;
-  right:-420px;
-  width:min(390px,92vw);
-  height:100vh;
-  background:linear-gradient(180deg,#050816,#071038);
-  border-left:1px solid rgba(255,216,75,.24);
-  z-index:1001;
-  padding:24px;
-  transition:.3s ease;
-  box-shadow:-20px 0 60px rgba(0,0,0,.7);
-  overflow-y:auto;
-}
-
+.menu-toggle{display:none;width:56px;height:56px;border-radius:18px;border:1px solid rgba(255,216,75,.32);background:#101936;color:#ffd84b;font-size:32px;font-weight:900;cursor:pointer}
+.menu-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:1000;opacity:0;pointer-events:none;transition:.25s ease}
+.menu-backdrop.active{opacity:1;pointer-events:auto}
+.side-menu{position:fixed;top:0;right:-420px;width:min(390px,92vw);height:100vh;background:linear-gradient(180deg,#050816,#071038);border-left:1px solid rgba(255,216,75,.24);z-index:1001;padding:24px;transition:.3s ease;box-shadow:-20px 0 60px rgba(0,0,0,.7);overflow-y:auto}
 .side-menu.active{right:0}
+.menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.menu-head strong{color:#ffd84b;font-size:26px}
+.close-menu{width:48px;height:48px;border-radius:16px;border:1px solid rgba(255,216,75,.25);background:#000;color:#ffd84b;font-size:30px;cursor:pointer}
+.menu-links{display:grid;gap:12px}
+.menu-links a,.menu-section-title{display:block;background:#101936;border:1px solid rgba(255,216,75,.18);border-radius:20px;padding:18px 20px;font-weight:900;color:white}
+.menu-section-title{color:#ffd84b;margin-top:10px}
+.menu-links a:hover{background:#ffd84b;color:#000}
 
-.menu-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:24px;
-}
+.hero{padding:60px 24px 25px;text-align:center}
+.hero h2{color:#ffd84b;font-size:clamp(54px,8vw,110px);font-weight:900}
+.hero p{color:#b8c1d8;font-size:22px;max-width:950px;margin:18px auto 0;line-height:1.6}
 
-.menu-head strong{
-  color:#ffd84b;
-  font-size:26px;
-}
+.controls{width:min(1550px,95%);margin:25px auto;display:grid;grid-template-columns:1fr 280px;gap:18px}
+.search,.sort{height:72px;border-radius:24px;border:1px solid rgba(255,216,75,.18);background:#101936;color:white;padding:0 24px;font-size:18px;outline:none}
 
-.close-menu{
-  width:48px;
-  height:48px;
-  border-radius:16px;
-  border:1px solid rgba(255,216,75,.25);
-  background:#000;
-  color:#ffd84b;
-  font-size:30px;
-  cursor:pointer;
-}
+.stats{width:min(1550px,95%);margin:0 auto 30px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.stat-card{background:#071038;border:1px solid rgba(255,216,75,.18);border-radius:28px;padding:28px}
+.stat-card h3{color:#93a0c7;margin-bottom:14px}
+.stat-card p{color:#ffd84b;font-size:52px;font-weight:900}
 
-.menu-links{
-  display:grid;
-  gap:12px;
-}
+.map-section{width:min(1550px,95%);margin:35px auto;background:#071038;border:1px solid rgba(255,216,75,.2);border-radius:28px;overflow:hidden}
+.map-header{padding:26px;border-bottom:1px solid rgba(255,216,75,.15)}
+.map-header h3{color:#ffd84b;font-size:36px;font-weight:900}
+.map-header p{color:#b8c1d8;margin-top:8px;font-size:18px}
+#nairobiMap{width:100%;height:520px}
 
-.menu-links a,
-.menu-section-title{
-  display:block;
-  background:#101936;
-  border:1px solid rgba(255,216,75,.18);
-  border-radius:20px;
-  padding:18px 20px;
-  font-weight:900;
-  color:white;
-}
+.map-note{width:min(1550px,95%);margin:0 auto 35px;background:white;color:#111;padding:30px;border-radius:24px;font-size:21px;line-height:1.6;box-shadow:0 0 35px rgba(255,0,140,.25)}
+.map-note a{color:#ff008c;font-weight:900}
 
-.menu-section-title{
-  color:#ffd84b;
-  margin-top:10px;
-}
-
-.menu-links a:hover{
-  background:#ffd84b;
-  color:#000;
-}
-
-.hero{
-  padding:60px 24px 25px;
-  text-align:center;
-}
-
-.hero h2{
-  color:#ffd84b;
-  font-size:clamp(54px,8vw,110px);
-  font-weight:900;
-}
-
-.hero p{
-  color:#b8c1d8;
-  font-size:22px;
-  max-width:950px;
-  margin:18px auto 0;
-  line-height:1.6;
-}
-
-.controls{
-  width:min(1550px,95%);
-  margin:25px auto;
-  display:grid;
-  grid-template-columns:1fr 280px;
-  gap:18px;
-}
-
-.search,.sort{
-  height:72px;
-  border-radius:24px;
-  border:1px solid rgba(255,216,75,.18);
-  background:#101936;
-  color:white;
-  padding:0 24px;
-  font-size:18px;
-  outline:none;
-}
-
-.stats{
-  width:min(1550px,95%);
-  margin:0 auto 30px;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:20px;
-}
-
-.stat-card{
-  background:#071038;
-  border:1px solid rgba(255,216,75,.18);
-  border-radius:28px;
-  padding:28px;
-}
-
-.stat-card h3{
-  color:#93a0c7;
-  margin-bottom:14px;
-}
-
-.stat-card p{
-  color:#ffd84b;
-  font-size:52px;
-  font-weight:900;
-}
-
-.map-section{
-  width:min(1550px,95%);
-  margin:35px auto;
-  background:#071038;
-  border:1px solid rgba(255,216,75,.2);
-  border-radius:28px;
-  overflow:hidden;
-}
-
-.map-header{
-  padding:26px;
-  border-bottom:1px solid rgba(255,216,75,.15);
-}
-
-.map-header h3{
-  color:#ffd84b;
-  font-size:36px;
-  font-weight:900;
-}
-
-.map-header p{
-  color:#b8c1d8;
-  margin-top:8px;
-  font-size:18px;
-}
-
-#nairobiMap{
-  width:100%;
-  height:520px;
-}
-
-.map-note{
-  width:min(1550px,95%);
-  margin:0 auto 35px;
-  background:white;
-  color:#111;
-  padding:30px;
-  border-radius:24px;
-  font-size:21px;
-  line-height:1.6;
-  box-shadow:0 0 35px rgba(255,0,140,.25);
-}
-
-.map-note a{
-  color:#ff008c;
-  font-weight:900;
-}
-
-.grid{
-  width:min(1550px,95%);
-  margin:auto;
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:26px;
-  padding-bottom:70px;
-}
-
-.card{
-  background:#071038;
-  border:1px solid rgba(255,216,75,.24);
-  border-radius:28px;
-  overflow:hidden;
-  position:relative;
-  transition:.3s;
-}
-
+.grid{width:min(1550px,95%);margin:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:26px;padding-bottom:70px}
+.card{background:#071038;border:1px solid rgba(255,216,75,.24);border-radius:28px;overflow:hidden;position:relative;transition:.3s}
 .card:hover{transform:translateY(-6px)}
+.card-image-wrap{width:100%;aspect-ratio:3/4;background:#000;overflow:hidden}
+.card-image{width:100%;height:100%;object-fit:cover;display:block}
+.badge{position:absolute;top:16px;right:16px;background:rgba(0,0,0,.72);color:#ffd84b;padding:10px 18px;border-radius:999px;border:1px solid rgba(255,216,75,.35);font-weight:900}
+.online-dot{position:absolute;top:18px;left:18px;width:15px;height:15px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px rgba(34,197,94,1),0 0 24px rgba(34,197,94,.75);border:2px solid white;animation:onlinePulse 1.4s infinite}
+@keyframes onlinePulse{0%{transform:scale(1)}50%{transform:scale(1.16)}100%{transform:scale(1)}}
 
-.card-image-wrap{
-  width:100%;
-  aspect-ratio:3/4;
-  background:#000;
-  overflow:hidden;
-}
-
-.card-image{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-
-.badge{
-  position:absolute;
-  top:16px;
-  right:16px;
-  background:rgba(0,0,0,.72);
-  color:#ffd84b;
-  padding:10px 18px;
-  border-radius:999px;
-  border:1px solid rgba(255,216,75,.35);
-  font-weight:900;
-}
-
-.online-dot{
-  position:absolute;
-  top:18px;
-  left:18px;
-  width:15px;
-  height:15px;
-  border-radius:50%;
-  background:#22c55e;
-  box-shadow:0 0 10px rgba(34,197,94,1),0 0 24px rgba(34,197,94,.75);
-  border:2px solid white;
-  animation:onlinePulse 1.4s infinite;
-}
-
-@keyframes onlinePulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.16)}
-  100%{transform:scale(1)}
-}
-
-.card-body{
-  padding:22px;
-}
-
-.name{
-  font-size:30px;
-  font-weight:900;
-  margin-bottom:10px;
-}
-
+.card-body{padding:22px}
+.name{font-size:30px;font-weight:900;margin-bottom:10px}
 .name a:hover{color:#ffd84b}
-
-.online-text{
-  display:inline-block;
-  color:#22c55e;
-  font-weight:900;
-  font-size:14px;
-  margin-bottom:12px;
-}
-
-.location{
-  color:#d7deef;
-  margin-bottom:10px;
-  line-height:1.5;
-  font-size:17px;
-}
-
-.phone{
-  color:#ffd84b;
-  font-weight:900;
-  margin-bottom:14px;
-  font-size:19px;
-}
-
-.bio{
-  color:#c8d2ee;
-  line-height:1.6;
-  min-height:75px;
-  margin-bottom:16px;
-}
-
-.engagement{
-  display:flex;
-  gap:12px;
-  align-items:center;
-  flex-wrap:wrap;
-  color:#ffd84b;
-  font-weight:900;
-  font-size:18px;
-  margin-bottom:20px;
-}
-
-.heart-like{
-  cursor:pointer;
-  user-select:none;
-  transition:.2s;
-}
-
-.heart-like:hover{
-  transform:scale(1.14);
-  color:#ff3f86;
-}
-
-.actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.btn{
-  height:56px;
-  border:none;
-  border-radius:18px;
-  font-size:18px;
-  font-weight:900;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
+.online-text{display:inline-block;color:#22c55e;font-weight:900;font-size:14px;margin-bottom:12px}
+.location{color:#d7deef;margin-bottom:10px;line-height:1.5;font-size:17px}
+.phone{color:#ffd84b;font-weight:900;margin-bottom:14px;font-size:19px}
+.bio{color:#c8d2ee;line-height:1.6;min-height:75px;margin-bottom:16px}
+.engagement{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:#ffd84b;font-weight:900;font-size:18px;margin-bottom:20px}
+.heart-like{cursor:pointer;user-select:none;transition:.2s}
+.heart-like:hover{transform:scale(1.14);color:#ff3f86}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{height:56px;border:none;border-radius:18px;font-size:18px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .whatsapp{background:#22c55e;color:#001b09}
 .call{background:#ffd84b;color:#000}
+.disabled-contact{background:#334155!important;color:#94a3b8!important;cursor:not-allowed!important;grid-column:1/-1}
 
-.empty{
-  grid-column:1/-1;
-  text-align:center;
-  padding:100px 20px;
-  color:#ffd84b;
-  font-size:30px;
-  font-weight:900;
-}
+.empty{grid-column:1/-1;text-align:center;padding:100px 20px;color:#ffd84b;font-size:30px;font-weight:900}
+.loading-card{height:520px;border-radius:28px;background:linear-gradient(90deg,#071038,#111c42,#071038);background-size:200% 100%;animation:shimmer 1.2s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-.disclaimer{
-  width:min(1550px,95%);
-  margin:40px auto 50px;
-  background:#071038;
-  border:1px solid rgba(255,216,75,.15);
-  border-radius:28px;
-  padding:38px;
-  color:#b8c1d8;
-  line-height:1.8;
-}
+.disclaimer{width:min(1550px,95%);margin:40px auto 50px;background:#071038;border:1px solid rgba(255,216,75,.15);border-radius:28px;padding:38px;color:#b8c1d8;line-height:1.8}
+.disclaimer h3{color:#ffd84b;font-size:34px;margin-bottom:20px}
+.disclaimer p{margin-bottom:16px}
+footer{border-top:1px solid rgba(255,216,75,.12);text-align:center;padding:35px 20px;color:#7e8cb2}
 
-.disclaimer h3{
-  color:#ffd84b;
-  font-size:34px;
-  margin-bottom:20px;
-}
-
-.disclaimer p{
-  margin-bottom:16px;
-}
-
-footer{
-  border-top:1px solid rgba(255,216,75,.12);
-  text-align:center;
-  padding:35px 20px;
-  color:#7e8cb2;
-}
-
-@media(max-width:1250px){
-  .grid{grid-template-columns:repeat(3,1fr)}
-  .stats{grid-template-columns:repeat(2,1fr)}
-}
-
-@media(max-width:950px){
-  .desktop-nav{display:none}
-  .menu-toggle{display:block}
-}
-
-@media(max-width:850px){
-  .grid{grid-template-columns:repeat(2,1fr)}
-  .controls{grid-template-columns:1fr}
-}
-
-@media(max-width:560px){
-  .header{padding:14px 16px}
-  .logo{width:52px;height:52px}
-  .site-title{font-size:30px}
-  .grid{grid-template-columns:1fr}
-  .stats{grid-template-columns:1fr}
-  #nairobiMap{height:420px}
-}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(3,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:950px){.desktop-nav{display:none}.menu-toggle{display:block}}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.controls{grid-template-columns:1fr}}
+@media(max-width:560px){.header{padding:14px 16px}.logo{width:52px;height:52px}.site-title{font-size:30px}.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr}#nairobiMap{height:420px}}
 </style>
 </head>
 
@@ -550,7 +121,6 @@ footer{
 
     <nav class="desktop-nav">
       <a href="/">Home</a>
-
       <div class="dropdown">
         <button class="dropbtn">Locations ▼</button>
         <div class="dropdown-content">
@@ -564,7 +134,6 @@ footer{
           <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">Mombasa</a>
         </div>
       </div>
-
       <a href="/shorts.html" class="shorts-btn">🔥 Shorts</a>
       <a href="/join.html" class="join-btn">Join Now</a>
     </nav>
@@ -608,7 +177,6 @@ footer{
 
 <section class="controls">
   <input id="searchInput" class="search" type="text" placeholder="Search by name, bio, location...">
-
   <select id="sortSelect" class="sort">
     <option value="featured">Featured First</option>
     <option value="likes">Most Likes</option>
@@ -645,33 +213,12 @@ footer{
 
 <section class="disclaimer">
   <h3>Disclaimer</h3>
-
-  <p>
-    Nairobi Sweets is an advertising and discovery platform only.
-    We do not operate as an agency, escort service, or booking company.
-    All profiles are independently managed by the individuals who create them.
-  </p>
-
-  <p>
-    Users must be 18 years or older to access this website.
-    By using this platform, you confirm that you are legally allowed to view adult-oriented content in your region.
-  </p>
-
-  <p>
-    Nairobi Sweets does not guarantee the accuracy of profile information,
-    availability, pricing, or interactions between users and advertisers.
-    Users engage with profiles at their own discretion and responsibility.
-  </p>
-
-  <p>
-    Any illegal activity, trafficking, exploitation, abuse, or non-consensual conduct
-    is strictly prohibited and may result in immediate removal and reporting where necessary.
-  </p>
+  <p>Nairobi Sweets is an advertising and discovery platform only. We do not operate as an agency, escort service, or booking company.</p>
+  <p>Users must be 18 years or older to access this website.</p>
+  <p>Nairobi Sweets does not guarantee profile accuracy, availability, pricing, or interactions between users and advertisers.</p>
 </section>
 
-<footer>
-  © Nairobi Sweets
-</footer>
+<footer>© Nairobi Sweets</footer>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
@@ -685,24 +232,207 @@ const closeMenu = document.getElementById("closeMenu");
 const sideMenu = document.getElementById("sideMenu");
 const menuBackdrop = document.getElementById("menuBackdrop");
 
-function openMenu(){
-  sideMenu.classList.add("active");
-  menuBackdrop.classList.add("active");
-  document.body.classList.add("menu-open");
-}
-
-function closeMenuPanel(){
-  sideMenu.classList.remove("active");
-  menuBackdrop.classList.remove("active");
-  document.body.classList.remove("menu-open");
-}
+function openMenu(){sideMenu.classList.add("active");menuBackdrop.classList.add("active");document.body.classList.add("menu-open")}
+function closeMenuPanel(){sideMenu.classList.remove("active");menuBackdrop.classList.remove("active");document.body.classList.remove("menu-open")}
 
 menuToggle.addEventListener("click",openMenu);
 closeMenu.addEventListener("click",closeMenuPanel);
 menuBackdrop.addEventListener("click",closeMenuPanel);
+document.querySelectorAll(".side-menu a").forEach(link=>link.addEventListener("click",closeMenuPanel));
 
-document.querySelectorAll(".side-menu a").forEach(link=>{
-  link.addEventListener("click",closeMenuPanel);
+function safeText(value,fallback=""){
+  return value && String(value).trim() ? String(value).trim() : fallback;
+}
+
+function safePhone(phone){
+  const raw = String(phone || "").replace(/\D/g,"");
+  if(!raw) return null;
+  if(raw.startsWith("0")) return "254" + raw.slice(1);
+  if(raw.startsWith("7") || raw.startsWith("1")) return "254" + raw;
+  return raw;
+}
+
+function aiBio(profile){
+  const name = safeText(profile.stage_name || profile.name,"This verified profile");
+  const location = safeText(profile.location,"Nairobi");
+  return safeText(
+    profile.bio,
+    `${name} is available in ${location}. View photos, check details, and connect directly through WhatsApp or call.`
+  );
+}
+
+function safeImage(profile){
+  return (
+    profile.photo_url ||
+    profile.image_url ||
+    profile.profile_photo ||
+    profile.avatar_url ||
+    profile.photo ||
+    profile.main_photo ||
+    "/assets/logo/logo-badge.png"
+  );
+}
+
+function safePlan(profile){
+  const plan = String(profile.plan || profile.plan_name || profile.package || "featured").toLowerCase();
+  if(plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP";
+  if(plan.includes("vip")) return "⭐ VIP";
+  return "✨ Featured";
+}
+
+function getName(p){return safeText(p.stage_name || p.name || p.full_name,"Verified Profile")}
+function getLikes(p){return Number(p.likes_count ?? p.likes ?? 0)}
+function getViews(p){return Number(p.views_count ?? p.views ?? 0)}
+
+function showSkeletons(){
+  document.getElementById("profilesGrid").innerHTML =
+    Array.from({length:8}).map(()=>`<div class="loading-card"></div>`).join("");
+}
+
+function updateStats(list){
+  document.getElementById("totalProfiles").textContent = list.length;
+  document.getElementById("totalViews").textContent = list.reduce((sum,p)=>sum+getViews(p),0).toLocaleString();
+  document.getElementById("totalLikes").textContent = list.reduce((sum,p)=>sum+getLikes(p),0).toLocaleString();
+  document.getElementById("vipProfiles").textContent = list.filter(p=>{
+    const plan = String(p.plan || p.plan_name || "").toLowerCase();
+    return plan.includes("vip") || plan.includes("signature");
+  }).length;
+}
+
+function renderProfiles(list){
+  updateStats(list);
+  const grid = document.getElementById("profilesGrid");
+
+  if(!list.length){
+    grid.innerHTML = `<div class="empty">No profiles found. The velvet room is quiet for now.</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(profile=>{
+    const rawPhone = profile.phone || profile.whatsapp || "";
+    const phone = safePhone(rawPhone);
+
+    const buttons = phone
+      ? `
+        <a class="btn whatsapp" href="https://wa.me/${phone}" target="_blank">WhatsApp</a>
+        <a class="btn call" href="tel:${phone}">Call</a>
+      `
+      : `<button class="btn disabled-contact" disabled>Contact Hidden</button>`;
+
+    return `
+      <article class="card">
+        <div class="badge">${safePlan(profile)}</div>
+        <div class="online-dot"></div>
+
+        <div class="card-image-wrap">
+          <a href="/profile.html?id=${profile.id}" onclick="viewProfile('${profile.id}')">
+            <img
+              src="${safeImage(profile)}"
+              class="card-image"
+              loading="lazy"
+              alt="${getName(profile)}"
+              onerror="this.onerror=null;this.src='/assets/logo/logo-badge.png';"
+            >
+          </a>
+        </div>
+
+        <div class="card-body">
+          <div class="name">
+            <a href="/profile.html?id=${profile.id}" onclick="viewProfile('${profile.id}')">
+              ${getName(profile)}
+            </a>
+          </div>
+
+          <span class="online-text">Online Now</span>
+          <div class="location">📍 ${safeText(profile.location,"Nairobi")}</div>
+          ${phone ? `<div class="phone">📞 ${phone}</div>` : `<div class="phone">📞 Contact hidden</div>`}
+          <div class="bio">${aiBio(profile)}</div>
+
+          <div class="engagement">
+            <span class="heart-like" id="likes-${profile.id}" onclick="likeProfile('${profile.id}')">❤️ ${getLikes(profile)} likes</span>
+            <span>•</span>
+            <span id="views-${profile.id}">👁️ ${getViews(profile)} views</span>
+          </div>
+
+          <div class="actions">${buttons}</div>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+async function loadProfiles(){
+  showSkeletons();
+
+  const { data, error } = await sb
+    .from("profiles")
+    .select("*")
+    .eq("approved",true)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    document.getElementById("profilesGrid").innerHTML =
+      `<div class="empty">Could not load profiles. Please refresh in a moment.</div>`;
+    console.error(error);
+    return;
+  }
+
+  allProfiles = data || [];
+  renderProfiles(allProfiles);
+}
+
+async function likeProfile(id){
+  const profile = allProfiles.find(p=>String(p.id) === String(id));
+  if(!profile) return;
+
+  const newLikes = getLikes(profile) + 1;
+
+  const { error } = await sb.from("profiles").update({likes_count:newLikes}).eq("id",id);
+
+  if(error){
+    alert("Like failed. Try again.");
+    return;
+  }
+
+  profile.likes_count = newLikes;
+  document.getElementById(`likes-${id}`).innerHTML = `❤️ ${newLikes} likes`;
+  updateStats(allProfiles);
+}
+
+async function viewProfile(id){
+  const profile = allProfiles.find(p=>String(p.id) === String(id));
+  if(!profile) return;
+
+  const newViews = getViews(profile) + 1;
+
+  const { error } = await sb.from("profiles").update({views_count:newViews}).eq("id",id);
+
+  if(!error){
+    profile.views_count = newViews;
+    const el = document.getElementById(`views-${id}`);
+    if(el) el.innerHTML = `👁️ ${newViews} views`;
+    updateStats(allProfiles);
+  }
+}
+
+document.getElementById("searchInput").addEventListener("input",e=>{
+  const q = e.target.value.toLowerCase();
+  renderProfiles(allProfiles.filter(p=>`
+    ${p.stage_name || ""}
+    ${p.name || ""}
+    ${p.location || ""}
+    ${p.bio || ""}
+  `.toLowerCase().includes(q)));
+});
+
+document.getElementById("sortSelect").addEventListener("change",e=>{
+  let list = [...allProfiles];
+
+  if(e.target.value === "likes") list.sort((a,b)=>getLikes(b)-getLikes(a));
+  if(e.target.value === "views") list.sort((a,b)=>getViews(b)-getViews(a));
+  if(e.target.value === "newest") list.sort((a,b)=>new Date(b.created_at || 0)-new Date(a.created_at || 0));
+
+  renderProfiles(list);
 });
 
 function initMap(){
@@ -711,13 +441,6 @@ function initMap(){
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
     maxZoom:19,
     attribution:"© OpenStreetMap contributors"
-  }).addTo(map);
-
-  L.circle([-1.286389,36.817223],{
-    color:"#ff005c",
-    fillColor:"#ff005c",
-    fillOpacity:.18,
-    radius:6500
   }).addTo(map);
 
   const spots = [
@@ -733,235 +456,6 @@ function initMap(){
     L.marker([lat,lng]).addTo(map).bindPopup(name);
   });
 }
-
-function cleanPhone(phone){
-  let p = String(phone || "").replace(/\D/g,"");
-  if(p.startsWith("0")) p = "254" + p.slice(1);
-  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
-  return p;
-}
-
-function getPhoto(p){
-  return (
-    p.photo_url ||
-    p.image_url ||
-    p.profile_photo ||
-    p.avatar_url ||
-    p.photo ||
-    "/assets/logo/logo-badge.png"
-  );
-}
-
-function getName(p){
-  return p.stage_name || p.name || p.full_name || "Profile";
-}
-
-function getPlan(p){
-  return String(p.plan || "").toLowerCase();
-}
-
-function getBadge(p){
-  const plan = getPlan(p);
-  if(plan === "vvip" || plan === "signature") return "👑 VVIP";
-  if(plan === "vip") return "⭐ VIP";
-  return "✨ Featured";
-}
-
-function getLikes(p){
-  return Number(p.likes_count ?? p.likes ?? 0);
-}
-
-function getViews(p){
-  return Number(p.views_count ?? p.views ?? 0);
-}
-
-function updateStats(list){
-  const totalViews = list.reduce((sum,p)=>sum + getViews(p),0);
-  const totalLikes = list.reduce((sum,p)=>sum + getLikes(p),0);
-  const vipTotal = list.filter(p=>{
-    const plan = getPlan(p);
-    return plan === "vip" || plan === "vvip" || plan === "signature";
-  }).length;
-
-  document.getElementById("totalProfiles").textContent = list.length;
-  document.getElementById("totalViews").textContent = totalViews.toLocaleString();
-  document.getElementById("totalLikes").textContent = totalLikes.toLocaleString();
-  document.getElementById("vipProfiles").textContent = vipTotal;
-}
-
-function renderProfiles(list){
-  updateStats(list);
-
-  const grid = document.getElementById("profilesGrid");
-
-  if(!list.length){
-    grid.innerHTML = `<div class="empty">No profiles found</div>`;
-    return;
-  }
-
-  grid.innerHTML = list.map(profile=>{
-    const rawPhone = profile.phone || profile.whatsapp || "";
-    const whatsapp = cleanPhone(rawPhone);
-    const likes = getLikes(profile);
-    const views = getViews(profile);
-
-    return `
-      <article class="card">
-        <div class="badge">${getBadge(profile)}</div>
-        <div class="online-dot"></div>
-
-        <div class="card-image-wrap">
-          <a href="/profile.html?id=${profile.id}" onclick="viewProfile('${profile.id}')">
-            <img
-              src="${getPhoto(profile)}"
-              class="card-image"
-              loading="lazy"
-              alt="${getName(profile)}"
-              onerror="this.src='/assets/logo/logo-badge.png'"
-            >
-          </a>
-        </div>
-
-        <div class="card-body">
-          <div class="name">
-            <a href="/profile.html?id=${profile.id}" onclick="viewProfile('${profile.id}')">
-              ${getName(profile)}
-            </a>
-          </div>
-
-          <span class="online-text">Online Now</span>
-
-          <div class="location">📍 ${profile.location || "Nairobi"}</div>
-          <div class="phone">📞 ${rawPhone}</div>
-
-          <div class="bio">
-            ${profile.bio || "Premium Nairobi profile."}
-          </div>
-
-          <div class="engagement">
-            <span
-              class="heart-like"
-              id="likes-${profile.id}"
-              onclick="likeProfile('${profile.id}')"
-              title="Like profile"
-            >
-              ❤️ ${likes} likes
-            </span>
-
-            <span>•</span>
-
-            <span id="views-${profile.id}">
-              👁️ ${views} views
-            </span>
-          </div>
-
-          <div class="actions">
-            <a class="btn whatsapp" href="https://wa.me/${whatsapp}" target="_blank">WhatsApp</a>
-            <a class="btn call" href="tel:${rawPhone}">Call</a>
-          </div>
-        </div>
-      </article>
-    `;
-  }).join("");
-}
-
-async function loadProfiles(){
-  const { data, error } = await sb
-    .from("profiles")
-    .select("*")
-    .eq("approved",true)
-    .order("created_at",{ascending:false});
-
-  if(error){
-    document.getElementById("profilesGrid").innerHTML =
-      `<div class="empty">${error.message}</div>`;
-    return;
-  }
-
-  allProfiles = data || [];
-  renderProfiles(allProfiles);
-}
-
-async function likeProfile(id){
-  const profile = allProfiles.find(p=>String(p.id) === String(id));
-  if(!profile) return;
-
-  const newLikes = getLikes(profile) + 1;
-
-  const { error } = await sb
-    .from("profiles")
-    .update({likes_count:newLikes})
-    .eq("id",id);
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  profile.likes_count = newLikes;
-
-  const el = document.getElementById(`likes-${id}`);
-  if(el) el.innerHTML = `❤️ ${newLikes} likes`;
-
-  updateStats(allProfiles);
-}
-
-async function viewProfile(id){
-  const profile = allProfiles.find(p=>String(p.id) === String(id));
-  if(!profile) return;
-
-  const newViews = getViews(profile) + 1;
-
-  const { error } = await sb
-    .from("profiles")
-    .update({views_count:newViews})
-    .eq("id",id);
-
-  if(error){
-    console.error(error.message);
-    return;
-  }
-
-  profile.views_count = newViews;
-
-  const el = document.getElementById(`views-${id}`);
-  if(el) el.innerHTML = `👁️ ${newViews} views`;
-
-  updateStats(allProfiles);
-}
-
-document.getElementById("searchInput").addEventListener("input",e=>{
-  const q = e.target.value.toLowerCase();
-
-  const filtered = allProfiles.filter(p=>{
-    return `
-      ${p.stage_name || ""}
-      ${p.name || ""}
-      ${p.location || ""}
-      ${p.bio || ""}
-    `.toLowerCase().includes(q);
-  });
-
-  renderProfiles(filtered);
-});
-
-document.getElementById("sortSelect").addEventListener("change",e=>{
-  let list = [...allProfiles];
-
-  if(e.target.value === "likes"){
-    list.sort((a,b)=>getLikes(b)-getLikes(a));
-  }
-
-  if(e.target.value === "views"){
-    list.sort((a,b)=>getViews(b)-getViews(a));
-  }
-
-  if(e.target.value === "newest"){
-    list.sort((a,b)=>new Date(b.created_at || 0)-new Date(a.created_at || 0));
-  }
-
-  renderProfiles(list);
-});
 
 initMap();
 loadProfiles();
