@@ -1,247 +1,217 @@
 let allProfiles = [];
+let activeFilter = "home";
 
-/* MENU */
+const grid = document.querySelector(".profiles") || document.getElementById("profilesGrid");
+const searchInput = document.querySelector(".search-box") || document.getElementById("searchInput");
+const statsNumber = document.querySelector(".stats-number");
+const totalProfiles = document.getElementById("totalProfiles");
+const totalViews = document.getElementById("totalViews");
+const totalLikes = document.getElementById("totalLikes");
+const vipProfiles = document.getElementById("vipProfiles");
 
-const sideMenu = document.getElementById("sideMenu");
-const menuBackdrop = document.getElementById("menuBackdrop");
-
-function openMenu(){
-  sideMenu.classList.add("active");
-  menuBackdrop.classList.add("active");
-  document.body.classList.add("menu-open");
+function toggleMenu() {
+  const menu = document.getElementById("mobileMenu") || document.getElementById("sideMenu");
+  if (menu) menu.classList.toggle("active");
 }
 
-function closeMenuPanel(){
-  sideMenu.classList.remove("active");
-  menuBackdrop.classList.remove("active");
-  document.body.classList.remove("menu-open");
+function openSweet() {
+  const panel = document.getElementById("sweetPanel") || document.getElementById("aiPanel");
+  if (panel) panel.classList.add("active");
 }
 
-document.getElementById("menuToggle").onclick = openMenu;
-document.getElementById("closeMenu").onclick = closeMenuPanel;
-menuBackdrop.onclick = closeMenuPanel;
-
-/* HELPERS */
-
-function safeText(v,f=""){
-  return v && String(v).trim()
-    ? String(v).trim()
-    : f;
+function closeSweet() {
+  const panel = document.getElementById("sweetPanel") || document.getElementById("aiPanel");
+  if (panel) panel.classList.remove("active");
 }
 
-function safePhone(phone){
+window.toggleMenu = toggleMenu;
+window.openSweet = openSweet;
+window.closeSweet = closeSweet;
 
-  const raw = String(phone || "")
-    .replace(/\D/g,"");
+function safeText(value, fallback = "") {
+  return value && String(value).trim() ? String(value).trim() : fallback;
+}
 
-  if(!raw) return null;
+function safePhone(phone) {
+  const raw = String(phone || "").replace(/\D/g, "");
 
-  if(raw.startsWith("0")){
-    return "254" + raw.slice(1);
-  }
-
-  if(raw.startsWith("7") || raw.startsWith("1")){
-    return "254" + raw;
-  }
+  if (!raw) return null;
+  if (raw.startsWith("0")) return "254" + raw.slice(1);
+  if (raw.startsWith("7") || raw.startsWith("1")) return "254" + raw;
 
   return raw;
 }
 
-function safeImage(p){
-
+function safeImage(profile) {
   return (
-    p.photo_url ||
-    p.image_url ||
-    p.profile_photo ||
-    p.avatar_url ||
-    p.photo ||
-    p.main_photo ||
+    profile.photo_url ||
+    profile.image_url ||
+    profile.profile_photo ||
+    profile.avatar_url ||
+    profile.photo ||
+    profile.main_photo ||
     "/assets/logo/logo-badge.png"
   );
 }
 
-function getName(p){
-
+function getName(profile) {
   return safeText(
-    p.stage_name ||
-    p.name ||
-    p.full_name,
+    profile.stage_name || profile.name || profile.full_name,
     "Verified Profile"
   );
 }
 
-function getLikes(p){
-  return Number(p.likes_count ?? p.likes ?? 0);
+function getLocation(profile) {
+  return safeText(profile.location, "Nairobi");
 }
 
-function getViews(p){
-  return Number(p.views_count ?? p.views ?? 0);
+function getLikes(profile) {
+  return Number(profile.likes_count ?? profile.likes ?? 0);
 }
 
-function safePlan(p){
+function getViews(profile) {
+  return Number(profile.views_count ?? profile.views ?? 0);
+}
 
-  const plan = String(
-    p.plan ||
-    p.plan_name ||
-    p.package ||
+function getPlan(profile) {
+  return String(
+    profile.plan ||
+    profile.plan_name ||
+    profile.package ||
+    profile.tier ||
     "featured"
   ).toLowerCase();
+}
 
-  if(
-    plan.includes("vvip") ||
-    plan.includes("signature")
-  ){
-    return "👑 VVIP";
-  }
+function getBadge(profile) {
+  const plan = getPlan(profile);
 
-  if(plan.includes("vip")){
-    return "⭐ VIP";
-  }
+  if (plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP";
+  if (plan.includes("vip")) return "⭐ VIP";
 
   return "✨ Featured";
 }
 
-function aiBio(p){
-
+function aiBio(profile) {
   return safeText(
-    p.bio,
-    `${getName(p)} is available in ${safeText(p.location,"Nairobi")}. View photos and connect directly through WhatsApp or call.`
+    profile.bio,
+    `${getName(profile)} is available in ${getLocation(profile)}. View photos and connect directly through WhatsApp or call.`
   );
 }
 
-/* LOADING */
-
-function showSkeletons(){
-
-  document.getElementById("profilesGrid").innerHTML =
-    Array.from({length:6})
-      .map(()=>`<div class="loading-card"></div>`)
-      .join("");
+function hasWhatsapp(profile) {
+  return Boolean(profile.phone || profile.whatsapp);
 }
 
-/* STATS */
+function scoreProfile(profile) {
+  let score = 0;
 
-function updateStats(list){
+  const plan = getPlan(profile);
 
-  document.getElementById("totalProfiles").textContent =
-    list.length;
+  if (plan.includes("vvip") || plan.includes("signature")) score += 1000;
+  if (plan.includes("vip")) score += 700;
+  if (plan.includes("featured")) score += 350;
 
-  document.getElementById("totalViews").textContent =
-    list.reduce((s,p)=>s+getViews(p),0)
-      .toLocaleString();
+  score += getLikes(profile) * 3;
+  score += getViews(profile) * 0.5;
 
-  document.getElementById("totalLikes").textContent =
-    list.reduce((s,p)=>s+getLikes(p),0)
-      .toLocaleString();
+  if (safeImage(profile)) score += 80;
+  if (hasWhatsapp(profile)) score += 100;
+  if (profile.created_at) score += Math.max(0, 50 - daysOld(profile.created_at));
 
-  document.getElementById("vipProfiles").textContent =
-    list.filter(p =>
-      String(
-        p.plan ||
-        p.plan_name ||
-        ""
-      )
-      .toLowerCase()
-      .includes("vip")
-    ).length;
+  return score;
 }
 
-/* RENDER */
+function daysOld(dateString) {
+  const created = new Date(dateString);
+  if (Number.isNaN(created.getTime())) return 999;
 
-function renderProfiles(list){
+  const diff = Date.now() - created.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+function showSkeletons() {
+  if (!grid) return;
+
+  grid.innerHTML = Array.from({ length: 6 })
+    .map(() => `<div class="loading-card"></div>`)
+    .join("");
+}
+
+function updateStats(list) {
+  const profileCount = list.length;
+  const views = list.reduce((sum, profile) => sum + getViews(profile), 0);
+  const likes = list.reduce((sum, profile) => sum + getLikes(profile), 0);
+  const vipCount = list.filter(profile => getPlan(profile).includes("vip")).length;
+
+  if (statsNumber) statsNumber.textContent = profileCount.toLocaleString();
+  if (totalProfiles) totalProfiles.textContent = profileCount.toLocaleString();
+  if (totalViews) totalViews.textContent = views.toLocaleString();
+  if (totalLikes) totalLikes.textContent = likes.toLocaleString();
+  if (vipProfiles) vipProfiles.textContent = vipCount.toLocaleString();
+}
+
+function compactBio(text, max = 125) {
+  const clean = safeText(text, "");
+  if (clean.length <= max) return clean;
+  return clean.slice(0, max).trim() + "...";
+}
+
+function renderProfiles(list) {
+  if (!grid) return;
 
   updateStats(list);
 
-  const grid =
-    document.getElementById("profilesGrid");
-
-  if(!list.length){
-
+  if (!list.length) {
     grid.innerHTML = `
       <div class="empty">
-        No profiles found.
+        No profiles found. Try another location or filter.
       </div>
     `;
-
     return;
   }
 
-  grid.innerHTML = list.map(p => {
-
-    const phone = safePhone(
-      p.phone || p.whatsapp
-    );
+  grid.innerHTML = list.map(profile => {
+    const phone = safePhone(profile.phone || profile.whatsapp);
+    const image = safeImage(profile);
+    const name = getName(profile);
+    const location = getLocation(profile);
+    const bio = compactBio(aiBio(profile));
 
     const buttons = phone
       ? `
-        <a
-          class="btn whatsapp"
-          href="https://wa.me/${phone}"
-          target="_blank"
-        >
-          WhatsApp
-        </a>
-
-        <a
-          class="btn call"
-          href="tel:${phone}"
-        >
-          Call
-        </a>
+        <a class="call-btn btn call" href="tel:${phone}">CALL</a>
+        <a class="wa-btn btn whatsapp" href="https://wa.me/${phone}" target="_blank">WHATSAPP</a>
       `
       : `
-        <button
-          class="btn disabled-contact"
-          disabled
-        >
-          Contact Hidden
-        </button>
+        <button class="btn disabled-contact" disabled>CONTACT HIDDEN</button>
       `;
 
     return `
       <article class="card">
+        <span class="online-dot"></span>
 
-        <div class="badge">
-          ${safePlan(p)}
+        <div class="featured-badge badge">
+          ${getBadge(profile)}
         </div>
 
-        <div class="online-dot"></div>
-
-        <div class="card-image-wrap">
-
-          <a
-            href="/profile.html?id=${p.id}"
-            onclick="viewProfile('${p.id}')"
+        <a href="/profile.html?id=${profile.id}" onclick="viewProfile('${profile.id}')">
+          <img
+            src="${image}"
+            class="card-image"
+            loading="lazy"
+            alt="${name}"
+            onerror="this.onerror=null;this.src='/assets/logo/logo-badge.png';"
           >
-
-            <img
-              src="${safeImage(p)}"
-              class="card-image"
-              loading="lazy"
-              alt="${getName(p)}"
-
-              onerror="
-                this.onerror=null;
-                this.src='/assets/logo/logo-badge.png';
-              "
-            >
-
-          </a>
-
-        </div>
+        </a>
 
         <div class="card-body">
+          <div class="card-name name">${name}</div>
 
-          <div class="name">
-            ${getName(p)}
-          </div>
-
-          <span class="online-text">
-            Online Now
-          </span>
+          <div class="online online-text">Online Now</div>
 
           <div class="location">
-            📍 ${safeText(p.location,"Nairobi")}
+            📍 ${location}
           </div>
 
           <div class="phone">
@@ -249,245 +219,196 @@ function renderProfiles(list){
           </div>
 
           <div class="bio">
-            ${aiBio(p)}
+            ${bio}
           </div>
 
           <div class="engagement">
-
-            <span
-              class="heart-like"
-              id="likes-${p.id}"
-              onclick="likeProfile('${p.id}')"
-            >
-              ❤️ ${getLikes(p)} likes
+            <span class="heart-like" id="likes-${profile.id}" onclick="likeProfile('${profile.id}')">
+              ❤️ ${getLikes(profile)} likes
             </span>
-
             <span>•</span>
-
-            <span id="views-${p.id}">
-              👁️ ${getViews(p)} views
+            <span id="views-${profile.id}">
+              👁️ ${getViews(profile)} views
             </span>
-
           </div>
 
-          <div class="actions">
+          <div class="action-row actions">
             ${buttons}
           </div>
-
         </div>
-
       </article>
     `;
-
   }).join("");
 }
 
-/* LOAD */
+function applyFilters() {
+  const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
-async function loadProfiles(){
+  let list = [...allProfiles];
 
+  if (activeFilter && activeFilter !== "home") {
+    list = list.filter(profile => {
+      const plan = getPlan(profile);
+      const text = `
+        ${profile.stage_name || ""}
+        ${profile.name || ""}
+        ${profile.full_name || ""}
+        ${profile.location || ""}
+        ${profile.bio || ""}
+        ${profile.body_type || ""}
+        ${profile.plan || ""}
+        ${profile.package || ""}
+      `.toLowerCase();
+
+      if (activeFilter === "vip") return plan.includes("vip");
+      if (activeFilter === "online") return true;
+      if (activeFilter === "whatsapp") return hasWhatsapp(profile);
+
+      return text.includes(activeFilter);
+    });
+  }
+
+  if (query) {
+    list = list.filter(profile => {
+      const text = `
+        ${profile.stage_name || ""}
+        ${profile.name || ""}
+        ${profile.full_name || ""}
+        ${profile.location || ""}
+        ${profile.bio || ""}
+        ${profile.body_type || ""}
+        ${profile.plan || ""}
+        ${profile.package || ""}
+        ${profile.phone || ""}
+        ${profile.whatsapp || ""}
+      `.toLowerCase();
+
+      return text.includes(query);
+    });
+  }
+
+  list.sort((a, b) => scoreProfile(b) - scoreProfile(a));
+
+  renderProfiles(list);
+}
+
+function setupFilterButtons() {
+  document.querySelectorAll(".filters button").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".filters button").forEach(btn => {
+        btn.classList.remove("active");
+      });
+
+      button.classList.add("active");
+
+      activeFilter = button.textContent
+        .replace(/[^\w\s]/g, "")
+        .trim()
+        .toLowerCase();
+
+      if (activeFilter === "home") activeFilter = "home";
+      if (activeFilter === "vip") activeFilter = "vip";
+      if (activeFilter === "online") activeFilter = "online";
+      if (activeFilter === "whatsapp") activeFilter = "whatsapp";
+
+      applyFilters();
+    });
+  });
+}
+
+function setupSearch() {
+  if (!searchInput) return;
+
+  searchInput.addEventListener("input", () => {
+    applyFilters();
+  });
+}
+
+async function loadProfiles() {
   showSkeletons();
+
+  if (typeof sb === "undefined") {
+    if (grid) {
+      grid.innerHTML = `
+        <div class="empty">
+          Supabase is not connected. Check assets/js/config.js.
+        </div>
+      `;
+    }
+    return;
+  }
 
   const { data, error } = await sb
     .from("profiles")
     .select("*")
-    .eq("approved",true)
-    .order("created_at",{ascending:false});
+    .eq("approved", true)
+    .order("created_at", { ascending: false });
 
-  if(error){
-
+  if (error) {
     console.error(error);
 
-    document.getElementById(
-      "profilesGrid"
-    ).innerHTML = `
-      <div class="empty">
-        Could not load profiles.
-      </div>
-    `;
+    if (grid) {
+      grid.innerHTML = `
+        <div class="empty">
+          Could not load profiles. Refresh page.
+        </div>
+      `;
+    }
 
     return;
   }
 
-  allProfiles = data || [];
+  allProfiles = (data || []).sort((a, b) => scoreProfile(b) - scoreProfile(a));
 
-  renderProfiles(allProfiles);
+  applyFilters();
 }
 
-/* LIKE */
+async function likeProfile(id) {
+  const profile = allProfiles.find(item => String(item.id) === String(id));
+  if (!profile) return;
 
-async function likeProfile(id){
-
-  const p = allProfiles.find(
-    x => String(x.id) === String(id)
-  );
-
-  if(!p) return;
-
-  const newLikes = getLikes(p) + 1;
+  const newLikes = getLikes(profile) + 1;
 
   const { error } = await sb
     .from("profiles")
-    .update({
-      likes_count:newLikes
-    })
-    .eq("id",id);
+    .update({ likes_count: newLikes })
+    .eq("id", id);
 
-  if(error){
-    console.log(error);
+  if (error) {
+    console.error(error);
     return;
   }
 
-  p.likes_count = newLikes;
+  profile.likes_count = newLikes;
 
-  document.getElementById(
-    `likes-${id}`
-  ).innerHTML =
-    `❤️ ${newLikes} likes`;
+  const el = document.getElementById(`likes-${id}`);
+  if (el) el.innerHTML = `❤️ ${newLikes} likes`;
 
-  updateStats(allProfiles);
+  applyFilters();
 }
 
-/* VIEW */
+async function viewProfile(id) {
+  const profile = allProfiles.find(item => String(item.id) === String(id));
+  if (!profile) return;
 
-async function viewProfile(id){
-
-  const p = allProfiles.find(
-    x => String(x.id) === String(id)
-  );
-
-  if(!p) return;
-
-  const newViews = getViews(p) + 1;
+  const newViews = getViews(profile) + 1;
 
   const { error } = await sb
     .from("profiles")
-    .update({
-      views_count:newViews
-    })
-    .eq("id",id);
+    .update({ views_count: newViews })
+    .eq("id", id);
 
-  if(!error){
+  if (!error) {
+    profile.views_count = newViews;
 
-    p.views_count = newViews;
-
-    const el =
-      document.getElementById(
-        `views-${id}`
-      );
-
-    if(el){
-
-      el.innerHTML =
-        `👁️ ${newViews} views`;
-    }
-
-    updateStats(allProfiles);
+    const el = document.getElementById(`views-${id}`);
+    if (el) el.innerHTML = `👁️ ${newViews} views`;
   }
 }
 
-/* SEARCH */
+window.likeProfile = likeProfile;
+window.viewProfile = viewProfile;
 
-document
-.getElementById("searchInput")
-.addEventListener("input",e=>{
-
-  const q =
-    e.target.value.toLowerCase();
-
-  renderProfiles(
-
-    allProfiles.filter(p =>
-
-      `
-        ${p.stage_name || ""}
-        ${p.name || ""}
-        ${p.location || ""}
-        ${p.bio || ""}
-      `
-      .toLowerCase()
-      .includes(q)
-
-    )
-
-  );
-});
-
-/* SORT */
-
-document
-.getElementById("sortSelect")
-.addEventListener("change",e=>{
-
-  let list = [...allProfiles];
-
-  if(e.target.value==="likes"){
-
-    list.sort(
-      (a,b)=>
-        getLikes(b)-getLikes(a)
-    );
-  }
-
-  if(e.target.value==="views"){
-
-    list.sort(
-      (a,b)=>
-        getViews(b)-getViews(a)
-    );
-  }
-
-  if(e.target.value==="newest"){
-
-    list.sort(
-      (a,b)=>
-        new Date(b.created_at || 0)
-        -
-        new Date(a.created_at || 0)
-    );
-  }
-
-  renderProfiles(list);
-});
-
-/* MAP */
-
-function initMap(){
-
-  const map =
-    L.map("nairobiMap")
-    .setView(
-      [-1.286389,36.817223],
-      12
-    );
-
-  L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-      maxZoom:19,
-      attribution:"© OpenStreetMap"
-    }
-  ).addTo(map);
-
-  [
-    ["CBD",-1.286389,36.817223],
-    ["Kilimani",-1.2921,36.7856],
-    ["Westlands",-1.2676,36.8108],
-    ["Kasarani",-1.2257,36.8951],
-    ["Ruiru",-1.1466,36.9615],
-    ["Kikuyu",-1.2450,36.6630]
-  ]
-
-  .forEach(([n,lat,lng]) => {
-
-    L.marker([lat,lng])
-      .addTo(map)
-      .bindPopup(n);
-
-  });
-}
-
-/* START */
-
-initMap();
+setupFilterButtons();
+setupSearch();
 loadProfiles();
