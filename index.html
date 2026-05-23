@@ -27,7 +27,7 @@ body.menu-open{overflow:hidden}
 a{text-decoration:none;color:inherit}
 
 .header{
-  background:rgba(0,0,0,.94);
+  background:rgba(0,0,0,.95);
   padding:18px 28px;
   border-bottom:1px solid rgba(255,216,75,.18);
   position:sticky;
@@ -137,7 +137,7 @@ a{text-decoration:none;color:inherit}
 .menu-backdrop{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.7);
+  background:rgba(0,0,0,.72);
   z-index:1000;
   opacity:0;
   pointer-events:none;
@@ -268,7 +268,10 @@ a{text-decoration:none;color:inherit}
   padding:28px;
 }
 
-.stat-card h3{color:#93a0c7;margin-bottom:14px}
+.stat-card h3{
+  color:#93a0c7;
+  margin-bottom:14px;
+}
 
 .stat-card p{
   color:#ffd84b;
@@ -302,7 +305,10 @@ a{text-decoration:none;color:inherit}
   font-size:18px;
 }
 
-#nairobiMap{width:100%;height:520px}
+#nairobiMap{
+  width:100%;
+  height:520px;
+}
 
 .map-note{
   width:min(1550px,95%);
@@ -316,7 +322,10 @@ a{text-decoration:none;color:inherit}
   box-shadow:0 0 35px rgba(255,0,140,.25);
 }
 
-.map-note a{color:#ff008c;font-weight:900}
+.map-note a{
+  color:#ff008c;
+  font-weight:900;
+}
 
 .grid{
   width:min(1550px,95%);
@@ -374,9 +383,18 @@ a{text-decoration:none;color:inherit}
   background:#22c55e;
   box-shadow:0 0 10px rgba(34,197,94,1),0 0 24px rgba(34,197,94,.75);
   border:2px solid white;
+  animation:onlinePulse 1.4s infinite;
 }
 
-.card-body{padding:22px}
+@keyframes onlinePulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.16)}
+  100%{transform:scale(1)}
+}
+
+.card-body{
+  padding:22px;
+}
 
 .name{
   font-size:30px;
@@ -484,7 +502,9 @@ a{text-decoration:none;color:inherit}
   margin-bottom:20px;
 }
 
-.disclaimer p{margin-bottom:16px}
+.disclaimer p{
+  margin-bottom:16px;
+}
 
 footer{
   border-top:1px solid rgba(255,216,75,.12);
@@ -625,13 +645,33 @@ footer{
 
 <section class="disclaimer">
   <h3>Disclaimer</h3>
-  <p>Nairobi Sweets is an advertising and discovery platform only. We do not operate as an agency, escort service, or booking company. All profiles are independently managed by the individuals who create them.</p>
-  <p>Users must be 18 years or older to access this website. By using this platform, you confirm that you are legally allowed to view adult-oriented content in your region.</p>
-  <p>Nairobi Sweets does not guarantee the accuracy of profile information, availability, pricing, or interactions between users and advertisers. Users engage with profiles at their own discretion and responsibility.</p>
-  <p>Any illegal activity, trafficking, exploitation, abuse, or non-consensual conduct is strictly prohibited and may result in immediate removal and reporting where necessary.</p>
+
+  <p>
+    Nairobi Sweets is an advertising and discovery platform only.
+    We do not operate as an agency, escort service, or booking company.
+    All profiles are independently managed by the individuals who create them.
+  </p>
+
+  <p>
+    Users must be 18 years or older to access this website.
+    By using this platform, you confirm that you are legally allowed to view adult-oriented content in your region.
+  </p>
+
+  <p>
+    Nairobi Sweets does not guarantee the accuracy of profile information,
+    availability, pricing, or interactions between users and advertisers.
+    Users engage with profiles at their own discretion and responsibility.
+  </p>
+
+  <p>
+    Any illegal activity, trafficking, exploitation, abuse, or non-consensual conduct
+    is strictly prohibited and may result in immediate removal and reporting where necessary.
+  </p>
 </section>
 
-<footer>© Nairobi Sweets</footer>
+<footer>
+  © Nairobi Sweets
+</footer>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
@@ -776,6 +816,7 @@ function renderProfiles(list){
               src="${getPhoto(profile)}"
               class="card-image"
               loading="lazy"
+              alt="${getName(profile)}"
               onerror="this.src='/assets/logo/logo-badge.png'"
             >
           </a>
@@ -789,16 +830,29 @@ function renderProfiles(list){
           </div>
 
           <span class="online-text">Online Now</span>
+
           <div class="location">📍 ${profile.location || "Nairobi"}</div>
           <div class="phone">📞 ${rawPhone}</div>
-          <div class="bio">${profile.bio || "Premium Nairobi profile."}</div>
+
+          <div class="bio">
+            ${profile.bio || "Premium Nairobi profile."}
+          </div>
 
           <div class="engagement">
-            <span class="heart-like" id="likes-${profile.id}" onclick="likeProfile('${profile.id}')" title="Like profile">
+            <span
+              class="heart-like"
+              id="likes-${profile.id}"
+              onclick="likeProfile('${profile.id}')"
+              title="Like profile"
+            >
               ❤️ ${likes} likes
             </span>
+
             <span>•</span>
-            <span id="views-${profile.id}">👁️ ${views} views</span>
+
+            <span id="views-${profile.id}">
+              👁️ ${views} views
+            </span>
           </div>
 
           <div class="actions">
@@ -894,9 +948,15 @@ document.getElementById("searchInput").addEventListener("input",e=>{
 document.getElementById("sortSelect").addEventListener("change",e=>{
   let list = [...allProfiles];
 
-  if(e.target.value === "likes") list.sort((a,b)=>getLikes(b)-getLikes(a));
-  if(e.target.value === "views") list.sort((a,b)=>getViews(b)-getViews(a));
-  if(e.target.value === "newest") {
+  if(e.target.value === "likes"){
+    list.sort((a,b)=>getLikes(b)-getLikes(a));
+  }
+
+  if(e.target.value === "views"){
+    list.sort((a,b)=>getViews(b)-getViews(a));
+  }
+
+  if(e.target.value === "newest"){
     list.sort((a,b)=>new Date(b.created_at || 0)-new Date(a.created_at || 0));
   }
 
