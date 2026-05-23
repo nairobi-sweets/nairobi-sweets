@@ -22,6 +22,13 @@ aiInput.addEventListener("keydown", (e) => {
 
 aiSearchBtn.addEventListener("click", runAISearch);
 
+document.querySelectorAll(".ai-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    aiInput.value = chip.dataset.query;
+    runAISearch();
+  });
+});
+
 async function runAISearch() {
   const query = aiInput.value.trim();
 
