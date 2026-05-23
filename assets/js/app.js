@@ -1,32 +1,9 @@
 let allProfiles = [];
 let activeFilter = "home";
 
-const grid = document.querySelector(".profiles") || document.getElementById("profilesGrid");
-const searchInput = document.querySelector(".search-box") || document.getElementById("searchInput");
+const grid = document.querySelector(".profiles");
+const searchInput = document.querySelector(".search-box");
 const statsNumber = document.querySelector(".stats-number");
-const totalProfiles = document.getElementById("totalProfiles");
-const totalViews = document.getElementById("totalViews");
-const totalLikes = document.getElementById("totalLikes");
-const vipProfiles = document.getElementById("vipProfiles");
-
-function toggleMenu() {
-  const menu = document.getElementById("mobileMenu") || document.getElementById("sideMenu");
-  if (menu) menu.classList.toggle("active");
-}
-
-function openSweet() {
-  const panel = document.getElementById("sweetPanel") || document.getElementById("aiPanel");
-  if (panel) panel.classList.add("active");
-}
-
-function closeSweet() {
-  const panel = document.getElementById("sweetPanel") || document.getElementById("aiPanel");
-  if (panel) panel.classList.remove("active");
-}
-
-window.toggleMenu = toggleMenu;
-window.openSweet = openSweet;
-window.closeSweet = closeSweet;
 
 function safeText(value, fallback = "") {
   return value && String(value).trim() ? String(value).trim() : fallback;
@@ -48,29 +25,29 @@ function safeImage(profile) {
     profile.image_url ||
     profile.profile_photo ||
     profile.avatar_url ||
-    profile.photo ||
     profile.main_photo ||
+    profile.photo ||
+    profile.image ||
     "/assets/logo/logo-badge.png"
   );
 }
 
 function getName(profile) {
   return safeText(
-    profile.stage_name || profile.name || profile.full_name,
+    profile.stage_name ||
+    profile.name ||
+    profile.full_name,
     "Verified Profile"
   );
 }
 
 function getLocation(profile) {
-  return safeText(profile.location, "Nairobi");
-}
-
-function getLikes(profile) {
-  return Number(profile.likes_count ?? profile.likes ?? 0);
-}
-
-function getViews(profile) {
-  return Number(profile.views_count ?? profile.views ?? 0);
+  return safeText(
+    profile.location ||
+    profile.town ||
+    profile.area,
+    "Nairobi"
+  );
 }
 
 function getPlan(profile) {
@@ -92,80 +69,46 @@ function getBadge(profile) {
   return "✨ Featured";
 }
 
-function aiBio(profile) {
+function getLikes(profile) {
+  return Number(profile.likes_count || profile.likes || 0);
+}
+
+function getViews(profile) {
+  return Number(profile.views_count || profile.views || 0);
+}
+
+function getBio(profile) {
   return safeText(
-    profile.bio,
-    `${getName(profile)} is available in ${getLocation(profile)}. View photos and connect directly through WhatsApp or call.`
+    profile.bio ||
+    profile.description,
+    `Meet ${getName(profile)} from ${getLocation(profile)}.`
   );
 }
 
-function hasWhatsapp(profile) {
-  return Boolean(profile.phone || profile.whatsapp);
-}
-
-function scoreProfile(profile) {
-  let score = 0;
-
-  const plan = getPlan(profile);
-
-  if (plan.includes("vvip") || plan.includes("signature")) score += 1000;
-  if (plan.includes("vip")) score += 700;
-  if (plan.includes("featured")) score += 350;
-
-  score += getLikes(profile) * 3;
-  score += getViews(profile) * 0.5;
-
-  if (safeImage(profile)) score += 80;
-  if (hasWhatsapp(profile)) score += 100;
-  if (profile.created_at) score += Math.max(0, 50 - daysOld(profile.created_at));
-
-  return score;
-}
-
-function daysOld(dateString) {
-  const created = new Date(dateString);
-  if (Number.isNaN(created.getTime())) return 999;
-
-  const diff = Date.now() - created.getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
+function compactBio(text, max = 130) {
+  if (!text) return "";
+  return text.length > max ? text.slice(0, max).trim() + "..." : text;
 }
 
 function showSkeletons() {
-  if (!grid) return;
-
-  grid.innerHTML = Array.from({ length: 6 })
+  grid.innerHTML = Array.from({ length: 5 })
     .map(() => `<div class="loading-card"></div>`)
     .join("");
 }
 
 function updateStats(list) {
-  const profileCount = list.length;
-  const views = list.reduce((sum, profile) => sum + getViews(profile), 0);
-  const likes = list.reduce((sum, profile) => sum + getLikes(profile), 0);
-  const vipCount = list.filter(profile => getPlan(profile).includes("vip")).length;
-
-  if (statsNumber) statsNumber.textContent = profileCount.toLocaleString();
-  if (totalProfiles) totalProfiles.textContent = profileCount.toLocaleString();
-  if (totalViews) totalViews.textContent = views.toLocaleString();
-  if (totalLikes) totalLikes.textContent = likes.toLocaleString();
-  if (vipProfiles) vipProfiles.textContent = vipCount.toLocaleString();
-}
-
-function compactBio(text, max = 125) {
-  const clean = safeText(text, "");
-  if (clean.length <= max) return clean;
-  return clean.slice(0, max).trim() + "...";
+  if (statsNumber) {
+    statsNumber.textContent = list.length.toLocaleString();
+  }
 }
 
 function renderProfiles(list) {
-  if (!grid) return;
-
   updateStats(list);
 
   if (!list.length) {
     grid.innerHTML = `
       <div class="empty">
-        No profiles found. Try another location or filter.
+        No profiles found. Check Supabase approved rows.
       </div>
     `;
     return;
@@ -176,22 +119,14 @@ function renderProfiles(list) {
     const image = safeImage(profile);
     const name = getName(profile);
     const location = getLocation(profile);
-    const bio = compactBio(aiBio(profile));
-
-    const buttons = phone
-      ? `
-        <a class="call-btn btn call" href="tel:${phone}">CALL</a>
-        <a class="wa-btn btn whatsapp" href="https://wa.me/${phone}" target="_blank">WHATSAPP</a>
-      `
-      : `
-        <button class="btn disabled-contact" disabled>CONTACT HIDDEN</button>
-      `;
+    const bio = compactBio(getBio(profile));
 
     return `
       <article class="card">
+
         <span class="online-dot"></span>
 
-        <div class="featured-badge badge">
+        <div class="featured-badge">
           ${getBadge(profile)}
         </div>
 
@@ -206,24 +141,19 @@ function renderProfiles(list) {
         </a>
 
         <div class="card-body">
-          <div class="card-name name">${name}</div>
 
-          <div class="online online-text">Online Now</div>
+          <div class="card-name">${name}</div>
 
-          <div class="location">
-            📍 ${location}
-          </div>
+          <div class="online">Online Now</div>
 
-          <div class="phone">
-            📞 ${phone || "Contact hidden"}
-          </div>
+          <div class="location">📍 ${location}</div>
 
-          <div class="bio">
-            ${bio}
-          </div>
+          <div class="phone">📞 ${phone || "Contact hidden"}</div>
+
+          <div class="bio">${bio}</div>
 
           <div class="engagement">
-            <span class="heart-like" id="likes-${profile.id}" onclick="likeProfile('${profile.id}')">
+            <span onclick="likeProfile('${profile.id}')" id="likes-${profile.id}">
               ❤️ ${getLikes(profile)} likes
             </span>
             <span>•</span>
@@ -232,67 +162,73 @@ function renderProfiles(list) {
             </span>
           </div>
 
-          <div class="action-row actions">
-            ${buttons}
+          <div class="action-row">
+            ${
+              phone
+                ? `
+                  <a class="call-btn" href="tel:${phone}">CALL</a>
+                  <a class="wa-btn" href="https://wa.me/${phone}" target="_blank">WHATSAPP</a>
+                `
+                : `<button class="disabled-contact">CONTACT HIDDEN</button>`
+            }
           </div>
+
         </div>
+
       </article>
     `;
   }).join("");
 }
 
 function applyFilters() {
-  const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+  const search = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
   let list = [...allProfiles];
 
-  if (activeFilter && activeFilter !== "home") {
+  if (activeFilter !== "home") {
     list = list.filter(profile => {
-      const plan = getPlan(profile);
       const text = `
-        ${profile.stage_name || ""}
-        ${profile.name || ""}
-        ${profile.full_name || ""}
-        ${profile.location || ""}
-        ${profile.bio || ""}
-        ${profile.body_type || ""}
-        ${profile.plan || ""}
-        ${profile.package || ""}
+        ${getName(profile)}
+        ${getLocation(profile)}
+        ${getBio(profile)}
+        ${getPlan(profile)}
+        ${profile.phone || ""}
+        ${profile.whatsapp || ""}
       `.toLowerCase();
 
-      if (activeFilter === "vip") return plan.includes("vip");
+      if (activeFilter === "vip") return getPlan(profile).includes("vip");
+      if (activeFilter === "whatsapp") return Boolean(profile.phone || profile.whatsapp);
       if (activeFilter === "online") return true;
-      if (activeFilter === "whatsapp") return hasWhatsapp(profile);
 
       return text.includes(activeFilter);
     });
   }
 
-  if (query) {
+  if (search) {
     list = list.filter(profile => {
       const text = `
-        ${profile.stage_name || ""}
-        ${profile.name || ""}
-        ${profile.full_name || ""}
-        ${profile.location || ""}
-        ${profile.bio || ""}
-        ${profile.body_type || ""}
-        ${profile.plan || ""}
-        ${profile.package || ""}
+        ${getName(profile)}
+        ${getLocation(profile)}
+        ${getBio(profile)}
+        ${getPlan(profile)}
         ${profile.phone || ""}
         ${profile.whatsapp || ""}
       `.toLowerCase();
 
-      return text.includes(query);
+      return text.includes(search);
     });
   }
 
-  list.sort((a, b) => scoreProfile(b) - scoreProfile(a));
+  list.sort((a, b) => {
+    const scoreA = getLikes(a) * 3 + getViews(a);
+    const scoreB = getLikes(b) * 3 + getViews(b);
+    return scoreB - scoreA;
+  });
 
   renderProfiles(list);
 }
 
-function setupFilterButtons() {
+function setupFilters() {
   document.querySelectorAll(".filters button").forEach(button => {
     button.addEventListener("click", () => {
       document.querySelectorAll(".filters button").forEach(btn => {
@@ -306,11 +242,6 @@ function setupFilterButtons() {
         .trim()
         .toLowerCase();
 
-      if (activeFilter === "home") activeFilter = "home";
-      if (activeFilter === "vip") activeFilter = "vip";
-      if (activeFilter === "online") activeFilter = "online";
-      if (activeFilter === "whatsapp") activeFilter = "whatsapp";
-
       applyFilters();
     });
   });
@@ -319,22 +250,18 @@ function setupFilterButtons() {
 function setupSearch() {
   if (!searchInput) return;
 
-  searchInput.addEventListener("input", () => {
-    applyFilters();
-  });
+  searchInput.addEventListener("input", applyFilters);
 }
 
 async function loadProfiles() {
   showSkeletons();
 
   if (typeof sb === "undefined") {
-    if (grid) {
-      grid.innerHTML = `
-        <div class="empty">
-          Supabase is not connected. Check assets/js/config.js.
-        </div>
-      `;
-    }
+    grid.innerHTML = `
+      <div class="empty">
+        Supabase is not connected. Check config.js.
+      </div>
+    `;
     return;
   }
 
@@ -344,27 +271,25 @@ async function loadProfiles() {
     .eq("approved", true)
     .order("created_at", { ascending: false });
 
+  console.log("SUPABASE DATA:", data);
+  console.log("SUPABASE ERROR:", error);
+
   if (error) {
-    console.error(error);
-
-    if (grid) {
-      grid.innerHTML = `
-        <div class="empty">
-          Could not load profiles. Refresh page.
-        </div>
-      `;
-    }
-
+    grid.innerHTML = `
+      <div class="empty">
+        Supabase error: ${error.message}
+      </div>
+    `;
     return;
   }
 
-  allProfiles = (data || []).sort((a, b) => scoreProfile(b) - scoreProfile(a));
+  allProfiles = data || [];
 
-  applyFilters();
+  renderProfiles(allProfiles);
 }
 
 async function likeProfile(id) {
-  const profile = allProfiles.find(item => String(item.id) === String(id));
+  const profile = allProfiles.find(p => String(p.id) === String(id));
   if (!profile) return;
 
   const newLikes = getLikes(profile) + 1;
@@ -374,41 +299,29 @@ async function likeProfile(id) {
     .update({ likes_count: newLikes })
     .eq("id", id);
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+  if (error) return console.log(error);
 
   profile.likes_count = newLikes;
 
   const el = document.getElementById(`likes-${id}`);
   if (el) el.innerHTML = `❤️ ${newLikes} likes`;
-
-  applyFilters();
 }
 
 async function viewProfile(id) {
-  const profile = allProfiles.find(item => String(item.id) === String(id));
+  const profile = allProfiles.find(p => String(p.id) === String(id));
   if (!profile) return;
 
   const newViews = getViews(profile) + 1;
 
-  const { error } = await sb
+  await sb
     .from("profiles")
     .update({ views_count: newViews })
     .eq("id", id);
-
-  if (!error) {
-    profile.views_count = newViews;
-
-    const el = document.getElementById(`views-${id}`);
-    if (el) el.innerHTML = `👁️ ${newViews} views`;
-  }
 }
 
 window.likeProfile = likeProfile;
 window.viewProfile = viewProfile;
 
-setupFilterButtons();
+setupFilters();
 setupSearch();
 loadProfiles();
