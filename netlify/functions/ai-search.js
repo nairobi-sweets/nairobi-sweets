@@ -1,139 +1,97 @@
-const aiOpen = document.getElementById("aiOpen");
-const aiClose = document.getElementById("aiClose");
-const aiPanel = document.getElementById("aiPanel");
-const aiInput = document.getElementById("aiInput");
-const aiSearchBtn = document.getElementById("aiSearchBtn");
-const aiAnswer = document.getElementById("aiAnswer");
-const aiResults = document.getElementById("aiResults");
+const { createClient } = require("@supabase/supabase-js");
 
-aiOpen.addEventListener("click", () => {
-  aiPanel.classList.add("active");
-});
-
-aiClose.addEventListener("click", () => {
-  aiPanel.classList.remove("active");
-});
-
-aiInput.addEventListener("keydown", (e) => {
-
-  if(e.key === "Enter"){
-    runAISearch();
-  }
-
-});
-
-aiSearchBtn.addEventListener(
-  "click",
-  runAISearch
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-async function runAISearch(){
+exports.handler = async (event) => {
 
-  const query = aiInput.value.trim();
+  try {
 
-  if(!query){
+    const body = JSON.parse(event.body || "{}");
 
-    aiAnswer.innerHTML = `
-      Sweet needs a clue 💋<br><br>
-      Try:
-      <br>
-      • VIP in Kilimani
-      <br>
-      • Westlands WhatsApp
-      <br>
-      • Most liked
-    `;
+    const query =
+      String(body.query || "")
+      .toLowerCase()
+      .trim();
 
-    return;
-  }
-
-  aiAnswer.innerHTML = `
-    Sweet is searching... ✨
-  `;
-
-  aiResults.innerHTML = "";
-
-  try{
-
-    const response = await fetch(
-      "/.netlify/functions/ai-search",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({ query })
-      }
-    );
-
-    const data = await response.json();
-
-    if(!response.ok){
-
-      throw new Error(
-        data.error ||
-        "Search failed"
-      );
+    if (!query) {
+      return response(400, {
+        error: "Missing query"
+      });
     }
 
-    aiAnswer.innerHTML =
-      data.answer ||
-      "Sweet found some matches 💋";
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("approved", true)
+      .limit(30);
 
-    aiResults.innerHTML =
-      (data.results || [])
-      .map(profile => `
-
-        <div
-          class="ai-result"
-          onclick="window.location.href='/profile.html?id=${profile.id}'"
-        >
-
-          <img
-            src="${
-              profile.photo_url ||
-              '/assets/logo/logo-badge.png'
-            }"
-
-            onerror="
-              this.src='/assets/logo/logo-badge.png'
-            "
-          >
-
-          <div>
-
-            <strong>
-              ${profile.stage_name}
-            </strong>
-
-            <span>
-              📍 ${profile.location}
-            </span>
-
-            <br>
-
-            <span>
-              ❤️ ${profile.likes_count}
-              ·
-              👁️ ${profile.views_count}
-            </span>
-
-          </div>
-
-        </div>
-
-      `).join("");
-
-    if(!data.results || !data.results.length){
-
-      aiResults.innerHTML = "";
+    if (error) {
+      return response(500, {
+        error: error.message
+      });
     }
 
-  }catch(error){
+    const results = (data || []).filter(profile => {
 
-    aiAnswer.innerHTML = `
-      Sweet got distracted 💔<br><br>
-      Please try again.
-    `;
+      const text = `
+        ${profile.stage_name || ""}
+        ${profile.name || ""}
+        ${profile.location || ""}
+        ${profile.bio || ""}
+        ${profile.plan || ""}
+      `
+      .toLowerCase();
+
+      return text.includes(query);
+
+    });
+
+    let answer = "";
+
+    if (results.length > 0) {
+
+      answer = `
+        Sweet found ${results.length} match${results.length > 1 ? "es" : ""} 💋
+      `;
+
+    } else {
+
+      answer = `
+        No exact match found 😢<br><br>
+        Try:
+        • VIP in Kilimani
+        • Westlands
+        • Online now
+      `;
+    }
+
+    return response(200, {
+      answer,
+      results
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+    return response(500, {
+      error: err.message
+    });
   }
+};
+
+function response(statusCode, data) {
+
+  return {
+    statusCode,
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify(data)
+  };
 }
