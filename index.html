@@ -1,476 +1,749 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nairobi Sweets</title>
 
-<title>Nairobi Sweets | Verified Nairobi Profiles</title>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
 
-<meta
-  name="description"
-  content="Verified Nairobi profiles with WhatsApp access, VIP listings, likes, views, maps and Sweet AI."
->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<link rel="icon" href="/assets/logo/logo-badge.png">
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
 
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
+    body{
+      background:#000814;
+      color:white;
+      overflow-x:hidden;
+    }
 
-<link
-  rel="stylesheet"
-  href="/assets/css/styles.css"
-/>
+    a{
+      text-decoration:none;
+      color:inherit;
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:999;
+      background:#000;
+      border-bottom:1px solid rgba(255,215,0,.15);
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
 
+    .brand img{
+      width:42px;
+      height:42px;
+      border-radius:10px;
+      object-fit:cover;
+    }
+
+    .brand h1{
+      font-size:2rem;
+      color:#ffd54f;
+      font-weight:900;
+    }
+
+    .menu-btn{
+      width:72px;
+      height:72px;
+      border-radius:24px;
+      background:#08123f;
+      border:2px solid rgba(255,215,0,.2);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      box-shadow:0 0 30px rgba(0,0,0,.5);
+    }
+
+    .menu-btn span{
+      font-size:2.5rem;
+      color:#ffd54f;
+    }
+
+    .mobile-menu{
+      position:fixed;
+      top:0;
+      right:-100%;
+      width:82%;
+      height:100vh;
+      background:#050b25;
+      z-index:9999;
+      padding:30px;
+      transition:.35s;
+      overflow-y:auto;
+    }
+
+    .mobile-menu.active{
+      right:0;
+    }
+
+    .menu-close{
+      font-size:2rem;
+      margin-bottom:30px;
+      cursor:pointer;
+      color:#ffd54f;
+    }
+
+    .menu-links{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .menu-links a{
+      padding:18px;
+      border-radius:18px;
+      background:#08123f;
+      font-size:1.15rem;
+      border:1px solid rgba(255,255,255,.05);
+    }
+
+    .hero{
+      padding:35px 20px 25px;
+    }
+
+    .hero-box{
+      background:#020b44;
+      border-radius:30px;
+      padding:35px 25px;
+      border:1px solid rgba(255,215,0,.1);
+    }
+
+    .hero h2{
+      font-size:5rem;
+      line-height:1;
+      color:#ffd54f;
+      font-weight:900;
+      margin-bottom:25px;
+    }
+
+    .hero p{
+      font-size:1.35rem;
+      line-height:2;
+      color:#d6d6d6;
+    }
+
+    .search-wrap{
+      margin-top:28px;
+    }
+
+    .search-box{
+      width:100%;
+      padding:28px;
+      border-radius:28px;
+      border:2px solid rgba(255,215,0,.1);
+      background:#08123f;
+      color:white;
+      font-size:1.2rem;
+      outline:none;
+    }
+
+    .filters{
+      display:flex;
+      gap:14px;
+      overflow-x:auto;
+      padding:20px;
+    }
+
+    .filters button{
+      min-width:max-content;
+      border:none;
+      padding:16px 22px;
+      border-radius:999px;
+      background:#ef4444;
+      color:white;
+      font-weight:700;
+      font-size:1rem;
+      cursor:pointer;
+    }
+
+    .filters button.active{
+      background:#16a34a;
+    }
+
+    .stats{
+      padding:0 20px 20px;
+    }
+
+    .stats-box{
+      background:#08123f;
+      border-radius:30px;
+      padding:30px;
+      border:1px solid rgba(255,215,0,.08);
+    }
+
+    .stats-title{
+      color:#9ca3af;
+      font-size:1.2rem;
+      margin-bottom:15px;
+      font-weight:700;
+    }
+
+    .stats-number{
+      font-size:5rem;
+      color:#ffd54f;
+      font-weight:900;
+    }
+
+    .profiles{
+      padding:10px 20px 150px;
+      display:grid;
+      gap:25px;
+    }
+
+    .card{
+      background:#020b44;
+      border-radius:35px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.05);
+      position:relative;
+    }
+
+    .card-image{
+      width:100%;
+      height:460px;
+      object-fit:cover;
+      display:block;
+    }
+
+    .featured-badge{
+      position:absolute;
+      top:20px;
+      right:20px;
+      background:rgba(0,0,0,.7);
+      backdrop-filter:blur(10px);
+      color:#ffd54f;
+      padding:14px 20px;
+      border-radius:999px;
+      font-weight:800;
+      font-size:1.2rem;
+    }
+
+    .online-dot{
+      position:absolute;
+      top:20px;
+      left:20px;
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      background:#22c55e;
+      border:4px solid white;
+    }
+
+    .card-body{
+      padding:25px;
+    }
+
+    .card-name{
+      font-size:3rem;
+      font-weight:900;
+      margin-bottom:12px;
+    }
+
+    .online{
+      color:#22c55e;
+      font-size:1.2rem;
+      font-weight:800;
+      margin-bottom:12px;
+    }
+
+    .location{
+      color:#d1d5db;
+      font-size:1.1rem;
+      margin-bottom:10px;
+    }
+
+    .phone{
+      color:#ffd54f;
+      font-size:1.5rem;
+      font-weight:900;
+      margin-bottom:18px;
+    }
+
+    .bio{
+      color:#d1d5db;
+      line-height:1.8;
+      font-size:1.1rem;
+      margin-bottom:20px;
+    }
+
+    .action-row{
+      display:flex;
+      gap:15px;
+    }
+
+    .call-btn,
+    .wa-btn{
+      flex:1;
+      border:none;
+      border-radius:18px;
+      padding:18px;
+      font-size:1rem;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .call-btn{
+      background:#ef4444;
+      color:white;
+    }
+
+    .wa-btn{
+      background:#16a34a;
+      color:white;
+    }
+
+    .sweet-ai{
+      position:fixed;
+      right:22px;
+      bottom:110px;
+      width:92px;
+      height:92px;
+      border-radius:50%;
+      background:linear-gradient(135deg,#ff0080,#ffcc00);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+      box-shadow:0 0 40px rgba(255,0,128,.45);
+      animation:floaty 2s infinite ease-in-out;
+      cursor:pointer;
+    }
+
+    .sweet-ai img{
+      width:78px;
+      height:78px;
+      object-fit:cover;
+      border-radius:50%;
+    }
+
+    @keyframes floaty{
+      0%{transform:translateY(0)}
+      50%{transform:translateY(-8px)}
+      100%{transform:translateY(0)}
+    }
+
+    .sweet-panel{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:-100%;
+      width:92%;
+      background:#020b44;
+      border-radius:35px 35px 0 0;
+      z-index:9999;
+      transition:.4s;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .sweet-panel.active{
+      bottom:0;
+    }
+
+    .sweet-header{
+      padding:24px;
+      background:linear-gradient(90deg,#000,#3b001f);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .sweet-header h3{
+      color:#ffd54f;
+      font-size:2rem;
+    }
+
+    .close-sweet{
+      font-size:2rem;
+      color:#ffd54f;
+      cursor:pointer;
+    }
+
+    .sweet-content{
+      padding:24px;
+    }
+
+    .sweet-input{
+      width:100%;
+      padding:24px;
+      border:none;
+      outline:none;
+      border-radius:24px;
+      background:#000a33;
+      color:white;
+      font-size:1.1rem;
+      margin-bottom:18px;
+    }
+
+    .quick-row{
+      display:flex;
+      gap:12px;
+      overflow-x:auto;
+      margin-bottom:20px;
+    }
+
+    .quick-row button{
+      min-width:max-content;
+      border:none;
+      padding:14px 18px;
+      border-radius:999px;
+      background:#08123f;
+      color:#ffd54f;
+      font-weight:700;
+      border:1px solid rgba(255,215,0,.1);
+    }
+
+    .sweet-send{
+      width:100%;
+      border:none;
+      background:#ffd54f;
+      color:black;
+      padding:22px;
+      border-radius:22px;
+      font-size:1.4rem;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .sweet-results{
+      margin-top:25px;
+      color:#d1d5db;
+      line-height:1.8;
+      font-size:1.1rem;
+    }
+
+    .bottom-nav{
+      position:fixed;
+      bottom:0;
+      left:0;
+      width:100%;
+      background:#000;
+      border-top:1px solid rgba(255,255,255,.08);
+      display:flex;
+      justify-content:space-around;
+      padding:15px 0;
+      z-index:999;
+    }
+
+    .bottom-nav button{
+      background:none;
+      border:none;
+      color:#ffd54f;
+      font-size:1.7rem;
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
+  <header class="topbar">
 
-<header class="header">
+    <div class="brand">
+      <img src="assets/logo/logo-navbar.png">
+      <h1>Nairobi Sweets</h1>
+    </div>
 
-  <div class="header-inner">
+    <div class="menu-btn" onclick="toggleMenu()">
+      <span>☰</span>
+    </div>
 
-    <a href="/" class="brand">
+  </header>
 
-      <img
-        src="/assets/logo/logo-navbar.png"
-        class="logo"
-        alt="Nairobi Sweets"
-      >
+  <div class="mobile-menu" id="mobileMenu">
 
-      <div class="site-title">
-        Nairobi Sweets
+    <div class="menu-close" onclick="toggleMenu()">✕</div>
+
+    <div class="menu-links">
+      <a href="#">🏠 Home</a>
+      <a href="#">🔥 Featured</a>
+      <a href="#">💬 WhatsApp</a>
+      <a href="#">👑 VIP</a>
+      <a href="#">📍 Locations</a>
+      <a href="#">🎥 Shorts</a>
+      <a href="#">💎 Join Nairobi Sweets</a>
+    </div>
+
+  </div>
+
+  <section class="hero">
+
+    <div class="hero-box">
+
+      <h2>Profiles</h2>
+
+      <p>
+        Verified profiles, WhatsApp access, VIP listings,
+        online status, likes, views, luxury discovery,
+        shorts and real photos.
+      </p>
+
+      <div class="search-wrap">
+        <input
+          type="text"
+          class="search-box"
+          placeholder="Search by name, bio, location..."
+        />
       </div>
 
-    </a>
-
-    <button
-      class="menu-toggle"
-      id="menuToggle"
-    >
-      ☰
-    </button>
-
-  </div>
-
-</header>
-
-<!-- QUICK NAV -->
-
-<nav class="quick">
-
-  <a class="gold" href="/">
-    Home
-  </a>
-
-  <a href="/join.html">
-    Join
-  </a>
-
-  <a class="pink" href="/shorts.html">
-    Shorts
-  </a>
-
-  <a href="/login.html">
-    Login
-  </a>
-
-  <a href="#profiles">
-    Profiles
-  </a>
-
-  <a href="#locations">
-    Locations
-  </a>
-
-</nav>
-
-<!-- MENU -->
-
-<div
-  class="menu-backdrop"
-  id="menuBackdrop"
-></div>
-
-<aside
-  class="side-menu"
-  id="sideMenu"
->
-
-  <div class="menu-head">
-
-    <strong>
-      Menu
-    </strong>
-
-    <button
-      class="close-menu"
-      id="closeMenu"
-    >
-      ×
-    </button>
-
-  </div>
-
-  <div class="menu-links">
-
-    <a href="/">
-      Home
-    </a>
-
-    <a href="/join.html">
-      Join Now
-    </a>
-
-    <a href="/shorts.html">
-      🔥 Shorts
-    </a>
-
-    <a href="/login.html">
-      Login
-    </a>
-
-    <a
-      href="https://wa.me/254708374149"
-      target="_blank"
-    >
-      WhatsApp
-    </a>
-
-    <a href="tel:254708374149">
-      Call
-    </a>
-
-    <div class="menu-section-title">
-      Locations
     </div>
 
-    <a href="/seo/locations/nairobi.html">
-      Nairobi
-    </a>
+  </section>
 
-    <a href="/seo/locations/kilimani.html">
-      Kilimani
-    </a>
+  <div class="filters">
 
-    <a href="/seo/locations/westlands.html">
-      Westlands
-    </a>
-
-    <a href="/seo/locations/kasarani-equity-kasarani.html">
-      Kasarani
-    </a>
-
-    <a href="/seo/locations/kikuyu.html">
-      Kikuyu
-    </a>
-
-    <a href="/seo/locations/kiambu-ruiru-membley.html">
-      Ruiru
-    </a>
-
-    <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">
-      Mombasa
-    </a>
+    <button class="active">HOME</button>
+    <button>VIP</button>
+    <button>ONLINE</button>
+    <button>WHATSAPP</button>
+    <button>KILIMANI</button>
+    <button>WESTLANDS</button>
+    <button>RUAKA</button>
+    <button>RUIRU</button>
 
   </div>
 
-</aside>
+  <section class="stats">
 
-<!-- HERO -->
+    <div class="stats-box">
 
-<section class="hero">
+      <div class="stats-title">Total Profiles</div>
 
-  <h1>
-    Profiles
-  </h1>
-
-  <p>
-    Verified profiles, WhatsApp access,
-    VIP listings, likes, views and Sweet AI.
-  </p>
-
-</section>
-
-<!-- CONTROLS -->
-
-<section class="controls">
-
-  <input
-    id="searchInput"
-    class="search"
-    type="text"
-    placeholder="Search by name, location or bio..."
-  >
-
-  <select
-    id="sortSelect"
-    class="sort"
-  >
-
-    <option value="featured">
-      Featured First
-    </option>
-
-    <option value="likes">
-      Most Likes
-    </option>
-
-    <option value="views">
-      Most Views
-    </option>
-
-    <option value="newest">
-      Newest
-    </option>
-
-  </select>
-
-</section>
-
-<!-- LOCATION STRIP -->
-
-<div
-  class="location-strip"
-  id="locations"
->
-
-  <a href="/">
-    HOME
-  </a>
-
-  <a href="/seo/locations/kilimani.html">
-    Kilimani
-  </a>
-
-  <a href="/seo/locations/westlands.html">
-    Westlands
-  </a>
-
-  <a href="/seo/locations/kasarani-equity-kasarani.html">
-    Kasarani
-  </a>
-
-  <a href="/seo/locations/kiambu-ruiru-membley.html">
-    Ruiru
-  </a>
-
-  <a href="/seo/locations/kikuyu.html">
-    Kikuyu
-  </a>
-
-  <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">
-    Mombasa
-  </a>
-
-</div>
-
-<!-- PROFILES -->
-
-<section
-  class="grid"
-  id="profilesGrid"
-></section>
-
-<!-- STATS -->
-
-<section class="stats">
-
-  <div class="stat-card">
-    <h3>Total Profiles</h3>
-    <p id="totalProfiles">0</p>
-  </div>
-
-  <div class="stat-card">
-    <h3>Total Views</h3>
-    <p id="totalViews">0</p>
-  </div>
-
-  <div class="stat-card">
-    <h3>Total Likes</h3>
-    <p id="totalLikes">0</p>
-  </div>
-
-  <div class="stat-card">
-    <h3>VIP Profiles</h3>
-    <p id="vipProfiles">0</p>
-  </div>
-
-</section>
-
-<!-- MAP -->
-
-<section class="map-section">
-
-  <div class="map-header">
-
-    <h3>
-      Nairobi Coverage Map
-    </h3>
-
-    <p>
-      Explore Nairobi and nearby areas.
-    </p>
-
-  </div>
-
-  <div id="nairobiMap"></div>
-
-</section>
-
-<!-- DISCLAIMER -->
-
-<section class="disclaimer">
-
-  <h3>
-    Disclaimer
-  </h3>
-
-  <p>
-    Nairobi Sweets is an advertising
-    and discovery platform only.
-    All profiles are independently managed.
-  </p>
-
-</section>
-
-<footer>
-  © Nairobi Sweets
-</footer>
-
-<!-- SWEET AI -->
-
-<div class="ai-float">
-
-  <button
-    class="ai-button"
-    id="aiOpen"
-    title="Chat with Sweet"
-  >
-    👠
-  </button>
-
-</div>
-
-<div
-  class="ai-panel"
-  id="aiPanel"
->
-
-  <div class="ai-head">
-
-    <span>
-      Sweet AI ✨
-    </span>
-
-    <button
-      class="ai-close"
-      id="aiClose"
-    >
-      ×
-    </button>
-
-  </div>
-
-  <div class="ai-body">
-
-    <input
-      id="aiInput"
-      class="ai-input"
-      placeholder="VIP in Kilimani, WhatsApp girls..."
-    >
-
-    <!-- QUICK AI CHIPS -->
-
-    <div class="ai-suggestions">
-
-      <button
-        class="ai-chip"
-        data-query="Online now"
-      >
-        Online Now
-      </button>
-
-      <button
-        class="ai-chip"
-        data-query="VIP in Westlands"
-      >
-        VIP Westlands
-      </button>
-
-      <button
-        class="ai-chip"
-        data-query="WhatsApp Kilimani"
-      >
-        WhatsApp Kilimani
-      </button>
-
-      <button
-        class="ai-chip"
-        data-query="Most liked"
-      >
-        Most Liked
-      </button>
-
-      <button
-        class="ai-chip"
-        data-query="Trending"
-      >
-        Trending
-      </button>
+      <div class="stats-number">100</div>
 
     </div>
 
-    <button
-      class="ai-search-btn"
-      id="aiSearchBtn"
-    >
-      Ask Sweet
-    </button>
+  </section>
 
-    <div
-      class="ai-answer"
-      id="aiAnswer"
-    >
+  <section class="profiles">
 
-      Hi, I’m Sweet 💋
+    <div class="card">
 
-      <br><br>
+      <span class="online-dot"></span>
 
-      Tap a quick search
-      or tell me what
-      you're looking for.
+      <div class="featured-badge">
+        ✨ Featured
+      </div>
+
+      <img
+        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200"
+        class="card-image"
+      >
+
+      <div class="card-body">
+
+        <div class="card-name">Angie</div>
+
+        <div class="online">Online Now</div>
+
+        <div class="location">
+          📍 Syokimau, Katani-Road
+        </div>
+
+        <div class="phone">
+          📞 +254724432299
+        </div>
+
+        <div class="bio">
+          Get amazing escort services with Angie from
+          Syokimau, Katani-Road.
+        </div>
+
+        <div class="action-row">
+
+          <button class="call-btn">
+            CALL
+          </button>
+
+          <button class="wa-btn">
+            WHATSAPP
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
 
-    <div
-      class="ai-results"
-      id="aiResults"
-    ></div>
+  </section>
+
+  <div class="sweet-ai" onclick="openSweet()">
+
+    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400">
 
   </div>
 
-</div>
+  <div class="sweet-panel" id="sweetPanel">
 
-<!-- CONFIG -->
+    <div class="sweet-header">
 
-<script src="/assets/js/config.js"></script>
+      <h3>Sweet AI ✨</h3>
 
-<!-- APP -->
+      <div class="close-sweet" onclick="closeSweet()">
+        ✕
+      </div>
 
-<script src="/assets/js/app.js"></script>
+    </div>
 
-<!-- SWEET AI -->
+    <div class="sweet-content">
 
-<script src="/assets/js/sweet-ai.js"></script>
+      <input
+        id="sweetInput"
+        class="sweet-input"
+        placeholder="VIP in Kilimani, WhatsApp girls..."
+      >
+
+      <div class="quick-row">
+
+        <button onclick="quickAsk('Online now')">
+          Online Now
+        </button>
+
+        <button onclick="quickAsk('VIP Westlands')">
+          VIP Westlands
+        </button>
+
+        <button onclick="quickAsk('WhatsApp Kilimani')">
+          WhatsApp Kilimani
+        </button>
+
+      </div>
+
+      <button class="sweet-send" onclick="askSweet()">
+        Ask Sweet
+      </button>
+
+      <div class="sweet-results" id="sweetResults">
+
+        Hi, I’m Sweet 💋
+
+        <br><br>
+
+        Tap a quick search or tell me what you're looking for.
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <nav class="bottom-nav">
+
+    <button>🏠</button>
+    <button>🔥</button>
+    <button>💬</button>
+    <button>👑</button>
+    <button>☰</button>
+
+  </nav>
+
+<script>
+
+function toggleMenu(){
+  document
+    .getElementById("mobileMenu")
+    .classList.toggle("active");
+}
+
+function openSweet(){
+  document
+    .getElementById("sweetPanel")
+    .classList.add("active");
+}
+
+function closeSweet(){
+  document
+    .getElementById("sweetPanel")
+    .classList.remove("active");
+}
+
+function quickAsk(text){
+  document.getElementById("sweetInput").value = text;
+  askSweet();
+}
+
+async function askSweet(){
+
+  const input = document
+    .getElementById("sweetInput")
+    .value
+    .toLowerCase();
+
+  const results = document.getElementById("sweetResults");
+
+  results.innerHTML = `
+    Sweet is searching... ✨
+  `;
+
+  setTimeout(() => {
+
+    if(input.includes("online")){
+
+      results.innerHTML = `
+        🟢 I found online profiles right now.<br><br>
+        Try: Angie, Candy, Vee
+      `;
+
+    }
+
+    else if(input.includes("vip")){
+
+      results.innerHTML = `
+        👑 VIP profiles are trending tonight.<br><br>
+        Best areas:
+        Kilimani,
+        Westlands,
+        Ruaka
+      `;
+
+    }
+
+    else if(input.includes("whatsapp")){
+
+      results.innerHTML = `
+        💬 WhatsApp-ready profiles available now.
+      `;
+
+    }
+
+    else{
+
+      results.innerHTML = `
+        No exact match found 😢
+
+        <br><br>
+
+        Try:
+        • VIP in Kilimani
+        • Westlands
+        • Online now
+      `;
+
+    }
+
+  },1000);
+
+}
+
+</script>
 
 </body>
 </html>
