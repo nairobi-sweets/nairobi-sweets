@@ -13,7 +13,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-exports.handler = async function(event) {
+exports.handler = async function (event) {
   try {
     const body = JSON.parse(event.body || "{}");
 
@@ -22,7 +22,10 @@ exports.handler = async function(event) {
     const stkCallback = body.Body?.stkCallback;
 
     if (!stkCallback) {
-      return json(400, { error: "Invalid callback payload" });
+      return json(200, {
+        ResultCode: 0,
+        ResultDesc: "Ignored empty callback"
+      });
     }
 
     const checkoutRequestID = stkCallback.CheckoutRequestID;
@@ -33,20 +36,20 @@ exports.handler = async function(event) {
     const items = stkCallback.CallbackMetadata?.Item || [];
 
     const amount =
-      items.find(i => i.Name === "Amount")?.Value || 0;
+      items.find((i) => i.Name === "Amount")?.Value || 0;
 
     const mpesaReceipt =
-      items.find(i => i.Name === "MpesaReceiptNumber")?.Value || null;
+      items.find((i) => i.Name === "MpesaReceiptNumber")?.Value || null;
 
     const phone =
-      items.find(i => i.Name === "PhoneNumber")?.Value || null;
+      items.find((i) => i.Name === "PhoneNumber")?.Value || null;
 
     const transactionDate =
-      items.find(i => i.Name === "TransactionDate")?.Value || null;
+      items.find((i) => i.Name === "TransactionDate")?.Value || null;
 
     const status = resultCode === 0 ? "paid" : "failed";
 
-    const { data: payment, error: paymentError } = await supabase
+    const { data: payments, error: paymentError } = await supabase
       .from("payments")
       .update({
         status,
@@ -66,18 +69,27 @@ exports.handler = async function(event) {
         updated_at: new Date().toISOString()
       })
       .eq("checkout_request_id", checkoutRequestID)
-      .select()
-      .single();
+      .select();
 
     if (paymentError) {
       console.log("Payment update error:", paymentError);
-      return json(500, {
-        ResultCode: 1,
-        ResultDesc: paymentError.message
+      return json(200, {
+        ResultCode: 0,
+        ResultDesc: "Callback received but payment update failed"
       });
     }
 
-    if (resultCode === 0 && payment?.profile_id) {
+    const payment = payments?.[0];
+
+    if (!payment) {
+      console.log("No matching payment row for:", checkoutRequestID);
+      return json(200, {
+        ResultCode: 0,
+        ResultDesc: "Callback received but no matching payment row"
+      });
+    }
+
+    if (resultCode === 0 && payment.profile_id) {
       const expiry = new Date();
       expiry.setDate(expiry.getDate() + 7);
 
@@ -100,13 +112,12 @@ exports.handler = async function(event) {
       ResultCode: 0,
       ResultDesc: "Callback processed successfully"
     });
-
   } catch (error) {
     console.log("Callback fatal error:", error);
 
-    return json(500, {
-      ResultCode: 1,
-      ResultDesc: error.message || "Callback processing failed"
+    return json(200, {
+      ResultCode: 0,
+      ResultDesc: "Callback received with internal handling error"
     });
   }
 };
