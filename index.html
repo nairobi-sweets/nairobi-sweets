@@ -1,145 +1,475 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Nairobi Sweets | Verified Nairobi Profiles</title>
-<meta name="description" content="Verified Nairobi profiles with WhatsApp access, VIP listings, likes, views, shorts, maps and Sweet AI search.">
+
+<meta
+  name="description"
+  content="Verified Nairobi profiles with WhatsApp access, VIP listings, likes, views, maps and Sweet AI."
+>
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="/assets/css/styles.css">
+
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<link
+  rel="stylesheet"
+  href="/assets/css/styles.css"
+/>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 </head>
 
 <body>
 
+<!-- HEADER -->
+
 <header class="header">
+
   <div class="header-inner">
+
     <a href="/" class="brand">
-      <img src="/assets/logo/logo-navbar.png" class="logo" alt="Nairobi Sweets">
-      <div class="site-title">Nairobi Sweets</div>
+
+      <img
+        src="/assets/logo/logo-navbar.png"
+        class="logo"
+        alt="Nairobi Sweets"
+      >
+
+      <div class="site-title">
+        Nairobi Sweets
+      </div>
+
     </a>
 
-    <button class="menu-toggle" id="menuToggle">☰</button>
+    <button
+      class="menu-toggle"
+      id="menuToggle"
+    >
+      ☰
+    </button>
+
   </div>
+
 </header>
 
+<!-- QUICK NAV -->
+
 <nav class="quick">
-  <a class="gold" href="/">Home</a>
-  <a href="/join.html">Join</a>
-  <a class="pink" href="/shorts.html">Shorts</a>
-  <a href="/login.html">Login</a>
-  <a href="#profiles">Profiles</a>
-  <a href="#locations">Locations</a>
+
+  <a class="gold" href="/">
+    Home
+  </a>
+
+  <a href="/join.html">
+    Join
+  </a>
+
+  <a class="pink" href="/shorts.html">
+    Shorts
+  </a>
+
+  <a href="/login.html">
+    Login
+  </a>
+
+  <a href="#profiles">
+    Profiles
+  </a>
+
+  <a href="#locations">
+    Locations
+  </a>
+
 </nav>
 
-<div class="menu-backdrop" id="menuBackdrop"></div>
+<!-- MENU -->
 
-<aside class="side-menu" id="sideMenu">
+<div
+  class="menu-backdrop"
+  id="menuBackdrop"
+></div>
+
+<aside
+  class="side-menu"
+  id="sideMenu"
+>
+
   <div class="menu-head">
-    <strong>Menu</strong>
-    <button class="close-menu" id="closeMenu">×</button>
+
+    <strong>
+      Menu
+    </strong>
+
+    <button
+      class="close-menu"
+      id="closeMenu"
+    >
+      ×
+    </button>
+
   </div>
 
   <div class="menu-links">
-    <a href="/">Home</a>
-    <a href="/join.html">Join Now</a>
-    <a href="/shorts.html">🔥 Shorts</a>
-    <a href="/login.html">Login</a>
-    <a href="https://wa.me/254708374149" target="_blank">WhatsApp</a>
-    <a href="tel:254708374149">Call</a>
 
-    <div class="menu-section-title">Locations</div>
-    <a href="/seo/locations/nairobi.html">Nairobi</a>
-    <a href="/seo/locations/kilimani.html">Kilimani</a>
-    <a href="/seo/locations/westlands.html">Westlands</a>
-    <a href="/seo/locations/kasarani-equity-kasarani.html">Kasarani</a>
-    <a href="/seo/locations/kikuyu.html">Kikuyu</a>
-    <a href="/seo/locations/kiambu-ruiru-membley.html">Ruiru</a>
-    <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">Mombasa</a>
+    <a href="/">
+      Home
+    </a>
+
+    <a href="/join.html">
+      Join Now
+    </a>
+
+    <a href="/shorts.html">
+      🔥 Shorts
+    </a>
+
+    <a href="/login.html">
+      Login
+    </a>
+
+    <a
+      href="https://wa.me/254708374149"
+      target="_blank"
+    >
+      WhatsApp
+    </a>
+
+    <a href="tel:254708374149">
+      Call
+    </a>
+
+    <div class="menu-section-title">
+      Locations
+    </div>
+
+    <a href="/seo/locations/nairobi.html">
+      Nairobi
+    </a>
+
+    <a href="/seo/locations/kilimani.html">
+      Kilimani
+    </a>
+
+    <a href="/seo/locations/westlands.html">
+      Westlands
+    </a>
+
+    <a href="/seo/locations/kasarani-equity-kasarani.html">
+      Kasarani
+    </a>
+
+    <a href="/seo/locations/kikuyu.html">
+      Kikuyu
+    </a>
+
+    <a href="/seo/locations/kiambu-ruiru-membley.html">
+      Ruiru
+    </a>
+
+    <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">
+      Mombasa
+    </a>
+
   </div>
+
 </aside>
 
+<!-- HERO -->
+
 <section class="hero">
-  <h1>Profiles</h1>
-  <p>Verified profiles, WhatsApp access, VIP listings, likes, views, shorts and real photos.</p>
+
+  <h1>
+    Profiles
+  </h1>
+
+  <p>
+    Verified profiles, WhatsApp access,
+    VIP listings, likes, views and Sweet AI.
+  </p>
+
 </section>
+
+<!-- CONTROLS -->
 
 <section class="controls">
-  <input id="searchInput" class="search" type="text" placeholder="Search by name, bio, location...">
 
-  <select id="sortSelect" class="sort">
-    <option value="featured">Featured First</option>
-    <option value="likes">Most Likes</option>
-    <option value="views">Most Views</option>
-    <option value="newest">Newest</option>
+  <input
+    id="searchInput"
+    class="search"
+    type="text"
+    placeholder="Search by name, location or bio..."
+  >
+
+  <select
+    id="sortSelect"
+    class="sort"
+  >
+
+    <option value="featured">
+      Featured First
+    </option>
+
+    <option value="likes">
+      Most Likes
+    </option>
+
+    <option value="views">
+      Most Views
+    </option>
+
+    <option value="newest">
+      Newest
+    </option>
+
   </select>
+
 </section>
 
-<div class="location-strip" id="locations">
-  <a href="/">HOME</a>
-  <a href="/seo/locations/kilimani.html">Kilimani</a>
-  <a href="/seo/locations/westlands.html">Westlands</a>
-  <a href="/seo/locations/kasarani-equity-kasarani.html">Kasarani</a>
-  <a href="/seo/locations/kiambu-ruiru-membley.html">Ruiru</a>
-  <a href="/seo/locations/kikuyu.html">Kikuyu</a>
-  <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">Mombasa</a>
+<!-- LOCATION STRIP -->
+
+<div
+  class="location-strip"
+  id="locations"
+>
+
+  <a href="/">
+    HOME
+  </a>
+
+  <a href="/seo/locations/kilimani.html">
+    Kilimani
+  </a>
+
+  <a href="/seo/locations/westlands.html">
+    Westlands
+  </a>
+
+  <a href="/seo/locations/kasarani-equity-kasarani.html">
+    Kasarani
+  </a>
+
+  <a href="/seo/locations/kiambu-ruiru-membley.html">
+    Ruiru
+  </a>
+
+  <a href="/seo/locations/kikuyu.html">
+    Kikuyu
+  </a>
+
+  <a href="/seo/locations/mombasa-bamburi-naivas-bamburi.html">
+    Mombasa
+  </a>
+
 </div>
 
-<section class="grid" id="profilesGrid"></section>
+<!-- PROFILES -->
+
+<section
+  class="grid"
+  id="profilesGrid"
+></section>
+
+<!-- STATS -->
 
 <section class="stats">
-  <div class="stat-card"><h3>Total Profiles</h3><p id="totalProfiles">0</p></div>
-  <div class="stat-card"><h3>Total Views</h3><p id="totalViews">0</p></div>
-  <div class="stat-card"><h3>Total Likes</h3><p id="totalLikes">0</p></div>
-  <div class="stat-card"><h3>VIP Profiles</h3><p id="vipProfiles">0</p></div>
+
+  <div class="stat-card">
+    <h3>Total Profiles</h3>
+    <p id="totalProfiles">0</p>
+  </div>
+
+  <div class="stat-card">
+    <h3>Total Views</h3>
+    <p id="totalViews">0</p>
+  </div>
+
+  <div class="stat-card">
+    <h3>Total Likes</h3>
+    <p id="totalLikes">0</p>
+  </div>
+
+  <div class="stat-card">
+    <h3>VIP Profiles</h3>
+    <p id="vipProfiles">0</p>
+  </div>
+
 </section>
+
+<!-- MAP -->
 
 <section class="map-section">
+
   <div class="map-header">
-    <h3>Nairobi Coverage Map</h3>
-    <p>Explore popular Nairobi locations and nearby areas.</p>
+
+    <h3>
+      Nairobi Coverage Map
+    </h3>
+
+    <p>
+      Explore Nairobi and nearby areas.
+    </p>
+
   </div>
+
   <div id="nairobiMap"></div>
+
 </section>
+
+<!-- DISCLAIMER -->
 
 <section class="disclaimer">
-  <h3>Disclaimer</h3>
-  <p>Nairobi Sweets is an advertising and discovery platform only. All profiles are independently managed by individuals.</p>
+
+  <h3>
+    Disclaimer
+  </h3>
+
+  <p>
+    Nairobi Sweets is an advertising
+    and discovery platform only.
+    All profiles are independently managed.
+  </p>
+
 </section>
 
-<footer>© Nairobi Sweets</footer>
+<footer>
+  © Nairobi Sweets
+</footer>
+
+<!-- SWEET AI -->
 
 <div class="ai-float">
-  <button class="ai-button" id="aiOpen" title="Chat with Sweet">👠</button>
+
+  <button
+    class="ai-button"
+    id="aiOpen"
+    title="Chat with Sweet"
+  >
+    👠
+  </button>
+
 </div>
 
-<div class="ai-panel" id="aiPanel">
+<div
+  class="ai-panel"
+  id="aiPanel"
+>
+
   <div class="ai-head">
-    <span>Sweet AI ✨</span>
-    <button class="ai-close" id="aiClose">×</button>
+
+    <span>
+      Sweet AI ✨
+    </span>
+
+    <button
+      class="ai-close"
+      id="aiClose"
+    >
+      ×
+    </button>
+
   </div>
 
   <div class="ai-body">
-    <input id="aiInput" class="ai-input" placeholder="VIP in Kilimani, WhatsApp girls...">
 
-    <button class="ai-search-btn" id="aiSearchBtn">Ask Sweet</button>
+    <input
+      id="aiInput"
+      class="ai-input"
+      placeholder="VIP in Kilimani, WhatsApp girls..."
+    >
 
-    <div class="ai-answer" id="aiAnswer">
-      Hi, I’m Sweet 💋<br><br>
-      Tell me what you're looking for...
+    <!-- QUICK AI CHIPS -->
+
+    <div class="ai-suggestions">
+
+      <button
+        class="ai-chip"
+        data-query="Online now"
+      >
+        Online Now
+      </button>
+
+      <button
+        class="ai-chip"
+        data-query="VIP in Westlands"
+      >
+        VIP Westlands
+      </button>
+
+      <button
+        class="ai-chip"
+        data-query="WhatsApp Kilimani"
+      >
+        WhatsApp Kilimani
+      </button>
+
+      <button
+        class="ai-chip"
+        data-query="Most liked"
+      >
+        Most Liked
+      </button>
+
+      <button
+        class="ai-chip"
+        data-query="Trending"
+      >
+        Trending
+      </button>
+
     </div>
 
-    <div class="ai-results" id="aiResults"></div>
+    <button
+      class="ai-search-btn"
+      id="aiSearchBtn"
+    >
+      Ask Sweet
+    </button>
+
+    <div
+      class="ai-answer"
+      id="aiAnswer"
+    >
+
+      Hi, I’m Sweet 💋
+
+      <br><br>
+
+      Tap a quick search
+      or tell me what
+      you're looking for.
+
+    </div>
+
+    <div
+      class="ai-results"
+      id="aiResults"
+    ></div>
+
   </div>
+
 </div>
 
+<!-- CONFIG -->
+
 <script src="/assets/js/config.js"></script>
+
+<!-- APP -->
+
 <script src="/assets/js/app.js"></script>
+
+<!-- SWEET AI -->
+
 <script src="/assets/js/sweet-ai.js"></script>
 
 </body>
