@@ -1,7 +1,7 @@
-/* =========================
+/* =========================================
    NAIROBI SWEETS
    FULL PATCHED styles.css
-========================= */
+========================================= */
 
 *{
   margin:0;
@@ -21,16 +21,18 @@ body{
   padding-bottom:110px;
 }
 
-/* =========================
+/* =========================================
    TOPBAR
-========================= */
+========================================= */
 
 .topbar{
   position:sticky;
   top:0;
   z-index:999;
+
   background:#000;
-  border-bottom:1px solid rgba(255,215,0,.15);
+
+  border-bottom:1px solid rgba(255,215,0,.12);
 
   display:flex;
   align-items:center;
@@ -43,57 +45,64 @@ body{
   display:flex;
   align-items:center;
   gap:14px;
+
   text-decoration:none;
 }
 
 .brand img{
-  width:46px;
-  height:46px;
-  border-radius:14px;
+  width:52px;
+  height:52px;
+
+  border-radius:16px;
+
   object-fit:cover;
 }
 
 .brand h1{
   color:#ffd54a;
+
   font-size:32px;
   font-weight:900;
+
   letter-spacing:-1px;
 }
 
 .menu-btn{
-  width:84px;
-  height:84px;
-  border-radius:28px;
+  width:88px;
+  height:88px;
+
+  border-radius:30px;
 
   background:#07114a;
+
+  border:2px solid rgba(255,215,0,.15);
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  border:2px solid rgba(255,215,0,.15);
-
   cursor:pointer;
 
   box-shadow:
-  0 0 25px rgba(255,215,0,.12);
+  0 0 30px rgba(255,215,0,.12);
 }
 
 .menu-btn span{
   color:#ffd54a;
+
   font-size:54px;
   font-weight:900;
 }
 
-/* =========================
+/* =========================================
    MOBILE MENU
-========================= */
+========================================= */
 
 .mobile-menu{
   position:fixed;
   inset:0;
 
-  background:rgba(0,0,0,.96);
+  background:rgba(0,0,0,.97);
 
   z-index:1200;
 
@@ -108,10 +117,14 @@ body{
 }
 
 .menu-close{
-  font-size:44px;
-  color:#fff;
   text-align:right;
+
+  color:#fff;
+
+  font-size:50px;
+
   margin-bottom:40px;
+
   cursor:pointer;
 }
 
@@ -123,30 +136,31 @@ body{
 
 .menu-links a{
   text-decoration:none;
+
   color:#fff;
 
   background:#07114a;
 
-  padding:22px 26px;
-
   border-radius:22px;
+
+  padding:24px;
 
   font-size:24px;
   font-weight:700;
 }
 
-/* =========================
+/* =========================================
    HERO
-========================= */
+========================================= */
 
 .hero{
-  padding:28px 22px 0;
+  padding:26px 22px 0;
 }
 
 .hero-box{
   background:#020a56;
 
-  border-radius:42px;
+  border-radius:44px;
 
   padding:34px;
 
@@ -159,20 +173,25 @@ body{
 .hero-box h2{
   font-size:92px;
   line-height:.95;
+
   color:#ffd54a;
+
   font-weight:900;
-  margin-bottom:22px;
+
+  margin-bottom:20px;
 }
 
 .hero-box p{
-  color:#d4d4d4;
+  color:#d8d8d8;
+
   font-size:28px;
+
   line-height:1.8;
 }
 
-/* =========================
+/* =========================================
    SEARCH
-========================= */
+========================================= */
 
 .search-wrap{
   margin-top:34px;
@@ -185,11 +204,11 @@ body{
 
   border:2px solid rgba(255,255,255,.08);
 
-  color:#fff;
-
-  border-radius:32px;
+  border-radius:30px;
 
   padding:28px;
+
+  color:#fff;
 
   font-size:26px;
 
@@ -197,16 +216,16 @@ body{
 }
 
 .search-box::placeholder{
-  color:#9b9b9b;
+  color:#979797;
 }
 
-/* =========================
+/* =========================================
    FILTERS
-========================= */
+========================================= */
 
 .filters{
   display:flex;
-  gap:18px;
+  gap:16px;
 
   overflow-x:auto;
 
@@ -222,11 +241,9 @@ body{
 .filters button{
   border:none;
 
-  min-width:max-content;
+  padding:20px 32px;
 
-  padding:20px 34px;
-
-  border-radius:24px;
+  border-radius:22px;
 
   background:#f54747;
 
@@ -235,6 +252,8 @@ body{
   font-size:22px;
   font-weight:800;
 
+  min-width:max-content;
+
   cursor:pointer;
 }
 
@@ -242,12 +261,12 @@ body{
   background:#17b348;
 }
 
-/* =========================
+/* =========================================
    STATS
-========================= */
+========================================= */
 
 .stats{
-  padding:0 22px 22px;
+  padding:0 22px 24px;
 }
 
 .stats-box{
@@ -261,31 +280,34 @@ body{
 }
 
 .stats-title{
-  color:#b8b8b8;
+  color:#bbbbbb;
+
   font-size:24px;
+
   margin-bottom:10px;
 }
 
 .stats-number{
+  color:#ffd54a;
+
   font-size:90px;
   font-weight:900;
-  color:#ffd54a;
 }
 
-/* =========================
+/* =========================================
    PROFILE GRID
-========================= */
+========================================= */
 
 .profiles{
-  padding:0 22px 50px;
-
   display:grid;
   gap:34px;
+
+  padding:0 22px 50px;
 }
 
-/* =========================
+/* =========================================
    CARD
-========================= */
+========================================= */
 
 .card{
   background:#020a56;
@@ -302,14 +324,14 @@ body{
   0 0 40px rgba(0,0,0,.35);
 }
 
-/* =========================
-   IMAGE FIX
-========================= */
-
 .card a{
   display:block;
   background:#020617;
 }
+
+/* =========================================
+   IMAGE FIX
+========================================= */
 
 .card-image{
   width:100%;
@@ -318,14 +340,14 @@ body{
 
   object-fit:contain;
 
-  background:#020617;
-
   display:block;
+
+  background:#020617;
 }
 
-/* =========================
-   BADGES
-========================= */
+/* =========================================
+   ONLINE DOT
+========================================= */
 
 .online-dot{
   position:absolute;
@@ -342,11 +364,15 @@ body{
 
   border:4px solid #fff;
 
-  z-index:4;
+  z-index:5;
 
   box-shadow:
   0 0 20px #2cff67;
 }
+
+/* =========================================
+   FEATURED BADGE
+========================================= */
 
 .featured-badge{
   position:absolute;
@@ -354,7 +380,7 @@ body{
   top:24px;
   right:24px;
 
-  background:rgba(0,0,0,.75);
+  background:rgba(0,0,0,.72);
 
   color:#ffd54a;
 
@@ -370,9 +396,9 @@ body{
   backdrop-filter:blur(10px);
 }
 
-/* =========================
+/* =========================================
    CARD BODY
-========================= */
+========================================= */
 
 .card-body{
   padding:28px;
@@ -381,7 +407,8 @@ body{
 .card-name{
   font-size:72px;
   font-weight:900;
-  margin-bottom:16px;
+
+  margin-bottom:14px;
 }
 
 .online{
@@ -390,12 +417,14 @@ body{
   font-size:26px;
   font-weight:800;
 
-  margin-bottom:14px;
+  margin-bottom:12px;
 }
 
 .location{
   color:#d7d7d7;
+
   font-size:24px;
+
   margin-bottom:14px;
 }
 
@@ -412,26 +441,31 @@ body{
   color:#d0d0d0;
 
   font-size:24px;
+
   line-height:1.7;
 
-  margin-bottom:26px;
+  margin-bottom:24px;
 }
+
+/* =========================================
+   ENGAGEMENT
+========================================= */
 
 .engagement{
   display:flex;
   align-items:center;
   gap:12px;
 
-  color:#bbbbbb;
+  color:#c5c5c5;
 
   font-size:20px;
 
-  margin-bottom:26px;
+  margin-bottom:28px;
 }
 
-/* =========================
-   ACTIONS
-========================= */
+/* =========================================
+   ACTION ROW
+========================================= */
 
 .action-row{
   display:grid;
@@ -439,12 +473,18 @@ body{
   gap:18px;
 }
 
+/* =========================================
+   CALL + WHATSAPP BUTTONS
+========================================= */
+
 .call-btn,
 .wa-btn,
 .disabled-contact{
+
   display:flex;
   align-items:center;
   justify-content:center;
+  gap:14px;
 
   text-decoration:none;
 
@@ -454,28 +494,83 @@ body{
 
   padding:24px;
 
-  font-size:28px;
+  font-size:26px;
   font-weight:900;
 
   color:#fff;
+
+  transition:.25s ease;
+
+  position:relative;
+
+  overflow:hidden;
 }
 
 .call-btn{
-  background:#f54747;
+
+  background:
+  linear-gradient(
+    135deg,
+    #ff4d4d,
+    #d91f1f
+  );
+
+  box-shadow:
+  0 10px 30px rgba(255,0,0,.25);
 }
 
 .wa-btn{
-  background:#1fb54a;
+
+  background:
+  linear-gradient(
+    135deg,
+    #25D366,
+    #128C7E
+  );
+
+  box-shadow:
+  0 10px 30px rgba(0,255,100,.22);
+}
+
+.call-btn:hover,
+.wa-btn:hover{
+  transform:translateY(-3px) scale(1.02);
+}
+
+.call-btn:active,
+.wa-btn:active{
+  transform:scale(.97);
+}
+
+.call-btn i{
+  font-size:30px;
+  font-style:normal;
+}
+
+.wa-real-icon{
+
+  width:34px;
+  height:34px;
+
+  object-fit:contain;
+
+  border-radius:10px;
+
+  flex-shrink:0;
 }
 
 .disabled-contact{
+
   grid-column:span 2;
+
   background:#1f1f1f;
+
+  color:#888;
 }
 
-/* =========================
+/* =========================================
    SWEET AI FLOAT
-========================= */
+========================================= */
 
 .sweet-ai{
   position:fixed;
@@ -509,14 +604,22 @@ body{
 }
 
 @keyframes floaty{
-  0%{transform:translateY(0);}
-  50%{transform:translateY(-10px);}
-  100%{transform:translateY(0);}
+  0%{
+    transform:translateY(0);
+  }
+
+  50%{
+    transform:translateY(-10px);
+  }
+
+  100%{
+    transform:translateY(0);
+  }
 }
 
-/* =========================
+/* =========================================
    SWEET PANEL
-========================= */
+========================================= */
 
 .sweet-panel{
   position:fixed;
@@ -534,7 +637,6 @@ body{
   z-index:1200;
 
   transform:translateY(120%);
-
   transition:.35s ease;
 
   border:1px solid rgba(255,215,0,.12);
@@ -561,12 +663,15 @@ body{
 
 .sweet-header h3{
   color:#ffd54a;
+
   font-size:32px;
 }
 
 .close-sweet{
   color:#ffd54a;
+
   font-size:42px;
+
   cursor:pointer;
 }
 
@@ -645,9 +750,9 @@ body{
   line-height:1.7;
 }
 
-/* =========================
+/* =========================================
    BOTTOM NAV
-========================= */
+========================================= */
 
 .bottom-nav{
   position:fixed;
@@ -680,9 +785,9 @@ body{
   cursor:pointer;
 }
 
-/* =========================
+/* =========================================
    LOADERS
-========================= */
+========================================= */
 
 .loader,
 .empty{
@@ -723,9 +828,9 @@ body{
   }
 }
 
-/* =========================
+/* =========================================
    MOBILE
-========================= */
+========================================= */
 
 @media(max-width:768px){
 
