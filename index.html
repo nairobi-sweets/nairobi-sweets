@@ -337,36 +337,37 @@ body{
 }
 
 .card-name{
-  font-size:26px;
+  font-size:22px;
   font-weight:900;
   color:white;
   margin-bottom:10px;
+  line-height:1.1;
 }
 
 .online{
   color:#31ff71;
-  font-size:16px;
+  font-size:15px;
   font-weight:900;
   margin-bottom:12px;
 }
 
 .location{
   color:#d5d5d5;
-  font-size:15px;
+  font-size:14px;
   line-height:1.5;
   margin-bottom:12px;
 }
 
 .phone{
   color:#ffd54a;
-  font-size:17px;
+  font-size:16px;
   font-weight:900;
   margin-bottom:14px;
 }
 
 .bio{
   color:#d2d2d2;
-  font-size:14px;
+  font-size:13px;
   line-height:1.6;
   margin-bottom:16px;
 }
@@ -377,10 +378,151 @@ body{
 
   color:#d0d0d0;
 
-  font-size:14px;
+  font-size:13px;
 
   margin-bottom:18px;
 }
+
+/* ========================= */
+/* BADGES */
+/* ========================= */
+
+.featured-badge{
+  position:absolute;
+  top:16px;
+  right:16px;
+
+  background:rgba(0,0,0,.72);
+
+  color:#ffd54a;
+
+  padding:10px 18px;
+
+  border-radius:999px;
+
+  font-size:13px;
+  font-weight:900;
+
+  backdrop-filter:blur(10px);
+
+  z-index:6;
+}
+
+.online-dot{
+  position:absolute;
+  top:16px;
+  left:16px;
+
+  width:20px;
+  height:20px;
+
+  border-radius:50%;
+
+  background:#31ff71;
+
+  border:3px solid white;
+
+  z-index:6;
+}
+
+/* ========================= */
+/* ACTION BUTTONS */
+/* ========================= */
+
+.action-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.call-btn,
+.wa-btn{
+  min-height:48px;
+
+  border-radius:18px;
+
+  text-decoration:none;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  font-size:13px;
+  font-weight:800;
+
+  transition:.25s;
+}
+
+.call-btn:hover,
+.wa-btn:hover{
+  transform:translateY(-2px);
+}
+
+.call-btn{
+
+  background:
+  linear-gradient(145deg,#050717,#07114a);
+
+  color:white;
+
+  border:1px solid rgba(255,255,255,.08);
+
+  box-shadow:
+  0 0 22px rgba(255,0,128,.16);
+
+}
+
+.wa-btn{
+
+  background:
+  linear-gradient(145deg,#02140a,#06361b);
+
+  color:white;
+
+  border:1px solid rgba(255,255,255,.08);
+
+  box-shadow:
+  0 0 22px rgba(0,255,120,.16);
+
+}
+
+.wa-btn img{
+  width:18px;
+  height:18px;
+  object-fit:contain;
+}
+
+.call-btn span,
+.wa-btn span{
+  letter-spacing:.4px;
+}
+
+/* ========================= */
+/* MOBILE */
+/* ========================= */
+
+@media(max-width:900px){
+
+  .profiles{
+    grid-template-columns:1fr;
+    gap:28px;
+  }
+
+  .card-image{
+    height:auto;
+    aspect-ratio:4/5;
+  }
+
+  .card-name{
+    font-size:28px;
+  }
+
+  .call-btn,
+  .wa-btn{
+    min-height:56px;
+    font-size:14px;
+  }
 
 /* ========================= */
 /* BADGES */
