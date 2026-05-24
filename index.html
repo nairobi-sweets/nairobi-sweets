@@ -206,6 +206,90 @@ a{text-decoration:none;color:inherit}
 .sweet-ai img{width:100%;height:100%;object-fit:cover}
 @keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
 
+.sweet-panel{
+  position:fixed;
+  right:18px;
+  bottom:170px;
+  width:min(360px,92vw);
+  background:linear-gradient(180deg,#020a56,#010633);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:24px;
+  overflow:hidden;
+  z-index:1400;
+  display:none;
+  box-shadow:0 0 35px rgba(255,0,128,.25);
+}
+.sweet-panel.active{display:block}
+.sweet-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px;
+  background:linear-gradient(90deg,#000,#2b001f);
+}
+.sweet-header h3{color:#ffd54a;font-size:20px}
+.sweet-header button{background:none;border:none;color:#ffd54a;font-size:24px;cursor:pointer}
+.sweet-body{padding:16px}
+.sweet-body input{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:#020926;
+  color:white;
+  outline:none;
+}
+.sweet-chips{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin:12px 0;
+}
+.sweet-chips button{
+  min-width:max-content;
+  border:none;
+  border-radius:999px;
+  padding:10px 12px;
+  background:#07114a;
+  color:#ffd54a;
+  font-weight:900;
+  cursor:pointer;
+}
+.sweet-send{
+  width:100%;
+  border:none;
+  border-radius:14px;
+  padding:14px;
+  background:#ffd54a;
+  color:#000;
+  font-weight:900;
+  cursor:pointer;
+}
+.sweet-results{
+  margin-top:14px;
+  color:#ddd;
+  font-size:14px;
+  line-height:1.6;
+}
+.sweet-mini-card{
+  display:grid;
+  grid-template-columns:54px 1fr;
+  gap:10px;
+  background:#07114a;
+  border-radius:14px;
+  padding:10px;
+  margin-top:10px;
+  cursor:pointer;
+}
+.sweet-mini-card img{
+  width:54px;
+  height:70px;
+  border-radius:10px;
+  object-fit:cover;
+}
+.sweet-mini-card strong{color:#ffd54a;font-size:13px}
+.sweet-mini-card span{display:block;color:#ddd;font-size:12px;margin-top:3px}
+
 .bottom-nav{
   position:fixed;left:0;right:0;bottom:0;height:80px;
   background:rgba(0,0,0,.96);
@@ -346,8 +430,32 @@ a{text-decoration:none;color:inherit}
   </p>
 </section>
 
-<div class="sweet-ai" onclick="window.location.href='/reel.html'">
+<div class="sweet-ai" onclick="openSweet()">
   <img src="/assets/logo/logo-badge.png" alt="Sweet AI">
+</div>
+
+<div class="sweet-panel" id="sweetPanel">
+  <div class="sweet-header">
+    <h3>Sweet AI ✨</h3>
+    <button onclick="closeSweet()">✕</button>
+  </div>
+
+  <div class="sweet-body">
+    <input id="sweetInput" placeholder="VIP in Kilimani, WhatsApp Westlands...">
+
+    <div class="sweet-chips">
+      <button onclick="quickAsk('VIP in Kilimani')">VIP Kilimani</button>
+      <button onclick="quickAsk('Online now')">Online Now</button>
+      <button onclick="quickAsk('WhatsApp Westlands')">WhatsApp Westlands</button>
+    </div>
+
+    <button class="sweet-send" onclick="askSweet()">Ask Sweet</button>
+
+    <div id="sweetResults" class="sweet-results">
+      Hi, I’m Sweet 💋<br><br>
+      Tell me what you're looking for.
+    </div>
+  </div>
 </div>
 
 <nav class="bottom-nav">
@@ -377,6 +485,19 @@ function toggleMenu(){
 function quickVip(){
   const vipBtn = document.querySelector('[data-filter="vip"]');
   if(vipBtn) vipBtn.click();
+}
+
+function openSweet(){
+  document.getElementById("sweetPanel").classList.add("active");
+}
+
+function closeSweet(){
+  document.getElementById("sweetPanel").classList.remove("active");
+}
+
+function quickAsk(text){
+  document.getElementById("sweetInput").value = text;
+  askSweet();
 }
 
 function safePhone(phone){
@@ -589,6 +710,49 @@ async function loadProfiles(){
 
   renderShorts(allProfiles);
   applyFilters();
+}
+
+async function askSweet(){
+  const input = document.getElementById("sweetInput");
+  const results = document.getElementById("sweetResults");
+  const message = input.value.trim();
+
+  if(!message){
+    results.innerHTML = "Sweet needs a clue 💋";
+    return;
+  }
+
+  results.innerHTML = "Sweet is searching... ✨";
+
+  try{
+    const response = await fetch("/.netlify/functions/sweet-chat",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message})
+    });
+
+    const data = await response.json();
+    const profiles = data.results || data.profiles || [];
+
+    const cards = profiles.map(profile=>`
+      <div class="sweet-mini-card" onclick="window.location.href='/profile.html?id=${profile.id}'">
+        <img src="${profile.photo_url || "/assets/logo/logo-badge.png"}" onerror="this.src='/assets/logo/logo-badge.png'">
+        <div>
+          <strong>${profile.stage_name || "Verified"}</strong>
+          <span>📍 ${profile.location || "Nairobi"}</span>
+          <span>❤️ ${profile.likes_count || 0} · 👁️ ${profile.views_count || 0}</span>
+        </div>
+      </div>
+    `).join("");
+
+    results.innerHTML = `
+      <div>${data.reply || data.answer || "Sweet found something 💋"}</div>
+      ${cards}
+    `;
+  }catch(error){
+    console.error(error);
+    results.innerHTML = "Sweet got distracted 💔 Try again.";
+  }
 }
 
 loadProfiles();
