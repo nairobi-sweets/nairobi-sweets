@@ -1,12 +1,17 @@
+<!-- ========================================= -->
+<!-- NAIROBI SWEETS · CORRECTED LUXURY VERSION -->
+<!-- ========================================= -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Nairobi Sweets</title>
 
-<meta name="description" content="Luxury Nairobi discovery platform with verified VIP profiles, WhatsApp access, reels, online status and Sweet AI.">
+<meta name="description" content="Luxury Nairobi discovery platform with verified VIP profiles, reels, WhatsApp access and Sweet AI.">
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
 
@@ -20,26 +25,36 @@
   box-sizing:border-box;
 }
 
+html{
+  scroll-behavior:smooth;
+}
+
 body{
-  background:#000;
+  background:
+  radial-gradient(circle at top,#0d123f 0%,#000 45%);
   color:white;
   font-family:Arial,Helvetica,sans-serif;
   overflow-x:hidden;
-  padding-bottom:90px;
+  padding-bottom:100px;
 }
 
+/* ========================= */
 /* TOPBAR */
+/* ========================= */
 
 .topbar{
   position:sticky;
   top:0;
   z-index:999;
-  background:#000;
-  padding:16px 22px;
+  background:rgba(0,0,0,.96);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,213,74,.08);
+
   display:flex;
   align-items:center;
   justify-content:space-between;
-  border-bottom:1px solid rgba(255,213,74,.08);
+
+  padding:16px 22px;
 }
 
 .brand{
@@ -50,10 +65,11 @@ body{
 }
 
 .brand img{
-  width:70px;
-  height:70px;
+  width:68px;
+  height:68px;
   object-fit:cover;
   border-radius:18px;
+  box-shadow:0 0 18px rgba(255,213,74,.2);
 }
 
 .brand h1{
@@ -64,72 +80,95 @@ body{
 }
 
 .menu-btn{
-  width:90px;
-  height:90px;
+  width:88px;
+  height:88px;
   border-radius:26px;
-  background:#061050;
+
+  background:linear-gradient(180deg,#07145f,#02083d);
+
+  border:2px solid rgba(255,213,74,.12);
+
   display:flex;
   align-items:center;
   justify-content:center;
-  border:2px solid rgba(255,213,74,.12);
-  cursor:pointer;
-  box-shadow:0 0 25px rgba(255,213,74,.12);
+
+  box-shadow:
+  0 0 25px rgba(255,213,74,.08),
+  inset 0 0 25px rgba(255,255,255,.03);
 }
 
 .menu-btn span{
   color:#ffd54a;
-  font-size:52px;
+  font-size:50px;
   font-weight:900;
 }
 
+/* ========================= */
 /* HERO */
+/* ========================= */
 
 .hero{
-  padding:24px 120px 0;
+  padding:24px 90px 10px;
 }
 
 .hero-box{
-  background:linear-gradient(180deg,#020a56,#010633);
+  background:
+  linear-gradient(180deg,#020a56,#010633);
+
   border-radius:34px;
-  padding:40px;
+
+  padding:42px;
+
   border:1px solid rgba(255,213,74,.08);
+
   box-shadow:
-  0 0 35px rgba(255,0,128,.12),
-  0 20px 60px rgba(0,0,0,.45);
+  0 0 35px rgba(255,0,128,.14),
+  0 25px 80px rgba(0,0,0,.5);
 }
 
 .hero-box h2{
-  font-size:70px;
   color:#ffd54a;
+  font-size:70px;
   font-weight:900;
   margin-bottom:18px;
 }
 
 .hero-box p{
   color:#d8d8d8;
-  font-size:21px;
+  font-size:20px;
   line-height:1.7;
 }
 
 .search-box{
   width:100%;
   margin-top:24px;
-  background:#00092e;
+
+  background:#020926;
+
   border:1px solid rgba(255,255,255,.08);
-  border-radius:22px;
-  padding:20px;
+
   color:white;
+
+  border-radius:22px;
+
+  padding:20px;
+
   font-size:18px;
+
   outline:none;
 }
 
+/* ========================= */
 /* FILTERS */
+/* ========================= */
 
 .filters{
   display:flex;
-  gap:12px;
+  gap:14px;
   overflow-x:auto;
-  padding:20px 120px;
+
+  padding:20px 90px;
+
   scrollbar-width:none;
 }
 
@@ -139,24 +178,35 @@ body{
 
 .filters button{
   border:none;
-  background:#f54747;
+
+  background:linear-gradient(145deg,#1d243f,#08114f);
+
   color:white;
-  padding:14px 24px;
+
   border-radius:18px;
-  font-size:16px;
+
+  padding:14px 24px;
+
+  font-size:15px;
   font-weight:900;
+
   min-width:max-content;
+
+  border:1px solid rgba(255,255,255,.06);
+
   cursor:pointer;
 }
 
 .filters button.active{
-  background:#18b84f;
+  background:linear-gradient(145deg,#1db954,#117336);
 }
 
+/* ========================= */
 /* SHORTS */
+/* ========================= */
 
 .shorts-section{
-  padding:0 120px 24px;
+  padding:0 90px 20px;
 }
 
 .shorts-header{
@@ -175,7 +225,7 @@ body{
 .shorts-header a{
   color:#ff4d8d;
   text-decoration:none;
-  font-weight:800;
+  font-weight:900;
 }
 
 .shorts-row{
@@ -191,14 +241,21 @@ body{
 
 .short-card{
   position:relative;
-  min-width:240px;
-  width:240px;
-  height:420px;
-  border-radius:28px;
+
+  min-width:220px;
+  width:220px;
+
+  height:390px;
+
   overflow:hidden;
-  flex-shrink:0;
+
+  border-radius:28px;
+
   background:#020617;
+
   border:1px solid rgba(255,255,255,.06);
+
+  flex-shrink:0;
 }
 
 .short-card video,
@@ -213,162 +270,264 @@ body{
   left:0;
   right:0;
   bottom:0;
+
   padding:18px;
-  background:linear-gradient(to top,rgba(0,0,0,.92),transparent);
+
+  background:
+  linear-gradient(to top,rgba(0,0,0,.92),transparent);
 }
 
 .short-name{
-  font-size:24px;
+  font-size:22px;
   font-weight:900;
-  color:white;
 }
 
 .short-location{
-  color:#ddd;
+  color:#d5d5d5;
   margin-top:6px;
 }
 
+/* ========================= */
 /* PROFILES */
+/* ========================= */
 
 .profiles{
   display:grid;
-  grid-template-columns:repeat(4, minmax(220px, 1fr));
-  gap:24px;
-  padding:24px 120px 70px;
-  align-items:start;
+
+  grid-template-columns:
+  repeat(4,minmax(230px,1fr));
+
+  gap:26px;
+
+  padding:24px 90px 70px;
 }
 
 .card{
   position:relative;
-  border-radius:6px;
-  background:#fff;
-  color:#111;
+
   overflow:hidden;
-  box-shadow:0 0 0 1px #ddd;
+
+  border-radius:30px;
+
+  background:
+  linear-gradient(180deg,#020a56,#010633);
+
+  border:1px solid rgba(255,213,74,.08);
+
+  box-shadow:
+  0 0 30px rgba(255,0,128,.08),
+  0 18px 50px rgba(0,0,0,.45);
+
+  transition:.25s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
 }
 
 .card-image{
   width:100%;
-  height:260px;
+  height:350px;
   object-fit:cover;
   display:block;
 }
 
 .card-body{
-  padding:14px;
+  padding:18px;
 }
 
 .card-name{
-  font-size:20px;
-  color:#222;
-  font-weight:600;
+  font-size:26px;
+  font-weight:900;
+  color:white;
   margin-bottom:10px;
 }
 
 .online{
-  color:#169123;
-  font-size:18px;
-  font-weight:700;
-  margin-bottom:10px;
+  color:#31ff71;
+  font-size:16px;
+  font-weight:900;
+  margin-bottom:12px;
 }
 
 .location{
-  color:#222;
+  color:#d5d5d5;
   font-size:15px;
-  margin-bottom:10px;
+  line-height:1.5;
+  margin-bottom:12px;
 }
 
 .phone{
-  color:#168f22;
-  font-size:20px;
-  font-weight:700;
+  color:#ffd54a;
+  font-size:17px;
+  font-weight:900;
   margin-bottom:14px;
 }
 
 .bio{
-  color:#ff2e2e;
+  color:#d2d2d2;
   font-size:14px;
-  line-height:1.55;
-  margin-bottom:18px;
+  line-height:1.6;
+  margin-bottom:16px;
 }
 
 .engagement{
   display:flex;
-  gap:8px;
-  color:#777;
+  gap:10px;
+
+  color:#d0d0d0;
+
   font-size:14px;
-  margin-bottom:16px;
+
+  margin-bottom:18px;
 }
+
+/* ========================= */
+/* BADGES */
+/* ========================= */
 
 .featured-badge{
   position:absolute;
-  top:14px;
-  right:14px;
-  background:#f12525;
-  color:white;
-  font-size:13px;
-  padding:8px 22px;
+  top:16px;
+  right:16px;
+
+  background:rgba(0,0,0,.72);
+
+  color:#ffd54a;
+
+  padding:12px 20px;
+
+  border-radius:999px;
+
+  font-size:15px;
   font-weight:900;
-  z-index:5;
+
+  backdrop-filter:blur(10px);
+
+  z-index:6;
 }
 
 .online-dot{
-  display:none;
+  position:absolute;
+  top:16px;
+  left:16px;
+
+  width:22px;
+  height:22px;
+
+  border-radius:50%;
+
+  background:#31ff71;
+
+  border:3px solid white;
+
+  z-index:6;
 }
+
+/* ========================= */
+/* ACTION BUTTONS */
+/* ========================= */
 
 .action-row{
   display:grid;
-  grid-template-columns:1fr;
+  grid-template-columns:1fr 1fr;
   gap:12px;
 }
 
 .call-btn,
 .wa-btn{
-  min-height:44px;
-  border-radius:4px;
+  min-height:54px;
+
+  border-radius:20px;
+
   text-decoration:none;
+
   display:flex;
   align-items:center;
   justify-content:center;
   gap:10px;
-  background:linear-gradient(#ff4d4d,#d91f1f);
+
+  font-size:15px;
+  font-weight:900;
+
+  transition:.25s;
+}
+
+.call-btn:hover,
+.wa-btn:hover{
+  transform:translateY(-2px);
+}
+
+.call-btn{
+
+  background:
+  linear-gradient(145deg,#050717,#07114a);
+
   color:white;
-  font-weight:700;
-  font-size:16px;
+
+  border:1px solid rgba(255,255,255,.08);
+
+  box-shadow:
+  0 0 22px rgba(255,0,128,.16);
+
 }
 
 .wa-btn{
-  display:none;
+
+  background:
+  linear-gradient(145deg,#02140a,#06361b);
+
+  color:white;
+
+  border:1px solid rgba(255,255,255,.08);
+
+  box-shadow:
+  0 0 22px rgba(0,255,120,.16);
+
 }
 
-/* MAP */
+.wa-btn img{
+  width:22px;
+  height:22px;
+  object-fit:contain;
+}
 
-.map-section,
-.disclaimer{
-  margin:0 120px 30px;
-  background:linear-gradient(180deg,#020a56,#010633);
-  border-radius:34px;
+.call-btn span,
+.wa-btn span{
+  letter-spacing:.4px;
+}
+
+/* ========================= */
+/* MAP */
+/* ========================= */
+
+.map-section{
+  margin:0 90px 30px;
+
   overflow:hidden;
+
+  border-radius:34px;
+
+  background:
+  linear-gradient(180deg,#020a56,#010633);
+
   border:1px solid rgba(255,213,74,.08);
 }
 
-.map-header,
-.disclaimer{
+.map-header{
   padding:24px;
 }
 
-.map-header h3,
-.disclaimer h3{
+.map-header h3{
   color:#ffd54a;
   font-size:32px;
   margin-bottom:12px;
 }
 
-.map-header p,
-.disclaimer p{
-  color:#d7d7d7;
-  line-height:1.7;
+.map-header p{
+  color:#d5d5d5;
   font-size:18px;
+  line-height:1.6;
 }
 
 .map-frame{
@@ -377,19 +536,59 @@ body{
   border:0;
 }
 
+/* ========================= */
+/* DISCLAIMER */
+/* ========================= */
+
+.disclaimer{
+  margin:0 90px 30px;
+
+  background:
+  linear-gradient(180deg,#020a56,#010633);
+
+  border-radius:34px;
+
+  padding:28px;
+
+  border:1px solid rgba(255,213,74,.08);
+}
+
+.disclaimer h3{
+  color:#ffd54a;
+  font-size:34px;
+  margin-bottom:14px;
+}
+
+.disclaimer p{
+  color:#d7d7d7;
+  font-size:18px;
+  line-height:1.8;
+}
+
+/* ========================= */
 /* SWEET AI */
+/* ========================= */
 
 .sweet-ai{
   position:fixed;
+
   right:18px;
-  bottom:100px;
-  width:58px;
-  height:58px;
+  bottom:104px;
+
+  width:62px;
+  height:62px;
+
   border-radius:50%;
+
   overflow:hidden;
+
+  border:4px solid #ff4d8d;
+
   z-index:999;
-  border:3px solid #ff4d8d;
-  box-shadow:0 0 18px rgba(255,0,128,.32);
+
+  box-shadow:
+  0 0 24px rgba(255,0,128,.35);
+
   animation:floaty 3s infinite ease-in-out;
 }
 
@@ -405,55 +604,60 @@ body{
   100%{transform:translateY(0)}
 }
 
+/* ========================= */
 /* BOTTOM NAV */
+/* ========================= */
 
 .bottom-nav{
   position:fixed;
+
   left:0;
   right:0;
   bottom:0;
-  height:82px;
+
+  height:84px;
+
   background:rgba(0,0,0,.96);
+
   border-top:1px solid rgba(255,213,74,.08);
+
+  backdrop-filter:blur(16px);
+
   display:flex;
   align-items:center;
   justify-content:space-around;
+
   z-index:999;
 }
 
 .bottom-nav button{
   border:none;
   background:none;
+
   color:#ffd54a;
+
   font-size:24px;
+
   cursor:pointer;
 }
 
+/* ========================= */
 /* MOBILE */
+/* ========================= */
 
 @media(max-width:900px){
 
   .hero,
   .filters,
   .shorts-section,
-  .profiles,
-  .map-section,
-  .disclaimer{
+  .profiles{
     padding-left:18px;
     padding-right:18px;
-    margin-left:0;
-    margin-right:0;
   }
 
   .profiles{
     grid-template-columns:1fr;
     gap:28px;
-  }
-
-  .card{
-    border-radius:34px;
-    background:linear-gradient(180deg,#020a56,#010633);
-    color:white;
   }
 
   .card-image{
@@ -462,83 +666,32 @@ body{
   }
 
   .card-name{
-    font-size:34px;
-    color:white;
-    font-weight:900;
-  }
-
-  .online{
-    color:#2cff67;
-    font-size:20px;
-    font-weight:900;
-  }
-
-  .location{
-    color:#d8d8d8;
-  }
-
-  .phone{
-    color:#ffd54a;
-    font-size:22px;
-    font-weight:900;
-  }
-
-  .bio{
-    color:#d0d0d0;
-    font-size:15px;
-  }
-
-  .featured-badge{
-    background:rgba(0,0,0,.75);
-    color:#ffd54a;
-    border-radius:999px;
-  }
-
-  .online-dot{
-    display:block;
-    position:absolute;
-    top:16px;
-    left:16px;
-    width:22px;
-    height:22px;
-    border-radius:50%;
-    background:#2cff67;
-    border:3px solid white;
-    z-index:5;
-  }
-
-  .action-row{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .call-btn,
-  .wa-btn{
-    min-height:62px;
-    border-radius:22px;
-    background:linear-gradient(145deg,#050717,#07114a);
-    font-size:15px;
-  }
-
-  .wa-btn{
-    display:flex;
-    background:linear-gradient(145deg,#02140a,#06361b);
+    font-size:32px;
   }
 
   .hero{
     padding-top:18px;
   }
 
-  .hero-box h2{
-    font-size:56px;
+  .hero-box{
+    padding:30px;
   }
 
-  .brand h1{
-    font-size:26px;
+  .hero-box h2{
+    font-size:58px;
+  }
+
+  .hero-box p{
+    font-size:18px;
   }
 
   .brand img{
     width:54px;
     height:54px;
+  }
+
+  .brand h1{
+    font-size:26px;
   }
 
   .menu-btn{
@@ -550,6 +703,18 @@ body{
     font-size:42px;
   }
 
+  .short-card{
+    width:200px;
+    min-width:200px;
+    height:340px;
+  }
+
+  .map-section,
+  .disclaimer{
+    margin-left:18px;
+    margin-right:18px;
+  }
+
 }
 
 </style>
@@ -559,287 +724,351 @@ body{
 
 <header class="topbar">
 
-  <a href="/" class="brand">
-    <img src="/assets/logo/logo-navbar.png">
-    <h1>Nairobi Sweets</h1>
-  </a>
+<a href="/" class="brand">
 
-  <div class="menu-btn">
-    <span>☰</span>
-  </div>
+<img src="/assets/logo/logo-navbar.png">
+
+<h1>Nairobi Sweets</h1>
+
+</a>
+
+<div class="menu-btn">
+<span>☰</span>
+</div>
 
 </header>
 
 <section class="hero">
 
-  <div class="hero-box">
+<div class="hero-box">
 
-    <h2>Profiles</h2>
+<h2>Profiles</h2>
 
-    <p>
-      Verified profiles, WhatsApp access, VIP listings,
-      online status, luxury discovery and reels.
-    </p>
+<p>
+Verified profiles, WhatsApp access,
+VIP listings, online status,
+luxury discovery, reels and real photos.
+</p>
 
-    <input
-      type="text"
-      class="search-box"
-      placeholder="Search by name, bio, location..."
-    >
+<input
+type="text"
+class="search-box"
+placeholder="Search by name, bio, location..."
+>
 
-  </div>
+</div>
 
 </section>
 
 <div class="filters">
 
-  <button class="active">HOME</button>
-  <button>VIP</button>
-  <button>ONLINE</button>
-  <button>WHATSAPP</button>
-  <button>KILIMANI</button>
-  <button>WESTLANDS</button>
+<button class="active">HOME</button>
+<button>VIP</button>
+<button>ONLINE</button>
+<button>WHATSAPP</button>
+<button>KILIMANI</button>
+<button>WESTLANDS</button>
 
 </div>
 
 <section class="shorts-section">
 
-  <div class="shorts-header">
-    <h2>🔥 Nairobi Shorts</h2>
-    <a href="/reel.html">Open Reels →</a>
-  </div>
+<div class="shorts-header">
 
-  <div class="shorts-row">
+<h2>🔥 Nairobi Shorts</h2>
 
-    <div class="short-card">
+<a href="/reel.html">Open Reels →</a>
 
-      <video autoplay muted loop playsinline>
-        <source src="https://cdn.coverr.co/videos/coverr-girl-walking-1560084033398?download=1080p" type="video/mp4">
-      </video>
+</div>
 
-      <div class="short-overlay">
-        <div class="short-name">Suzzie</div>
-        <div class="short-location">📍 Nairobi</div>
-      </div>
+<div class="shorts-row">
 
-    </div>
+<div class="short-card">
 
-    <div class="short-card">
+<video autoplay muted loop playsinline>
+<source src="https://cdn.coverr.co/videos/coverr-young-woman-on-phone-1560084033398?download=1080p" type="video/mp4">
+</video>
 
-      <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200&auto=format&fit=crop">
+<div class="short-overlay">
+<div class="short-name">Suzzie</div>
+<div class="short-location">📍 Nairobi</div>
+</div>
 
-      <div class="short-overlay">
-        <div class="short-name">Miriam</div>
-        <div class="short-location">📍 Roysambu</div>
-      </div>
+</div>
 
-    </div>
+<div class="short-card">
 
-  </div>
+<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200&auto=format&fit=crop">
+
+<div class="short-overlay">
+<div class="short-name">Miriam</div>
+<div class="short-location">📍 Roysambu</div>
+</div>
+
+</div>
+
+</div>
 
 </section>
 
 <section class="profiles" id="profiles">
 
-  <div style="padding:60px;text-align:center;width:100%;grid-column:1/-1;color:#ffd54a;font-size:24px;font-weight:900;">
-    Loading profiles...
-  </div>
+<div style="grid-column:1/-1;padding:60px;text-align:center;color:#ffd54a;font-size:24px;font-weight:900;">
+Loading profiles...
+</div>
 
 </section>
 
 <section class="map-section">
 
-  <div class="map-header">
-    <h3>Nairobi Coverage Map</h3>
-    <p>Explore active areas across Nairobi and nearby towns.</p>
-  </div>
+<div class="map-header">
 
-  <iframe
-    class="map-frame"
-    src="https://www.google.com/maps?q=Nairobi,Kenya&output=embed">
-  </iframe>
+<h3>Nairobi Coverage Map</h3>
+
+<p>
+Explore active areas across Nairobi and nearby towns.
+</p>
+
+</div>
+
+<iframe
+class="map-frame"
+src="https://www.google.com/maps?q=Nairobi,Kenya&output=embed">
+</iframe>
 
 </section>
 
 <section class="disclaimer">
 
-  <h3>Disclaimer</h3>
+<h3>Disclaimer</h3>
 
-  <p>
-    Nairobi Sweets is an advertising and discovery platform only.
-    All profiles are independently managed.
-    Users must act responsibly and follow applicable laws.
-  </p>
+<p>
+Nairobi Sweets is an advertising and discovery platform only.
+All profiles are independently managed.
+Users must act responsibly and follow applicable laws.
+</p>
 
 </section>
 
 <div class="sweet-ai">
-  <img src="/assets/logo/logo-badge.png">
+
+<img src="/assets/logo/logo-badge.png">
+
 </div>
 
 <nav class="bottom-nav">
 
-  <button onclick="window.location.href='/'">🏠</button>
-  <button onclick="window.location.href='/shorts.html'">🔥</button>
-  <button onclick="window.location.href='/reel.html'">🎬</button>
-  <button>👑</button>
-  <button>☰</button>
+<button onclick="window.location.href='/'">🏠</button>
+<button onclick="window.location.href='/shorts.html'">🔥</button>
+<button onclick="window.location.href='/reel.html'">🎬</button>
+<button>👑</button>
+<button>☰</button>
 
 </nav>
 
 <script>
 
-const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_URL =
+"https://dkjlvyynvgtijccitvvd.supabase.co";
 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
 
-const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const sb =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
-const profilesEl = document.getElementById("profiles");
+const profilesEl =
+document.getElementById("profiles");
 
 function safePhone(phone){
 
-  let p = String(phone || "").replace(/\D/g,"");
+let p =
+String(phone || "")
+.replace(/\D/g,"");
 
-  if(!p) return "";
+if(!p) return "";
 
-  if(p.startsWith("0")){
-    p = "254" + p.slice(1);
-  }
+if(p.startsWith("0")){
+p = "254" + p.slice(1);
+}
 
-  if(p.startsWith("7") || p.startsWith("1")){
-    p = "254" + p;
-  }
+if(
+p.startsWith("7") ||
+p.startsWith("1")
+){
+p = "254" + p;
+}
 
-  return p;
+return p;
+
 }
 
 function getImage(profile){
 
-  return (
-    profile.photo_url ||
-    profile.image_url ||
-    profile.profile_photo ||
-    profile.photo ||
-    "/assets/logo/logo-badge.png"
-  );
+return (
+profile.photo_url ||
+profile.image_url ||
+profile.profile_photo ||
+profile.photo ||
+"/assets/logo/logo-badge.png"
+);
 
 }
 
 function getBadge(profile){
 
-  const plan = String(
-    profile.plan ||
-    profile.plan_name ||
-    profile.package ||
-    ""
-  ).toLowerCase();
+const plan =
+String(
+profile.plan ||
+profile.plan_name ||
+profile.package ||
+""
+).toLowerCase();
 
-  if(plan.includes("vip")){
-    return "⭐ VIP";
-  }
+if(plan.includes("vip")){
+return "⭐ VIP";
+}
 
-  return "✨ Featured";
+return "✨ Featured";
+
 }
 
 async function loadProfiles(){
 
-  const {data,error} = await sb
-    .from("profiles")
-    .select("*")
-    .eq("approved",true)
-    .order("created_at",{ascending:false});
+const {data,error} =
+await sb
+.from("profiles")
+.select("*")
+.eq("approved",true)
+.order(
+"created_at",
+{ascending:false}
+);
 
-  if(error){
+if(error){
 
-    profilesEl.innerHTML = `
-      <div style="padding:60px;text-align:center;color:#ff5b5b;font-size:20px;">
-        ${error.message}
-      </div>
-    `;
+profilesEl.innerHTML = `
+<div style="
+padding:60px;
+text-align:center;
+color:#ff6b6b;
+font-size:20px;
+">
+${error.message}
+</div>
+`;
 
-    return;
-  }
+return;
 
-  if(!data || !data.length){
+}
 
-    profilesEl.innerHTML = `
-      <div style="padding:60px;text-align:center;color:#d7d7d7;font-size:20px;">
-        No profiles found.
-      </div>
-    `;
+if(!data || !data.length){
 
-    return;
-  }
+profilesEl.innerHTML = `
+<div style="
+padding:60px;
+text-align:center;
+color:#d5d5d5;
+font-size:20px;
+">
+No profiles found.
+</div>
+`;
 
-  profilesEl.innerHTML = data.map(profile=>{
+return;
 
-    const phone = safePhone(profile.phone || profile.whatsapp);
+}
 
-    return `
+profilesEl.innerHTML =
+data.map(profile=>{
 
-      <article class="card">
+const phone =
+safePhone(
+profile.phone ||
+profile.whatsapp
+);
 
-        <span class="online-dot"></span>
+return `
 
-        <div class="featured-badge">
-          ${getBadge(profile)}
-        </div>
+<article class="card">
 
-        <img
-          src="${getImage(profile)}"
-          class="card-image"
-          loading="lazy"
-          onerror="this.src='/assets/logo/logo-badge.png'"
-        >
+<span class="online-dot"></span>
 
-        <div class="card-body">
+<div class="featured-badge">
+${getBadge(profile)}
+</div>
 
-          <div class="card-name">
-            ${profile.stage_name || "Verified Profile"}
-          </div>
+<img
+src="${getImage(profile)}"
+class="card-image"
+loading="lazy"
+onerror="this.src='/assets/logo/logo-badge.png'"
+>
 
-          <div class="online">
-            Online Now
-          </div>
+<div class="card-body">
 
-          <div class="location">
-            📍 ${profile.location || "Nairobi"}
-          </div>
+<div class="card-name">
+${profile.stage_name || "Verified"}
+</div>
 
-          <div class="phone">
-            📞 ${phone || "Hidden"}
-          </div>
+<div class="online">
+Online Now
+</div>
 
-          <div class="bio">
-            ${profile.bio || "Luxury Nairobi discovery profile."}
-          </div>
+<div class="location">
+📍 ${profile.location || "Nairobi"}
+</div>
 
-          <div class="engagement">
-            ❤️ ${profile.likes_count || 0} likes
-            •
-            👁️ ${profile.views_count || 0} views
-          </div>
+<div class="phone">
+📞 ${phone || "Hidden"}
+</div>
 
-          <div class="action-row">
+<div class="bio">
+${profile.bio || "Luxury Nairobi discovery profile."}
+</div>
 
-            <a class="call-btn" href="tel:${phone}">
-              ☎ CALL
-            </a>
+<div class="engagement">
+❤️ ${profile.likes_count || 0} likes
+•
+👁️ ${profile.views_count || 0} views
+</div>
 
-            <a class="wa-btn" href="https://wa.me/${phone}" target="_blank">
-              💬 WHATSAPP
-            </a>
+<div class="action-row">
 
-          </div>
+<a
+class="call-btn"
+href="tel:${phone}"
+>
 
-        </div>
+☎
+<span>CALL</span>
 
-      </article>
+</a>
 
-    `;
+<a
+class="wa-btn"
+href="https://wa.me/${phone}"
+target="_blank"
+>
 
-  }).join("");
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
+
+<span>WHATSAPP</span>
+
+</a>
+
+</div>
+
+</div>
+
+</article>
+
+`;
+
+}).join("");
 
 }
 
