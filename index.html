@@ -13,115 +13,636 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{background:#000814;color:#fff;font-family:Arial,Helvetica,sans-serif;overflow-x:hidden;padding-bottom:110px}
+body{
+  background:#000814;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  overflow-x:hidden;
+  padding-bottom:100px;
+}
 a{text-decoration:none;color:inherit}
 
 .topbar{
-  position:sticky;top:0;z-index:999;background:#000;
+  position:sticky;
+  top:0;
+  z-index:999;
+  background:#000;
   border-bottom:1px solid rgba(255,213,74,.12);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 28px;
+  box-shadow:0 12px 36px rgba(0,0,0,.6);
 }
-.brand{display:flex;align-items:center;gap:14px}
-.brand img{width:58px;height:58px;border-radius:18px;object-fit:cover}
-.brand h1{color:#ffd54a;font-size:34px;font-weight:900}
-.menu-btn{width:82px;height:82px;border-radius:28px;background:#07114a;border:2px solid rgba(255,213,74,.16);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.menu-btn span{color:#ffd54a;font-size:48px;font-weight:900}
 
-.mobile-menu{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:1200;transform:translateX(100%);transition:.35s ease;padding:40px}
-.mobile-menu.active{transform:translateX(0)}
-.menu-close{text-align:right;color:#ffd54a;font-size:48px;margin-bottom:35px;cursor:pointer}
-.menu-links{display:flex;flex-direction:column;gap:18px}
-.menu-links a{background:#07114a;border-radius:22px;padding:22px;color:white;font-size:22px;font-weight:800}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
 
-.hero{padding:26px 22px 0}
+.brand img{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  object-fit:cover;
+}
+
+.brand h1{
+  color:#ffd54a;
+  font-size:38px;
+  font-weight:900;
+  letter-spacing:-1px;
+}
+
+.menu-btn{
+  width:82px;
+  height:82px;
+  border-radius:28px;
+  background:#07114a;
+  border:2px solid rgba(255,213,74,.16);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.menu-btn span{
+  color:#ffd54a;
+  font-size:48px;
+  font-weight:900;
+}
+
+.mobile-menu{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.97);
+  z-index:1200;
+  transform:translateX(100%);
+  transition:.35s ease;
+  padding:40px;
+}
+
+.mobile-menu.active{
+  transform:translateX(0);
+}
+
+.menu-close{
+  text-align:right;
+  color:#ffd54a;
+  font-size:48px;
+  margin-bottom:35px;
+  cursor:pointer;
+}
+
+.menu-links{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.menu-links a{
+  background:#07114a;
+  border-radius:22px;
+  padding:22px;
+  color:white;
+  font-size:22px;
+  font-weight:800;
+}
+
+.hero{
+  padding:32px 34px 0;
+}
+
 .hero-box{
   background:linear-gradient(180deg,#020a56,#010633);
-  border-radius:44px;padding:36px;border:1px solid rgba(255,213,74,.1);
-  box-shadow:0 0 45px rgba(255,0,128,.16),0 20px 60px rgba(0,0,0,.45);
+  border-radius:44px;
+  padding:38px;
+  border:1px solid rgba(255,213,74,.1);
+  box-shadow:
+    0 0 45px rgba(255,0,128,.16),
+    0 20px 60px rgba(0,0,0,.45);
 }
-.hero h2{font-size:88px;line-height:.95;color:#ffd54a;font-weight:900;margin-bottom:22px}
-.hero p{color:#d8d8d8;font-size:27px;line-height:1.75}
-.search-wrap{margin-top:30px}
-.search-box{width:100%;background:#07114a;border:2px solid rgba(255,213,74,.09);border-radius:32px;padding:26px;color:#fff;font-size:24px;outline:none}
 
-.filters{display:flex;gap:16px;overflow-x:auto;padding:24px 20px;scrollbar-width:none}
-.filters::-webkit-scrollbar{display:none}
-.filters button{border:none;padding:18px 30px;border-radius:24px;background:#f54747;color:#fff;font-size:20px;font-weight:900;min-width:max-content;cursor:pointer}
-.filters button.active{background:#16b84d}
+.hero h2{
+  font-size:82px;
+  line-height:.95;
+  color:#ffd54a;
+  font-weight:900;
+  margin-bottom:22px;
+}
 
-.stats{padding:0 22px 24px}
-.stats-box{background:linear-gradient(180deg,#020a56,#010633);border-radius:38px;padding:28px;border:1px solid rgba(255,213,74,.1)}
-.stats-title{color:#bcbcbc;font-size:23px;margin-bottom:8px}
-.stats-number{color:#ffd54a;font-size:78px;font-weight:900}
+.hero p{
+  color:#d8d8d8;
+  font-size:25px;
+  line-height:1.65;
+}
 
-.profiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px;padding:0 22px 60px;align-items:start}
+.search-wrap{
+  margin-top:30px;
+}
+
+.search-box{
+  width:100%;
+  background:#07114a;
+  border:2px solid rgba(255,213,74,.09);
+  border-radius:32px;
+  padding:24px;
+  color:#fff;
+  font-size:22px;
+  outline:none;
+}
+
+.filters{
+  display:flex;
+  gap:16px;
+  overflow-x:auto;
+  padding:24px 34px;
+  scrollbar-width:none;
+}
+
+.filters::-webkit-scrollbar{
+  display:none;
+}
+
+.filters button{
+  border:none;
+  padding:16px 28px;
+  border-radius:24px;
+  background:#f54747;
+  color:#fff;
+  font-size:18px;
+  font-weight:900;
+  min-width:max-content;
+  cursor:pointer;
+}
+
+.filters button.active{
+  background:#16b84d;
+}
+
+.stats{
+  padding:0 34px 28px;
+}
+
+.stats-box{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border-radius:34px;
+  padding:26px;
+  border:1px solid rgba(255,213,74,.1);
+}
+
+.stats-title{
+  color:#bcbcbc;
+  font-size:20px;
+  margin-bottom:8px;
+}
+
+.stats-number{
+  color:#ffd54a;
+  font-size:64px;
+  font-weight:900;
+}
+
+.profiles{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(320px,1fr));
+  gap:34px;
+  padding:34px;
+  align-items:start;
+}
+
 .card{
   background:linear-gradient(180deg,#020a56,#010633);
-  border-radius:38px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.05);
-  box-shadow:0 0 42px rgba(255,0,128,.14),0 18px 60px rgba(0,0,0,.45);
+  border-radius:38px;
+  overflow:hidden;
+  position:relative;
+  border:1px solid rgba(255,255,255,.05);
+  box-shadow:
+    0 0 42px rgba(255,0,128,.14),
+    0 18px 60px rgba(0,0,0,.45);
+  transition:.3s ease;
 }
-.card-image{width:100%;height:auto;display:block;object-fit:contain;background:#020617}
-.online-dot{position:absolute;top:18px;left:18px;width:24px;height:24px;background:#2cff67;border-radius:50%;border:3px solid #fff;z-index:5;box-shadow:0 0 22px #2cff67}
-.featured-badge{position:absolute;top:18px;right:18px;background:rgba(0,0,0,.72);color:#ffd54a;padding:12px 18px;border-radius:999px;font-size:16px;font-weight:900;z-index:5;backdrop-filter:blur(12px)}
-.card-body{padding:24px}
-.card-name{font-size:42px;font-weight:900;margin-bottom:12px;line-height:1}
-.online{color:#26ff64;font-size:20px;font-weight:900;margin-bottom:12px}
-.location{color:#d7d7d7;font-size:18px;margin-bottom:12px}
-.phone{color:#ffd54a;font-size:20px;font-weight:900;margin-bottom:18px;word-break:break-word}
-.bio{color:#d0d0d0;font-size:17px;line-height:1.6;margin-bottom:20px}
-.engagement{display:flex;align-items:center;gap:10px;color:#c4c4c4;font-size:16px;margin-bottom:20px;flex-wrap:wrap}
 
-.action-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
-.call-btn,.wa-btn{
-  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  min-height:105px;border-radius:28px;overflow:hidden;transition:.25s ease;border:1px solid rgba(255,255,255,.06);
+.card:hover{
+  transform:translateY(-6px);
 }
-.call-btn{background:linear-gradient(145deg,#050717,#07114a);box-shadow:0 12px 35px rgba(255,0,90,.22)}
-.wa-btn{background:linear-gradient(145deg,#02140a,#06361b);box-shadow:0 12px 35px rgba(0,255,120,.22)}
-.call-btn i{font-size:34px;font-style:normal;position:relative;z-index:2}
-.call-btn span,.wa-btn span{font-size:16px;font-weight:900;color:#fff;position:relative;z-index:2}
-.wa-real-icon{width:42px;height:42px;object-fit:contain;border-radius:12px;position:relative;z-index:2}
-.disabled-contact{grid-column:span 2;background:#1c1c1c;color:#888;border:none;border-radius:24px;padding:24px;font-size:18px;font-weight:800}
 
-.sweet-ai{position:fixed;right:20px;bottom:125px;width:100px;height:100px;border-radius:50%;overflow:hidden;cursor:pointer;z-index:999;border:7px solid #ff4d8d;box-shadow:0 0 44px rgba(255,0,128,.58);animation:floaty 3s infinite ease-in-out}
-.sweet-ai img{width:100%;height:100%;object-fit:cover}
-@keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+.card-image{
+  width:100%;
+  aspect-ratio:4/5;
+  object-fit:cover;
+  display:block;
+  background:#020617;
+}
 
-.sweet-panel{position:fixed;left:18px;right:18px;bottom:115px;background:#020a56;border-radius:34px;overflow:hidden;z-index:1200;transform:translateY(120%);transition:.35s ease;border:1px solid rgba(255,213,74,.1)}
-.sweet-panel.active{transform:translateY(0)}
-.sweet-header{background:linear-gradient(90deg,#000,#2b001f);padding:22px;display:flex;align-items:center;justify-content:space-between}
-.sweet-header h3{color:#ffd54a;font-size:28px}
-.close-sweet{color:#ffd54a;font-size:38px;cursor:pointer}
-.sweet-content{padding:22px}
-.sweet-input{width:100%;background:#00092e;border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:22px;color:#fff;font-size:20px;outline:none}
-.quick-row{display:flex;gap:12px;overflow-x:auto;margin:18px 0}
-.quick-row button{border:none;background:#07114a;color:#ffd54a;padding:14px 20px;border-radius:999px;font-size:17px;font-weight:800;min-width:max-content}
-.sweet-send{width:100%;border:none;background:#ffd54a;color:#000;border-radius:24px;padding:22px;font-size:26px;font-weight:900;margin-bottom:20px}
-.sweet-results{color:#d7d7d7;font-size:19px;line-height:1.6}
-.sweet-result-card{display:grid;grid-template-columns:70px 1fr;gap:12px;background:#07114a;border-radius:18px;padding:12px;margin-top:12px;cursor:pointer}
-.sweet-result-card img{width:70px;height:88px;object-fit:cover;border-radius:14px}
-.sweet-result-card strong{display:block;color:#ffd54a;margin-bottom:5px}
-.sweet-result-card span{display:block;color:#ddd;font-size:14px}
+.online-dot{
+  position:absolute;
+  top:18px;
+  left:18px;
+  width:24px;
+  height:24px;
+  background:#2cff67;
+  border-radius:50%;
+  border:3px solid #fff;
+  z-index:5;
+  box-shadow:0 0 22px #2cff67;
+}
 
-.bottom-nav{position:fixed;left:0;right:0;bottom:0;height:92px;background:rgba(0,0,0,.94);backdrop-filter:blur(18px);border-top:1px solid rgba(255,213,74,.1);display:flex;align-items:center;justify-content:space-around;z-index:999}
-.bottom-nav button{border:none;background:none;color:#ffd54a;font-size:38px;cursor:pointer}
+.featured-badge{
+  position:absolute;
+  top:18px;
+  right:18px;
+  background:rgba(0,0,0,.72);
+  color:#ffd54a;
+  padding:12px 18px;
+  border-radius:999px;
+  font-size:16px;
+  font-weight:900;
+  z-index:5;
+  backdrop-filter:blur(12px);
+}
 
-.loader,.empty{text-align:center;color:#b8b8b8;padding:80px 20px;font-size:24px;grid-column:1/-1}
-.loading-card{height:500px;border-radius:38px;background:linear-gradient(90deg,#07114a,#111f75,#07114a);background-size:200% 100%;animation:shimmer 1.5s infinite}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.card-body{
+  padding:24px;
+}
 
-@media(max-width:1400px){.profiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:950px){.profiles{grid-template-columns:repeat(2,minmax(0,1fr))}.card-name{font-size:38px}}
-@media(max-width:600px){
-  .profiles{grid-template-columns:1fr;gap:34px;padding:0 18px 60px}
-  .brand h1{font-size:28px}
-  .menu-btn{width:76px;height:76px}
-  .menu-btn span{font-size:46px}
-  .hero-box h2{font-size:74px}
-  .hero-box p{font-size:22px}
-  .card-name{font-size:52px}
-  .call-btn,.wa-btn{min-height:126px}
+.card-name{
+  font-size:42px;
+  font-weight:900;
+  margin-bottom:12px;
+  line-height:1;
+}
+
+.online{
+  color:#26ff64;
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.location{
+  color:#d7d7d7;
+  font-size:18px;
+  margin-bottom:12px;
+}
+
+.phone{
+  color:#ffd54a;
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:18px;
+  word-break:break-word;
+}
+
+.bio{
+  color:#d0d0d0;
+  font-size:17px;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+
+.engagement{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#c4c4c4;
+  font-size:16px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.action-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-top:18px;
+}
+
+.call-btn,
+.wa-btn{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  min-height:105px;
+  border-radius:28px;
+  overflow:hidden;
+  transition:.25s ease;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.call-btn{
+  background:linear-gradient(145deg,#050717,#07114a);
+  box-shadow:0 12px 35px rgba(255,0,90,.22);
+}
+
+.wa-btn{
+  background:linear-gradient(145deg,#02140a,#06361b);
+  box-shadow:0 12px 35px rgba(0,255,120,.22);
+}
+
+.call-btn:hover,
+.wa-btn:hover{
+  transform:translateY(-3px) scale(1.02);
+}
+
+.call-btn i{
+  font-size:34px;
+  font-style:normal;
+  position:relative;
+  z-index:2;
+}
+
+.call-btn span,
+.wa-btn span{
+  font-size:16px;
+  font-weight:900;
+  color:#fff;
+  position:relative;
+  z-index:2;
+}
+
+.wa-real-icon{
+  width:42px;
+  height:42px;
+  object-fit:contain;
+  border-radius:12px;
+  position:relative;
+  z-index:2;
+}
+
+.disabled-contact{
+  grid-column:span 2;
+  background:#1c1c1c;
+  color:#888;
+  border:none;
+  border-radius:24px;
+  padding:24px;
+  font-size:18px;
+  font-weight:800;
+}
+
+.sweet-ai{
+  position:fixed;
+  right:24px;
+  bottom:120px;
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  overflow:hidden;
+  cursor:pointer;
+  z-index:999;
+  border:6px solid #ff4d8d;
+  box-shadow:0 0 34px rgba(255,0,128,.45);
+  animation:floaty 3s infinite ease-in-out;
+}
+
+.sweet-ai img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+@keyframes floaty{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+  100%{transform:translateY(0)}
+}
+
+.sweet-panel{
+  position:fixed;
+  left:18px;
+  right:18px;
+  bottom:105px;
+  background:#020a56;
+  border-radius:34px;
+  overflow:hidden;
+  z-index:1200;
+  transform:translateY(120%);
+  transition:.35s ease;
+  border:1px solid rgba(255,213,74,.1);
+  max-height:75vh;
+}
+
+.sweet-panel.active{
+  transform:translateY(0);
+}
+
+.sweet-header{
+  background:linear-gradient(90deg,#000,#2b001f);
+  padding:22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.sweet-header h3{
+  color:#ffd54a;
+  font-size:28px;
+}
+
+.close-sweet{
+  color:#ffd54a;
+  font-size:38px;
+  cursor:pointer;
+}
+
+.sweet-content{
+  padding:22px;
+  max-height:62vh;
+  overflow-y:auto;
+}
+
+.sweet-input{
+  width:100%;
+  background:#00092e;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:22px;
+  padding:22px;
+  color:#fff;
+  font-size:20px;
+  outline:none;
+}
+
+.quick-row{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  margin:18px 0;
+}
+
+.quick-row button{
+  border:none;
+  background:#07114a;
+  color:#ffd54a;
+  padding:14px 20px;
+  border-radius:999px;
+  font-size:17px;
+  font-weight:800;
+  min-width:max-content;
+}
+
+.sweet-send{
+  width:100%;
+  border:none;
+  background:#ffd54a;
+  color:#000;
+  border-radius:24px;
+  padding:22px;
+  font-size:26px;
+  font-weight:900;
+  margin-bottom:20px;
+}
+
+.sweet-results{
+  color:#d7d7d7;
+  font-size:19px;
+  line-height:1.6;
+}
+
+.sweet-result-card{
+  display:grid;
+  grid-template-columns:70px 1fr;
+  gap:12px;
+  background:#07114a;
+  border-radius:18px;
+  padding:12px;
+  margin-top:12px;
+  cursor:pointer;
+}
+
+.sweet-result-card img{
+  width:70px;
+  height:88px;
+  object-fit:cover;
+  border-radius:14px;
+}
+
+.sweet-result-card strong{
+  display:block;
+  color:#ffd54a;
+  margin-bottom:5px;
+}
+
+.sweet-result-card span{
+  display:block;
+  color:#ddd;
+  font-size:14px;
+}
+
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:84px;
+  background:rgba(0,0,0,.94);
+  backdrop-filter:blur(18px);
+  border-top:1px solid rgba(255,213,74,.1);
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  z-index:999;
+}
+
+.bottom-nav button{
+  border:none;
+  background:none;
+  color:#ffd54a;
+  font-size:30px;
+  cursor:pointer;
+}
+
+.loader,
+.empty{
+  text-align:center;
+  color:#b8b8b8;
+  padding:80px 20px;
+  font-size:24px;
+  grid-column:1/-1;
+}
+
+.loading-card{
+  height:500px;
+  border-radius:38px;
+  background:linear-gradient(90deg,#07114a,#111f75,#07114a);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+}
+
+@keyframes shimmer{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+@media(max-width:1400px){
+  .profiles{
+    grid-template-columns:repeat(3,minmax(280px,1fr));
+  }
+}
+
+@media(max-width:1000px){
+  .profiles{
+    grid-template-columns:repeat(2,minmax(260px,1fr));
+  }
+}
+
+@media(max-width:700px){
+  .hero{
+    padding:24px 18px 0;
+  }
+
+  .hero h2{
+    font-size:68px;
+  }
+
+  .hero p{
+    font-size:21px;
+  }
+
+  .profiles{
+    grid-template-columns:1fr;
+    padding:18px;
+    gap:28px;
+  }
+
+  .brand h1{
+    font-size:28px;
+  }
+
+  .menu-btn{
+    width:76px;
+    height:76px;
+  }
+
+  .menu-btn span{
+    font-size:46px;
+  }
+
+  .card-name{
+    font-size:52px;
+  }
+
+  .bottom-nav{
+    height:92px;
+  }
+
+  .bottom-nav button{
+    font-size:38px;
+  }
+
+  .sweet-ai{
+    width:100px;
+    height:100px;
+  }
+
+  .call-btn,
+  .wa-btn{
+    min-height:126px;
+  }
 }
 </style>
 </head>
@@ -133,11 +654,15 @@ a{text-decoration:none;color:inherit}
     <img src="/assets/logo/logo-navbar.png" alt="Nairobi Sweets" onerror="this.src='/assets/logo/logo-badge.png'">
     <h1>Nairobi Sweets</h1>
   </a>
-  <div class="menu-btn" onclick="toggleMenu()"><span>☰</span></div>
+
+  <div class="menu-btn" onclick="toggleMenu()">
+    <span>☰</span>
+  </div>
 </header>
 
 <div class="mobile-menu" id="mobileMenu">
   <div class="menu-close" onclick="toggleMenu()">✕</div>
+
   <div class="menu-links">
     <a href="/">🏠 Home</a>
     <a href="/shorts.html">🔥 Shorts</a>
@@ -151,7 +676,13 @@ a{text-decoration:none;color:inherit}
 <section class="hero">
   <div class="hero-box">
     <h2>Profiles</h2>
-    <p>Verified profiles, WhatsApp access, VIP listings, online status, likes, views, luxury discovery, shorts and real photos.</p>
+
+    <p>
+      Verified profiles, WhatsApp access, VIP listings,
+      online status, likes, views, luxury discovery,
+      shorts and real photos.
+    </p>
+
     <div class="search-wrap">
       <input type="text" class="search-box" placeholder="Search by name, bio, location...">
     </div>
@@ -191,15 +722,19 @@ a{text-decoration:none;color:inherit}
     <h3>Sweet AI ✨</h3>
     <div class="close-sweet" onclick="closeSweet()">✕</div>
   </div>
+
   <div class="sweet-content">
     <input id="sweetInput" class="sweet-input" placeholder="VIP in Kilimani, WhatsApp girls...">
+
     <div class="quick-row">
       <button onclick="quickAsk('Online now')">Online Now</button>
       <button onclick="quickAsk('VIP Westlands')">VIP Westlands</button>
       <button onclick="quickAsk('WhatsApp Kilimani')">WhatsApp Kilimani</button>
       <button onclick="quickAsk('Most liked')">Most Liked</button>
     </div>
+
     <button class="sweet-send" onclick="askSweet()">Ask Sweet</button>
+
     <div class="sweet-results" id="sweetResults">
       Hi, I’m Sweet 💋<br><br>
       Tap a quick search or tell me what you're looking for.
@@ -217,7 +752,7 @@ a{text-decoration:none;color:inherit}
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const SUPABASE_KEY = "PASTE_YOUR_ANON_PUBLIC_KEY_HERE";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let allProfiles = [];
@@ -242,6 +777,7 @@ function closeSweet(){
 function quickVip(){
   const vipButton = [...document.querySelectorAll(".filters button")]
     .find(btn => btn.textContent.trim().toLowerCase() === "vip");
+
   if(vipButton) vipButton.click();
 }
 
@@ -251,9 +787,11 @@ function safeText(value,fallback=""){
 
 function safePhone(phone){
   const raw = String(phone || "").replace(/\D/g,"");
+
   if(!raw) return null;
   if(raw.startsWith("0")) return "254" + raw.slice(1);
   if(raw.startsWith("7") || raw.startsWith("1")) return "254" + raw;
+
   return raw;
 }
 
@@ -273,29 +811,57 @@ function safeImage(profile){
 }
 
 function getName(profile){
-  return safeText(profile.stage_name || profile.name || profile.full_name,"Verified Profile");
+  return safeText(
+    profile.stage_name ||
+    profile.name ||
+    profile.full_name,
+    "Verified Profile"
+  );
 }
 
 function getLocation(profile){
-  return safeText(profile.location || profile.town || profile.area,"Nairobi");
+  return safeText(
+    profile.location ||
+    profile.town ||
+    profile.area,
+    "Nairobi"
+  );
 }
 
 function getPlan(profile){
-  return String(profile.plan || profile.plan_name || profile.package || profile.tier || "featured").toLowerCase();
+  return String(
+    profile.plan ||
+    profile.plan_name ||
+    profile.package ||
+    profile.tier ||
+    "featured"
+  ).toLowerCase();
 }
 
 function getBadge(profile){
   const plan = getPlan(profile);
+
   if(plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP";
   if(plan.includes("vip")) return "⭐ VIP";
+
   return "✨ Featured";
 }
 
-function getLikes(profile){return Number(profile.likes_count || profile.likes || 0)}
-function getViews(profile){return Number(profile.views_count || profile.views || 0)}
+function getLikes(profile){
+  return Number(profile.likes_count || profile.likes || 0);
+}
+
+function getViews(profile){
+  return Number(profile.views_count || profile.views || 0);
+}
 
 function getBio(profile){
-  return safeText(profile.bio || profile.description || profile.about,`Meet ${getName(profile)} from ${getLocation(profile)}.`);
+  return safeText(
+    profile.bio ||
+    profile.description ||
+    profile.about,
+    `Meet ${getName(profile)} from ${getLocation(profile)}.`
+  );
 }
 
 function compactBio(text,max=135){
@@ -305,12 +871,16 @@ function compactBio(text,max=135){
 function scoreProfile(profile){
   let score = 0;
   const plan = getPlan(profile);
+
   if(plan.includes("vvip") || plan.includes("signature")) score += 1000;
   if(plan.includes("vip")) score += 700;
   if(plan.includes("featured")) score += 300;
+
   score += getLikes(profile) * 3;
   score += getViews(profile);
+
   if(profile.phone || profile.whatsapp) score += 80;
+
   return score;
 }
 
@@ -322,7 +892,11 @@ function renderProfiles(list){
   updateStats(list);
 
   if(!list.length){
-    grid.innerHTML = `<div class="empty">No profiles found. Check approved rows in Supabase.</div>`;
+    grid.innerHTML = `
+      <div class="empty">
+        No profiles found. Check approved rows in Supabase.
+      </div>
+    `;
     return;
   }
 
@@ -336,10 +910,19 @@ function renderProfiles(list){
     return `
       <article class="card">
         <span class="online-dot"></span>
-        <div class="featured-badge">${getBadge(profile)}</div>
+
+        <div class="featured-badge">
+          ${getBadge(profile)}
+        </div>
 
         <a href="/profile.html?id=${profile.id}" onclick="viewProfile('${profile.id}')">
-          <img src="${image}" class="card-image" loading="lazy" alt="${name}" onerror="this.onerror=null;this.src='/assets/logo/logo-badge.png';">
+          <img
+            src="${image}"
+            class="card-image"
+            loading="lazy"
+            alt="${name}"
+            onerror="this.onerror=null;this.src='/assets/logo/logo-badge.png';"
+          >
         </a>
 
         <div class="card-body">
@@ -350,9 +933,13 @@ function renderProfiles(list){
           <div class="bio">${bio}</div>
 
           <div class="engagement">
-            <span onclick="likeProfile('${profile.id}')" id="likes-${profile.id}" style="cursor:pointer;">❤️ ${getLikes(profile)} likes</span>
+            <span onclick="likeProfile('${profile.id}')" id="likes-${profile.id}" style="cursor:pointer;">
+              ❤️ ${getLikes(profile)} likes
+            </span>
             <span>•</span>
-            <span id="views-${profile.id}">👁️ ${getViews(profile)} views</span>
+            <span id="views-${profile.id}">
+              👁️ ${getViews(profile)} views
+            </span>
           </div>
 
           <div class="action-row">
@@ -360,14 +947,25 @@ function renderProfiles(list){
               phone
               ? `
                 <a class="call-btn" href="tel:${phone}" aria-label="Call ${name}">
-                  <i>📞</i><span>CALL</span>
+                  <i>📞</i>
+                  <span>CALL</span>
                 </a>
+
                 <a class="wa-btn" href="https://wa.me/${phone}" target="_blank" rel="noopener" aria-label="WhatsApp ${name}">
-                  <img src="/assets/icons/whatsapp.png" alt="WhatsApp" class="wa-real-icon" onerror="this.style.display='none';">
+                  <img
+                    src="/assets/icons/whatsapp.png"
+                    alt="WhatsApp"
+                    class="wa-real-icon"
+                    onerror="this.style.display='none';"
+                  >
                   <span>WHATSAPP</span>
                 </a>
               `
-              : `<button class="disabled-contact">CONTACT HIDDEN</button>`
+              : `
+                <button class="disabled-contact">
+                  CONTACT HIDDEN
+                </button>
+              `
             }
           </div>
         </div>
@@ -378,34 +976,61 @@ function renderProfiles(list){
 
 function applyFilters(){
   const search = searchInput.value.toLowerCase().trim();
+
   let list = [...allProfiles];
 
   if(activeFilter !== "home"){
     list = list.filter(profile => {
-      const text = `${getName(profile)} ${getLocation(profile)} ${getBio(profile)} ${getPlan(profile)} ${profile.phone || ""} ${profile.whatsapp || ""}`.toLowerCase();
+      const text = `
+        ${getName(profile)}
+        ${getLocation(profile)}
+        ${getBio(profile)}
+        ${getPlan(profile)}
+        ${profile.phone || ""}
+        ${profile.whatsapp || ""}
+      `.toLowerCase();
+
       if(activeFilter === "vip") return getPlan(profile).includes("vip");
       if(activeFilter === "whatsapp") return Boolean(profile.phone || profile.whatsapp);
       if(activeFilter === "online") return true;
+
       return text.includes(activeFilter);
     });
   }
 
   if(search){
     list = list.filter(profile => {
-      const text = `${getName(profile)} ${getLocation(profile)} ${getBio(profile)} ${getPlan(profile)} ${profile.phone || ""} ${profile.whatsapp || ""}`.toLowerCase();
+      const text = `
+        ${getName(profile)}
+        ${getLocation(profile)}
+        ${getBio(profile)}
+        ${getPlan(profile)}
+        ${profile.phone || ""}
+        ${profile.whatsapp || ""}
+      `.toLowerCase();
+
       return text.includes(search);
     });
   }
 
   list.sort((a,b)=>scoreProfile(b)-scoreProfile(a));
+
   renderProfiles(list);
 }
 
 document.querySelectorAll(".filters button").forEach(button=>{
   button.addEventListener("click",()=>{
-    document.querySelectorAll(".filters button").forEach(btn=>btn.classList.remove("active"));
+    document.querySelectorAll(".filters button").forEach(btn=>{
+      btn.classList.remove("active");
+    });
+
     button.classList.add("active");
-    activeFilter = button.textContent.replace(/[^\w\s]/g,"").trim().toLowerCase();
+
+    activeFilter = button.textContent
+      .replace(/[^\w\s]/g,"")
+      .trim()
+      .toLowerCase();
+
     applyFilters();
   });
 });
@@ -413,7 +1038,9 @@ document.querySelectorAll(".filters button").forEach(button=>{
 searchInput.addEventListener("input",applyFilters);
 
 async function loadProfiles(){
-  grid.innerHTML = Array.from({length:6}).map(()=>`<div class="loading-card"></div>`).join("");
+  grid.innerHTML = Array.from({length:8})
+    .map(()=>`<div class="loading-card"></div>`)
+    .join("");
 
   const {data,error} = await sb
     .from("profiles")
@@ -425,7 +1052,11 @@ async function loadProfiles(){
   console.log("SUPABASE ERROR:",error);
 
   if(error){
-    grid.innerHTML = `<div class="empty">Supabase error: ${error.message}</div>`;
+    grid.innerHTML = `
+      <div class="empty">
+        Supabase error: ${error.message}
+      </div>
+    `;
     return;
   }
 
@@ -435,21 +1066,39 @@ async function loadProfiles(){
 
 async function likeProfile(id){
   const profile = allProfiles.find(p=>String(p.id) === String(id));
+
   if(!profile) return;
+
   const newLikes = getLikes(profile) + 1;
-  const {error} = await sb.from("profiles").update({likes_count:newLikes}).eq("id",id);
+
+  const {error} = await sb
+    .from("profiles")
+    .update({likes_count:newLikes})
+    .eq("id",id);
+
   if(error) return console.log(error);
+
   profile.likes_count = newLikes;
+
   const el = document.getElementById(`likes-${id}`);
+
   if(el) el.innerHTML = `❤️ ${newLikes} likes`;
+
   updateStats(allProfiles);
 }
 
 async function viewProfile(id){
   const profile = allProfiles.find(p=>String(p.id) === String(id));
+
   if(!profile) return;
+
   const newViews = getViews(profile) + 1;
-  const {error} = await sb.from("profiles").update({views_count:newViews}).eq("id",id);
+
+  const {error} = await sb
+    .from("profiles")
+    .update({views_count:newViews})
+    .eq("id",id);
+
   if(!error) profile.views_count = newViews;
 }
 
@@ -464,7 +1113,10 @@ async function askSweet(){
   const message = input.value.trim();
 
   if(!message){
-    results.innerHTML = `Sweet needs a clue 💋<br><br>Try VIP in Kilimani or WhatsApp Westlands.`;
+    results.innerHTML = `
+      Sweet needs a clue 💋<br><br>
+      Try VIP in Kilimani or WhatsApp Westlands.
+    `;
     return;
   }
 
@@ -478,11 +1130,15 @@ async function askSweet(){
     });
 
     const data = await response.json();
+
     const profiles = data.results || data.profiles || [];
 
-    let cards = profiles.map(profile => `
+    const cards = profiles.map(profile => `
       <div class="sweet-result-card" onclick="window.location.href='/profile.html?id=${profile.id}'">
-        <img src="${profile.photo_url || "/assets/logo/logo-badge.png"}" onerror="this.src='/assets/logo/logo-badge.png'">
+        <img
+          src="${profile.photo_url || "/assets/logo/logo-badge.png"}"
+          onerror="this.src='/assets/logo/logo-badge.png'"
+        >
         <div>
           <strong>${profile.stage_name || "Verified Profile"}</strong>
           <span>📍 ${profile.location || "Nairobi"}</span>
@@ -497,7 +1153,11 @@ async function askSweet(){
     `;
   }catch(error){
     console.error(error);
-    results.innerHTML = `Sweet got distracted 💔<br><br>Please try again.`;
+
+    results.innerHTML = `
+      Sweet got distracted 💔<br><br>
+      Please try again.
+    `;
   }
 }
 
