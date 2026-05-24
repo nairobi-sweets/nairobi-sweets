@@ -6,7 +6,7 @@
 
 <title>Nairobi Sweets</title>
 
-<meta name="description" content="Verified Nairobi profiles, VIP listings, WhatsApp access, luxury discovery and Sweet AI.">
+<meta name="description" content="Luxury Nairobi discovery platform with verified VIP profiles, WhatsApp access, reels, online status and Sweet AI.">
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
 
@@ -20,12 +20,8 @@
   box-sizing:border-box;
 }
 
-html{
-  scroll-behavior:smooth;
-}
-
 body{
-  background:#000814;
+  background:#000;
   color:white;
   font-family:Arial,Helvetica,sans-serif;
   overflow-x:hidden;
@@ -39,130 +35,88 @@ body{
   top:0;
   z-index:999;
   background:#000;
-  border-bottom:1px solid rgba(255,213,74,.08);
+  padding:16px 22px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:16px 18px;
+  border-bottom:1px solid rgba(255,213,74,.08);
 }
 
 .brand{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:14px;
+  text-decoration:none;
 }
 
 .brand img{
-  width:54px;
-  height:54px;
+  width:70px;
+  height:70px;
   object-fit:cover;
-  border-radius:16px;
+  border-radius:18px;
 }
 
 .brand h1{
   color:#ffd54a;
-  font-size:30px;
+  font-size:42px;
   font-weight:900;
-  letter-spacing:-1px;
+  letter-spacing:-2px;
 }
 
 .menu-btn{
-  width:74px;
-  height:74px;
-  border-radius:24px;
-  background:#07114a;
-  border:2px solid rgba(255,213,74,.12);
+  width:90px;
+  height:90px;
+  border-radius:26px;
+  background:#061050;
   display:flex;
   align-items:center;
   justify-content:center;
+  border:2px solid rgba(255,213,74,.12);
   cursor:pointer;
-  box-shadow:0 0 30px rgba(255,213,74,.12);
+  box-shadow:0 0 25px rgba(255,213,74,.12);
 }
 
 .menu-btn span{
   color:#ffd54a;
-  font-size:42px;
+  font-size:52px;
   font-weight:900;
-}
-
-/* MENU */
-
-.mobile-menu{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.96);
-  z-index:1200;
-  transform:translateX(100%);
-  transition:.35s ease;
-  padding:30px;
-}
-
-.mobile-menu.active{
-  transform:translateX(0);
-}
-
-.menu-close{
-  text-align:right;
-  font-size:42px;
-  color:#ffd54a;
-  margin-bottom:30px;
-}
-
-.menu-links{
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-}
-
-.menu-links a{
-  background:#07114a;
-  border-radius:22px;
-  padding:20px;
-  color:white;
-  text-decoration:none;
-  font-size:20px;
-  font-weight:800;
 }
 
 /* HERO */
 
 .hero{
-  padding:18px;
+  padding:24px 120px 0;
 }
 
 .hero-box{
   background:linear-gradient(180deg,#020a56,#010633);
   border-radius:34px;
-  padding:30px;
+  padding:40px;
   border:1px solid rgba(255,213,74,.08);
   box-shadow:
   0 0 35px rgba(255,0,128,.12),
   0 20px 60px rgba(0,0,0,.45);
 }
 
-.hero h2{
-  font-size:62px;
-  line-height:.95;
+.hero-box h2{
+  font-size:70px;
   color:#ffd54a;
-  margin-bottom:18px;
   font-weight:900;
+  margin-bottom:18px;
 }
 
-.hero p{
-  color:#d7d7d7;
-  font-size:20px;
-  line-height:1.6;
-}
-
-.search-wrap{
-  margin-top:24px;
+.hero-box p{
+  color:#d8d8d8;
+  font-size:21px;
+  line-height:1.7;
 }
 
 .search-box{
   width:100%;
+  margin-top:24px;
   background:#00092e;
   border:1px solid rgba(255,255,255,.08);
-  border-radius:24px;
+  border-radius:22px;
   padding:20px;
   color:white;
   font-size:18px;
@@ -175,7 +129,7 @@ body{
   display:flex;
   gap:12px;
   overflow-x:auto;
-  padding:0 18px 18px;
+  padding:20px 120px;
   scrollbar-width:none;
 }
 
@@ -187,188 +141,215 @@ body{
   border:none;
   background:#f54747;
   color:white;
-  padding:14px 22px;
+  padding:14px 24px;
   border-radius:18px;
   font-size:16px;
   font-weight:900;
   min-width:max-content;
+  cursor:pointer;
 }
 
 .filters button.active{
   background:#18b84f;
 }
 
+/* SHORTS */
+
+.shorts-section{
+  padding:0 120px 24px;
+}
+
+.shorts-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+
+.shorts-header h2{
+  color:#ffd54a;
+  font-size:34px;
+  font-weight:900;
+}
+
+.shorts-header a{
+  color:#ff4d8d;
+  text-decoration:none;
+  font-weight:800;
+}
+
+.shorts-row{
+  display:flex;
+  gap:18px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.shorts-row::-webkit-scrollbar{
+  display:none;
+}
+
+.short-card{
+  position:relative;
+  min-width:240px;
+  width:240px;
+  height:420px;
+  border-radius:28px;
+  overflow:hidden;
+  flex-shrink:0;
+  background:#020617;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.short-card video,
+.short-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.short-overlay{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:18px;
+  background:linear-gradient(to top,rgba(0,0,0,.92),transparent);
+}
+
+.short-name{
+  font-size:24px;
+  font-weight:900;
+  color:white;
+}
+
+.short-location{
+  color:#ddd;
+  margin-top:6px;
+}
+
 /* PROFILES */
 
 .profiles{
   display:grid;
-  grid-template-columns:repeat(4,minmax(280px,1fr));
-  gap:26px;
-  padding:18px;
+  grid-template-columns:repeat(4, minmax(220px, 1fr));
+  gap:24px;
+  padding:24px 120px 70px;
+  align-items:start;
 }
 
 .card{
   position:relative;
-  background:linear-gradient(180deg,#020a56,#010633);
-  border-radius:34px;
+  border-radius:6px;
+  background:#fff;
+  color:#111;
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.04);
-  box-shadow:
-  0 0 40px rgba(255,0,128,.12),
-  0 20px 60px rgba(0,0,0,.45);
+  box-shadow:0 0 0 1px #ddd;
 }
 
 .card-image{
   width:100%;
-  aspect-ratio:4/5;
+  height:260px;
   object-fit:cover;
   display:block;
-  background:#020617;
-}
-
-.online-dot{
-  position:absolute;
-  top:16px;
-  left:16px;
-  width:22px;
-  height:22px;
-  border-radius:50%;
-  background:#2cff67;
-  border:3px solid white;
-  box-shadow:0 0 18px #2cff67;
-  z-index:5;
-}
-
-.featured-badge{
-  position:absolute;
-  top:16px;
-  right:16px;
-  background:rgba(0,0,0,.68);
-  color:#ffd54a;
-  padding:12px 18px;
-  border-radius:999px;
-  font-size:15px;
-  font-weight:900;
-  backdrop-filter:blur(12px);
-  z-index:5;
 }
 
 .card-body{
-  padding:22px;
+  padding:14px;
 }
 
 .card-name{
-  font-size:30px;
-  font-weight:900;
-  line-height:1.05;
+  font-size:20px;
+  color:#222;
+  font-weight:600;
   margin-bottom:10px;
-  color:white;
 }
 
 .online{
-  color:#2cff67;
-  font-size:16px;
-  font-weight:900;
+  color:#169123;
+  font-size:18px;
+  font-weight:700;
   margin-bottom:10px;
 }
 
 .location{
-  color:#d7d7d7;
+  color:#222;
   font-size:15px;
   margin-bottom:10px;
 }
 
 .phone{
-  color:#ffd54a;
-  font-size:18px;
-  font-weight:900;
+  color:#168f22;
+  font-size:20px;
+  font-weight:700;
   margin-bottom:14px;
 }
 
 .bio{
-  color:#d0d0d0;
-  font-size:15px;
+  color:#ff2e2e;
+  font-size:14px;
   line-height:1.55;
-  margin-bottom:16px;
+  margin-bottom:18px;
 }
 
 .engagement{
   display:flex;
-  align-items:center;
   gap:8px;
-  color:#c8c8c8;
+  color:#777;
   font-size:14px;
-  margin-bottom:18px;
+  margin-bottom:16px;
 }
 
-/* ACTION BUTTONS */
+.featured-badge{
+  position:absolute;
+  top:14px;
+  right:14px;
+  background:#f12525;
+  color:white;
+  font-size:13px;
+  padding:8px 22px;
+  font-weight:900;
+  z-index:5;
+}
+
+.online-dot{
+  display:none;
+}
 
 .action-row{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:1fr;
   gap:12px;
 }
 
 .call-btn,
 .wa-btn{
-  position:relative;
+  min-height:44px;
+  border-radius:4px;
+  text-decoration:none;
   display:flex;
   align-items:center;
   justify-content:center;
   gap:10px;
-  min-height:62px;
-  border-radius:22px;
-  text-decoration:none;
-  transition:.25s ease;
-  overflow:hidden;
-}
-
-.call-btn{
-  background:linear-gradient(145deg,#050717,#07114a);
-  box-shadow:0 8px 22px rgba(255,0,90,.18);
+  background:linear-gradient(#ff4d4d,#d91f1f);
+  color:white;
+  font-weight:700;
+  font-size:16px;
 }
 
 .wa-btn{
-  background:linear-gradient(145deg,#02140a,#06361b);
-  box-shadow:0 8px 22px rgba(0,255,120,.18);
-}
-
-.call-btn:hover,
-.wa-btn:hover{
-  transform:translateY(-2px);
-}
-
-.call-btn i{
-  font-size:20px;
-  font-style:normal;
-}
-
-.call-btn span,
-.wa-btn span{
-  color:white;
-  font-size:14px;
-  font-weight:900;
-  letter-spacing:.5px;
-}
-
-.wa-real-icon{
-  width:22px;
-  height:22px;
-  object-fit:contain;
+  display:none;
 }
 
 /* MAP */
 
 .map-section,
 .disclaimer{
-  margin:18px;
+  margin:0 120px 30px;
   background:linear-gradient(180deg,#020a56,#010633);
-  border-radius:32px;
+  border-radius:34px;
   overflow:hidden;
   border:1px solid rgba(255,213,74,.08);
-  box-shadow:
-  0 0 35px rgba(255,0,128,.12),
-  0 20px 60px rgba(0,0,0,.42);
 }
 
 .map-header,
@@ -379,9 +360,8 @@ body{
 .map-header h3,
 .disclaimer h3{
   color:#ffd54a;
-  font-size:30px;
+  font-size:32px;
   margin-bottom:12px;
-  font-weight:900;
 }
 
 .map-header p,
@@ -407,7 +387,6 @@ body{
   height:58px;
   border-radius:50%;
   overflow:hidden;
-  cursor:pointer;
   z-index:999;
   border:3px solid #ff4d8d;
   box-shadow:0 0 18px rgba(255,0,128,.32);
@@ -422,7 +401,7 @@ body{
 
 @keyframes floaty{
   0%{transform:translateY(0)}
-  50%{transform:translateY(-8px)}
+  50%{transform:translateY(-6px)}
   100%{transform:translateY(0)}
 }
 
@@ -434,8 +413,7 @@ body{
   right:0;
   bottom:0;
   height:82px;
-  background:rgba(0,0,0,.95);
-  backdrop-filter:blur(18px);
+  background:rgba(0,0,0,.96);
   border-top:1px solid rgba(255,213,74,.08);
   display:flex;
   align-items:center;
@@ -447,31 +425,110 @@ body{
   border:none;
   background:none;
   color:#ffd54a;
-  font-size:26px;
+  font-size:24px;
+  cursor:pointer;
 }
 
 /* MOBILE */
 
-@media(max-width:1200px){
-  .profiles{
-    grid-template-columns:repeat(3,minmax(260px,1fr));
-  }
-}
-
 @media(max-width:900px){
-  .profiles{
-    grid-template-columns:repeat(2,minmax(240px,1fr));
-  }
-}
 
-@media(max-width:700px){
+  .hero,
+  .filters,
+  .shorts-section,
+  .profiles,
+  .map-section,
+  .disclaimer{
+    padding-left:18px;
+    padding-right:18px;
+    margin-left:0;
+    margin-right:0;
+  }
 
   .profiles{
     grid-template-columns:1fr;
-    gap:24px;
+    gap:28px;
   }
 
-  .hero h2{
+  .card{
+    border-radius:34px;
+    background:linear-gradient(180deg,#020a56,#010633);
+    color:white;
+  }
+
+  .card-image{
+    height:auto;
+    aspect-ratio:4/5;
+  }
+
+  .card-name{
+    font-size:34px;
+    color:white;
+    font-weight:900;
+  }
+
+  .online{
+    color:#2cff67;
+    font-size:20px;
+    font-weight:900;
+  }
+
+  .location{
+    color:#d8d8d8;
+  }
+
+  .phone{
+    color:#ffd54a;
+    font-size:22px;
+    font-weight:900;
+  }
+
+  .bio{
+    color:#d0d0d0;
+    font-size:15px;
+  }
+
+  .featured-badge{
+    background:rgba(0,0,0,.75);
+    color:#ffd54a;
+    border-radius:999px;
+  }
+
+  .online-dot{
+    display:block;
+    position:absolute;
+    top:16px;
+    left:16px;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background:#2cff67;
+    border:3px solid white;
+    z-index:5;
+  }
+
+  .action-row{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .call-btn,
+  .wa-btn{
+    min-height:62px;
+    border-radius:22px;
+    background:linear-gradient(145deg,#050717,#07114a);
+    font-size:15px;
+  }
+
+  .wa-btn{
+    display:flex;
+    background:linear-gradient(145deg,#02140a,#06361b);
+  }
+
+  .hero{
+    padding-top:18px;
+  }
+
+  .hero-box h2{
     font-size:56px;
   }
 
@@ -479,12 +536,18 @@ body{
     font-size:26px;
   }
 
-  .card-name{
-    font-size:28px;
+  .brand img{
+    width:54px;
+    height:54px;
   }
 
-  .bottom-nav button{
-    font-size:28px;
+  .menu-btn{
+    width:74px;
+    height:74px;
+  }
+
+  .menu-btn span{
+    font-size:42px;
   }
 
 }
@@ -501,24 +564,11 @@ body{
     <h1>Nairobi Sweets</h1>
   </a>
 
-  <div class="menu-btn" onclick="toggleMenu()">
+  <div class="menu-btn">
     <span>☰</span>
   </div>
 
 </header>
-
-<div class="mobile-menu" id="mobileMenu">
-
-  <div class="menu-close" onclick="toggleMenu()">✕</div>
-
-  <div class="menu-links">
-    <a href="/">🏠 Home</a>
-    <a href="/shorts.html">🔥 Shorts</a>
-    <a href="/join.html">💎 Join</a>
-    <a href="/login.html">👤 Login</a>
-  </div>
-
-</div>
 
 <section class="hero">
 
@@ -527,13 +577,15 @@ body{
     <h2>Profiles</h2>
 
     <p>
-      Verified profiles, WhatsApp access, VIP listings, online status,
-      likes, views and luxury discovery.
+      Verified profiles, WhatsApp access, VIP listings,
+      online status, luxury discovery and reels.
     </p>
 
-    <div class="search-wrap">
-      <input type="text" class="search-box" placeholder="Search by name, bio, location...">
-    </div>
+    <input
+      type="text"
+      class="search-box"
+      placeholder="Search by name, bio, location..."
+    >
 
   </div>
 
@@ -547,13 +599,49 @@ body{
   <button>WHATSAPP</button>
   <button>KILIMANI</button>
   <button>WESTLANDS</button>
-  <button>RUIRU</button>
 
 </div>
 
+<section class="shorts-section">
+
+  <div class="shorts-header">
+    <h2>🔥 Nairobi Shorts</h2>
+    <a href="/reel.html">Open Reels →</a>
+  </div>
+
+  <div class="shorts-row">
+
+    <div class="short-card">
+
+      <video autoplay muted loop playsinline>
+        <source src="https://cdn.coverr.co/videos/coverr-girl-walking-1560084033398?download=1080p" type="video/mp4">
+      </video>
+
+      <div class="short-overlay">
+        <div class="short-name">Suzzie</div>
+        <div class="short-location">📍 Nairobi</div>
+      </div>
+
+    </div>
+
+    <div class="short-card">
+
+      <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200&auto=format&fit=crop">
+
+      <div class="short-overlay">
+        <div class="short-name">Miriam</div>
+        <div class="short-location">📍 Roysambu</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
 <section class="profiles" id="profiles">
 
-  <div style="padding:80px;text-align:center;width:100%;grid-column:1/-1;color:#ffd54a;font-size:24px;font-weight:900;">
+  <div style="padding:60px;text-align:center;width:100%;grid-column:1/-1;color:#ffd54a;font-size:24px;font-weight:900;">
     Loading profiles...
   </div>
 
@@ -568,8 +656,7 @@ body{
 
   <iframe
     class="map-frame"
-    src="https://www.google.com/maps?q=Nairobi,Kenya&output=embed"
-    loading="lazy">
+    src="https://www.google.com/maps?q=Nairobi,Kenya&output=embed">
   </iframe>
 
 </section>
@@ -581,7 +668,7 @@ body{
   <p>
     Nairobi Sweets is an advertising and discovery platform only.
     All profiles are independently managed.
-    Users must act responsibly and follow all applicable laws.
+    Users must act responsibly and follow applicable laws.
   </p>
 
 </section>
@@ -594,9 +681,9 @@ body{
 
   <button onclick="window.location.href='/'">🏠</button>
   <button onclick="window.location.href='/shorts.html'">🔥</button>
-  <button>💬</button>
+  <button onclick="window.location.href='/reel.html'">🎬</button>
   <button>👑</button>
-  <button onclick="toggleMenu()">☰</button>
+  <button>☰</button>
 
 </nav>
 
@@ -609,10 +696,6 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 const profilesEl = document.getElementById("profiles");
-
-function toggleMenu(){
-  document.getElementById("mobileMenu").classList.toggle("active");
-}
 
 function safePhone(phone){
 
@@ -741,20 +824,11 @@ async function loadProfiles(){
           <div class="action-row">
 
             <a class="call-btn" href="tel:${phone}">
-              <i>☎</i>
-              <span>CALL</span>
+              ☎ CALL
             </a>
 
             <a class="wa-btn" href="https://wa.me/${phone}" target="_blank">
-
-              <img
-                src="/assets/icons/whatsapp.png"
-                class="wa-real-icon"
-                onerror="this.style.display='none'"
-              >
-
-              <span>WHATSAPP</span>
-
+              💬 WHATSAPP
             </a>
 
           </div>
