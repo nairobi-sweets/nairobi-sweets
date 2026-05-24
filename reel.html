@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nairobi Sweets Reels</title>
+<meta name="description" content="Nairobi Sweets video reels, VIP profiles, WhatsApp access and call buttons.">
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#000;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  overflow:hidden;
+}
+
+.topbar{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 18px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.86),transparent);
+}
+
+.logo{
+  color:#ffd54a;
+  font-size:25px;
+  font-weight:900;
+}
+
+.home{
+  color:#fff;
+  text-decoration:none;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,213,74,.2);
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:900;
+  backdrop-filter:blur(14px);
+}
+
+.feed{
+  height:100vh;
+  overflow-y:scroll;
+  scroll-snap-type:y mandatory;
+}
+
+.feed::-webkit-scrollbar{
+  display:none;
+}
+
+.reel{
+  position:relative;
+  height:100vh;
+  scroll-snap-align:start;
+  background:#020617;
+  overflow:hidden;
+}
+
+.video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.reel::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to top,rgba(0,0,0,.86),transparent 48%),
+    linear-gradient(to bottom,rgba(0,0,0,.55),transparent 25%);
+  pointer-events:none;
+}
+
+.ai-badge{
+  position:absolute;
+  top:92px;
+  left:18px;
+  z-index:7;
+  background:#ff1493;
+  color:white;
+  padding:10px 16px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:900;
+  box-shadow:0 0 24px rgba(255,0,128,.45);
+}
+
+.info{
+  position:absolute;
+  left:18px;
+  right:88px;
+  bottom:96px;
+  z-index:8;
+}
+
+.badge{
+  display:inline-block;
+  background:#ffd54a;
+  color:#000;
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.name{
+  font-size:32px;
+  font-weight:900;
+  line-height:1.05;
+  margin-bottom:10px;
+  text-shadow:0 2px 20px rgba(0,0,0,.7);
+}
+
+.location{
+  color:#e5e7eb;
+  font-size:15px;
+  font-weight:800;
+  line-height:1.35;
+  margin-bottom:8px;
+}
+
+.bio{
+  color:#d1d5db;
+  font-size:14px;
+  line-height:1.45;
+  max-width:96%;
+}
+
+.actions{
+  position:absolute;
+  right:14px;
+  bottom:136px;
+  z-index:9;
+  display:grid;
+  gap:14px;
+}
+
+.action{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  color:white;
+  font-size:22px;
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(12px);
+  box-shadow:0 10px 24px rgba(0,0,0,.35);
+}
+
+.whatsapp{
+  background:#25D366;
+}
+
+.call{
+  background:#ffd54a;
+  color:#000;
+}
+
+.mute{
+  background:rgba(255,255,255,.18);
+}
+
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:78px;
+  background:rgba(0,0,0,.94);
+  backdrop-filter:blur(18px);
+  border-top:1px solid rgba(255,213,74,.12);
+  z-index:60;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+}
+
+.bottom-nav a{
+  text-decoration:none;
+  color:#ffd54a;
+  font-size:24px;
+}
+
+.loader,
+.empty{
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#ffd54a;
+  padding:24px;
+  font-size:22px;
+  font-weight:900;
+}
+
+@media(max-width:700px){
+  .logo{
+    font-size:23px;
+  }
+
+  .name{
+    font-size:30px;
+  }
+
+  .bottom-nav{
+    height:82px;
+  }
+
+  .bottom-nav a{
+    font-size:24px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="logo">🎬 Nairobi Reels</div>
+  <a href="/" class="home">Home</a>
+</header>
+
+<main class="feed" id="feed">
+  <div class="loader">Loading reels...</div>
+</main>
+
+<nav class="bottom-nav">
+  <a href="/">🏠</a>
+  <a href="/shorts.html">🔥</a>
+  <a href="/reel.html">🎬</a>
+  <a href="/join.html">➕</a>
+  <a href="/login.html">👤</a>
+</nav>
+
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const feed = document.getElementById("feed");
+
+function safePhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
+}
+
+function getVideo(profile){
+  return (
+    profile.video_url ||
+    profile.short_url ||
+    profile.reel_url ||
+    ""
+  );
+}
+
+function isValidVideo(url){
+  return /\.(mp4|webm|mov)$/i.test(String(url || ""));
+}
+
+function getName(profile){
+  return profile.stage_name || profile.name || profile.full_name || "Verified Profile";
+}
+
+function getLocation(profile){
+  return profile.location || profile.town || profile.area || "Nairobi";
+}
+
+function getPlan(profile){
+  return String(profile.plan || profile.plan_name || profile.package || profile.tier || "").toLowerCase();
+}
+
+function getBadge(profile){
+  const plan = getPlan(profile);
+  if(plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP Pick";
+  if(plan.includes("vip")) return "👑 VIP Pick";
+  return "🎬 Reel Pick";
+}
+
+function getAiBadge(profile){
+  const plan = getPlan(profile);
+  const views = Number(profile.views_count || profile.views || 0);
+  const likes = Number(profile.likes_count || profile.likes || 0);
+
+  if(plan.includes("vip")) return "👑 VIP Energy";
+  if(views > 1000) return "🔥 Trending";
+  if(likes > 50) return "💋 Most Liked";
+
+  return "✨ Sweet Reels";
+}
+
+function renderReel(profile){
+  const video = getVideo(profile);
+  const phone = safePhone(profile.phone || profile.whatsapp);
+  const name = getName(profile);
+
+  return `
+    <section class="reel">
+
+      <video
+        class="video"
+        src="${video}"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+      ></video>
+
+      <div class="ai-badge">${getAiBadge(profile)}</div>
+
+      <div class="info">
+        <div class="badge">${getBadge(profile)}</div>
+        <div class="name">${name}</div>
+        <div class="location">📍 ${getLocation(profile)} · 🟢 Online Now</div>
+        <div class="bio">${profile.bio || profile.description || "Watch the reel, then tap WhatsApp or call to connect."}</div>
+      </div>
+
+      <div class="actions">
+        <button class="action mute" onclick="toggleMute(this)">🔇</button>
+        <a class="action" onclick="likeReel('${profile.id}')">❤️</a>
+        <a class="action">👁️</a>
+        ${phone ? `<a class="action whatsapp" href="https://wa.me/${phone}" target="_blank" rel="noopener">💬</a>` : ""}
+        ${phone ? `<a class="action call" href="tel:${phone}">☎</a>` : ""}
+      </div>
+
+    </section>
+  `;
+}
+
+async function loadReels(){
+  const {data,error} = await sb
+    .from("profiles")
+    .select("*")
+    .eq("approved",true)
+    .order("created_at",{ascending:false})
+    .limit(80);
+
+  if(error){
+    feed.innerHTML = `<div class="empty">Supabase error: ${error.message}</div>`;
+    return;
+  }
+
+  const reels = (data || []).filter(profile => {
+    const video = getVideo(profile);
+    return video && isValidVideo(video);
+  });
+
+  if(!reels.length){
+    feed.innerHTML = `
+      <div class="empty">
+        No video reels yet.<br><br>
+        Add public MP4 links to video_url, short_url, or reel_url in Supabase.
+      </div>
+    `;
+    return;
+  }
+
+  const ranked = reels.sort((a,b)=>{
+    const scoreA = Number(a.likes_count || 0) * 3 + Number(a.views_count || 0);
+    const scoreB = Number(b.likes_count || 0) * 3 + Number(b.views_count || 0);
+    return scoreB - scoreA;
+  });
+
+  feed.innerHTML = ranked.map(renderReel).join("");
+  observeVideos();
+}
+
+function observeVideos(){
+  const videos = document.querySelectorAll("video");
+
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.play().catch(()=>{});
+      }else{
+        entry.target.pause();
+      }
+    });
+  },{threshold:.65});
+
+  videos.forEach(video=>observer.observe(video));
+}
+
+function toggleMute(button){
+  const reel = button.closest(".reel");
+  const video = reel.querySelector("video");
+
+  video.muted = !video.muted;
+  button.textContent = video.muted ? "🔇" : "🔊";
+}
+
+async function likeReel(id){
+  const {data} = await sb
+    .from("profiles")
+    .select("likes_count")
+    .eq("id",id)
+    .single();
+
+  const likes = Number(data?.likes_count || 0) + 1;
+
+  await sb
+    .from("profiles")
+    .update({likes_count:likes})
+    .eq("id",id);
+}
+
+window.toggleMute = toggleMute;
+window.likeReel = likeReel;
+
+loadReels();
+</script>
+
+</body>
+</html>
