@@ -1,1221 +1,597 @@
-<!-- ========================================= -->
-<!-- NAIROBI SWEETS · CORRECTED LUXURY VERSION -->
-<!-- ========================================= -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Nairobi Sweets</title>
-
-<meta name="description" content="Luxury Nairobi discovery platform with verified VIP profiles, reels, WhatsApp access and Sweet AI.">
+<title>Nairobi Sweets | Verified Nairobi Profiles</title>
+<meta name="description" content="Luxury Nairobi discovery platform with verified profiles, VIP listings, WhatsApp access, reels, map and Sweet AI.">
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
-  background:
-  radial-gradient(circle at top,#0d123f 0%,#000 45%);
+  background:radial-gradient(circle at top,#0d123f 0%,#000 45%);
   color:white;
   font-family:Arial,Helvetica,sans-serif;
   overflow-x:hidden;
   padding-bottom:100px;
 }
-
-/* ========================= */
-/* TOPBAR */
-/* ========================= */
+a{text-decoration:none;color:inherit}
 
 .topbar{
-  position:sticky;
-  top:0;
-  z-index:999;
+  position:sticky;top:0;z-index:999;
   background:rgba(0,0,0,.96);
   backdrop-filter:blur(20px);
   border-bottom:1px solid rgba(255,213,74,.08);
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:16px 22px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;
 }
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  text-decoration:none;
-}
-
-.brand img{
-  width:68px;
-  height:68px;
-  object-fit:cover;
-  border-radius:18px;
-  box-shadow:0 0 18px rgba(255,213,74,.2);
-}
-
-.brand h1{
-  color:#ffd54a;
-  font-size:42px;
-  font-weight:900;
-  letter-spacing:-2px;
-}
-
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand img{width:58px;height:58px;object-fit:cover;border-radius:16px;box-shadow:0 0 18px rgba(255,213,74,.16)}
+.brand h1{color:#ffd54a;font-size:34px;font-weight:900;letter-spacing:-1.5px}
 .menu-btn{
-  width:88px;
-  height:88px;
-  border-radius:26px;
-
+  width:72px;height:72px;border-radius:22px;
   background:linear-gradient(180deg,#07145f,#02083d);
-
-  border:2px solid rgba(255,213,74,.12);
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  box-shadow:
-  0 0 25px rgba(255,213,74,.08),
-  inset 0 0 25px rgba(255,255,255,.03);
-}
-
-.menu-btn span{
-  color:#ffd54a;
-  font-size:50px;
-  font-weight:900;
-}
-
-/* ========================= */
-/* HERO */
-/* ========================= */
-
-.hero{
-  padding:24px 90px 10px;
-}
-
-.hero-box{
-  background:
-  linear-gradient(180deg,#020a56,#010633);
-
-  border-radius:34px;
-
-  padding:42px;
-
-  border:1px solid rgba(255,213,74,.08);
-
-  box-shadow:
-  0 0 35px rgba(255,0,128,.14),
-  0 25px 80px rgba(0,0,0,.5);
-}
-
-.hero-box h2{
-  color:#ffd54a;
-  font-size:70px;
-  font-weight:900;
-  margin-bottom:18px;
-}
-
-.hero-box p{
-  color:#d8d8d8;
-  font-size:20px;
-  line-height:1.7;
-}
-
-.search-box{
-  width:100%;
-  margin-top:24px;
-
-  background:#020926;
-
-  border:1px solid rgba(255,255,255,.08);
-
-  color:white;
-
-  border-radius:22px;
-
-  padding:20px;
-
-  font-size:18px;
-
-  outline:none;
-}
-
-/* ========================= */
-/* FILTERS */
-/* ========================= */
-
-.filters{
-  display:flex;
-  gap:14px;
-  overflow-x:auto;
-
-  padding:20px 90px;
-
-  scrollbar-width:none;
-}
-
-.filters::-webkit-scrollbar{
-  display:none;
-}
-
-.filters button{
-  border:none;
-
-  background:linear-gradient(145deg,#1d243f,#08114f);
-
-  color:white;
-
-  border-radius:18px;
-
-  padding:14px 24px;
-
-  font-size:15px;
-  font-weight:900;
-
-  min-width:max-content;
-
-  border:1px solid rgba(255,255,255,.06);
-
+  border:1px solid rgba(255,213,74,.12);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 22px rgba(255,213,74,.08);
   cursor:pointer;
 }
+.menu-btn span{color:#ffd54a;font-size:38px;font-weight:900}
 
-.filters button.active{
-  background:linear-gradient(145deg,#1db954,#117336);
+.mobile-menu{
+  position:fixed;inset:0;background:rgba(0,0,0,.97);
+  z-index:1500;transform:translateX(100%);
+  transition:.35s ease;padding:34px;
 }
-
-/* ========================= */
-/* SHORTS */
-/* ========================= */
-
-.shorts-section{
-  padding:0 90px 20px;
-}
-
-.shorts-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:18px;
-}
-
-.shorts-header h2{
-  color:#ffd54a;
-  font-size:34px;
-  font-weight:900;
-}
-
-.shorts-header a{
-  color:#ff4d8d;
-  text-decoration:none;
-  font-weight:900;
-}
-
-.shorts-row{
-  display:flex;
-  gap:18px;
-  overflow-x:auto;
-  scrollbar-width:none;
-}
-
-.shorts-row::-webkit-scrollbar{
-  display:none;
-}
-
-.short-card{
-  position:relative;
-
-  min-width:220px;
-  width:220px;
-
-  height:390px;
-
-  overflow:hidden;
-
-  border-radius:28px;
-
-  background:#020617;
-
-  border:1px solid rgba(255,255,255,.06);
-
-  flex-shrink:0;
-}
-
-.short-card video,
-.short-card img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.short-overlay{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-
+.mobile-menu.active{transform:translateX(0)}
+.menu-close{text-align:right;color:#ffd54a;font-size:44px;margin-bottom:28px;cursor:pointer}
+.menu-links{display:flex;flex-direction:column;gap:16px}
+.menu-links a{
+  background:linear-gradient(180deg,#07145f,#02083d);
+  border:1px solid rgba(255,213,74,.08);
+  border-radius:20px;
   padding:18px;
-
-  background:
-  linear-gradient(to top,rgba(0,0,0,.92),transparent);
-}
-
-.short-name{
-  font-size:22px;
+  font-size:18px;
   font-weight:900;
 }
 
-.short-location{
-  color:#d5d5d5;
-  margin-top:6px;
+.hero{padding:22px 80px 12px}
+.hero-box{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border-radius:30px;
+  padding:34px;
+  border:1px solid rgba(255,213,74,.08);
+  box-shadow:0 0 30px rgba(255,0,128,.12),0 25px 80px rgba(0,0,0,.5);
+}
+.hero-box h2{color:#ffd54a;font-size:58px;font-weight:900;margin-bottom:16px}
+.hero-box p{color:#d8d8d8;font-size:17px;line-height:1.7}
+.search-box{
+  width:100%;margin-top:22px;
+  background:#020926;
+  border:1px solid rgba(255,255,255,.08);
+  color:white;border-radius:18px;
+  padding:18px;font-size:15px;outline:none;
 }
 
-/* ========================= */
-/* PROFILES */
-/* ========================= */
+.filters{
+  display:flex;gap:12px;overflow-x:auto;
+  padding:18px 80px;scrollbar-width:none;
+}
+.filters::-webkit-scrollbar{display:none}
+.filters button{
+  border:none;
+  background:linear-gradient(145deg,#1d243f,#08114f);
+  color:white;border-radius:14px;
+  padding:12px 18px;
+  font-size:12px;font-weight:900;
+  min-width:max-content;
+  border:1px solid rgba(255,255,255,.06);
+  cursor:pointer;
+}
+.filters button.active{background:linear-gradient(145deg,#1db954,#117336)}
+
+.shorts-section{padding:0 80px 18px}
+.shorts-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.shorts-header h2{color:#ffd54a;font-size:28px;font-weight:900}
+.shorts-header a{color:#ff4d8d;text-decoration:none;font-size:13px;font-weight:900}
+.shorts-row{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none}
+.shorts-row::-webkit-scrollbar{display:none}
+.short-card{
+  position:relative;min-width:200px;width:200px;height:340px;
+  overflow:hidden;border-radius:24px;background:#020617;
+  border:1px solid rgba(255,255,255,.06);flex-shrink:0;
+}
+.short-card video,.short-card img{width:100%;height:100%;object-fit:cover}
+.short-overlay{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:16px;background:linear-gradient(to top,rgba(0,0,0,.92),transparent);
+}
+.short-name{font-size:18px;font-weight:900}
+.short-location{color:#d5d5d5;margin-top:5px;font-size:12px}
 
 .profiles{
   display:grid;
-
-  grid-template-columns:
-  repeat(4,minmax(230px,1fr));
-
-  gap:26px;
-
-  padding:24px 90px 70px;
+  grid-template-columns:repeat(4,minmax(220px,1fr));
+  gap:22px;
+  padding:22px 80px 70px;
 }
-
 .card{
-  position:relative;
-
-  overflow:hidden;
-
-  border-radius:30px;
-
-  background:
-  linear-gradient(180deg,#020a56,#010633);
-
+  position:relative;overflow:hidden;border-radius:28px;
+  background:linear-gradient(180deg,#020a56,#010633);
   border:1px solid rgba(255,213,74,.08);
-
-  box-shadow:
-  0 0 30px rgba(255,0,128,.08),
-  0 18px 50px rgba(0,0,0,.45);
-
+  box-shadow:0 0 28px rgba(255,0,128,.08),0 18px 50px rgba(0,0,0,.45);
   transition:.25s;
 }
-
-.card:hover{
-  transform:translateY(-5px);
-}
-
-.card-image{
-  width:100%;
-  height:350px;
-  object-fit:cover;
-  display:block;
-}
-
-.card-body{
-  padding:18px;
-}
-
-.card-name{
-  font-size:22px;
-  font-weight:900;
-  color:white;
-  margin-bottom:10px;
-  line-height:1.1;
-}
-
-.online{
-  color:#31ff71;
-  font-size:15px;
-  font-weight:900;
-  margin-bottom:12px;
-}
-
-.location{
-  color:#d5d5d5;
-  font-size:14px;
-  line-height:1.5;
-  margin-bottom:12px;
-}
-
-.phone{
-  color:#ffd54a;
-  font-size:16px;
-  font-weight:900;
-  margin-bottom:14px;
-}
-
-.bio{
-  color:#d2d2d2;
-  font-size:13px;
-  line-height:1.6;
-  margin-bottom:16px;
-}
-
-.engagement{
-  display:flex;
-  gap:10px;
-
-  color:#d0d0d0;
-
-  font-size:13px;
-
-  margin-bottom:18px;
-}
-
-/* ========================= */
-/* BADGES */
-/* ========================= */
+.card:hover{transform:translateY(-4px)}
+.card-image{width:100%;height:320px;object-fit:cover;display:block;background:#020617}
+.card-body{padding:16px}
+.card-name{font-size:18px;font-weight:900;color:white;margin-bottom:8px;line-height:1.08;letter-spacing:-.3px}
+.online{color:#31ff71;font-size:13px;font-weight:900;margin-bottom:10px}
+.location{color:#d5d5d5;font-size:12px;line-height:1.45;margin-bottom:10px}
+.phone{color:#ffd54a;font-size:14px;font-weight:900;margin-bottom:12px}
+.bio{color:#d2d2d2;font-size:12px;line-height:1.55;margin-bottom:14px}
+.engagement{display:flex;gap:8px;color:#d0d0d0;font-size:11px;margin-bottom:14px;flex-wrap:wrap}
 
 .featured-badge{
-  position:absolute;
-  top:16px;
-  right:16px;
-
+  position:absolute;top:14px;right:14px;
   background:rgba(0,0,0,.72);
-
-  color:#ffd54a;
-
-  padding:10px 18px;
-
-  border-radius:999px;
-
-  font-size:13px;
-  font-weight:900;
-
-  backdrop-filter:blur(10px);
-
-  z-index:6;
+  color:#ffd54a;padding:8px 16px;
+  border-radius:999px;font-size:11px;font-weight:900;
+  backdrop-filter:blur(10px);z-index:6;
 }
-
 .online-dot{
-  position:absolute;
-  top:16px;
-  left:16px;
-
-  width:20px;
-  height:20px;
-
-  border-radius:50%;
-
-  background:#31ff71;
-
-  border:3px solid white;
-
-  z-index:6;
+  position:absolute;top:14px;left:14px;
+  width:18px;height:18px;border-radius:50%;
+  background:#31ff71;border:3px solid white;z-index:6;
 }
 
-/* ========================= */
-/* ACTION BUTTONS */
-/* ========================= */
-
-.action-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.call-btn,.wa-btn{
+  min-height:42px;border-radius:16px;text-decoration:none;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:11px;font-weight:800;transition:.25s;
 }
-
-.call-btn,
-.wa-btn{
-  min-height:48px;
-
-  border-radius:18px;
-
-  text-decoration:none;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-
-  font-size:13px;
-  font-weight:800;
-
-  transition:.25s;
-}
-
-.call-btn:hover,
-.wa-btn:hover{
-  transform:translateY(-2px);
-}
-
+.call-btn:hover,.wa-btn:hover{transform:translateY(-2px)}
 .call-btn{
-
-  background:
-  linear-gradient(145deg,#050717,#07114a);
-
-  color:white;
-
-  border:1px solid rgba(255,255,255,.08);
-
-  box-shadow:
-  0 0 22px rgba(255,0,128,.16);
-
+  background:linear-gradient(145deg,#050717,#07114a);
+  color:white;border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 0 20px rgba(255,0,128,.14);
 }
-
 .wa-btn{
-
-  background:
-  linear-gradient(145deg,#02140a,#06361b);
-
-  color:white;
-
-  border:1px solid rgba(255,255,255,.08);
-
-  box-shadow:
-  0 0 22px rgba(0,255,120,.16);
-
+  background:linear-gradient(145deg,#02140a,#06361b);
+  color:white;border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 0 20px rgba(0,255,120,.14);
 }
-
-.wa-btn img{
-  width:18px;
-  height:18px;
-  object-fit:contain;
+.wa-btn img{width:15px;height:15px;object-fit:contain}
+.call-btn span,.wa-btn span{letter-spacing:.3px}
+.disabled-contact{
+  grid-column:1/-1;
+  min-height:42px;border-radius:16px;
+  background:#1c1c1c;color:#888;border:none;
+  font-size:11px;font-weight:900;
 }
-
-.call-btn span,
-.wa-btn span{
-  letter-spacing:.4px;
-}
-
-/* ========================= */
-/* MOBILE */
-/* ========================= */
-
-@media(max-width:900px){
-
-  .profiles{
-    grid-template-columns:1fr;
-    gap:28px;
-  }
-
-  .card-image{
-    height:auto;
-    aspect-ratio:4/5;
-  }
-
-  .card-name{
-    font-size:28px;
-  }
-
-  .call-btn,
-  .wa-btn{
-    min-height:56px;
-    font-size:14px;
-  }
-
-/* ========================= */
-/* BADGES */
-/* ========================= */
-
-.featured-badge{
-  position:absolute;
-  top:16px;
-  right:16px;
-
-  background:rgba(0,0,0,.72);
-
-  color:#ffd54a;
-
-  padding:12px 20px;
-
-  border-radius:999px;
-
-  font-size:15px;
-  font-weight:900;
-
-  backdrop-filter:blur(10px);
-
-  z-index:6;
-}
-
-.online-dot{
-  position:absolute;
-  top:16px;
-  left:16px;
-
-  width:22px;
-  height:22px;
-
-  border-radius:50%;
-
-  background:#31ff71;
-
-  border:3px solid white;
-
-  z-index:6;
-}
-
-/* ========================= */
-/* ACTION BUTTONS */
-/* ========================= */
-
-.action-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.call-btn,
-.wa-btn{
-  min-height:54px;
-
-  border-radius:20px;
-
-  text-decoration:none;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-
-  font-size:15px;
-  font-weight:900;
-
-  transition:.25s;
-}
-
-.call-btn:hover,
-.wa-btn:hover{
-  transform:translateY(-2px);
-}
-
-.call-btn{
-
-  background:
-  linear-gradient(145deg,#050717,#07114a);
-
-  color:white;
-
-  border:1px solid rgba(255,255,255,.08);
-
-  box-shadow:
-  0 0 22px rgba(255,0,128,.16);
-
-}
-
-.wa-btn{
-
-  background:
-  linear-gradient(145deg,#02140a,#06361b);
-
-  color:white;
-
-  border:1px solid rgba(255,255,255,.08);
-
-  box-shadow:
-  0 0 22px rgba(0,255,120,.16);
-
-}
-
-.wa-btn img{
-  width:22px;
-  height:22px;
-  object-fit:contain;
-}
-
-.call-btn span,
-.wa-btn span{
-  letter-spacing:.4px;
-}
-
-/* ========================= */
-/* MAP */
-/* ========================= */
 
 .map-section{
-  margin:0 90px 30px;
-
-  overflow:hidden;
-
-  border-radius:34px;
-
-  background:
-  linear-gradient(180deg,#020a56,#010633);
-
+  margin:0 80px 28px;overflow:hidden;border-radius:30px;
+  background:linear-gradient(180deg,#020a56,#010633);
   border:1px solid rgba(255,213,74,.08);
 }
-
-.map-header{
-  padding:24px;
-}
-
-.map-header h3{
-  color:#ffd54a;
-  font-size:32px;
-  margin-bottom:12px;
-}
-
-.map-header p{
-  color:#d5d5d5;
-  font-size:18px;
-  line-height:1.6;
-}
-
-.map-frame{
-  width:100%;
-  height:320px;
-  border:0;
-}
-
-/* ========================= */
-/* DISCLAIMER */
-/* ========================= */
+.map-header{padding:22px}
+.map-header h3{color:#ffd54a;font-size:26px;margin-bottom:10px}
+.map-header p{color:#d5d5d5;font-size:15px;line-height:1.6}
+.map-frame{width:100%;height:300px;border:0}
 
 .disclaimer{
-  margin:0 90px 30px;
-
-  background:
-  linear-gradient(180deg,#020a56,#010633);
-
-  border-radius:34px;
-
-  padding:28px;
-
+  margin:0 80px 28px;
+  background:linear-gradient(180deg,#020a56,#010633);
+  border-radius:30px;padding:24px;
   border:1px solid rgba(255,213,74,.08);
 }
-
-.disclaimer h3{
-  color:#ffd54a;
-  font-size:34px;
-  margin-bottom:14px;
-}
-
-.disclaimer p{
-  color:#d7d7d7;
-  font-size:18px;
-  line-height:1.8;
-}
-
-/* ========================= */
-/* SWEET AI */
-/* ========================= */
+.disclaimer h3{color:#ffd54a;font-size:28px;margin-bottom:12px}
+.disclaimer p{color:#d7d7d7;font-size:15px;line-height:1.7}
 
 .sweet-ai{
-  position:fixed;
-
-  right:18px;
-  bottom:104px;
-
-  width:62px;
-  height:62px;
-
-  border-radius:50%;
-
-  overflow:hidden;
-
-  border:4px solid #ff4d8d;
-
-  z-index:999;
-
-  box-shadow:
-  0 0 24px rgba(255,0,128,.35);
-
+  position:fixed;right:18px;bottom:104px;
+  width:58px;height:58px;border-radius:50%;
+  overflow:hidden;border:3px solid #ff4d8d;z-index:999;
+  box-shadow:0 0 22px rgba(255,0,128,.32);
   animation:floaty 3s infinite ease-in-out;
-}
-
-.sweet-ai img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-@keyframes floaty{
-  0%{transform:translateY(0)}
-  50%{transform:translateY(-6px)}
-  100%{transform:translateY(0)}
-}
-
-/* ========================= */
-/* BOTTOM NAV */
-/* ========================= */
-
-.bottom-nav{
-  position:fixed;
-
-  left:0;
-  right:0;
-  bottom:0;
-
-  height:84px;
-
-  background:rgba(0,0,0,.96);
-
-  border-top:1px solid rgba(255,213,74,.08);
-
-  backdrop-filter:blur(16px);
-
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
-
-  z-index:999;
-}
-
-.bottom-nav button{
-  border:none;
-  background:none;
-
-  color:#ffd54a;
-
-  font-size:24px;
-
   cursor:pointer;
 }
+.sweet-ai img{width:100%;height:100%;object-fit:cover}
+@keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
 
-/* ========================= */
-/* MOBILE */
-/* ========================= */
+.bottom-nav{
+  position:fixed;left:0;right:0;bottom:0;height:80px;
+  background:rgba(0,0,0,.96);
+  border-top:1px solid rgba(255,213,74,.08);
+  backdrop-filter:blur(16px);
+  display:flex;align-items:center;justify-content:space-around;
+  z-index:999;
+}
+.bottom-nav button{border:none;background:none;color:#ffd54a;font-size:22px;cursor:pointer}
 
-@media(max-width:900px){
-
-  .hero,
-  .filters,
-  .shorts-section,
-  .profiles{
-    padding-left:18px;
-    padding-right:18px;
-  }
-
-  .profiles{
-    grid-template-columns:1fr;
-    gap:28px;
-  }
-
-  .card-image{
-    height:auto;
-    aspect-ratio:4/5;
-  }
-
-  .card-name{
-    font-size:32px;
-  }
-
-  .hero{
-    padding-top:18px;
-  }
-
-  .hero-box{
-    padding:30px;
-  }
-
-  .hero-box h2{
-    font-size:58px;
-  }
-
-  .hero-box p{
-    font-size:18px;
-  }
-
-  .brand img{
-    width:54px;
-    height:54px;
-  }
-
-  .brand h1{
-    font-size:26px;
-  }
-
-  .menu-btn{
-    width:74px;
-    height:74px;
-  }
-
-  .menu-btn span{
-    font-size:42px;
-  }
-
-  .short-card{
-    width:200px;
-    min-width:200px;
-    height:340px;
-  }
-
-  .map-section,
-  .disclaimer{
-    margin-left:18px;
-    margin-right:18px;
-  }
-
+.loading,.empty{
+  grid-column:1/-1;
+  padding:60px;
+  text-align:center;
+  color:#ffd54a;
+  font-size:22px;
+  font-weight:900;
 }
 
+@media(max-width:1200px){
+  .profiles{grid-template-columns:repeat(3,minmax(220px,1fr))}
+}
+
+@media(max-width:900px){
+  .hero,.filters,.shorts-section,.profiles{padding-left:18px;padding-right:18px}
+  .profiles{grid-template-columns:1fr;gap:26px}
+  .card-image{height:auto;aspect-ratio:4/5}
+  .card-name{font-size:26px}
+  .online{font-size:18px}
+  .location{font-size:15px}
+  .phone{font-size:18px}
+  .bio{font-size:14px}
+  .engagement{font-size:13px}
+  .call-btn,.wa-btn{min-height:56px;font-size:14px;border-radius:20px}
+  .wa-btn img{width:18px;height:18px}
+  .hero{padding-top:18px}
+  .hero-box{padding:28px}
+  .hero-box h2{font-size:52px}
+  .hero-box p{font-size:17px}
+  .brand img{width:52px;height:52px}
+  .brand h1{font-size:25px}
+  .menu-btn{width:68px;height:68px}
+  .menu-btn span{font-size:38px}
+  .short-card{width:190px;min-width:190px;height:320px}
+  .map-section,.disclaimer{margin-left:18px;margin-right:18px}
+}
 </style>
 </head>
 
 <body>
 
 <header class="topbar">
+  <a href="/" class="brand">
+    <img src="/assets/logo/logo-navbar.png" onerror="this.src='/assets/logo/logo-badge.png'" alt="Nairobi Sweets">
+    <h1>Nairobi Sweets</h1>
+  </a>
 
-<a href="/" class="brand">
-
-<img src="/assets/logo/logo-navbar.png">
-
-<h1>Nairobi Sweets</h1>
-
-</a>
-
-<div class="menu-btn">
-<span>☰</span>
-</div>
-
+  <div class="menu-btn" onclick="toggleMenu()">
+    <span>☰</span>
+  </div>
 </header>
 
-<section class="hero">
+<div class="mobile-menu" id="mobileMenu">
+  <div class="menu-close" onclick="toggleMenu()">✕</div>
 
-<div class="hero-box">
-
-<h2>Profiles</h2>
-
-<p>
-Verified profiles, WhatsApp access,
-VIP listings, online status,
-luxury discovery, reels and real photos.
-</p>
-
-<input
-type="text"
-class="search-box"
-placeholder="Search by name, bio, location..."
->
-
+  <div class="menu-links">
+    <a href="/">🏠 Home</a>
+    <a href="/shorts.html">🔥 Shorts</a>
+    <a href="/reel.html">🎬 Reels</a>
+    <a href="/join.html">💎 Join</a>
+    <a href="/login.html">👤 Login</a>
+  </div>
 </div>
 
+<section class="hero">
+  <div class="hero-box">
+    <h2>Profiles</h2>
+    <p>Verified profiles, WhatsApp access, VIP listings, reels and luxury discovery.</p>
+
+    <input
+      type="text"
+      class="search-box"
+      id="searchInput"
+      placeholder="Search by name, bio, location..."
+    >
+  </div>
 </section>
 
 <div class="filters">
-
-<button class="active">HOME</button>
-<button>VIP</button>
-<button>ONLINE</button>
-<button>WHATSAPP</button>
-<button>KILIMANI</button>
-<button>WESTLANDS</button>
-
+  <button class="active" data-filter="home">HOME</button>
+  <button data-filter="vip">VIP</button>
+  <button data-filter="online">ONLINE</button>
+  <button data-filter="whatsapp">WHATSAPP</button>
+  <button data-filter="kilimani">KILIMANI</button>
+  <button data-filter="westlands">WESTLANDS</button>
 </div>
 
 <section class="shorts-section">
+  <div class="shorts-header">
+    <h2>🔥 Nairobi Shorts</h2>
+    <a href="/reel.html">Open Reels →</a>
+  </div>
 
-<div class="shorts-header">
-
-<h2>🔥 Nairobi Shorts</h2>
-
-<a href="/reel.html">Open Reels →</a>
-
-</div>
-
-<div class="shorts-row">
-
-<div class="short-card">
-
-<video autoplay muted loop playsinline>
-<source src="https://cdn.coverr.co/videos/coverr-young-woman-on-phone-1560084033398?download=1080p" type="video/mp4">
-</video>
-
-<div class="short-overlay">
-<div class="short-name">Suzzie</div>
-<div class="short-location">📍 Nairobi</div>
-</div>
-
-</div>
-
-<div class="short-card">
-
-<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200&auto=format&fit=crop">
-
-<div class="short-overlay">
-<div class="short-name">Miriam</div>
-<div class="short-location">📍 Roysambu</div>
-</div>
-
-</div>
-
-</div>
-
+  <div class="shorts-row" id="shortsRow">
+    <div class="short-card">
+      <img src="/assets/logo/logo-badge.png" alt="Short">
+      <div class="short-overlay">
+        <div class="short-name">Loading</div>
+        <div class="short-location">📍 Nairobi</div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="profiles" id="profiles">
-
-<div style="grid-column:1/-1;padding:60px;text-align:center;color:#ffd54a;font-size:24px;font-weight:900;">
-Loading profiles...
-</div>
-
+  <div class="loading">Loading profiles...</div>
 </section>
 
 <section class="map-section">
+  <div class="map-header">
+    <h3>Nairobi Coverage Map</h3>
+    <p>Explore active areas across Nairobi and nearby towns.</p>
+  </div>
 
-<div class="map-header">
-
-<h3>Nairobi Coverage Map</h3>
-
-<p>
-Explore active areas across Nairobi and nearby towns.
-</p>
-
-</div>
-
-<iframe
-class="map-frame"
-src="https://www.google.com/maps?q=Nairobi,Kenya&output=embed">
-</iframe>
-
+  <iframe
+    class="map-frame"
+    src="https://www.google.com/maps?q=Nairobi,Kenya&output=embed"
+    loading="lazy">
+  </iframe>
 </section>
 
 <section class="disclaimer">
-
-<h3>Disclaimer</h3>
-
-<p>
-Nairobi Sweets is an advertising and discovery platform only.
-All profiles are independently managed.
-Users must act responsibly and follow applicable laws.
-</p>
-
+  <h3>Disclaimer</h3>
+  <p>
+    Nairobi Sweets is an advertising and discovery platform only.
+    All profiles are independently managed.
+    Users must act responsibly and follow applicable laws.
+  </p>
 </section>
 
-<div class="sweet-ai">
-
-<img src="/assets/logo/logo-badge.png">
-
+<div class="sweet-ai" onclick="window.location.href='/reel.html'">
+  <img src="/assets/logo/logo-badge.png" alt="Sweet AI">
 </div>
 
 <nav class="bottom-nav">
-
-<button onclick="window.location.href='/'">🏠</button>
-<button onclick="window.location.href='/shorts.html'">🔥</button>
-<button onclick="window.location.href='/reel.html'">🎬</button>
-<button>👑</button>
-<button>☰</button>
-
+  <button onclick="window.location.href='/'">🏠</button>
+  <button onclick="window.location.href='/shorts.html'">🔥</button>
+  <button onclick="window.location.href='/reel.html'">🎬</button>
+  <button onclick="quickVip()">👑</button>
+  <button onclick="toggleMenu()">☰</button>
 </nav>
 
 <script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SUPABASE_URL =
-"https://dkjlvyynvgtijccitvvd.supabase.co";
+let allProfiles = [];
+let activeFilter = "home";
 
-const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const profilesEl = document.getElementById("profiles");
+const shortsRow = document.getElementById("shortsRow");
+const searchInput = document.getElementById("searchInput");
 
-const sb =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+function toggleMenu(){
+  document.getElementById("mobileMenu").classList.toggle("active");
+}
 
-const profilesEl =
-document.getElementById("profiles");
+function quickVip(){
+  const vipBtn = document.querySelector('[data-filter="vip"]');
+  if(vipBtn) vipBtn.click();
+}
 
 function safePhone(phone){
-
-let p =
-String(phone || "")
-.replace(/\D/g,"");
-
-if(!p) return "";
-
-if(p.startsWith("0")){
-p = "254" + p.slice(1);
-}
-
-if(
-p.startsWith("7") ||
-p.startsWith("1")
-){
-p = "254" + p;
-}
-
-return p;
-
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
 }
 
 function getImage(profile){
+  return (
+    profile.photo_url ||
+    profile.image_url ||
+    profile.profile_photo ||
+    profile.avatar_url ||
+    profile.main_photo ||
+    profile.photo ||
+    profile.image ||
+    "/assets/logo/logo-badge.png"
+  );
+}
 
-return (
-profile.photo_url ||
-profile.image_url ||
-profile.profile_photo ||
-profile.photo ||
-"/assets/logo/logo-badge.png"
-);
+function getVideo(profile){
+  return profile.video_url || profile.short_url || profile.reel_url || "";
+}
 
+function isVideo(url){
+  return /\.(mp4|webm|mov)$/i.test(String(url || ""));
+}
+
+function getName(profile){
+  return profile.stage_name || profile.name || profile.full_name || "Verified";
+}
+
+function getLocation(profile){
+  return profile.location || profile.town || profile.area || "Nairobi";
+}
+
+function getPlan(profile){
+  return String(profile.plan || profile.plan_name || profile.package || "").toLowerCase();
 }
 
 function getBadge(profile){
-
-const plan =
-String(
-profile.plan ||
-profile.plan_name ||
-profile.package ||
-""
-).toLowerCase();
-
-if(plan.includes("vip")){
-return "⭐ VIP";
+  const plan = getPlan(profile);
+  if(plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP";
+  if(plan.includes("vip")) return "⭐ VIP";
+  return "✨ Featured";
 }
 
-return "✨ Featured";
-
+function getBio(profile){
+  return profile.bio || profile.description || profile.about || "Luxury Nairobi discovery profile.";
 }
+
+function compact(text, max=115){
+  text = String(text || "");
+  return text.length > max ? text.slice(0,max).trim() + "..." : text;
+}
+
+function renderProfiles(list){
+  if(!list.length){
+    profilesEl.innerHTML = `<div class="empty">No profiles found.</div>`;
+    return;
+  }
+
+  profilesEl.innerHTML = list.map(profile=>{
+    const phone = safePhone(profile.phone || profile.whatsapp);
+    const name = getName(profile);
+    const image = getImage(profile);
+
+    return `
+      <article class="card">
+        <span class="online-dot"></span>
+        <div class="featured-badge">${getBadge(profile)}</div>
+
+        <img
+          src="${image}"
+          class="card-image"
+          loading="lazy"
+          alt="${name}"
+          onerror="this.src='/assets/logo/logo-badge.png'"
+        >
+
+        <div class="card-body">
+          <div class="card-name">${name}</div>
+          <div class="online">Online Now</div>
+          <div class="location">📍 ${getLocation(profile)}</div>
+          <div class="phone">📞 ${phone || "Hidden"}</div>
+          <div class="bio">${compact(getBio(profile))}</div>
+
+          <div class="engagement">
+            ❤️ ${profile.likes_count || 0} likes
+            •
+            👁️ ${profile.views_count || 0} views
+          </div>
+
+          <div class="action-row">
+            ${
+              phone
+              ? `
+                <a class="call-btn" href="tel:${phone}">
+                  ☎ <span>CALL</span>
+                </a>
+
+                <a class="wa-btn" href="https://wa.me/${phone}" target="_blank">
+                  <img src="/assets/icons/whatsapp.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg'">
+                  <span>WHATSAPP</span>
+                </a>
+              `
+              : `<button class="disabled-contact">CONTACT HIDDEN</button>`
+            }
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function renderShorts(list){
+  const shorts = list.slice(0, 8);
+
+  if(!shorts.length){
+    shortsRow.innerHTML = "";
+    return;
+  }
+
+  shortsRow.innerHTML = shorts.map(profile=>{
+    const media = getVideo(profile) || getImage(profile);
+    const name = getName(profile);
+
+    const mediaTag = isVideo(media)
+      ? `<video autoplay muted loop playsinline><source src="${media}" type="video/mp4"></video>`
+      : `<img src="${media}" onerror="this.src='/assets/logo/logo-badge.png'">`;
+
+    return `
+      <div class="short-card" onclick="window.location.href='/reel.html'">
+        ${mediaTag}
+        <div class="short-overlay">
+          <div class="short-name">${name}</div>
+          <div class="short-location">📍 ${getLocation(profile)}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function applyFilters(){
+  let list = [...allProfiles];
+  const search = searchInput.value.toLowerCase().trim();
+
+  if(activeFilter !== "home"){
+    list = list.filter(profile=>{
+      const text = `
+        ${getName(profile)}
+        ${getLocation(profile)}
+        ${getBio(profile)}
+        ${getPlan(profile)}
+        ${profile.phone || ""}
+        ${profile.whatsapp || ""}
+      `.toLowerCase();
+
+      if(activeFilter === "vip") return getPlan(profile).includes("vip");
+      if(activeFilter === "whatsapp") return Boolean(profile.phone || profile.whatsapp);
+      if(activeFilter === "online") return true;
+
+      return text.includes(activeFilter);
+    });
+  }
+
+  if(search){
+    list = list.filter(profile=>{
+      const text = `
+        ${getName(profile)}
+        ${getLocation(profile)}
+        ${getBio(profile)}
+        ${getPlan(profile)}
+      `.toLowerCase();
+
+      return text.includes(search);
+    });
+  }
+
+  renderProfiles(list);
+}
+
+document.querySelectorAll(".filters button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.filter || "home";
+    applyFilters();
+  });
+});
+
+searchInput.addEventListener("input", applyFilters);
 
 async function loadProfiles(){
+  const { data, error } = await sb
+    .from("profiles")
+    .select("*")
+    .eq("approved", true)
+    .order("created_at", { ascending:false });
 
-const {data,error} =
-await sb
-.from("profiles")
-.select("*")
-.eq("approved",true)
-.order(
-"created_at",
-{ascending:false}
-);
+  if(error){
+    profilesEl.innerHTML = `<div class="empty">Supabase error: ${error.message}</div>`;
+    return;
+  }
 
-if(error){
+  allProfiles = data || [];
 
-profilesEl.innerHTML = `
-<div style="
-padding:60px;
-text-align:center;
-color:#ff6b6b;
-font-size:20px;
-">
-${error.message}
-</div>
-`;
-
-return;
-
-}
-
-if(!data || !data.length){
-
-profilesEl.innerHTML = `
-<div style="
-padding:60px;
-text-align:center;
-color:#d5d5d5;
-font-size:20px;
-">
-No profiles found.
-</div>
-`;
-
-return;
-
-}
-
-profilesEl.innerHTML =
-data.map(profile=>{
-
-const phone =
-safePhone(
-profile.phone ||
-profile.whatsapp
-);
-
-return `
-
-<article class="card">
-
-<span class="online-dot"></span>
-
-<div class="featured-badge">
-${getBadge(profile)}
-</div>
-
-<img
-src="${getImage(profile)}"
-class="card-image"
-loading="lazy"
-onerror="this.src='/assets/logo/logo-badge.png'"
->
-
-<div class="card-body">
-
-<div class="card-name">
-${profile.stage_name || "Verified"}
-</div>
-
-<div class="online">
-Online Now
-</div>
-
-<div class="location">
-📍 ${profile.location || "Nairobi"}
-</div>
-
-<div class="phone">
-📞 ${phone || "Hidden"}
-</div>
-
-<div class="bio">
-${profile.bio || "Luxury Nairobi discovery profile."}
-</div>
-
-<div class="engagement">
-❤️ ${profile.likes_count || 0} likes
-•
-👁️ ${profile.views_count || 0} views
-</div>
-
-<div class="action-row">
-
-<a
-class="call-btn"
-href="tel:${phone}"
->
-
-☎
-<span>CALL</span>
-
-</a>
-
-<a
-class="wa-btn"
-href="https://wa.me/${phone}"
-target="_blank"
->
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
-
-<span>WHATSAPP</span>
-
-</a>
-
-</div>
-
-</div>
-
-</article>
-
-`;
-
-}).join("");
-
+  renderShorts(allProfiles);
+  applyFilters();
 }
 
 loadProfiles();
-
 </script>
 
 </body>
