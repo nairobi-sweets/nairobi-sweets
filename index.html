@@ -1,6 +1,11 @@
+<!-- ======================================= -->
+<!-- NAIROBI SWEETS · FULL PATCHED INDEX -->
+<!-- ======================================= -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -104,6 +109,57 @@ a{
 .menu-btn span{
   color:#ffd54a;
   font-size:38px;
+  font-weight:900;
+}
+
+/* ========================= */
+/* MOBILE MENU */
+/* ========================= */
+
+.mobile-menu{
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,.97);
+
+  z-index:1500;
+
+  transform:translateX(100%);
+
+  transition:.35s ease;
+
+  padding:34px;
+}
+
+.mobile-menu.active{
+  transform:translateX(0);
+}
+
+.menu-close{
+  text-align:right;
+  color:#ffd54a;
+  font-size:44px;
+  margin-bottom:28px;
+  cursor:pointer;
+}
+
+.menu-links{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.menu-links a{
+  background:
+  linear-gradient(180deg,#07145f,#02083d);
+
+  border:1px solid rgba(255,213,74,.08);
+
+  border-radius:20px;
+
+  padding:18px;
+
+  font-size:18px;
   font-weight:900;
 }
 
@@ -230,7 +286,6 @@ a{
 
 .shorts-header a{
   color:#ff4d8d;
-  text-decoration:none;
   font-size:13px;
   font-weight:900;
 }
@@ -339,7 +394,6 @@ a{
   width:100%;
   height:320px;
   object-fit:cover;
-  display:block;
 }
 
 .card-body{
@@ -349,9 +403,7 @@ a{
 .card-name{
   font-size:18px;
   font-weight:900;
-  color:white;
   margin-bottom:8px;
-  line-height:1.08;
 }
 
 .online{
@@ -364,7 +416,6 @@ a{
 .location{
   color:#d5d5d5;
   font-size:12px;
-  line-height:1.45;
   margin-bottom:10px;
 }
 
@@ -408,8 +459,6 @@ a{
 
   font-size:11px;
   font-weight:900;
-
-  z-index:6;
 }
 
 .online-dot{
@@ -425,8 +474,6 @@ a{
   background:#31ff71;
 
   border:3px solid white;
-
-  z-index:6;
 }
 
 /* ========================= */
@@ -444,8 +491,6 @@ a{
   min-height:42px;
 
   border-radius:16px;
-
-  text-decoration:none;
 
   display:flex;
   align-items:center;
@@ -468,11 +513,6 @@ a{
   linear-gradient(145deg,#050717,#07114a);
 
   color:white;
-
-  border:1px solid rgba(255,255,255,.08);
-
-  box-shadow:
-  0 0 20px rgba(255,0,128,.14);
 }
 
 .wa-btn{
@@ -480,85 +520,11 @@ a{
   linear-gradient(145deg,#02140a,#06361b);
 
   color:white;
-
-  border:1px solid rgba(255,255,255,.08);
-
-  box-shadow:
-  0 0 20px rgba(0,255,120,.14);
 }
 
 .wa-btn img{
   width:15px;
   height:15px;
-  object-fit:contain;
-}
-
-/* ========================= */
-/* MAP */
-/* ========================= */
-
-.map-section{
-  margin:0 80px 28px;
-
-  overflow:hidden;
-
-  border-radius:30px;
-
-  background:
-  linear-gradient(180deg,#020a56,#010633);
-
-  border:1px solid rgba(255,213,74,.08);
-}
-
-.map-header{
-  padding:22px;
-}
-
-.map-header h3{
-  color:#ffd54a;
-  font-size:26px;
-  margin-bottom:10px;
-}
-
-.map-header p{
-  color:#d5d5d5;
-  font-size:15px;
-  line-height:1.6;
-}
-
-.map-frame{
-  width:100%;
-  height:300px;
-  border:0;
-}
-
-/* ========================= */
-/* DISCLAIMER */
-/* ========================= */
-
-.disclaimer{
-  margin:0 80px 28px;
-
-  background:
-  linear-gradient(180deg,#020a56,#010633);
-
-  border-radius:30px;
-
-  padding:24px;
-
-  border:1px solid rgba(255,213,74,.08);
-}
-
-.disclaimer h3{
-  color:#ffd54a;
-  font-size:28px;
-  margin-bottom:12px;
-}
-
-.disclaimer p{
-  color:#d7d7d7;
-  font-size:15px;
-  line-height:1.7;
 }
 
 /* ========================= */
@@ -608,7 +574,9 @@ a{
   100%{transform:translateY(0)}
 }
 
+/* ========================= */
 /* SWEET PANEL */
+/* ========================= */
 
 .sweet-panel{
   position:fixed;
@@ -634,10 +602,6 @@ a{
   z-index:1400;
 
   display:none;
-
-  box-shadow:
-  0 0 40px rgba(125,255,207,.18),
-  0 0 60px rgba(160,84,255,.12);
 }
 
 .sweet-panel.active{
@@ -661,8 +625,6 @@ a{
 
 .sweet-header h3{
   color:#7dffcf;
-  font-size:20px;
-  font-weight:900;
 }
 
 .sweet-header button{
@@ -682,7 +644,6 @@ a{
 
 .sweet-body input{
   width:100%;
-
   padding:14px;
 
   border-radius:16px;
@@ -693,42 +654,12 @@ a{
   background:#081412;
 
   color:white;
-
-  outline:none;
-}
-
-.sweet-chips{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  margin:12px 0;
-}
-
-.sweet-chips button{
-  min-width:max-content;
-
-  border:none;
-
-  border-radius:999px;
-
-  padding:10px 12px;
-
-  background:
-  linear-gradient(
-    145deg,
-    #0d2a24,
-    #1b0033
-  );
-
-  color:#7dffcf;
-
-  font-weight:900;
-
-  cursor:pointer;
 }
 
 .sweet-send{
   width:100%;
+
+  margin-top:12px;
 
   border:none;
 
@@ -752,12 +683,65 @@ a{
 
 .sweet-results{
   margin-top:14px;
-
   color:#d7f7ef;
-
   font-size:14px;
+}
 
-  line-height:1.6;
+/* ========================= */
+/* MAP */
+/* ========================= */
+
+.map-section{
+  margin:0 80px 28px;
+
+  overflow:hidden;
+
+  border-radius:30px;
+
+  background:
+  linear-gradient(180deg,#020a56,#010633);
+}
+
+.map-header{
+  padding:22px;
+}
+
+.map-header h3{
+  color:#ffd54a;
+  font-size:26px;
+}
+
+.map-frame{
+  width:100%;
+  height:300px;
+  border:0;
+}
+
+/* ========================= */
+/* DISCLAIMER */
+/* ========================= */
+
+.disclaimer{
+  margin:0 80px 28px;
+
+  background:
+  linear-gradient(180deg,#020a56,#010633);
+
+  border-radius:30px;
+
+  padding:24px;
+}
+
+.disclaimer h3{
+  color:#ffd54a;
+  font-size:28px;
+  margin-bottom:12px;
+}
+
+.disclaimer p{
+  color:#d7d7d7;
+  font-size:15px;
+  line-height:1.7;
 }
 
 /* ========================= */
@@ -774,8 +758,6 @@ a{
   height:80px;
 
   background:rgba(0,0,0,.96);
-
-  border-top:1px solid rgba(255,213,74,.08);
 
   display:flex;
   align-items:center;
@@ -818,28 +800,6 @@ a{
     aspect-ratio:4/5;
   }
 
-  .hero{
-    padding-top:18px;
-  }
-
-  .hero-box{
-    padding:28px;
-  }
-
-  .hero-box h2{
-    font-size:52px;
-  }
-
-  .brand h1{
-    font-size:25px;
-  }
-
-  .short-card{
-    width:190px;
-    min-width:190px;
-    height:320px;
-  }
-
   .map-section,
   .disclaimer{
     margin-left:18px;
@@ -869,6 +829,25 @@ a{
 
 </header>
 
+<!-- MOBILE MENU -->
+
+<div class="mobile-menu" id="mobileMenu">
+
+<div class="menu-close" onclick="toggleMenu()">✕</div>
+
+<div class="menu-links">
+<a href="/">🏠 Home</a>
+<a href="/shorts.html">🔥 Shorts</a>
+<a href="/reel.html">🎬 Reels</a>
+<a href="/join.html">💎 Join</a>
+<a href="/login.html">👤 Login</a>
+<a href="/vault-8472.html">🔐 Admin</a>
+</div>
+
+</div>
+
+<!-- HERO -->
+
 <section class="hero">
 
 <div class="hero-box">
@@ -883,13 +862,14 @@ VIP listings, reels and luxury discovery.
 <input
 type="text"
 class="search-box"
-id="searchInput"
 placeholder="Search by name, bio, location..."
 >
 
 </div>
 
 </section>
+
+<!-- FILTERS -->
 
 <div class="filters">
 
@@ -902,6 +882,8 @@ placeholder="Search by name, bio, location..."
 
 </div>
 
+<!-- SHORTS -->
+
 <section class="shorts-section">
 
 <div class="shorts-header">
@@ -912,7 +894,7 @@ placeholder="Search by name, bio, location..."
 
 </div>
 
-<div class="shorts-row">
+<div class="shorts-row" id="shortsRow">
 
 <div class="short-card">
 
@@ -929,19 +911,19 @@ placeholder="Search by name, bio, location..."
 
 </section>
 
+<!-- PROFILES -->
+
 <section class="profiles" id="profiles">
 
 </section>
+
+<!-- MAP -->
 
 <section class="map-section">
 
 <div class="map-header">
 
 <h3>Nairobi Coverage Map</h3>
-
-<p>
-Explore active areas across Nairobi and nearby towns.
-</p>
 
 </div>
 
@@ -952,6 +934,8 @@ src="https://www.google.com/maps?q=Nairobi,Kenya&output=embed">
 
 </section>
 
+<!-- DISCLAIMER -->
+
 <section class="disclaimer">
 
 <h3>Disclaimer</h3>
@@ -959,10 +943,11 @@ src="https://www.google.com/maps?q=Nairobi,Kenya&output=embed">
 <p>
 Nairobi Sweets is an advertising and discovery platform only.
 All profiles are independently managed.
-Users must act responsibly and follow applicable laws.
 </p>
 
 </section>
+
+<!-- SWEET AI -->
 
 <div class="sweet-ai" onclick="openSweet()">
 
@@ -982,13 +967,7 @@ Users must act responsibly and follow applicable laws.
 
 <div class="sweet-body">
 
-<input id="sweetInput" placeholder="VIP in Kilimani, WhatsApp Westlands...">
-
-<div class="sweet-chips">
-<button onclick="quickAsk('VIP in Kilimani')">VIP Kilimani</button>
-<button onclick="quickAsk('Online now')">Online Now</button>
-<button onclick="quickAsk('WhatsApp Westlands')">WhatsApp Westlands</button>
-</div>
+<input id="sweetInput" placeholder="VIP in Kilimani...">
 
 <button class="sweet-send" onclick="askSweet()">
 Ask Sweet
@@ -1001,6 +980,8 @@ Hi, I’m Sweet 💋
 </div>
 
 </div>
+
+<!-- NAV -->
 
 <nav class="bottom-nav">
 
@@ -1029,30 +1010,82 @@ SUPABASE_KEY
 const profilesEl =
 document.getElementById("profiles");
 
+const shortsRow =
+document.getElementById("shortsRow");
+
+/* ========================= */
+/* MENU */
+/* ========================= */
+
 function toggleMenu(){
+
+  const menu =
+  document.getElementById("mobileMenu");
+
+  menu.classList.toggle("active");
+
 }
 
+/* ========================= */
+/* SWEET */
+/* ========================= */
+
 function openSweet(){
+
   document
   .getElementById("sweetPanel")
   .classList
   .add("active");
+
 }
 
 function closeSweet(){
+
   document
   .getElementById("sweetPanel")
   .classList
   .remove("active");
+
 }
 
-function quickAsk(text){
-  document
-  .getElementById("sweetInput")
-  .value = text;
+async function askSweet(){
 
-  askSweet();
+  const input =
+  document.getElementById("sweetInput");
+
+  const results =
+  document.getElementById("sweetResults");
+
+  const message =
+  input.value.trim();
+
+  if(!message){
+
+    results.innerHTML =
+    "Sweet needs a clue 💋";
+
+    return;
+  }
+
+  results.innerHTML =
+  "Sweet is searching... ✨";
+
+  setTimeout(()=>{
+
+    results.innerHTML =
+    `
+    Found matching profiles near:
+    <br><br>
+    ${message}
+    `;
+
+  },1200);
+
 }
+
+/* ========================= */
+/* HELPERS */
+/* ========================= */
 
 function safePhone(phone){
 
@@ -1080,6 +1113,93 @@ function getImage(profile){
 
 }
 
+function getVideo(profile){
+
+  return (
+    profile.video_url ||
+    profile.short_url ||
+    profile.reel_url ||
+    ""
+  );
+
+}
+
+function isVideo(url){
+
+  return /\.(mp4|webm|mov)$/i
+  .test(String(url || ""));
+
+}
+
+/* ========================= */
+/* SHORTS */
+/* ========================= */
+
+function renderShorts(list){
+
+  const shorts =
+  list.slice(0,10);
+
+  if(!shorts.length){
+
+    shortsRow.innerHTML = "";
+
+    return;
+  }
+
+  shortsRow.innerHTML =
+  shorts.map(profile=>{
+
+    const media =
+    getVideo(profile) ||
+    getImage(profile);
+
+    const mediaTag =
+    isVideo(media)
+
+    ? `
+      <video autoplay muted loop playsinline>
+      <source src="${media}" type="video/mp4">
+      </video>
+      `
+
+    : `
+      <img src="${media}">
+      `;
+
+    return `
+
+    <div
+    class="short-card"
+    onclick="window.location.href='/reel.html'"
+    >
+
+      ${mediaTag}
+
+      <div class="short-overlay">
+
+        <div class="short-name">
+          ${profile.stage_name || "Verified"}
+        </div>
+
+        <div class="short-location">
+          📍 ${profile.location || "Nairobi"}
+        </div>
+
+      </div>
+
+    </div>
+
+    `;
+
+  }).join("");
+
+}
+
+/* ========================= */
+/* PROFILES */
+/* ========================= */
+
 async function loadProfiles(){
 
   const {data,error} =
@@ -1100,6 +1220,8 @@ async function loadProfiles(){
 
     return;
   }
+
+  renderShorts(data || []);
 
   profilesEl.innerHTML =
   data.map(profile=>{
@@ -1161,7 +1283,7 @@ async function loadProfiles(){
           >
 
           ☎
-          <span>CALL</span>
+          CALL
 
           </a>
 
@@ -1173,7 +1295,7 @@ async function loadProfiles(){
 
           <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
 
-          <span>WHATSAPP</span>
+          WHATSAPP
 
           </a>
 
@@ -1186,58 +1308,6 @@ async function loadProfiles(){
     `;
 
   }).join("");
-
-}
-
-async function askSweet(){
-
-  const input =
-  document.getElementById("sweetInput");
-
-  const results =
-  document.getElementById("sweetResults");
-
-  const message =
-  input.value.trim();
-
-  if(!message){
-
-    results.innerHTML =
-    "Sweet needs a clue 💋";
-
-    return;
-  }
-
-  results.innerHTML =
-  "Sweet is searching... ✨";
-
-  try{
-
-    const response =
-    await fetch(
-      "/.netlify/functions/sweet-chat",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({message})
-      }
-    );
-
-    const data =
-    await response.json();
-
-    results.innerHTML =
-    data.reply ||
-    "Sweet found something 💋";
-
-  }catch(error){
-
-    results.innerHTML =
-    "Sweet got distracted 💔";
-
-  }
 
 }
 
