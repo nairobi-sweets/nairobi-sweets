@@ -7,6 +7,1110 @@
 
 <title>Nairobi Sweets</title>
 
+<meta name="description" content="Luxury Nairobi profiles, WhatsApp access, reels, shorts and VIP discovery.">
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  background:
+  radial-gradient(circle at top,#0c1148 0%,#000 45%);
+  color:white;
+  font-family:Arial,Helvetica,sans-serif;
+  overflow-x:hidden;
+  padding-bottom:100px;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+/* ========================= */
+/* TOPBAR */
+/* ========================= */
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:999;
+
+  background:rgba(0,0,0,.96);
+
+  backdrop-filter:blur(20px);
+
+  border-bottom:1px solid rgba(255,213,74,.08);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:14px 18px;
+
+  gap:14px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.brand img{
+  width:72px;
+  height:72px;
+
+  object-fit:cover;
+
+  border-radius:18px;
+
+  background:#020617;
+
+  box-shadow:
+  0 0 22px rgba(255,213,74,.18),
+  0 0 40px rgba(255,0,128,.10);
+}
+
+.brand h1{
+  color:#ffd54a;
+  font-size:clamp(24px,7vw,42px);
+  line-height:.95;
+  font-weight:900;
+  letter-spacing:-1.8px;
+}
+
+.menu-btn{
+  width:72px;
+  height:72px;
+
+  border-radius:22px;
+
+  background:
+  linear-gradient(180deg,#07145f,#02083d);
+
+  border:1px solid rgba(255,213,74,.12);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+}
+
+.menu-btn span{
+  color:#ffd54a;
+  font-size:38px;
+  font-weight:900;
+}
+
+/* ========================= */
+/* MOBILE MENU */
+/* ========================= */
+
+.mobile-menu{
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,.98);
+
+  z-index:2000;
+
+  transform:translateX(100%);
+  transition:.35s ease;
+
+  padding:34px;
+}
+
+.mobile-menu.active{
+  transform:translateX(0);
+}
+
+.menu-close{
+  text-align:right;
+  color:#ffd54a;
+  font-size:44px;
+  margin-bottom:30px;
+  cursor:pointer;
+}
+
+.menu-links{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.menu-links a{
+  background:
+  linear-gradient(180deg,#07145f,#02083d);
+
+  border:1px solid rgba(255,213,74,.08);
+
+  border-radius:20px;
+
+  padding:18px;
+
+  font-size:18px;
+  font-weight:900;
+}
+
+/* ========================= */
+/* HERO */
+/* ========================= */
+
+.hero{
+  padding:20px 18px 12px;
+}
+
+.hero-box{
+  background:
+  linear-gradient(180deg,#020a56,#010633);
+
+  border-radius:32px;
+
+  padding:34px 24px;
+
+  border:1px solid rgba(255,213,74,.08);
+
+  box-shadow:
+  0 0 30px rgba(255,0,128,.12),
+  0 25px 80px rgba(0,0,0,.5);
+}
+
+.hero-box h2{
+  color:#ffd54a;
+  font-size:clamp(52px,13vw,100px);
+  line-height:.9;
+  font-weight:900;
+  margin-bottom:18px;
+}
+
+.hero-box p{
+  color:#d9d9d9;
+  font-size:18px;
+  line-height:1.7;
+}
+
+.search-box{
+  width:100%;
+  margin-top:24px;
+
+  background:#020926;
+
+  border:1px solid rgba(255,255,255,.08);
+
+  color:white;
+
+  border-radius:18px;
+
+  padding:18px;
+
+  font-size:15px;
+
+  outline:none;
+}
+
+/* ========================= */
+/* FILTERS */
+/* ========================= */
+
+.filters{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+
+  padding:14px 18px;
+
+  scrollbar-width:none;
+}
+
+.filters::-webkit-scrollbar{
+  display:none;
+}
+
+.filters button{
+  border:none;
+
+  background:
+  linear-gradient(145deg,#1d243f,#08114f);
+
+  color:white;
+
+  border-radius:16px;
+
+  padding:14px 20px;
+
+  font-size:12px;
+  font-weight:900;
+
+  min-width:max-content;
+
+  border:1px solid rgba(255,255,255,.06);
+
+  cursor:pointer;
+}
+
+.filters button.active{
+  background:
+  linear-gradient(145deg,#1db954,#117336);
+}
+
+/* ========================= */
+/* SHORTS */
+/* ========================= */
+
+.shorts-section{
+  padding:4px 18px 26px;
+}
+
+.shorts-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+
+.shorts-header h2{
+  color:#ffd54a;
+  font-size:28px;
+  font-weight:900;
+}
+
+.shorts-header a{
+  color:#ff4d8d;
+  font-size:13px;
+  font-weight:900;
+}
+
+.shorts-row{
+  display:flex;
+  gap:16px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.shorts-row::-webkit-scrollbar{
+  display:none;
+}
+
+.short-card{
+  position:relative;
+
+  min-width:190px;
+  width:190px;
+
+  height:330px;
+
+  overflow:hidden;
+
+  border-radius:26px;
+
+  background:#020617;
+
+  border:1px solid rgba(255,255,255,.06);
+
+  flex-shrink:0;
+
+  cursor:pointer;
+}
+
+.short-card video,
+.short-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.short-overlay{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+
+  padding:16px;
+
+  background:
+  linear-gradient(to top,rgba(0,0,0,.95),transparent);
+}
+
+.short-name{
+  font-size:18px;
+  font-weight:900;
+}
+
+.short-location{
+  color:#d5d5d5;
+  margin-top:5px;
+  font-size:12px;
+}
+
+/* ========================= */
+/* PROFILES */
+/* ========================= */
+
+.profiles{
+  display:grid;
+
+  grid-template-columns:
+  repeat(4,minmax(220px,1fr));
+
+  gap:22px;
+
+  padding:10px 18px 70px;
+}
+
+.card{
+  position:relative;
+
+  overflow:hidden;
+
+  border-radius:28px;
+
+  background:
+  linear-gradient(180deg,#020a56,#010633);
+
+  border:1px solid rgba(255,213,74,.08);
+
+  box-shadow:
+  0 0 28px rgba(255,0,128,.08),
+  0 18px 50px rgba(0,0,0,.45);
+}
+
+.card-image{
+  width:100%;
+  aspect-ratio:4/5;
+  object-fit:cover;
+}
+
+.card-body{
+  padding:16px;
+}
+
+.card-name{
+  font-size:14px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.online{
+  color:#31ff71;
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+
+.location{
+  color:#d5d5d5;
+  font-size:10px;
+  margin-bottom:10px;
+}
+
+.phone{
+  color:#ffd54a;
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.bio{
+  color:#d2d2d2;
+  font-size:10px;
+  line-height:1.55;
+  margin-bottom:14px;
+}
+
+.engagement{
+  display:flex;
+  gap:8px;
+
+  color:#d0d0d0;
+
+  font-size:10px;
+
+  margin-bottom:14px;
+}
+
+.featured-badge{
+  position:absolute;
+  top:14px;
+  right:14px;
+
+  background:rgba(0,0,0,.72);
+
+  color:#ffd54a;
+
+  padding:8px 16px;
+
+  border-radius:999px;
+
+  font-size:11px;
+  font-weight:900;
+}
+
+.online-dot{
+  position:absolute;
+  top:14px;
+  left:14px;
+
+  width:18px;
+  height:18px;
+
+  border-radius:50%;
+
+  background:#31ff71;
+
+  border:3px solid white;
+}
+
+/* ========================= */
+/* BUTTONS */
+/* ========================= */
+
+.action-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.call-btn,
+.wa-btn{
+  min-height:40px;
+
+  border-radius:16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+
+  font-size:9px;
+  font-weight:800;
+}
+
+.call-btn{
+  background:
+  linear-gradient(145deg,#050717,#07114a);
+
+  color:white;
+}
+
+.wa-btn{
+  background:
+  linear-gradient(145deg,#02140a,#06361b);
+
+  color:white;
+}
+
+.wa-btn img{
+  width:14px;
+  height:14px;
+}
+
+/* ========================= */
+/* MAP */
+/* ========================= */
+
+.map-wrap{
+  padding:0 18px 28px;
+}
+
+.map-card{
+  overflow:hidden;
+  border-radius:28px;
+  border:1px solid rgba(255,213,74,.08);
+}
+
+.map-card iframe{
+  width:100%;
+  height:320px;
+  border:none;
+}
+
+/* ========================= */
+/* DISCLAIMER */
+/* ========================= */
+
+.disclaimer{
+  padding:0 18px 80px;
+}
+
+.disclaimer-box{
+  background:
+  linear-gradient(180deg,#020a56,#010633);
+
+  border-radius:30px;
+
+  padding:28px;
+
+  border:1px solid rgba(255,213,74,.08);
+}
+
+.disclaimer-box h3{
+  color:#ffd54a;
+  font-size:26px;
+  margin-bottom:18px;
+}
+
+.disclaimer-box p{
+  color:#d8d8d8;
+  line-height:1.8;
+  font-size:15px;
+}
+
+/* ========================= */
+/* SWEET AI */
+/* ========================= */
+
+.sweet-ai{
+  position:fixed;
+  right:18px;
+  bottom:98px;
+
+  width:58px;
+  height:58px;
+
+  border-radius:50%;
+  overflow:hidden;
+
+  z-index:999;
+
+  cursor:pointer;
+
+  border:3px solid #7dffcf;
+
+  background:
+  linear-gradient(
+    145deg,
+    #071a17,
+    #120022
+  );
+
+  box-shadow:
+  0 0 22px rgba(125,255,207,.45),
+  0 0 42px rgba(160,84,255,.28);
+
+  animation:sweetFloat 3s infinite ease-in-out;
+}
+
+.sweet-ai img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+@keyframes sweetFloat{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-7px)}
+  100%{transform:translateY(0)}
+}
+
+/* ========================= */
+/* NAV */
+/* ========================= */
+
+.bottom-nav{
+  position:fixed;
+
+  left:0;
+  right:0;
+  bottom:0;
+
+  height:76px;
+
+  background:rgba(0,0,0,.96);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+
+  z-index:999;
+}
+
+.bottom-nav button{
+  border:none;
+  background:none;
+
+  color:#ffd54a;
+
+  font-size:22px;
+
+  cursor:pointer;
+}
+
+/* ========================= */
+/* MOBILE */
+/* ========================= */
+
+@media(max-width:900px){
+
+  .profiles{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+<a href="/" class="brand">
+
+<img src="/assets/logo/logo-navbar.png">
+
+<h1>Nairobi<br>Sweets</h1>
+
+</a>
+
+<div class="menu-btn" onclick="toggleMenu()">
+<span>☰</span>
+</div>
+
+</header>
+
+<!-- MENU -->
+
+<div class="mobile-menu" id="mobileMenu">
+
+<div class="menu-close" onclick="toggleMenu()">✕</div>
+
+<div class="menu-links">
+
+<a href="/">🏠 Home</a>
+<a href="/shorts.html">🔥 Shorts</a>
+<a href="/reel.html">🎬 Reels</a>
+<a href="/join.html">💎 Join</a>
+<a href="/login.html">👤 Login</a>
+<a href="/vault-8472.html">🔐 Admin</a>
+
+</div>
+
+</div>
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="hero-box">
+
+<h2>Profiles</h2>
+
+<p>
+Verified profiles, WhatsApp access,
+VIP listings, reels and luxury discovery.
+</p>
+
+<input
+type="text"
+class="search-box"
+id="searchInput"
+placeholder="Search by name, bio, location..."
+>
+
+</div>
+
+</section>
+
+<!-- FILTERS -->
+
+<div class="filters">
+
+<button class="active">HOME</button>
+<button>VIP</button>
+<button>ONLINE</button>
+<button>WHATSAPP</button>
+
+</div>
+
+<!-- SHORTS -->
+
+<section class="shorts-section">
+
+<div class="shorts-header">
+
+<h2>🔥 Nairobi Shorts</h2>
+
+<a href="/reel.html">Open Reels →</a>
+
+</div>
+
+<div class="shorts-row" id="shortsRow"></div>
+
+</section>
+
+<!-- PROFILES -->
+
+<section class="profiles" id="profiles"></section>
+
+<!-- MAP -->
+
+<section class="map-wrap">
+
+<div class="map-card">
+
+<iframe
+src="https://maps.google.com/maps?q=Nairobi&t=&z=11&ie=UTF8&iwloc=&output=embed"
+allowfullscreen>
+</iframe>
+
+</div>
+
+</section>
+
+<!-- DISCLAIMER -->
+
+<section class="disclaimer">
+
+<div class="disclaimer-box">
+
+<h3>Disclaimer</h3>
+
+<p>
+Nairobi Sweets is an advertising and discovery platform only.
+All profiles are independently managed. Users must act responsibly
+and comply with all applicable laws and regulations.
+</p>
+
+</div>
+
+</section>
+
+<!-- SWEET AI -->
+
+<div class="sweet-ai">
+<img src="/assets/logo/logo-badge.png">
+</div>
+
+<!-- NAV -->
+
+<nav class="bottom-nav">
+
+<button onclick="window.location.href='/'">🏠</button>
+<button onclick="window.location.href='/shorts.html'">🔥</button>
+<button onclick="window.location.href='/reel.html'">🎬</button>
+<button>✨</button>
+<button onclick="toggleMenu()">☰</button>
+
+</nav>
+
+<script>
+
+const SUPABASE_URL =
+"https://dkjlvyynvgtijccitvvd.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+
+const sb =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+const profilesEl =
+document.getElementById("profiles");
+
+const shortsRow =
+document.getElementById("shortsRow");
+
+const searchInput =
+document.getElementById("searchInput");
+
+let ALL_PROFILES = [];
+
+/* MENU */
+
+function toggleMenu(){
+
+  const menu =
+  document.getElementById("mobileMenu");
+
+  menu.classList.toggle("active");
+
+}
+
+/* HELPERS */
+
+function safePhone(phone){
+
+  let p =
+  String(phone || "")
+  .replace(/\D/g,"");
+
+  if(!p) return "";
+
+  if(p.startsWith("0")){
+    p = "254" + p.slice(1);
+  }
+
+  return p;
+}
+
+function getImage(profile){
+
+  return (
+    profile.photo_url ||
+    profile.image_url ||
+    profile.photo ||
+    "/assets/logo/logo-badge.png"
+  );
+
+}
+
+function getVideo(profile){
+
+  return (
+    profile.video_url ||
+    profile.short_url ||
+    profile.reel_url ||
+    ""
+  );
+
+}
+
+function isVideo(url){
+
+  return /\.(mp4|webm|mov)$/i
+  .test(String(url || ""));
+
+}
+
+/* SHORTS */
+
+function renderShorts(list){
+
+  const shorts =
+  list.slice(0,10);
+
+  shortsRow.innerHTML =
+  shorts.map(profile=>{
+
+    const media =
+    getVideo(profile) ||
+    getImage(profile);
+
+    const mediaTag =
+    isVideo(media)
+
+    ? `
+      <video autoplay muted loop playsinline>
+      <source src="${media}" type="video/mp4">
+      </video>
+      `
+
+    : `
+      <img src="${media}">
+      `;
+
+    return `
+
+    <div
+    class="short-card"
+    onclick="window.location.href='/reel.html'"
+    >
+
+      ${mediaTag}
+
+      <div class="short-overlay">
+
+        <div class="short-name">
+          ${profile.stage_name || "Verified"}
+        </div>
+
+        <div class="short-location">
+          📍 ${profile.location || "Nairobi"}
+        </div>
+
+      </div>
+
+    </div>
+
+    `;
+
+  }).join("");
+
+}
+
+/* PROFILES */
+
+function renderProfiles(data){
+
+  profilesEl.innerHTML =
+  data.map(profile=>{
+
+    const phone =
+    safePhone(
+      profile.phone ||
+      profile.whatsapp
+    );
+
+    return `
+
+    <article class="card">
+
+      <span class="online-dot"></span>
+
+      <div class="featured-badge">
+        ✨ VIP
+      </div>
+
+      <img
+      src="${getImage(profile)}"
+      class="card-image"
+      >
+
+      <div class="card-body">
+
+        <div class="card-name">
+          ${profile.stage_name || "Verified"}
+        </div>
+
+        <div class="online">
+          Online Now
+        </div>
+
+        <div class="location">
+          📍 ${profile.location || "Nairobi"}
+        </div>
+
+        <div class="phone">
+          📞 ${phone}
+        </div>
+
+        <div class="bio">
+          ${profile.bio || "Luxury Nairobi profile."}
+        </div>
+
+        <div class="engagement">
+          ❤️ ${profile.likes_count || 0}
+          •
+          👁️ ${profile.views_count || 0}
+        </div>
+
+        <div class="action-row">
+
+          <a
+          class="call-btn"
+          href="tel:${phone}"
+          >
+          ☎ CALL
+          </a>
+
+          <a
+          class="wa-btn"
+          href="https://wa.me/${phone}"
+          target="_blank"
+          >
+
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
+
+          WHATSAPP
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </article>
+
+    `;
+
+  }).join("");
+
+}
+
+/* SEARCH */
+
+searchInput.addEventListener("input",()=>{
+
+  const q =
+  searchInput.value.toLowerCase();
+
+  const filtered =
+  ALL_PROFILES.filter(p=>{
+
+    return (
+      (p.stage_name || "")
+      .toLowerCase()
+      .includes(q)
+
+      ||
+
+      (p.location || "")
+      .toLowerCase()
+      .includes(q)
+
+      ||
+
+      (p.bio || "")
+      .toLowerCase()
+      .includes(q)
+    );
+
+  });
+
+  renderProfiles(filtered);
+
+});
+
+/* LOAD */
+
+async function loadProfiles(){
+
+  const {data,error} =
+  await sb
+  .from("profiles")
+  .select("*")
+  .eq("approved",true)
+  .order("created_at",{ascending:false});
+
+  if(error){
+
+    profilesEl.innerHTML =
+    `<div style="padding:50px;color:red;">
+      ${error.message}
+    </div>`;
+
+    return;
+  }
+
+  ALL_PROFILES = data || [];
+
+  renderShorts(ALL_PROFILES);
+
+  renderProfiles(ALL_PROFILES);
+
+}
+
+loadProfiles();
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nairobi Sweets</title>
+
 <meta name="description" content="Luxury Nairobi discovery platform with verified VIP profiles, WhatsApp access, reels and Sweet AI.">
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
