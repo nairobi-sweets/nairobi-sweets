@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Nairobi Sweets</title>
-<meta name="description" content="Luxury Nairobi profiles, WhatsApp access, reels, shorts and VIP discovery.">
+<title>Nairobi Sweets | Verified Nairobi Profiles</title>
+<meta name="description" content="Luxury Nairobi profiles, VIP listings, WhatsApp access, shorts, reels, map and Sweet AI discovery.">
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -35,15 +35,24 @@ a{text-decoration:none;color:inherit}
   padding:14px 18px;
   gap:14px;
 }
-.brand{display:flex;align-items:center;gap:14px}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
+
 .brand img{
   width:72px;
   height:72px;
+  min-width:72px;
   object-fit:cover;
   border-radius:18px;
   background:#020617;
   box-shadow:0 0 22px rgba(255,213,74,.18),0 0 40px rgba(255,0,128,.10);
 }
+
 .brand h1{
   color:#ffd54a;
   font-size:clamp(24px,7vw,42px);
@@ -51,6 +60,7 @@ a{text-decoration:none;color:inherit}
   font-weight:900;
   letter-spacing:-1.8px;
 }
+
 .menu-btn{
   width:72px;
   height:72px;
@@ -63,7 +73,12 @@ a{text-decoration:none;color:inherit}
   justify-content:center;
   cursor:pointer;
 }
-.menu-btn span{color:#ffd54a;font-size:38px;font-weight:900}
+
+.menu-btn span{
+  color:#ffd54a;
+  font-size:38px;
+  font-weight:900;
+}
 
 .mobile-menu{
   position:fixed;
@@ -74,9 +89,23 @@ a{text-decoration:none;color:inherit}
   transition:.35s ease;
   padding:34px;
 }
+
 .mobile-menu.active{transform:translateX(0)}
-.menu-close{text-align:right;color:#ffd54a;font-size:44px;margin-bottom:30px;cursor:pointer}
-.menu-links{display:flex;flex-direction:column;gap:16px}
+
+.menu-close{
+  text-align:right;
+  color:#ffd54a;
+  font-size:44px;
+  margin-bottom:30px;
+  cursor:pointer;
+}
+
+.menu-links{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
 .menu-links a{
   background:linear-gradient(180deg,#07145f,#02083d);
   border:1px solid rgba(255,213,74,.08);
@@ -87,6 +116,7 @@ a{text-decoration:none;color:inherit}
 }
 
 .hero{padding:20px 18px 12px}
+
 .hero-box{
   background:linear-gradient(180deg,#020a56,#010633);
   border-radius:32px;
@@ -94,6 +124,7 @@ a{text-decoration:none;color:inherit}
   border:1px solid rgba(255,213,74,.08);
   box-shadow:0 0 30px rgba(255,0,128,.12),0 25px 80px rgba(0,0,0,.5);
 }
+
 .hero-box h2{
   color:#ffd54a;
   font-size:clamp(52px,13vw,100px);
@@ -101,7 +132,13 @@ a{text-decoration:none;color:inherit}
   font-weight:900;
   margin-bottom:18px;
 }
-.hero-box p{color:#d9d9d9;font-size:18px;line-height:1.7}
+
+.hero-box p{
+  color:#d9d9d9;
+  font-size:18px;
+  line-height:1.7;
+}
+
 .search-box{
   width:100%;
   margin-top:24px;
@@ -121,7 +158,9 @@ a{text-decoration:none;color:inherit}
   padding:14px 18px;
   scrollbar-width:none;
 }
+
 .filters::-webkit-scrollbar{display:none}
+
 .filters button{
   border:none;
   background:linear-gradient(145deg,#1d243f,#08114f);
@@ -134,14 +173,65 @@ a{text-decoration:none;color:inherit}
   border:1px solid rgba(255,255,255,.06);
   cursor:pointer;
 }
-.filters button.active{background:linear-gradient(145deg,#1db954,#117336)}
+
+.filters button.active{
+  background:linear-gradient(145deg,#1db954,#117336);
+}
+
+.stats-wrap{
+  padding:0 18px 20px;
+}
+
+.stats-box{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border:1px solid rgba(255,213,74,.08);
+  border-radius:24px;
+  padding:18px;
+}
+
+.stats-label{
+  color:#d8d8d8;
+  font-size:13px;
+  font-weight:800;
+}
+
+.stats-number{
+  color:#ffd54a;
+  font-size:38px;
+  font-weight:900;
+  margin-top:6px;
+}
 
 .shorts-section{padding:4px 18px 26px}
-.shorts-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.shorts-header h2{color:#ffd54a;font-size:28px;font-weight:900}
-.shorts-header a{color:#ff4d8d;font-size:13px;font-weight:900}
-.shorts-row{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none}
+
+.shorts-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+
+.shorts-header h2{
+  color:#ffd54a;
+  font-size:28px;
+  font-weight:900;
+}
+
+.shorts-header a{
+  color:#ff4d8d;
+  font-size:13px;
+  font-weight:900;
+}
+
+.shorts-row{
+  display:flex;
+  gap:16px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
 .shorts-row::-webkit-scrollbar{display:none}
+
 .short-card{
   position:relative;
   min-width:190px;
@@ -154,7 +244,14 @@ a{text-decoration:none;color:inherit}
   flex-shrink:0;
   cursor:pointer;
 }
-.short-card video,.short-card img{width:100%;height:100%;object-fit:cover}
+
+.short-card video,
+.short-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
 .short-overlay{
   position:absolute;
   left:0;
@@ -163,8 +260,17 @@ a{text-decoration:none;color:inherit}
   padding:16px;
   background:linear-gradient(to top,rgba(0,0,0,.95),transparent);
 }
-.short-name{font-size:18px;font-weight:900}
-.short-location{color:#d5d5d5;margin-top:5px;font-size:12px}
+
+.short-name{
+  font-size:18px;
+  font-weight:900;
+}
+
+.short-location{
+  color:#d5d5d5;
+  margin-top:5px;
+  font-size:12px;
+}
 
 .profiles{
   display:grid;
@@ -172,6 +278,7 @@ a{text-decoration:none;color:inherit}
   gap:22px;
   padding:10px 18px 70px;
 }
+
 .card{
   position:relative;
   overflow:hidden;
@@ -181,6 +288,7 @@ a{text-decoration:none;color:inherit}
   border:1px solid rgba(255,213,74,.08);
   box-shadow:0 0 28px rgba(255,0,128,.08),0 18px 50px rgba(0,0,0,.45);
 }
+
 .card-image{
   width:100%;
   aspect-ratio:4/4.4;
@@ -188,13 +296,50 @@ a{text-decoration:none;color:inherit}
   display:block;
   background:#020617;
 }
+
 .card-body{padding:16px}
-.card-name{font-size:14px;font-weight:900;margin-bottom:8px}
-.online{color:#31ff71;font-size:11px;font-weight:900;margin-bottom:10px}
-.location{color:#d5d5d5;font-size:10px;margin-bottom:10px}
-.phone{color:#ffd54a;font-size:11px;font-weight:900;margin-bottom:12px}
-.bio{color:#d2d2d2;font-size:10px;line-height:1.55;margin-bottom:14px}
-.engagement{display:flex;gap:8px;color:#d0d0d0;font-size:10px;margin-bottom:14px;flex-wrap:wrap}
+
+.card-name{
+  font-size:14px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.online{
+  color:#31ff71;
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+
+.location{
+  color:#d5d5d5;
+  font-size:10px;
+  margin-bottom:10px;
+}
+
+.phone{
+  color:#ffd54a;
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.bio{
+  color:#d2d2d2;
+  font-size:10px;
+  line-height:1.55;
+  margin-bottom:14px;
+}
+
+.engagement{
+  display:flex;
+  gap:8px;
+  color:#d0d0d0;
+  font-size:10px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
 
 .featured-badge{
   position:absolute;
@@ -206,7 +351,9 @@ a{text-decoration:none;color:inherit}
   border-radius:999px;
   font-size:11px;
   font-weight:900;
+  z-index:5;
 }
+
 .online-dot{
   position:absolute;
   top:14px;
@@ -216,10 +363,17 @@ a{text-decoration:none;color:inherit}
   border-radius:50%;
   background:#31ff71;
   border:3px solid white;
+  z-index:5;
 }
 
-.action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.call-btn,.wa-btn{
+.action-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.call-btn,
+.wa-btn{
   min-height:34px;
   border-radius:16px;
   display:flex;
@@ -229,31 +383,87 @@ a{text-decoration:none;color:inherit}
   font-size:9px;
   font-weight:800;
 }
+
 .call-btn{
   background:linear-gradient(145deg,#08114f,#050717);
   color:white;
   box-shadow:inset 0 1px 1px rgba(255,255,255,.08),0 6px 18px rgba(0,0,0,.35);
 }
+
 .wa-btn{
   background:linear-gradient(145deg,#0b5f2d,#06361b);
   color:white;
   box-shadow:inset 0 1px 1px rgba(255,255,255,.08),0 6px 18px rgba(0,0,0,.35);
 }
-.wa-btn img{width:14px;height:14px}
+
+.wa-btn img{
+  width:14px;
+  height:14px;
+}
+
+.disabled-contact{
+  grid-column:1/-1;
+  min-height:34px;
+  border-radius:16px;
+  background:#171717;
+  color:#777;
+  border:none;
+  font-size:9px;
+  font-weight:900;
+}
 
 .map-wrap{padding:0 18px 28px}
-.map-card{overflow:hidden;border-radius:28px;border:1px solid rgba(255,213,74,.08)}
-.map-card iframe{width:100%;height:320px;border:none}
+
+.map-card{
+  overflow:hidden;
+  border-radius:28px;
+  border:1px solid rgba(255,213,74,.08);
+  background:linear-gradient(180deg,#020a56,#010633);
+}
+
+.map-header{
+  padding:22px;
+}
+
+.map-header h3{
+  color:#ffd54a;
+  font-size:26px;
+  margin-bottom:10px;
+}
+
+.map-header p{
+  color:#d8d8d8;
+  font-size:15px;
+  line-height:1.6;
+}
+
+.map-card iframe{
+  width:100%;
+  height:320px;
+  border:none;
+  display:block;
+}
 
 .disclaimer{padding:0 18px 80px}
+
 .disclaimer-box{
   background:linear-gradient(180deg,#020a56,#010633);
   border-radius:30px;
   padding:28px;
   border:1px solid rgba(255,213,74,.08);
 }
-.disclaimer-box h3{color:#ffd54a;font-size:26px;margin-bottom:18px}
-.disclaimer-box p{color:#d8d8d8;line-height:1.8;font-size:15px}
+
+.disclaimer-box h3{
+  color:#ffd54a;
+  font-size:26px;
+  margin-bottom:18px;
+}
+
+.disclaimer-box p{
+  color:#d8d8d8;
+  line-height:1.8;
+  font-size:15px;
+}
 
 .sweet-ai{
   position:fixed;
@@ -270,7 +480,13 @@ a{text-decoration:none;color:inherit}
   box-shadow:0 0 22px rgba(125,255,207,.45),0 0 42px rgba(160,84,255,.28);
   animation:sweetFloat 3s infinite ease-in-out;
 }
-.sweet-ai img{width:100%;height:100%;object-fit:cover}
+
+.sweet-ai img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
 @keyframes sweetFloat{
   0%{transform:translateY(0)}
   50%{transform:translateY(-7px)}
@@ -290,7 +506,9 @@ a{text-decoration:none;color:inherit}
   display:none;
   box-shadow:0 0 40px rgba(125,255,207,.18),0 0 60px rgba(160,84,255,.12);
 }
+
 .sweet-panel.active{display:block}
+
 .sweet-header{
   display:flex;
   justify-content:space-between;
@@ -298,9 +516,23 @@ a{text-decoration:none;color:inherit}
   padding:16px 18px;
   background:linear-gradient(90deg,#05110f,#1b0033);
 }
-.sweet-header h3{color:#7dffcf;font-size:20px;font-weight:900}
-.sweet-header button{background:none;border:none;color:#b388ff;font-size:24px;cursor:pointer}
+
+.sweet-header h3{
+  color:#7dffcf;
+  font-size:20px;
+  font-weight:900;
+}
+
+.sweet-header button{
+  background:none;
+  border:none;
+  color:#b388ff;
+  font-size:24px;
+  cursor:pointer;
+}
+
 .sweet-body{padding:16px}
+
 .sweet-body input{
   width:100%;
   padding:14px;
@@ -310,6 +542,7 @@ a{text-decoration:none;color:inherit}
   color:white;
   outline:none;
 }
+
 .sweet-chips{
   display:flex;
   gap:8px;
@@ -317,7 +550,9 @@ a{text-decoration:none;color:inherit}
   margin:12px 0;
   scrollbar-width:none;
 }
+
 .sweet-chips::-webkit-scrollbar{display:none}
+
 .sweet-chips button{
   min-width:max-content;
   border:none;
@@ -330,6 +565,7 @@ a{text-decoration:none;color:inherit}
   border:1px solid rgba(125,255,207,.12);
   cursor:pointer;
 }
+
 .sweet-send{
   width:100%;
   border:none;
@@ -340,7 +576,23 @@ a{text-decoration:none;color:inherit}
   font-weight:900;
   cursor:pointer;
 }
-.sweet-results{margin-top:14px;color:#d7f7ef;font-size:14px;line-height:1.5}
+
+.sweet-results{
+  margin-top:14px;
+  color:#d7f7ef;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.sweet-card{
+  margin:10px 0;
+  padding:10px;
+  border-radius:14px;
+  background:#0d2a24;
+  border:1px solid rgba(125,255,207,.12);
+}
+
+.sweet-card strong{color:#7dffcf}
 
 .bottom-nav{
   position:fixed;
@@ -353,13 +605,57 @@ a{text-decoration:none;color:inherit}
   align-items:center;
   justify-content:space-around;
   z-index:999;
+  border-top:1px solid rgba(255,213,74,.08);
 }
+
 .bottom-nav button{
   border:none;
   background:none;
   color:#ffd54a;
   font-size:22px;
   cursor:pointer;
+}
+
+.loading,
+.empty{
+  grid-column:1/-1;
+  padding:50px;
+  color:#ffd54a;
+  font-weight:900;
+  text-align:center;
+}
+
+@media(min-width:1100px){
+  .hero,
+  .filters,
+  .stats-wrap,
+  .shorts-section,
+  .profiles,
+  .map-wrap,
+  .disclaimer{
+    padding-left:90px;
+    padding-right:90px;
+  }
+
+  .brand img{
+    width:58px;
+    height:58px;
+    min-width:58px;
+  }
+
+  .brand h1{
+    font-size:38px;
+  }
+
+  .menu-btn{
+    width:64px;
+    height:64px;
+    min-width:64px;
+  }
+}
+
+@media(max-width:1100px){
+  .profiles{grid-template-columns:repeat(3,minmax(220px,1fr))}
 }
 
 @media(max-width:900px){
@@ -413,7 +709,18 @@ a{text-decoration:none;color:inherit}
   <button data-filter="vip">VIP</button>
   <button data-filter="online">ONLINE</button>
   <button data-filter="whatsapp">WHATSAPP</button>
+  <button data-filter="kilimani">KILIMANI</button>
+  <button data-filter="westlands">WESTLANDS</button>
+  <button data-filter="ruiru">RUIRU</button>
+  <button data-filter="kasarani">KASARANI</button>
 </div>
+
+<section class="stats-wrap">
+  <div class="stats-box">
+    <div class="stats-label">Total Profiles</div>
+    <div class="stats-number" id="profileCount">0</div>
+  </div>
+</section>
 
 <section class="shorts-section">
   <div class="shorts-header">
@@ -424,10 +731,17 @@ a{text-decoration:none;color:inherit}
   <div class="shorts-row" id="shortsRow"></div>
 </section>
 
-<section class="profiles" id="profiles"></section>
+<section class="profiles" id="profiles">
+  <div class="loading">Loading profiles...</div>
+</section>
 
 <section class="map-wrap">
   <div class="map-card">
+    <div class="map-header">
+      <h3>Nairobi Coverage Map</h3>
+      <p>Explore active areas across Nairobi and nearby towns.</p>
+    </div>
+
     <iframe
       src="https://maps.google.com/maps?q=Nairobi&t=&z=11&ie=UTF8&iwloc=&output=embed"
       loading="lazy"
@@ -483,11 +797,14 @@ a{text-decoration:none;color:inherit}
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const SITE_URL = "https://nairobi-sweets.com";
+
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const profilesEl = document.getElementById("profiles");
 const shortsRow = document.getElementById("shortsRow");
 const searchInput = document.getElementById("searchInput");
+const profileCount = document.getElementById("profileCount");
 
 let ALL_PROFILES = [];
 let ACTIVE_FILTER = "home";
@@ -546,15 +863,75 @@ function getLocation(profile){
 }
 
 function getPlan(profile){
-  return String(profile.plan || profile.plan_name || profile.package || "").toLowerCase();
+  return String(profile.plan || profile.plan_name || profile.package || profile.tier || "").toLowerCase();
 }
 
 function getBio(profile){
   return profile.bio || profile.description || profile.about || "Luxury Nairobi profile.";
 }
 
+function getBadge(profile){
+  const plan = getPlan(profile);
+  if(plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP";
+  if(plan.includes("vip")) return "✨ VIP";
+  return "✨ Featured";
+}
+
+function getLikes(profile){
+  return Number(profile.likes_count || profile.likes || 0);
+}
+
+function getViews(profile){
+  return Number(profile.views_count || profile.views || 0);
+}
+
+function compact(text,max=115){
+  text = String(text || "");
+  return text.length > max ? text.slice(0,max).trim() + "..." : text;
+}
+
+function whatsappMessage(profile){
+  return encodeURIComponent(
+`🔥 Nairobi Sweets
+
+Hi ${getName(profile)},
+
+I found your profile on Nairobi Sweets.
+
+🌍 ${SITE_URL}
+
+💎 Verified Profiles
+🔥 Nairobi Shorts
+🎬 Nairobi Reels`
+  );
+}
+
+function profileSearchText(profile){
+  return `
+    ${getName(profile)}
+    ${getLocation(profile)}
+    ${getBio(profile)}
+    ${getPlan(profile)}
+    ${profile.phone || ""}
+    ${profile.whatsapp || ""}
+  `.toLowerCase();
+}
+
 function renderShorts(list){
   const shorts = list.slice(0,10);
+
+  if(!shorts.length){
+    shortsRow.innerHTML = `
+      <div class="short-card">
+        <img src="/assets/logo/logo-badge.png">
+        <div class="short-overlay">
+          <div class="short-name">No shorts yet</div>
+          <div class="short-location">📍 Nairobi</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
 
   shortsRow.innerHTML = shorts.map(profile=>{
     const media = getVideo(profile) || getImage(profile);
@@ -576,25 +953,26 @@ function renderShorts(list){
 }
 
 function renderProfiles(data){
+  profileCount.textContent = data.length.toLocaleString();
+
   if(!data.length){
-    profilesEl.innerHTML = `<div style="grid-column:1/-1;padding:50px;color:#ffd54a;font-weight:900;text-align:center;">No profiles found.</div>`;
+    profilesEl.innerHTML = `<div class="empty">No profiles found.</div>`;
     return;
   }
 
   profilesEl.innerHTML = data.map(profile=>{
     const phone = safePhone(profile.phone || profile.whatsapp);
-    const plan = getPlan(profile);
-    const badge = plan.includes("vip") ? "✨ VIP" : "✨ Featured";
 
     return `
       <article class="card">
         <span class="online-dot"></span>
-        <div class="featured-badge">${badge}</div>
+        <div class="featured-badge">${getBadge(profile)}</div>
 
         <img
           src="${getImage(profile)}"
           class="card-image"
           loading="lazy"
+          alt="${getName(profile)}"
           onerror="this.src='/assets/logo/logo-badge.png'"
         >
 
@@ -603,12 +981,12 @@ function renderProfiles(data){
           <div class="online">Online Now</div>
           <div class="location">📍 ${getLocation(profile)}</div>
           <div class="phone">📞 ${phone || "Hidden"}</div>
-          <div class="bio">${getBio(profile)}</div>
+          <div class="bio">${compact(getBio(profile))}</div>
 
           <div class="engagement">
-            ❤️ ${profile.likes_count || 0}
+            ❤️ ${getLikes(profile)}
             •
-            👁️ ${profile.views_count || 0}
+            👁️ ${getViews(profile)}
           </div>
 
           <div class="action-row">
@@ -616,15 +994,18 @@ function renderProfiles(data){
               phone
               ? `
                 <a class="call-btn" href="tel:${phone}">☎ CALL</a>
-                <a class="wa-btn" href="https://wa.me/${phone}" target="_blank">
+
+                <a
+                  class="wa-btn"
+                  href="https://wa.me/${phone}?text=${whatsappMessage(profile)}"
+                  target="_blank"
+                  rel="noopener"
+                >
                   <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
                   WHATSAPP
                 </a>
               `
-              : `
-                <a class="call-btn">CONTACT</a>
-                <a class="wa-btn">HIDDEN</a>
-              `
+              : `<button class="disabled-contact">CONTACT HIDDEN</button>`
             }
           </div>
         </div>
@@ -642,19 +1023,12 @@ function applyFilters(){
       if(ACTIVE_FILTER === "vip") return getPlan(p).includes("vip");
       if(ACTIVE_FILTER === "online") return true;
       if(ACTIVE_FILTER === "whatsapp") return Boolean(p.phone || p.whatsapp);
-      return true;
+      return profileSearchText(p).includes(ACTIVE_FILTER);
     });
   }
 
   if(q){
-    list = list.filter(p=>{
-      return `
-        ${getName(p)}
-        ${getLocation(p)}
-        ${getBio(p)}
-        ${getPlan(p)}
-      `.toLowerCase().includes(q);
-    });
+    list = list.filter(p=>profileSearchText(p).includes(q));
   }
 
   renderProfiles(list);
@@ -683,21 +1057,23 @@ async function askSweet(){
 
   results.innerHTML = "Sweet is searching... ✨";
 
-  const local = ALL_PROFILES.filter(p=>{
-    return `
-      ${getName(p)}
-      ${getLocation(p)}
-      ${getBio(p)}
-      ${getPlan(p)}
-    `.toLowerCase().includes(message.toLowerCase());
-  }).slice(0,3);
+  const q = message.toLowerCase();
+
+  let local = ALL_PROFILES.filter(p=>{
+    if(q.includes("vip")) return getPlan(p).includes("vip");
+    if(q.includes("whatsapp")) return Boolean(p.phone || p.whatsapp);
+    if(q.includes("online")) return true;
+    if(q.includes("liked")) return getLikes(p) > 0;
+    return profileSearchText(p).includes(q);
+  }).slice(0,4);
 
   if(local.length){
     results.innerHTML = local.map(p=>`
-      <div style="margin:10px 0;padding:10px;border-radius:14px;background:#0d2a24;">
-        <strong style="color:#7dffcf">${getName(p)}</strong><br>
+      <div class="sweet-card" onclick="window.location.href='/reel.html'">
+        <strong>${getName(p)}</strong><br>
         📍 ${getLocation(p)}<br>
-        📞 ${safePhone(p.phone || p.whatsapp) || "Hidden"}
+        📞 ${safePhone(p.phone || p.whatsapp) || "Hidden"}<br>
+        💎 ${getBadge(p)}
       </div>
     `).join("");
     return;
@@ -718,7 +1094,7 @@ async function askSweet(){
 }
 
 async function loadProfiles(){
-  profilesEl.innerHTML = `<div style="grid-column:1/-1;padding:50px;color:#ffd54a;font-weight:900;text-align:center;">Loading profiles...</div>`;
+  profilesEl.innerHTML = `<div class="loading">Loading profiles...</div>`;
 
   const {data,error} = await sb
     .from("profiles")
@@ -727,7 +1103,7 @@ async function loadProfiles(){
     .order("created_at",{ascending:false});
 
   if(error){
-    profilesEl.innerHTML = `<div style="grid-column:1/-1;padding:50px;color:red;">${error.message}</div>`;
+    profilesEl.innerHTML = `<div class="empty" style="color:#ff5b5b;">Supabase error: ${error.message}</div>`;
     return;
   }
 
