@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Nairobi Sweets</title>
 <meta name="description" content="Luxury Nairobi profiles, WhatsApp access, reels, shorts and VIP discovery.">
+
 <link rel="icon" href="/assets/logo/logo-badge.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -52,6 +54,7 @@ a{text-decoration:none;color:inherit}
 .menu-btn{
   width:72px;
   height:72px;
+  min-width:72px;
   border-radius:22px;
   background:linear-gradient(180deg,#07145f,#02083d);
   border:1px solid rgba(255,213,74,.12);
@@ -182,6 +185,8 @@ a{text-decoration:none;color:inherit}
   width:100%;
   aspect-ratio:4/4.4;
   object-fit:cover;
+  display:block;
+  background:#020617;
 }
 .card-body{padding:16px}
 .card-name{font-size:14px;font-weight:900;margin-bottom:8px}
@@ -189,7 +194,8 @@ a{text-decoration:none;color:inherit}
 .location{color:#d5d5d5;font-size:10px;margin-bottom:10px}
 .phone{color:#ffd54a;font-size:11px;font-weight:900;margin-bottom:12px}
 .bio{color:#d2d2d2;font-size:10px;line-height:1.55;margin-bottom:14px}
-.engagement{display:flex;gap:8px;color:#d0d0d0;font-size:10px;margin-bottom:14px}
+.engagement{display:flex;gap:8px;color:#d0d0d0;font-size:10px;margin-bottom:14px;flex-wrap:wrap}
+
 .featured-badge{
   position:absolute;
   top:14px;
@@ -304,9 +310,28 @@ a{text-decoration:none;color:inherit}
   color:white;
   outline:none;
 }
+.sweet-chips{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin:12px 0;
+  scrollbar-width:none;
+}
+.sweet-chips::-webkit-scrollbar{display:none}
+.sweet-chips button{
+  min-width:max-content;
+  border:none;
+  border-radius:999px;
+  padding:10px 12px;
+  background:linear-gradient(145deg,#0d2a24,#1b0033);
+  color:#7dffcf;
+  font-size:12px;
+  font-weight:900;
+  border:1px solid rgba(125,255,207,.12);
+  cursor:pointer;
+}
 .sweet-send{
   width:100%;
-  margin-top:12px;
   border:none;
   border-radius:16px;
   padding:14px;
@@ -434,6 +459,14 @@ a{text-decoration:none;color:inherit}
 
   <div class="sweet-body">
     <input id="sweetInput" placeholder="VIP in Kilimani, online now...">
+
+    <div class="sweet-chips">
+      <button onclick="quickAsk('VIP in Kilimani')">VIP Kilimani</button>
+      <button onclick="quickAsk('Online now')">Online Now</button>
+      <button onclick="quickAsk('WhatsApp Westlands')">WhatsApp Westlands</button>
+      <button onclick="quickAsk('Most liked')">Most Liked</button>
+    </div>
+
     <button class="sweet-send" onclick="askSweet()">Ask Sweet</button>
     <div id="sweetResults" class="sweet-results">Hi, I’m Sweet 💋</div>
   </div>
@@ -469,6 +502,11 @@ function openSweet(){
 
 function closeSweet(){
   document.getElementById("sweetPanel").classList.remove("active");
+}
+
+function quickAsk(text){
+  document.getElementById("sweetInput").value = text;
+  askSweet();
 }
 
 function safePhone(phone){
