@@ -3,38 +3,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>Nairobi Sweets Vault</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#000814;color:#fff;font-family:Arial,Helvetica,sans-serif}
-header{display:flex;justify-content:space-between;align-items:center;padding:26px;background:#000;border-bottom:1px solid rgba(255,213,74,.18)}
-h1{color:#ffd54a;font-size:42px;font-weight:900}
-button{border:none;cursor:pointer;font-weight:900}
-.refresh{background:#ffd54a;color:#000;border-radius:16px;padding:16px 28px;font-size:16px}
-.wrap{padding:28px}
-.panel{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:28px;padding:28px;margin-bottom:28px}
-h2{font-size:28px;margin-bottom:22px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-input,select,textarea{width:100%;background:#08122f;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;font-size:16px}
-textarea{grid-column:1/-1;min-height:120px}
-.filebox{background:#08122f;border:1px dashed rgba(255,213,74,.25);border-radius:16px;padding:16px}
-.filebox label{display:block;color:#ffd54a;font-weight:900;margin-bottom:10px}
-.add{background:#22c55e;color:#000;border-radius:16px;padding:16px 28px;margin-top:18px}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
-.card{background:linear-gradient(180deg,#020a56,#010633);border-radius:24px;overflow:hidden;border:1px solid rgba(255,213,74,.1)}
-.card img,.card video{width:100%;height:240px;object-fit:cover;background:#020617}
-.body{padding:16px}
-.name{font-size:22px;font-weight:900;color:#ffd54a;margin-bottom:8px}
-.meta{font-size:14px;color:#ddd;line-height:1.6;word-break:break-word}
-.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
-.approve{background:#22c55e;color:#000;border-radius:12px;padding:12px}
-.unapprove{background:#ffd54a;color:#000;border-radius:12px;padding:12px}
-.delete{background:#ef4444;color:#fff;border-radius:12px;padding:12px}
-.status{margin-top:14px;color:#ffd54a;font-weight:900}
-.small{font-size:12px;color:#aaa;margin-top:8px}
-@media(max-width:900px){.grid,.cards{grid-template-columns:1fr}h1{font-size:30px}header{gap:14px}}
+
+body{
+  background:#000814;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  padding-bottom:40px;
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  padding:26px;
+  background:#000;
+  border-bottom:1px solid rgba(255,213,74,.18);
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+
+h1{
+  color:#ffd54a;
+  font-size:42px;
+  font-weight:900;
+}
+
+button{
+  border:none;
+  cursor:pointer;
+  font-weight:900;
+}
+
+.refresh{
+  background:#ffd54a;
+  color:#000;
+  border-radius:16px;
+  padding:16px 28px;
+  font-size:16px;
+}
+
+.wrap{
+  padding:28px;
+}
+
+.panel{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:28px;
+  padding:28px;
+  margin-bottom:28px;
+}
+
+h2{
+  font-size:28px;
+  margin-bottom:22px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  background:#08122f;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  padding:16px;
+  font-size:16px;
+}
+
+textarea{
+  grid-column:1/-1;
+  min-height:120px;
+}
+
+.filebox{
+  background:#08122f;
+  border:1px dashed rgba(255,213,74,.25);
+  border-radius:16px;
+  padding:16px;
+}
+
+.filebox label{
+  display:block;
+  color:#ffd54a;
+  font-weight:900;
+  margin-bottom:10px;
+}
+
+.add{
+  background:#22c55e;
+  color:#000;
+  border-radius:16px;
+  padding:16px 28px;
+  margin-top:18px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:22px;
+}
+
+.card{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border-radius:24px;
+  overflow:hidden;
+  border:1px solid rgba(255,213,74,.1);
+}
+
+.card img,
+.card video{
+  width:100%;
+  height:240px;
+  object-fit:cover;
+  background:#020617;
+}
+
+.body{
+  padding:16px;
+}
+
+.name{
+  font-size:22px;
+  font-weight:900;
+  color:#ffd54a;
+  margin-bottom:8px;
+}
+
+.meta{
+  font-size:14px;
+  color:#ddd;
+  line-height:1.6;
+  word-break:break-word;
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+  margin-top:14px;
+}
+
+.approve{
+  background:#22c55e;
+  color:#000;
+  border-radius:12px;
+  padding:12px;
+}
+
+.unapprove{
+  background:#ffd54a;
+  color:#000;
+  border-radius:12px;
+  padding:12px;
+}
+
+.delete{
+  background:#ef4444;
+  color:#fff;
+  border-radius:12px;
+  padding:12px;
+}
+
+.status{
+  margin-top:14px;
+  color:#ffd54a;
+  font-weight:900;
+  min-height:24px;
+}
+
+.small{
+  font-size:12px;
+  color:#aaa;
+  margin-top:8px;
+}
+
+.preview{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:120px 120px;
+  gap:14px;
+}
+
+.preview img,
+.preview video{
+  width:120px;
+  height:120px;
+  object-fit:cover;
+  border-radius:16px;
+  background:#020617;
+  border:1px solid rgba(255,213,74,.15);
+}
+
+@media(max-width:1100px){
+  .grid,
+  .cards{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:700px){
+  header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  h1{
+    font-size:30px;
+  }
+
+  .grid,
+  .cards{
+    grid-template-columns:1fr;
+  }
+
+  .actions{
+    grid-template-columns:1fr;
+  }
+}
 </style>
 </head>
 
@@ -46,9 +247,23 @@ const entered = prompt("Enter Nairobi Sweets Vault Password");
 
 if(entered !== ADMIN_PASSWORD){
   document.body.innerHTML = `
-    <div style="height:100vh;background:#000;color:#ff3b3b;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;font-family:Arial">
+    <div style="
+      height:100vh;
+      background:#000;
+      color:#ff3b3b;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:38px;
+      font-weight:900;
+      font-family:Arial;
+      text-align:center;
+      padding:30px;
+    ">
       ACCESS DENIED
-    </div>`;
+    </div>
+  `;
+
   throw new Error("Unauthorized");
 }
 </script>
@@ -64,6 +279,7 @@ if(entered !== ADMIN_PASSWORD){
   <h2>Add New Profile</h2>
 
   <div class="grid">
+
     <input id="stage_name" placeholder="Stage name">
     <input id="phone" placeholder="Phone">
     <input id="location" placeholder="Location">
@@ -96,7 +312,10 @@ if(entered !== ADMIN_PASSWORD){
     </div>
 
     <textarea id="bio" placeholder="Bio / description"></textarea>
+
   </div>
+
+  <div class="preview" id="preview"></div>
 
   <button class="add" onclick="addProfile()">Add Profile</button>
   <div class="status" id="status"></div>
@@ -112,20 +331,49 @@ if(entered !== ADMIN_PASSWORD){
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 const list = document.getElementById("list");
 const statusBox = document.getElementById("status");
+const previewBox = document.getElementById("preview");
+
+function valueOf(id){
+  const el = document.getElementById(id);
+  return el ? String(el.value || "").trim() : "";
+}
+
+function numberOf(id){
+  const el = document.getElementById(id);
+  return el ? Number(el.value || 0) : 0;
+}
 
 function cleanPhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
-  if(p.startsWith("0")) p = "254" + p.slice(1);
-  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+
+  if(!p) return "";
+
+  if(p.startsWith("0")){
+    p = "254" + p.slice(1);
+  }
+
+  if(p.startsWith("7") || p.startsWith("1")){
+    p = "254" + p;
+  }
+
   return p;
 }
 
 function imageOf(p){
-  return p.photo_url || p.image_url || p.profile_photo || p.photo || "/assets/logo/logo-badge.png";
+  return (
+    p.photo_url ||
+    p.image_url ||
+    p.profile_photo ||
+    p.main_photo ||
+    p.photo ||
+    p.image ||
+    "/assets/logo/logo-badge.png"
+  );
 }
 
 function videoOf(p){
@@ -133,7 +381,8 @@ function videoOf(p){
 }
 
 function safeFileName(file){
-  return Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"-");
+  const original = file && file.name ? file.name : "upload";
+  return Date.now() + "-" + original.replace(/[^a-zA-Z0-9._-]/g,"-");
 }
 
 async function uploadFile(bucket,file){
@@ -146,7 +395,9 @@ async function uploadFile(bucket,file){
     .from(bucket)
     .upload(fileName,file,{upsert:false});
 
-  if(error) throw error;
+  if(error){
+    throw error;
+  }
 
   const { data } = sb
     .storage
@@ -156,48 +407,92 @@ async function uploadFile(bucket,file){
   return data.publicUrl;
 }
 
+function previewFiles(){
+  previewBox.innerHTML = "";
+
+  const imageFile = document.getElementById("photoUpload").files[0];
+  const reelFile = document.getElementById("reelUpload").files[0];
+
+  if(imageFile){
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(imageFile);
+    previewBox.appendChild(img);
+  }
+
+  if(reelFile){
+    const video = document.createElement("video");
+    video.src = URL.createObjectURL(reelFile);
+    video.muted = true;
+    video.controls = true;
+    previewBox.appendChild(video);
+  }
+}
+
+document.getElementById("photoUpload").addEventListener("change",previewFiles);
+document.getElementById("reelUpload").addEventListener("change",previewFiles);
+
 async function addProfile(){
   statusBox.textContent = "Saving profile...";
 
   try{
-    const uploadedPhotoUrl = await uploadFile("profile-images", document.getElementById("photoUpload").files[0]);
-    const uploadedReelUrl = await uploadFile("profile-videos", document.getElementById("reelUpload").files[0]);
+    const photoFile = document.getElementById("photoUpload").files[0] || null;
+    const reelFile = document.getElementById("reelUpload").files[0] || null;
 
-    const manualPhotoUrl = photo_url.value.trim();
-    const manualVideoUrl = video_url.value.trim();
+    const uploadedPhotoUrl = await uploadFile("profile-images",photoFile);
+    const uploadedReelUrl = await uploadFile("profile-videos",reelFile);
+
+    const manualPhotoUrl = valueOf("photo_url");
+    const manualVideoUrl = valueOf("video_url");
 
     const finalPhotoUrl = uploadedPhotoUrl || manualPhotoUrl;
     const finalVideoUrl = uploadedReelUrl || manualVideoUrl;
 
+    const stageName = valueOf("stage_name");
+    const phoneClean = cleanPhone(valueOf("phone"));
+
+    if(!stageName){
+      statusBox.textContent = "Stage name is required.";
+      return;
+    }
+
+    if(!phoneClean){
+      statusBox.textContent = "Phone number is required.";
+      return;
+    }
+
     const payload = {
-      stage_name: stage_name.value.trim(),
-      phone: cleanPhone(phone.value),
-      whatsapp: cleanPhone(phone.value),
-      location: location.value.trim(),
-      town: town.value.trim(),
-      age: age.value.trim(),
+      stage_name: stageName,
+      phone: phoneClean,
+      whatsapp: phoneClean,
+
+      location: valueOf("location"),
+      town: valueOf("town"),
+      age: valueOf("age"),
+
       photo_url: finalPhotoUrl,
       image_url: finalPhotoUrl,
+
       video_url: finalVideoUrl,
       reel_url: finalVideoUrl,
       short_url: finalVideoUrl,
-      plan: plan.value,
-      likes_count: Number(likes_count.value || 0),
-      views_count: Number(views_count.value || 0),
-      bio: bio.value.trim(),
+
+      plan: valueOf("plan") || "featured",
+
+      likes_count: numberOf("likes_count"),
+      views_count: numberOf("views_count"),
+
+      bio: valueOf("bio"),
+
       approved: true,
       created_at: new Date().toISOString()
     };
 
-    if(!payload.stage_name || !payload.phone){
-      statusBox.textContent = "Stage name and phone are required.";
-      return;
-    }
-
-    const { error } = await sb.from("profiles").insert(payload);
+    const { error } = await sb
+      .from("profiles")
+      .insert(payload);
 
     if(error){
-      statusBox.textContent = "Error: " + error.message;
+      statusBox.textContent = "Database error: " + error.message;
       return;
     }
 
@@ -206,30 +501,37 @@ async function addProfile(){
     loadProfiles();
 
   }catch(error){
-    statusBox.textContent = "Upload error: " + error.message;
+    statusBox.textContent = "Upload error: " + (error && error.message ? error.message : error);
   }
 }
 
 function clearForm(){
-  stage_name.value = "";
-  phone.value = "";
-  location.value = "";
-  photo_url.value = "";
-  video_url.value = "";
-  age.value = "";
-  town.value = "";
-  bio.value = "";
-  likes_count.value = 0;
-  views_count.value = 0;
-  plan.value = "featured";
-  photoUpload.value = "";
-  reelUpload.value = "";
+  [
+    "stage_name",
+    "phone",
+    "location",
+    "photo_url",
+    "video_url",
+    "age",
+    "town",
+    "bio"
+  ].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = "";
+  });
+
+  document.getElementById("likes_count").value = 0;
+  document.getElementById("views_count").value = 0;
+  document.getElementById("plan").value = "featured";
+  document.getElementById("photoUpload").value = "";
+  document.getElementById("reelUpload").value = "";
+  previewBox.innerHTML = "";
 }
 
 async function loadProfiles(){
   list.innerHTML = `<div style="color:#ffd54a;font-weight:900">Loading...</div>`;
 
-  const { data, error } = await sb
+  const { data,error } = await sb
     .from("profiles")
     .select("*")
     .order("created_at",{ascending:false});
@@ -249,6 +551,7 @@ async function loadProfiles(){
 
     return `
       <article class="card">
+
         ${
           video
           ? `<video src="${video}" muted loop controls poster="${imageOf(p)}"></video>`
@@ -256,7 +559,10 @@ async function loadProfiles(){
         }
 
         <div class="body">
-          <div class="name">${p.stage_name || "Verified"}</div>
+
+          <div class="name">
+            ${p.stage_name || "Verified"}
+          </div>
 
           <div class="meta">
             📍 ${p.location || p.town || "Nairobi"}<br>
@@ -272,21 +578,33 @@ async function loadProfiles(){
             <button class="unapprove" onclick="unapproveProfile('${p.id}')">Hide</button>
             <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
           </div>
+
         </div>
+
       </article>
     `;
   }).join("");
 }
 
 async function approveProfile(id){
-  const { error } = await sb.from("profiles").update({ approved:true }).eq("id",id);
+  const { error } = await sb
+    .from("profiles")
+    .update({ approved:true })
+    .eq("id",id);
+
   if(error) alert(error.message);
+
   loadProfiles();
 }
 
 async function unapproveProfile(id){
-  const { error } = await sb.from("profiles").update({ approved:false }).eq("id",id);
+  const { error } = await sb
+    .from("profiles")
+    .update({ approved:false })
+    .eq("id",id);
+
   if(error) alert(error.message);
+
   loadProfiles();
 }
 
@@ -294,8 +612,13 @@ async function deleteProfile(id){
   const ok = confirm("Delete this profile?");
   if(!ok) return;
 
-  const { error } = await sb.from("profiles").delete().eq("id",id);
+  const { error } = await sb
+    .from("profiles")
+    .delete()
+    .eq("id",id);
+
   if(error) alert(error.message);
+
   loadProfiles();
 }
 
