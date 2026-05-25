@@ -2,839 +2,233 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>Nairobi Sweets Vault</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-
-body{
-  background:#050814;
-  color:white;
-  font-family:Arial,Helvetica,sans-serif;
-}
-
-header{
-  background:#000;
-  padding:28px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid rgba(255,216,75,.18);
-}
-
-header h1{
-  color:#ffd84b;
-  font-size:42px;
-  font-weight:900;
-}
-
-button{
-  border:none;
-  cursor:pointer;
-  font-weight:900;
-}
-
-.refresh-btn{
-  background:#ffd84b;
-  color:#000;
-  padding:15px 24px;
-  border-radius:16px;
-}
-
-.section{
-  max-width:1800px;
-  margin:26px auto;
-  background:#0b1230;
-  border:1px solid rgba(255,216,75,.18);
-  border-radius:28px;
-  padding:28px;
-}
-
-.section h2{
-  font-size:30px;
-  margin-bottom:22px;
-}
-
-.form-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:14px;
-}
-
-input,select,textarea{
-  width:100%;
-  background:#101936;
-  border:1px solid rgba(255,255,255,.12);
-  color:white;
-  padding:16px;
-  border-radius:16px;
-  font-size:16px;
-}
-
-textarea{
-  min-height:110px;
-  margin-top:16px;
-  resize:vertical;
-  font-family:monospace;
-}
-
-.upload-preview{
-  width:120px;
-  height:120px;
-  object-fit:cover;
-  border-radius:18px;
-  border:2px solid #ffd84b;
-  margin-top:12px;
-  display:none;
-}
-
-.add-btn{
-  background:#22c55e;
-  color:#001b09;
-  padding:16px 26px;
-  border-radius:16px;
-  margin-top:18px;
-}
-
-.status{
-  max-width:1800px;
-  margin:auto;
-  padding:0 18px;
-  color:#ffd84b;
-  font-weight:900;
-}
-
-.vault-stats{
-  max-width:1800px;
-  margin:18px auto;
-  padding:0 18px;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px;
-}
-
-.stat-box{
-  background:#0b1230;
-  border:1px solid rgba(255,216,75,.18);
-  border-radius:22px;
-  padding:24px;
-}
-
-.stat-box span{
-  display:block;
-  color:#94a3b8;
-  margin-bottom:10px;
-  font-weight:700;
-}
-
-.stat-box strong{
-  font-size:42px;
-  color:#ffd84b;
-  font-weight:900;
-}
-
-.grid{
-  max-width:1800px;
-  margin:22px auto;
-  padding:0 18px 50px;
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:24px;
-  align-items:start;
-}
-
-.card{
-  min-width:0;
-  background:#0d1533;
-  border-radius:24px;
-  overflow:hidden;
-  border:1px solid rgba(255,216,75,.18);
-  transition:.3s ease;
-}
-
-.card:hover{
-  transform:translateY(-4px);
-  border-color:#ffd84b;
-}
-
-.image-wrap,.video-wrap{
-  width:100%;
-  height:280px;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-
-.image-wrap img,.video-wrap video{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  object-position:center;
-  background:#000;
-}
-
-.card-content{
-  padding:16px;
-}
-
-.name{
-  font-size:25px;
-  font-weight:900;
-  line-height:1.05;
-  margin-bottom:12px;
-}
-
-.badge{
-  display:inline-flex;
-  padding:8px 14px;
-  border-radius:999px;
-  background:rgba(255,216,75,.12);
-  border:1px solid rgba(255,216,75,.35);
-  color:#ffd84b;
-  font-size:13px;
-  font-weight:900;
-  margin-bottom:14px;
-}
-
-.info{
-  color:#e5e7eb;
-  line-height:1.6;
-  font-size:14px;
-  margin-bottom:14px;
-}
-
-.photo-edit{
-  width:100%;
-  min-height:70px;
-  background:#101936;
-  border:1px solid rgba(255,255,255,.12);
-  color:white;
-  border-radius:14px;
-  padding:12px;
-  font-family:monospace;
-  resize:vertical;
-  font-size:13px;
-  margin-bottom:10px;
-}
-
-.card-file{
-  width:100%;
-  margin-bottom:10px;
-  padding:12px;
-  background:#101936;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:14px;
-  color:white;
-}
-
-.actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.actions button{
-  padding:12px;
-  border-radius:14px;
-  font-size:13px;
-  transition:.25s ease;
-}
-
-.actions button:hover{
-  transform:translateY(-2px);
-}
-
-.approve{background:#22c55e;color:#001b09}
-.hide{background:#ff4770;color:white}
-.save{background:#38bdf8;color:#00111f}
-.reset{background:#ffd84b;color:#000}
-.vip{background:#fb923c;color:#000}
-.vvip{background:linear-gradient(135deg,#ff3d7f,#8b5cf6);color:white}
-.delete{background:#ef4444;color:white;grid-column:1/3}
-
-.divider{
-  max-width:1800px;
-  margin:34px auto 18px;
-  padding:0 18px;
-  color:#ffd84b;
-  font-size:34px;
-  font-weight:900;
-}
-
-@media(max-width:1400px){
-  .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-}
-
-@media(max-width:1100px){
-  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-}
-
-@media(max-width:800px){
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .vault-stats{grid-template-columns:repeat(2,1fr)}
-}
-
-@media(max-width:560px){
-  .grid{grid-template-columns:1fr}
-  .vault-stats{grid-template-columns:1fr}
-  header{padding:18px}
-  header h1{font-size:30px}
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000814;color:#fff;font-family:Arial,Helvetica,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:30px;background:#000;border-bottom:1px solid rgba(255,213,74,.15)}
+h1{color:#ffd54a;font-size:42px;font-weight:900}
+button{border:none;cursor:pointer;font-weight:900}
+.refresh{background:#ffd54a;color:#000;border-radius:16px;padding:16px 28px;font-size:16px}
+.wrap{padding:28px}
+.panel{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:28px;padding:28px;margin-bottom:28px}
+h2{font-size:28px;margin-bottom:24px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+input,select,textarea{width:100%;background:#08122f;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;font-size:16px}
+textarea{grid-column:1/-1;min-height:120px}
+.add{background:#22c55e;color:#000;border-radius:16px;padding:16px 28px;margin-top:18px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.card{background:linear-gradient(180deg,#020a56,#010633);border-radius:24px;overflow:hidden;border:1px solid rgba(255,213,74,.1)}
+.card img{width:100%;height:260px;object-fit:cover;background:#020617}
+.body{padding:16px}
+.name{font-size:22px;font-weight:900;color:#ffd54a;margin-bottom:8px}
+.meta{font-size:14px;color:#ddd;line-height:1.6}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.approve{background:#22c55e;color:#000;border-radius:12px;padding:12px}
+.delete{background:#ef4444;color:#fff;border-radius:12px;padding:12px}
+.status{margin-top:14px;color:#ffd54a;font-weight:900}
+@media(max-width:900px){.grid,.cards{grid-template-columns:1fr}h1{font-size:30px}}
 </style>
 </head>
 
 <body>
 
+<script>
+const ADMIN_PASSWORD = "1586758672";
+const entered = prompt("Enter Nairobi Sweets Vault Password");
+if(entered !== ADMIN_PASSWORD){
+  document.body.innerHTML = `
+    <div style="height:100vh;background:#000;color:#ff3b3b;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;font-family:Arial">
+      ACCESS DENIED
+    </div>`;
+  throw new Error("Unauthorized");
+}
+</script>
+
 <header>
   <h1>Nairobi Sweets Vault</h1>
-  <button class="refresh-btn" onclick="loadAll()">Refresh</button>
+  <button class="refresh" onclick="loadProfiles()">Refresh</button>
 </header>
 
-<section class="section">
+<div class="wrap">
+
+<section class="panel">
   <h2>Add New Profile</h2>
 
-  <div class="form-grid">
-    <input id="newName" placeholder="Stage name">
-    <input id="newPhone" placeholder="Phone">
-    <input id="newLocation" placeholder="Location">
-
-    <div>
-      <input id="newPhoto" placeholder="Photo URL">
-      <br><br>
-      <input type="file" id="photoUpload" accept="image/*" onchange="uploadAdminPhoto()">
-      <img id="photoPreview" class="upload-preview">
-    </div>
-
-    <select id="newTier">
+  <div class="grid">
+    <input id="stage_name" placeholder="Stage name">
+    <input id="phone" placeholder="Phone">
+    <input id="location" placeholder="Location">
+    <input id="photo_url" placeholder="Photo URL">
+    <select id="plan">
       <option value="featured">Featured</option>
       <option value="vip">VIP</option>
-      <option value="vvip">VVIP / Signature</option>
+      <option value="vvip">VVIP</option>
+      <option value="signature">Signature</option>
     </select>
 
-    <input id="newViews" type="number" value="0" placeholder="Starting views">
-    <input id="newLikes" type="number" value="0" placeholder="Starting likes">
+    <input id="likes_count" type="number" value="0" placeholder="Likes">
+    <input id="views_count" type="number" value="0" placeholder="Views">
+    <input id="video_url" placeholder="Video/Reel URL">
+    <input id="age" placeholder="Age">
+    <input id="town" placeholder="Town">
+
+    <textarea id="bio" placeholder="Bio / description"></textarea>
   </div>
 
-  <textarea id="newBio" placeholder="Bio / description"></textarea>
-
-  <button class="add-btn" onclick="addProfile()">Add Profile</button>
+  <button class="add" onclick="addProfile()">Add Profile</button>
+  <div class="status" id="status"></div>
 </section>
 
-<section class="section">
-  <h2>Add New Short</h2>
-
-  <div class="form-grid">
-    <input id="shortTitle" placeholder="Short title">
-    <input id="shortVideoUrl" placeholder="Video URL">
-    <input id="shortThumbUrl" placeholder="Thumbnail URL optional">
-    <input type="file" id="shortVideoUpload" accept="video/*" onchange="uploadShortVideo()">
-  </div>
-
-  <button class="add-btn" onclick="addShort()">Add Short</button>
+<section class="panel">
+  <h2>Profiles</h2>
+  <div class="cards" id="list"></div>
 </section>
 
-<section class="section">
-  <h2>Search Profiles</h2>
-  <input id="searchBox" placeholder="Search by name, phone, location..." oninput="renderProfiles()">
-</section>
-
-<div class="status" id="status">Loading...</div>
-
-<div class="vault-stats">
-  <div class="stat-box">
-    <span>Total Profiles</span>
-    <strong id="totalProfiles">0</strong>
-  </div>
-
-  <div class="stat-box">
-    <span>Total Views</span>
-    <strong id="totalViews">0</strong>
-  </div>
-
-  <div class="stat-box">
-    <span>Total Likes</span>
-    <strong id="totalLikes">0</strong>
-  </div>
-
-  <div class="stat-box">
-    <span>Approved Profiles</span>
-    <strong id="approvedProfiles">0</strong>
-  </div>
 </div>
-
-<div class="divider">Profiles</div>
-<main class="grid" id="profilesGrid"></main>
-
-<div class="divider">Shorts</div>
-<main class="grid" id="shortsGrid"></main>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-let profiles = [];
-let shorts = [];
-
-const profilesGrid = document.getElementById("profilesGrid");
-const shortsGrid = document.getElementById("shortsGrid");
+const list = document.getElementById("list");
 const statusBox = document.getElementById("status");
 
-function getImage(p){
-  return p.photo_url || p.image_url || p.profile_photo || p.avatar_url || p.photo || "./assets/logo/logo-badge.png";
+function cleanPhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
 }
 
-function getName(p){
-  return p.stage_name || p.name || "Unnamed";
-}
-
-function getTier(p){
-  const plan = String(p.plan || "").toLowerCase();
-
-  if(plan === "vvip" || plan === "signature") return "VVIP";
-  if(plan === "vip") return "VIP";
-
-  return "Featured";
-}
-
-async function uploadToBucket(file,prefix){
-  const ext = file.name.split(".").pop();
-
-  const fileName =
-    prefix + "-" + Date.now() + "-" +
-    Math.random().toString(36).substring(2) + "." + ext;
-
-  const { error } = await sb.storage
-    .from("profile-images")
-    .upload(fileName,file,{ upsert:true });
-
-  if(error) throw error;
-
-  const { data } = sb.storage
-    .from("profile-images")
-    .getPublicUrl(fileName);
-
-  return data.publicUrl;
-}
-
-async function uploadAdminPhoto(){
-  const fileInput = document.getElementById("photoUpload");
-  const preview = document.getElementById("photoPreview");
-
-  if(!fileInput.files.length) return;
-
-  try{
-    statusBox.textContent = "Uploading photo...";
-
-    const url = await uploadToBucket(fileInput.files[0],"admin-photo");
-
-    document.getElementById("newPhoto").value = url;
-    preview.src = url;
-    preview.style.display = "block";
-
-    statusBox.textContent = "Photo uploaded";
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-async function uploadShortVideo(){
-  const fileInput = document.getElementById("shortVideoUpload");
-
-  if(!fileInput.files.length) return;
-
-  try{
-    statusBox.textContent = "Uploading short video...";
-
-    const url = await uploadToBucket(fileInput.files[0],"short");
-
-    document.getElementById("shortVideoUrl").value = url;
-
-    statusBox.textContent = "Short uploaded";
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-async function replaceProfilePhoto(event,id){
-  const file = event.target.files[0];
-
-  if(!file) return;
-
-  try{
-    statusBox.textContent = "Uploading new profile photo...";
-
-    const imageUrl = await uploadToBucket(file,"profile-" + id);
-
-    const { error } = await sb
-      .from("profiles")
-      .update({
-        photo_url:imageUrl,
-        image_url:imageUrl
-      })
-      .eq("id",id);
-
-    if(error){
-      alert(error.message);
-      return;
-    }
-
-    statusBox.textContent = "Profile photo updated";
-    await loadProfiles();
-
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-async function loadProfiles(){
-  const { data,error } = await sb
-    .from("profiles")
-    .select("*")
-    .order("created_at",{ ascending:false });
-
-  if(error){
-    statusBox.textContent = error.message;
-    return;
-  }
-
-  profiles = data || [];
-
-  updateStats();
-  renderProfiles();
-}
-
-async function loadShorts(){
-  const { data,error } = await sb
-    .from("shorts")
-    .select("*")
-    .order("created_at",{ ascending:false });
-
-  if(error){
-    shortsGrid.innerHTML = `<div class="status">${error.message}</div>`;
-    return;
-  }
-
-  shorts = data || [];
-  renderShorts();
-}
-
-async function loadAll(){
-  statusBox.textContent = "Loading...";
-
-  await loadProfiles();
-  await loadShorts();
-
-  statusBox.textContent =
-    profiles.length + " profiles loaded · " +
-    shorts.length + " shorts loaded";
-}
-
-function updateStats(){
-  const totalViews = profiles.reduce((sum,p)=>sum + Number(p.views_count || 0),0);
-  const totalLikes = profiles.reduce((sum,p)=>sum + Number(p.likes_count || 0),0);
-  const approved = profiles.filter(p=>p.approved).length;
-
-  document.getElementById("totalProfiles").textContent = profiles.length;
-  document.getElementById("totalViews").textContent = totalViews.toLocaleString();
-  document.getElementById("totalLikes").textContent = totalLikes.toLocaleString();
-  document.getElementById("approvedProfiles").textContent = approved;
-}
-
-function renderProfiles(){
-  const q = document.getElementById("searchBox").value.toLowerCase();
-
-  let list = [...profiles];
-
-  if(q){
-    list = list.filter(p=>{
-      return [
-        getName(p),
-        p.phone,
-        p.whatsapp,
-        p.location,
-        p.bio
-      ]
-      .join(" ")
-      .toLowerCase()
-      .includes(q);
-    });
-  }
-
-  profilesGrid.innerHTML = list.map(p=>`
-    <article class="card">
-      <div class="image-wrap">
-        <img
-          src="${getImage(p)}"
-          loading="lazy"
-          onerror="this.src='./assets/logo/logo-badge.png'"
-        >
-      </div>
-
-      <div class="card-content">
-        <div class="name">${getName(p)}</div>
-        <div class="badge">${getTier(p)}</div>
-
-        <div class="info">
-          📍 ${p.location || "Nairobi"}<br>
-          📞 ${p.phone || "-"}<br>
-          ❤️ ${p.likes_count || 0} likes · 👁️ ${p.views_count || 0} views<br>
-          ${p.approved ? "Approved" : "Hidden"}
-        </div>
-
-        <textarea class="photo-edit" id="photo-${p.id}">${getImage(p)}</textarea>
-
-        <input
-          class="card-file"
-          type="file"
-          accept="image/*"
-          onchange="replaceProfilePhoto(event, ${p.id})"
-        >
-
-        <div class="actions">
-          <button class="approve" onclick="approveProfile(${p.id})">Approve</button>
-          <button class="hide" onclick="hideProfile(${p.id})">Hide</button>
-          <button class="save" onclick="savePhoto(${p.id})">Save Photo</button>
-          <button class="reset" onclick="resetStats(${p.id})">Reset Stats</button>
-          <button class="vip" onclick="setVIP(${p.id})">VIP</button>
-          <button class="vvip" onclick="setVVIP(${p.id})">VVIP</button>
-          <button class="delete" onclick="deleteProfile(${p.id})">Delete Profile</button>
-        </div>
-      </div>
-    </article>
-  `).join("");
-}
-
-function renderShorts(){
-  shortsGrid.innerHTML = shorts.map(s=>`
-    <article class="card">
-      <div class="video-wrap">
-        <video
-          src="${s.video_url}"
-          poster="${s.thumbnail_url || ""}"
-          controls
-          playsinline
-          preload="metadata"
-        ></video>
-      </div>
-
-      <div class="card-content">
-        <div class="name">${s.title || "Short"}</div>
-
-        <div class="info">
-          ❤️ ${s.likes_count || 0} likes · 👁️ ${s.views_count || 0} views<br>
-          ${s.approved ? "Approved" : "Hidden"}
-        </div>
-
-        <textarea class="photo-edit" id="short-video-${s.id}">${s.video_url}</textarea>
-
-        <div class="actions">
-          <button class="approve" onclick="approveShort(${s.id})">Approve</button>
-          <button class="hide" onclick="hideShort(${s.id})">Hide</button>
-          <button class="save" onclick="saveShortVideo(${s.id})">Save Video</button>
-          <button class="reset" onclick="resetShortStats(${s.id})">Reset Stats</button>
-          <button class="delete" onclick="deleteShort(${s.id})">Delete Short</button>
-        </div>
-      </div>
-    </article>
-  `).join("");
+function imageOf(p){
+  return p.photo_url || p.image_url || p.profile_photo || p.photo || "/assets/logo/logo-badge.png";
 }
 
 async function addProfile(){
+  statusBox.textContent = "Saving...";
+
   const payload = {
-    stage_name:document.getElementById("newName").value.trim(),
-    phone:document.getElementById("newPhone").value.trim(),
-    whatsapp:document.getElementById("newPhone").value.trim(),
-    location:document.getElementById("newLocation").value.trim(),
-    photo_url:document.getElementById("newPhoto").value.trim(),
-    image_url:document.getElementById("newPhoto").value.trim(),
-    bio:document.getElementById("newBio").value.trim(),
-    plan:document.getElementById("newTier").value,
-    views_count:Number(document.getElementById("newViews").value || 0),
-    likes_count:Number(document.getElementById("newLikes").value || 0),
-    approved:true
+    stage_name: stage_name.value.trim(),
+    phone: cleanPhone(phone.value),
+    whatsapp: cleanPhone(phone.value),
+    location: location.value.trim(),
+    town: town.value.trim(),
+    age: age.value.trim(),
+    photo_url: photo_url.value.trim(),
+    image_url: photo_url.value.trim(),
+    video_url: video_url.value.trim(),
+    reel_url: video_url.value.trim(),
+    plan: plan.value,
+    likes_count: Number(likes_count.value || 0),
+    views_count: Number(views_count.value || 0),
+    bio: bio.value.trim(),
+    approved: true,
+    created_at: new Date().toISOString()
   };
 
-  if(!payload.stage_name || !payload.phone || !payload.location || !payload.photo_url){
-    alert("Fill stage name, phone, location and photo.");
+  if(!payload.stage_name || !payload.phone){
+    statusBox.textContent = "Stage name and phone are required.";
     return;
   }
 
-  const { error } = await sb
-    .from("profiles")
-    .insert([payload]);
+  const { error } = await sb.from("profiles").insert(payload);
 
   if(error){
-    alert(error.message);
+    statusBox.textContent = "Error: " + error.message;
     return;
   }
 
-  alert("Profile added");
-
-  document.getElementById("newName").value = "";
-  document.getElementById("newPhone").value = "";
-  document.getElementById("newLocation").value = "";
-  document.getElementById("newPhoto").value = "";
-  document.getElementById("newBio").value = "";
-  document.getElementById("newViews").value = 0;
-  document.getElementById("newLikes").value = 0;
-  document.getElementById("photoUpload").value = "";
-  document.getElementById("photoPreview").style.display = "none";
-
-  await loadProfiles();
+  statusBox.textContent = "Profile added successfully.";
+  clearForm();
+  loadProfiles();
 }
 
-async function addShort(){
-  const payload = {
-    title:document.getElementById("shortTitle").value.trim(),
-    video_url:document.getElementById("shortVideoUrl").value.trim(),
-    thumbnail_url:document.getElementById("shortThumbUrl").value.trim(),
-    approved:true,
-    views_count:0,
-    likes_count:0
-  };
+function clearForm(){
+  stage_name.value = "";
+  phone.value = "";
+  location.value = "";
+  photo_url.value = "";
+  video_url.value = "";
+  age.value = "";
+  town.value = "";
+  bio.value = "";
+  likes_count.value = 0;
+  views_count.value = 0;
+  plan.value = "featured";
+}
 
-  if(!payload.video_url){
-    alert("Upload or paste a video URL first");
-    return;
-  }
+async function loadProfiles(){
+  list.innerHTML = `<div style="color:#ffd54a;font-weight:900">Loading...</div>`;
 
-  const { error } = await sb
-    .from("shorts")
-    .insert([payload]);
+  const { data, error } = await sb
+    .from("profiles")
+    .select("*")
+    .order("created_at",{ascending:false});
 
   if(error){
-    alert(error.message);
+    list.innerHTML = `<div style="color:#ff6b6b">${error.message}</div>`;
     return;
   }
 
-  alert("Short added");
+  if(!data || !data.length){
+    list.innerHTML = `<div>No profiles yet.</div>`;
+    return;
+  }
 
-  document.getElementById("shortTitle").value = "";
-  document.getElementById("shortVideoUrl").value = "";
-  document.getElementById("shortThumbUrl").value = "";
-  document.getElementById("shortVideoUpload").value = "";
+  list.innerHTML = data.map(p => `
+    <article class="card">
+      <img src="${imageOf(p)}" onerror="this.src='/assets/logo/logo-badge.png'">
 
-  await loadShorts();
+      <div class="body">
+        <div class="name">${p.stage_name || "Verified"}</div>
+
+        <div class="meta">
+          📍 ${p.location || p.town || "Nairobi"}<br>
+          📞 ${p.phone || p.whatsapp || "Hidden"}<br>
+          💎 ${p.plan || "featured"}<br>
+          ✅ Approved: ${p.approved ? "Yes" : "No"}<br>
+          ❤️ ${p.likes_count || 0} · 👁️ ${p.views_count || 0}
+        </div>
+
+        <div class="actions">
+          <button class="approve" onclick="approveProfile('${p.id}')">Approve</button>
+          <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
+        </div>
+      </div>
+    </article>
+  `).join("");
 }
 
 async function approveProfile(id){
-  await sb.from("profiles").update({approved:true}).eq("id",id);
-  loadProfiles();
-}
-
-async function hideProfile(id){
-  await sb.from("profiles").update({approved:false}).eq("id",id);
-  loadProfiles();
-}
-
-async function savePhoto(id){
-  const photo = document.getElementById(`photo-${id}`).value.trim();
-
-  await sb
+  const { error } = await sb
     .from("profiles")
-    .update({
-      photo_url:photo,
-      image_url:photo
-    })
+    .update({ approved:true })
     .eq("id",id);
 
-  loadProfiles();
-}
-
-async function resetStats(id){
-  await sb
-    .from("profiles")
-    .update({
-      views_count:0,
-      likes_count:0
-    })
-    .eq("id",id);
-
-  loadProfiles();
-}
-
-async function setVIP(id){
-  await sb
-    .from("profiles")
-    .update({plan:"vip"})
-    .eq("id",id);
-
-  loadProfiles();
-}
-
-async function setVVIP(id){
-  await sb
-    .from("profiles")
-    .update({plan:"vvip"})
-    .eq("id",id);
-
+  if(error) alert(error.message);
   loadProfiles();
 }
 
 async function deleteProfile(id){
-  if(!confirm("Delete this profile?")) return;
+  const ok = confirm("Delete this profile?");
+  if(!ok) return;
 
-  await sb
+  const { error } = await sb
     .from("profiles")
     .delete()
     .eq("id",id);
 
+  if(error) alert(error.message);
   loadProfiles();
 }
 
-async function approveShort(id){
-  await sb.from("shorts").update({approved:true}).eq("id",id);
-  loadShorts();
-}
-
-async function hideShort(id){
-  await sb.from("shorts").update({approved:false}).eq("id",id);
-  loadShorts();
-}
-
-async function saveShortVideo(id){
-  const video = document.getElementById(`short-video-${id}`).value.trim();
-
-  await sb
-    .from("shorts")
-    .update({video_url:video})
-    .eq("id",id);
-
-  loadShorts();
-}
-
-async function resetShortStats(id){
-  await sb
-    .from("shorts")
-    .update({
-      views_count:0,
-      likes_count:0
-    })
-    .eq("id",id);
-
-  loadShorts();
-}
-
-async function deleteShort(id){
-  if(!confirm("Delete this short?")) return;
-
-  await sb
-    .from("shorts")
-    .delete()
-    .eq("id",id);
-
-  loadShorts();
-}
-
-loadAll();
+loadProfiles();
 </script>
 
 </body>
