@@ -3,35 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>Nairobi Sweets Vault</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#000814;color:#fff;font-family:Arial,Helvetica,sans-serif}
-header{display:flex;justify-content:space-between;align-items:center;padding:30px;background:#000;border-bottom:1px solid rgba(255,213,74,.15)}
+header{display:flex;justify-content:space-between;align-items:center;padding:26px;background:#000;border-bottom:1px solid rgba(255,213,74,.18)}
 h1{color:#ffd54a;font-size:42px;font-weight:900}
 button{border:none;cursor:pointer;font-weight:900}
 .refresh{background:#ffd54a;color:#000;border-radius:16px;padding:16px 28px;font-size:16px}
 .wrap{padding:28px}
 .panel{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:28px;padding:28px;margin-bottom:28px}
-h2{font-size:28px;margin-bottom:24px}
-.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+h2{font-size:28px;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 input,select,textarea{width:100%;background:#08122f;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;font-size:16px}
 textarea{grid-column:1/-1;min-height:120px}
+.filebox{background:#08122f;border:1px dashed rgba(255,213,74,.25);border-radius:16px;padding:16px}
+.filebox label{display:block;color:#ffd54a;font-weight:900;margin-bottom:10px}
 .add{background:#22c55e;color:#000;border-radius:16px;padding:16px 28px;margin-top:18px}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
 .card{background:linear-gradient(180deg,#020a56,#010633);border-radius:24px;overflow:hidden;border:1px solid rgba(255,213,74,.1)}
-.card img{width:100%;height:260px;object-fit:cover;background:#020617}
+.card img,.card video{width:100%;height:240px;object-fit:cover;background:#020617}
 .body{padding:16px}
 .name{font-size:22px;font-weight:900;color:#ffd54a;margin-bottom:8px}
-.meta{font-size:14px;color:#ddd;line-height:1.6}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.meta{font-size:14px;color:#ddd;line-height:1.6;word-break:break-word}
+.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
 .approve{background:#22c55e;color:#000;border-radius:12px;padding:12px}
+.unapprove{background:#ffd54a;color:#000;border-radius:12px;padding:12px}
 .delete{background:#ef4444;color:#fff;border-radius:12px;padding:12px}
 .status{margin-top:14px;color:#ffd54a;font-weight:900}
-@media(max-width:900px){.grid,.cards{grid-template-columns:1fr}h1{font-size:30px}}
+.small{font-size:12px;color:#aaa;margin-top:8px}
+@media(max-width:900px){.grid,.cards{grid-template-columns:1fr}h1{font-size:30px}header{gap:14px}}
 </style>
 </head>
 
@@ -40,6 +43,7 @@ textarea{grid-column:1/-1;min-height:120px}
 <script>
 const ADMIN_PASSWORD = "1586758672";
 const entered = prompt("Enter Nairobi Sweets Vault Password");
+
 if(entered !== ADMIN_PASSWORD){
   document.body.innerHTML = `
     <div style="height:100vh;background:#000;color:#ff3b3b;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;font-family:Arial">
@@ -63,7 +67,12 @@ if(entered !== ADMIN_PASSWORD){
     <input id="stage_name" placeholder="Stage name">
     <input id="phone" placeholder="Phone">
     <input id="location" placeholder="Location">
+    <input id="age" placeholder="Age">
+
     <input id="photo_url" placeholder="Photo URL">
+    <input id="video_url" placeholder="Existing Reel / Video Public URL">
+    <input id="town" placeholder="Town / Area">
+
     <select id="plan">
       <option value="featured">Featured</option>
       <option value="vip">VIP</option>
@@ -73,9 +82,18 @@ if(entered !== ADMIN_PASSWORD){
 
     <input id="likes_count" type="number" value="0" placeholder="Likes">
     <input id="views_count" type="number" value="0" placeholder="Views">
-    <input id="video_url" placeholder="Video/Reel URL">
-    <input id="age" placeholder="Age">
-    <input id="town" placeholder="Town">
+
+    <div class="filebox">
+      <label>Upload Profile Photo</label>
+      <input type="file" id="photoUpload" accept="image/*">
+      <div class="small">Bucket: profile-images</div>
+    </div>
+
+    <div class="filebox">
+      <label>Upload Reel Video</label>
+      <input type="file" id="reelUpload" accept="video/mp4,video/webm,video/quicktime">
+      <div class="small">Bucket: profile-videos</div>
+    </div>
 
     <textarea id="bio" placeholder="Bio / description"></textarea>
   </div>
@@ -110,43 +128,86 @@ function imageOf(p){
   return p.photo_url || p.image_url || p.profile_photo || p.photo || "/assets/logo/logo-badge.png";
 }
 
+function videoOf(p){
+  return p.reel_url || p.video_url || p.short_url || "";
+}
+
+function safeFileName(file){
+  return Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g,"-");
+}
+
+async function uploadFile(bucket,file){
+  if(!file) return "";
+
+  const fileName = safeFileName(file);
+
+  const { error } = await sb
+    .storage
+    .from(bucket)
+    .upload(fileName,file,{upsert:false});
+
+  if(error) throw error;
+
+  const { data } = sb
+    .storage
+    .from(bucket)
+    .getPublicUrl(fileName);
+
+  return data.publicUrl;
+}
+
 async function addProfile(){
-  statusBox.textContent = "Saving...";
+  statusBox.textContent = "Saving profile...";
 
-  const payload = {
-    stage_name: stage_name.value.trim(),
-    phone: cleanPhone(phone.value),
-    whatsapp: cleanPhone(phone.value),
-    location: location.value.trim(),
-    town: town.value.trim(),
-    age: age.value.trim(),
-    photo_url: photo_url.value.trim(),
-    image_url: photo_url.value.trim(),
-    video_url: video_url.value.trim(),
-    reel_url: video_url.value.trim(),
-    plan: plan.value,
-    likes_count: Number(likes_count.value || 0),
-    views_count: Number(views_count.value || 0),
-    bio: bio.value.trim(),
-    approved: true,
-    created_at: new Date().toISOString()
-  };
+  try{
+    const uploadedPhotoUrl = await uploadFile("profile-images", document.getElementById("photoUpload").files[0]);
+    const uploadedReelUrl = await uploadFile("profile-videos", document.getElementById("reelUpload").files[0]);
 
-  if(!payload.stage_name || !payload.phone){
-    statusBox.textContent = "Stage name and phone are required.";
-    return;
+    const manualPhotoUrl = photo_url.value.trim();
+    const manualVideoUrl = video_url.value.trim();
+
+    const finalPhotoUrl = uploadedPhotoUrl || manualPhotoUrl;
+    const finalVideoUrl = uploadedReelUrl || manualVideoUrl;
+
+    const payload = {
+      stage_name: stage_name.value.trim(),
+      phone: cleanPhone(phone.value),
+      whatsapp: cleanPhone(phone.value),
+      location: location.value.trim(),
+      town: town.value.trim(),
+      age: age.value.trim(),
+      photo_url: finalPhotoUrl,
+      image_url: finalPhotoUrl,
+      video_url: finalVideoUrl,
+      reel_url: finalVideoUrl,
+      short_url: finalVideoUrl,
+      plan: plan.value,
+      likes_count: Number(likes_count.value || 0),
+      views_count: Number(views_count.value || 0),
+      bio: bio.value.trim(),
+      approved: true,
+      created_at: new Date().toISOString()
+    };
+
+    if(!payload.stage_name || !payload.phone){
+      statusBox.textContent = "Stage name and phone are required.";
+      return;
+    }
+
+    const { error } = await sb.from("profiles").insert(payload);
+
+    if(error){
+      statusBox.textContent = "Error: " + error.message;
+      return;
+    }
+
+    statusBox.textContent = "Profile + reel saved successfully.";
+    clearForm();
+    loadProfiles();
+
+  }catch(error){
+    statusBox.textContent = "Upload error: " + error.message;
   }
-
-  const { error } = await sb.from("profiles").insert(payload);
-
-  if(error){
-    statusBox.textContent = "Error: " + error.message;
-    return;
-  }
-
-  statusBox.textContent = "Profile added successfully.";
-  clearForm();
-  loadProfiles();
 }
 
 function clearForm(){
@@ -161,6 +222,8 @@ function clearForm(){
   likes_count.value = 0;
   views_count.value = 0;
   plan.value = "featured";
+  photoUpload.value = "";
+  reelUpload.value = "";
 }
 
 async function loadProfiles(){
@@ -181,36 +244,48 @@ async function loadProfiles(){
     return;
   }
 
-  list.innerHTML = data.map(p => `
-    <article class="card">
-      <img src="${imageOf(p)}" onerror="this.src='/assets/logo/logo-badge.png'">
+  list.innerHTML = data.map(p=>{
+    const video = videoOf(p);
 
-      <div class="body">
-        <div class="name">${p.stage_name || "Verified"}</div>
+    return `
+      <article class="card">
+        ${
+          video
+          ? `<video src="${video}" muted loop controls poster="${imageOf(p)}"></video>`
+          : `<img src="${imageOf(p)}" onerror="this.src='/assets/logo/logo-badge.png'">`
+        }
 
-        <div class="meta">
-          📍 ${p.location || p.town || "Nairobi"}<br>
-          📞 ${p.phone || p.whatsapp || "Hidden"}<br>
-          💎 ${p.plan || "featured"}<br>
-          ✅ Approved: ${p.approved ? "Yes" : "No"}<br>
-          ❤️ ${p.likes_count || 0} · 👁️ ${p.views_count || 0}
+        <div class="body">
+          <div class="name">${p.stage_name || "Verified"}</div>
+
+          <div class="meta">
+            📍 ${p.location || p.town || "Nairobi"}<br>
+            📞 ${p.phone || p.whatsapp || "Hidden"}<br>
+            💎 ${p.plan || "featured"}<br>
+            ✅ Approved: ${p.approved ? "Yes" : "No"}<br>
+            🎬 Reel: ${video ? "Yes" : "No"}<br>
+            ❤️ ${p.likes_count || 0} · 👁️ ${p.views_count || 0}
+          </div>
+
+          <div class="actions">
+            <button class="approve" onclick="approveProfile('${p.id}')">Approve</button>
+            <button class="unapprove" onclick="unapproveProfile('${p.id}')">Hide</button>
+            <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
+          </div>
         </div>
-
-        <div class="actions">
-          <button class="approve" onclick="approveProfile('${p.id}')">Approve</button>
-          <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
-        </div>
-      </div>
-    </article>
-  `).join("");
+      </article>
+    `;
+  }).join("");
 }
 
 async function approveProfile(id){
-  const { error } = await sb
-    .from("profiles")
-    .update({ approved:true })
-    .eq("id",id);
+  const { error } = await sb.from("profiles").update({ approved:true }).eq("id",id);
+  if(error) alert(error.message);
+  loadProfiles();
+}
 
+async function unapproveProfile(id){
+  const { error } = await sb.from("profiles").update({ approved:false }).eq("id",id);
   if(error) alert(error.message);
   loadProfiles();
 }
@@ -219,11 +294,7 @@ async function deleteProfile(id){
   const ok = confirm("Delete this profile?");
   if(!ok) return;
 
-  const { error } = await sb
-    .from("profiles")
-    .delete()
-    .eq("id",id);
-
+  const { error } = await sb.from("profiles").delete().eq("id",id);
   if(error) alert(error.message);
   loadProfiles();
 }
