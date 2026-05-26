@@ -3,239 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>Nairobi Sweets Vault</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  background:#000814;
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
-  padding-bottom:40px;
-}
-
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:20px;
-  padding:26px;
-  background:#000;
-  border-bottom:1px solid rgba(255,213,74,.18);
-  position:sticky;
-  top:0;
-  z-index:50;
-}
-
-h1{
-  color:#ffd54a;
-  font-size:42px;
-  font-weight:900;
-}
-
-button{
-  border:none;
-  cursor:pointer;
-  font-weight:900;
-}
-
-.refresh{
-  background:#ffd54a;
-  color:#000;
-  border-radius:16px;
-  padding:16px 28px;
-  font-size:16px;
-}
-
-.wrap{
-  padding:28px;
-}
-
-.panel{
-  background:linear-gradient(180deg,#020a56,#010633);
-  border:1px solid rgba(255,213,74,.12);
-  border-radius:28px;
-  padding:28px;
-  margin-bottom:28px;
-}
-
-h2{
-  font-size:28px;
-  margin-bottom:22px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
-}
-
-input,
-select,
-textarea{
-  width:100%;
-  background:#08122f;
-  color:#fff;
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:16px;
-  padding:16px;
-  font-size:16px;
-}
-
-textarea{
-  grid-column:1/-1;
-  min-height:120px;
-}
-
-.filebox{
-  background:#08122f;
-  border:1px dashed rgba(255,213,74,.25);
-  border-radius:16px;
-  padding:16px;
-}
-
-.filebox label{
-  display:block;
-  color:#ffd54a;
-  font-weight:900;
-  margin-bottom:10px;
-}
-
-.add{
-  background:#22c55e;
-  color:#000;
-  border-radius:16px;
-  padding:16px 28px;
-  margin-top:18px;
-}
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:22px;
-}
-
-.card{
-  background:linear-gradient(180deg,#020a56,#010633);
-  border-radius:24px;
-  overflow:hidden;
-  border:1px solid rgba(255,213,74,.1);
-}
-
-.card img,
-.card video{
-  width:100%;
-  height:240px;
-  object-fit:cover;
-  background:#020617;
-}
-
-.body{
-  padding:16px;
-}
-
-.name{
-  font-size:22px;
-  font-weight:900;
-  color:#ffd54a;
-  margin-bottom:8px;
-}
-
-.meta{
-  font-size:14px;
-  color:#ddd;
-  line-height:1.6;
-  word-break:break-word;
-}
-
-.actions{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:10px;
-  margin-top:14px;
-}
-
-.approve{
-  background:#22c55e;
-  color:#000;
-  border-radius:12px;
-  padding:12px;
-}
-
-.unapprove{
-  background:#ffd54a;
-  color:#000;
-  border-radius:12px;
-  padding:12px;
-}
-
-.delete{
-  background:#ef4444;
-  color:#fff;
-  border-radius:12px;
-  padding:12px;
-}
-
-.status{
-  margin-top:14px;
-  color:#ffd54a;
-  font-weight:900;
-  min-height:24px;
-}
-
-.small{
-  font-size:12px;
-  color:#aaa;
-  margin-top:8px;
-}
-
-.preview{
-  margin-top:14px;
-  display:grid;
-  grid-template-columns:120px 120px;
-  gap:14px;
-}
-
-.preview img,
-.preview video{
-  width:120px;
-  height:120px;
-  object-fit:cover;
-  border-radius:16px;
-  background:#020617;
-  border:1px solid rgba(255,213,74,.15);
-}
-
-@media(max-width:1100px){
-  .grid,
-  .cards{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(max-width:700px){
-  header{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
-  h1{
-    font-size:30px;
-  }
-
-  .grid,
-  .cards{
-    grid-template-columns:1fr;
-  }
-
-  .actions{
-    grid-template-columns:1fr;
-  }
-}
+body{background:#000814;color:#fff;font-family:Arial,Helvetica,sans-serif;padding-bottom:40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:26px;background:#000;border-bottom:1px solid rgba(255,213,74,.18);position:sticky;top:0;z-index:50}
+h1{color:#ffd54a;font-size:42px;font-weight:900}
+button{border:none;cursor:pointer;font-weight:900}
+.refresh{background:#ffd54a;color:#000;border-radius:16px;padding:16px 28px;font-size:16px}
+.wrap{padding:28px}
+.panel{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:28px;padding:28px;margin-bottom:28px}
+h2{font-size:28px;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+input,select,textarea{width:100%;background:#08122f;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;font-size:16px}
+textarea{grid-column:1/-1;min-height:120px}
+.filebox{background:#08122f;border:1px dashed rgba(255,213,74,.25);border-radius:16px;padding:16px}
+.filebox label{display:block;color:#ffd54a;font-weight:900;margin-bottom:10px}
+.checkrow{display:flex;align-items:center;gap:12px;background:#08122f;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px}
+.checkrow input{width:auto}
+.add{background:#22c55e;color:#000;border-radius:16px;padding:16px 28px;margin-top:18px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.card{background:linear-gradient(180deg,#020a56,#010633);border-radius:24px;overflow:hidden;border:1px solid rgba(255,213,74,.1)}
+.card img,.card video{width:100%;height:240px;object-fit:cover;background:#020617}
+.body{padding:16px}
+.name{font-size:22px;font-weight:900;color:#ffd54a;margin-bottom:8px}
+.meta{font-size:14px;color:#ddd;line-height:1.6;word-break:break-word}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tags span{background:rgba(255,213,74,.13);color:#ffd54a;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900}
+.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
+.approve{background:#22c55e;color:#000;border-radius:12px;padding:12px}
+.unapprove{background:#ffd54a;color:#000;border-radius:12px;padding:12px}
+.delete{background:#ef4444;color:#fff;border-radius:12px;padding:12px}
+.status{margin-top:14px;color:#ffd54a;font-weight:900;min-height:24px}
+.small{font-size:12px;color:#aaa;margin-top:8px}
+.preview{margin-top:14px;display:grid;grid-template-columns:120px 120px;gap:14px}
+.preview img,.preview video{width:120px;height:120px;object-fit:cover;border-radius:16px;background:#020617;border:1px solid rgba(255,213,74,.15)}
+@media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -246,24 +51,7 @@ const ADMIN_PASSWORD = "1586758672";
 const entered = prompt("Enter Nairobi Sweets Vault Password");
 
 if(entered !== ADMIN_PASSWORD){
-  document.body.innerHTML = `
-    <div style="
-      height:100vh;
-      background:#000;
-      color:#ff3b3b;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:38px;
-      font-weight:900;
-      font-family:Arial;
-      text-align:center;
-      padding:30px;
-    ">
-      ACCESS DENIED
-    </div>
-  `;
-
+  document.body.innerHTML = `<div style="height:100vh;background:#000;color:#ff3b3b;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;font-family:Arial;text-align:center;padding:30px;">ACCESS DENIED</div>`;
   throw new Error("Unauthorized");
 }
 </script>
@@ -276,54 +64,66 @@ if(entered !== ADMIN_PASSWORD){
 <div class="wrap">
 
 <section class="panel">
-  <h2>Add New Profile</h2>
+<h2>Add New Profile</h2>
 
-  <div class="grid">
+<div class="grid">
+  <input id="stage_name" placeholder="Stage name">
+  <input id="phone" placeholder="Phone">
+  <input id="location" placeholder="Location">
+  <input id="age" placeholder="Age">
 
-    <input id="stage_name" placeholder="Stage name">
-    <input id="phone" placeholder="Phone">
-    <input id="location" placeholder="Location">
-    <input id="age" placeholder="Age">
+  <input id="photo_url" placeholder="Photo URL">
+  <input id="video_url" placeholder="Existing Reel / Video Public URL">
+  <input id="slug" placeholder="SEO slug, auto if empty">
+  <input id="availability" placeholder="Availability e.g. Online Now">
 
-    <input id="photo_url" placeholder="Photo URL">
-    <input id="video_url" placeholder="Existing Reel / Video Public URL">
-    <input id="town" placeholder="Town / Area">
+  <input id="languages" placeholder="Languages e.g. English, Swahili">
+  <input id="nationality" placeholder="Nationality">
+  <input id="orientation" placeholder="Orientation">
+  <input id="height" placeholder="Height">
 
-    <select id="plan">
-      <option value="featured">Featured</option>
-      <option value="vip">VIP</option>
-      <option value="vvip">VVIP</option>
-      <option value="signature">Signature</option>
-    </select>
+  <input id="incall_price" placeholder="Incall price">
+  <input id="outcall_price" placeholder="Outcall price">
+  <input id="services" placeholder="Services tags, comma separated">
 
-    <input id="likes_count" type="number" value="0" placeholder="Likes">
-    <input id="views_count" type="number" value="0" placeholder="Views">
+  <select id="plan">
+    <option value="featured">Featured</option>
+    <option value="vip">VIP</option>
+    <option value="vvip">VVIP</option>
+    <option value="signature">Signature</option>
+  </select>
 
-    <div class="filebox">
-      <label>Upload Profile Photo</label>
-      <input type="file" id="photoUpload" accept="image/*">
-      <div class="small">Bucket: profile-images</div>
-    </div>
+  <input id="likes_count" type="number" value="0" placeholder="Likes">
+  <input id="views_count" type="number" value="0" placeholder="Views">
 
-    <div class="filebox">
-      <label>Upload Reel Video</label>
-      <input type="file" id="reelUpload" accept="video/mp4,video/webm,video/quicktime">
-      <div class="small">Bucket: profile-videos</div>
-    </div>
+  <label class="checkrow"><input type="checkbox" id="verified"> Verified</label>
+  <label class="checkrow"><input type="checkbox" id="featured"> Featured</label>
 
-    <textarea id="bio" placeholder="Bio / description"></textarea>
-
+  <div class="filebox">
+    <label>Upload Profile Photo</label>
+    <input type="file" id="photoUpload" accept="image/*">
+    <div class="small">Bucket: profile-images</div>
   </div>
 
-  <div class="preview" id="preview"></div>
+  <div class="filebox">
+    <label>Upload Reel Video</label>
+    <input type="file" id="reelUpload" accept="video/mp4,video/webm,video/quicktime">
+    <div class="small">Bucket: profile-videos</div>
+  </div>
 
-  <button class="add" onclick="addProfile()">Add Profile</button>
-  <div class="status" id="status"></div>
+  <textarea id="bio" placeholder="Short bio / description"></textarea>
+  <textarea id="about" placeholder="Full premium about section"></textarea>
+</div>
+
+<div class="preview" id="preview"></div>
+
+<button class="add" onclick="addProfile()">Add Profile</button>
+<div class="status" id="status"></div>
 </section>
 
 <section class="panel">
-  <h2>Profiles</h2>
-  <div class="cards" id="list"></div>
+<h2>Profiles</h2>
+<div class="cards" id="list"></div>
 </section>
 
 </div>
@@ -331,7 +131,6 @@ if(entered !== ADMIN_PASSWORD){
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
-
 const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 const list = document.getElementById("list");
@@ -343,6 +142,11 @@ function valueOf(id){
   return el ? String(el.value || "").trim() : "";
 }
 
+function checkedOf(id){
+  const el = document.getElementById(id);
+  return el ? Boolean(el.checked) : false;
+}
+
 function numberOf(id){
   const el = document.getElementById(id);
   return el ? Number(el.value || 0) : 0;
@@ -350,30 +154,29 @@ function numberOf(id){
 
 function cleanPhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
-
   if(!p) return "";
-
-  if(p.startsWith("0")){
-    p = "254" + p.slice(1);
-  }
-
-  if(p.startsWith("7") || p.startsWith("1")){
-    p = "254" + p;
-  }
-
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
   return p;
 }
 
+function makeSlug(text){
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
+}
+
+function parseServices(text){
+  return String(text || "")
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
 function imageOf(p){
-  return (
-    p.photo_url ||
-    p.image_url ||
-    p.profile_photo ||
-    p.main_photo ||
-    p.photo ||
-    p.image ||
-    "/assets/logo/logo-badge.png"
-  );
+  return p.photo_url || p.image_url || p.profile_photo || p.main_photo || p.photo || p.image || "/assets/logo/logo-badge.png";
 }
 
 function videoOf(p){
@@ -395,9 +198,7 @@ async function uploadFile(bucket,file){
     .from(bucket)
     .upload(fileName,file,{upsert:false});
 
-  if(error){
-    throw error;
-  }
+  if(error) throw error;
 
   const { data } = sb
     .storage
@@ -441,14 +242,12 @@ async function addProfile(){
     const uploadedPhotoUrl = await uploadFile("profile-images",photoFile);
     const uploadedReelUrl = await uploadFile("profile-videos",reelFile);
 
-    const manualPhotoUrl = valueOf("photo_url");
-    const manualVideoUrl = valueOf("video_url");
-
-    const finalPhotoUrl = uploadedPhotoUrl || manualPhotoUrl;
-    const finalVideoUrl = uploadedReelUrl || manualVideoUrl;
+    const finalPhotoUrl = uploadedPhotoUrl || valueOf("photo_url");
+    const finalVideoUrl = uploadedReelUrl || valueOf("video_url");
 
     const stageName = valueOf("stage_name");
     const phoneClean = cleanPhone(valueOf("phone"));
+    const finalSlug = valueOf("slug") || makeSlug(stageName + "-" + valueOf("location"));
 
     if(!stageName){
       statusBox.textContent = "Stage name is required.";
@@ -464,10 +263,10 @@ async function addProfile(){
       stage_name: stageName,
       phone: phoneClean,
       whatsapp: phoneClean,
-
       location: valueOf("location"),
-      town: valueOf("town"),
       age: valueOf("age"),
+      bio: valueOf("bio"),
+      about: valueOf("about"),
 
       photo_url: finalPhotoUrl,
       image_url: finalPhotoUrl,
@@ -477,26 +276,36 @@ async function addProfile(){
       short_url: finalVideoUrl,
 
       plan: valueOf("plan") || "featured",
+      services: parseServices(valueOf("services")),
+      incall_price: valueOf("incall_price"),
+      outcall_price: valueOf("outcall_price"),
+      languages: valueOf("languages"),
+      nationality: valueOf("nationality"),
+      orientation: valueOf("orientation"),
+      height: valueOf("height"),
+      availability: valueOf("availability") || "Online Now",
+
+      verified: checkedOf("verified"),
+      featured: checkedOf("featured"),
+      slug: finalSlug,
 
       likes_count: numberOf("likes_count"),
       views_count: numberOf("views_count"),
-
-      bio: valueOf("bio"),
+      likes: numberOf("likes_count"),
+      views: numberOf("views_count"),
 
       approved: true,
       created_at: new Date().toISOString()
     };
 
-    const { error } = await sb
-      .from("profiles")
-      .insert(payload);
+    const { error } = await sb.from("profiles").insert(payload);
 
     if(error){
       statusBox.textContent = "Database error: " + error.message;
       return;
     }
 
-    statusBox.textContent = "Profile + reel saved successfully.";
+    statusBox.textContent = "Profile + premium fields + reel saved successfully.";
     clearForm();
     loadProfiles();
 
@@ -507,14 +316,9 @@ async function addProfile(){
 
 function clearForm(){
   [
-    "stage_name",
-    "phone",
-    "location",
-    "photo_url",
-    "video_url",
-    "age",
-    "town",
-    "bio"
+    "stage_name","phone","location","age","photo_url","video_url","slug",
+    "availability","languages","nationality","orientation","height",
+    "incall_price","outcall_price","services","bio","about"
   ].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value = "";
@@ -523,6 +327,8 @@ function clearForm(){
   document.getElementById("likes_count").value = 0;
   document.getElementById("views_count").value = 0;
   document.getElementById("plan").value = "featured";
+  document.getElementById("verified").checked = false;
+  document.getElementById("featured").checked = false;
   document.getElementById("photoUpload").value = "";
   document.getElementById("reelUpload").value = "";
   previewBox.innerHTML = "";
@@ -548,10 +354,10 @@ async function loadProfiles(){
 
   list.innerHTML = data.map(p=>{
     const video = videoOf(p);
+    const services = Array.isArray(p.services) ? p.services : [];
 
     return `
       <article class="card">
-
         ${
           video
           ? `<video src="${video}" muted loop controls poster="${imageOf(p)}"></video>`
@@ -559,18 +365,22 @@ async function loadProfiles(){
         }
 
         <div class="body">
-
-          <div class="name">
-            ${p.stage_name || "Verified"}
-          </div>
+          <div class="name">${p.stage_name || "Verified"}</div>
 
           <div class="meta">
-            📍 ${p.location || p.town || "Nairobi"}<br>
+            📍 ${p.location || "Nairobi"}<br>
             📞 ${p.phone || p.whatsapp || "Hidden"}<br>
             💎 ${p.plan || "featured"}<br>
             ✅ Approved: ${p.approved ? "Yes" : "No"}<br>
+            🛡️ Verified: ${p.verified ? "Yes" : "No"}<br>
+            ⭐ Featured: ${p.featured ? "Yes" : "No"}<br>
             🎬 Reel: ${video ? "Yes" : "No"}<br>
-            ❤️ ${p.likes_count || 0} · 👁️ ${p.views_count || 0}
+            🔗 Slug: ${p.slug || "none"}<br>
+            ❤️ ${p.likes_count || p.likes || 0} · 👁️ ${p.views_count || p.views || 0}
+          </div>
+
+          <div class="tags">
+            ${services.map(s=>`<span>${s}</span>`).join("")}
           </div>
 
           <div class="actions">
@@ -578,33 +388,21 @@ async function loadProfiles(){
             <button class="unapprove" onclick="unapproveProfile('${p.id}')">Hide</button>
             <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
           </div>
-
         </div>
-
       </article>
     `;
   }).join("");
 }
 
 async function approveProfile(id){
-  const { error } = await sb
-    .from("profiles")
-    .update({ approved:true })
-    .eq("id",id);
-
+  const { error } = await sb.from("profiles").update({ approved:true }).eq("id",id);
   if(error) alert(error.message);
-
   loadProfiles();
 }
 
 async function unapproveProfile(id){
-  const { error } = await sb
-    .from("profiles")
-    .update({ approved:false })
-    .eq("id",id);
-
+  const { error } = await sb.from("profiles").update({ approved:false }).eq("id",id);
   if(error) alert(error.message);
-
   loadProfiles();
 }
 
@@ -612,13 +410,8 @@ async function deleteProfile(id){
   const ok = confirm("Delete this profile?");
   if(!ok) return;
 
-  const { error } = await sb
-    .from("profiles")
-    .delete()
-    .eq("id",id);
-
+  const { error } = await sb.from("profiles").delete().eq("id",id);
   if(error) alert(error.message);
-
   loadProfiles();
 }
 
