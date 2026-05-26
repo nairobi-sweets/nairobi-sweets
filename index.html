@@ -287,6 +287,7 @@ a{text-decoration:none;color:inherit}
   background:linear-gradient(180deg,#020a56,#010633);
   border:1px solid rgba(255,213,74,.08);
   box-shadow:0 0 28px rgba(255,0,128,.08),0 18px 50px rgba(0,0,0,.45);
+  cursor:pointer;
 }
 
 .card-image{
@@ -964,7 +965,7 @@ function renderProfiles(data){
     const phone = safePhone(profile.phone || profile.whatsapp);
 
     return `
-      <article class="card">
+      <article class="card" onclick="window.location.href='/profile.html?id=${profile.id}'">
         <span class="online-dot"></span>
         <div class="featured-badge">${getBadge(profile)}</div>
 
@@ -993,13 +994,14 @@ function renderProfiles(data){
             ${
               phone
               ? `
-                <a class="call-btn" href="tel:${phone}">☎ CALL</a>
+                <a class="call-btn" href="tel:${phone}" onclick="event.stopPropagation()">☎ CALL</a>
 
                 <a
                   class="wa-btn"
                   href="https://wa.me/${phone}?text=${whatsappMessage(profile)}"
                   target="_blank"
                   rel="noopener"
+                  onclick="event.stopPropagation()"
                 >
                   <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
                   WHATSAPP
