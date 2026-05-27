@@ -671,10 +671,217 @@ a{text-decoration:none;color:inherit}
 @media(max-width:900px){
   .profiles{grid-template-columns:1fr}
 }
+
+
+/* =========================
+AGE GATE
+========================= */
+.age-gate{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(18px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.age-gate.active{display:flex}
+
+.age-card{
+  width:min(560px,94vw);
+  background:radial-gradient(circle at top,#101b69 0%,#050817 55%,#000 100%);
+  border:1px solid rgba(255,213,74,.18);
+  border-radius:34px;
+  padding:30px;
+  position:relative;
+  text-align:center;
+  box-shadow:0 0 35px rgba(255,180,0,.20),0 0 80px rgba(255,0,128,.12),0 30px 100px rgba(0,0,0,.8);
+}
+
+.age-close{
+  position:absolute;
+  top:18px;
+  right:18px;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#ffd54a;
+  font-size:30px;
+  cursor:pointer;
+}
+
+.age-logo{
+  width:110px;
+  height:110px;
+  border-radius:28px;
+  object-fit:cover;
+  margin-bottom:18px;
+  box-shadow:0 0 28px rgba(255,140,0,.45),0 0 60px rgba(255,80,0,.25);
+}
+
+.age-card h2{
+  color:#ffd54a;
+  font-size:34px;
+  font-weight:900;
+  line-height:1;
+  margin-bottom:10px;
+}
+
+.age-sub{
+  color:#d7d7d7;
+  font-size:15px;
+  margin-bottom:22px;
+}
+
+.age-label{
+  display:block;
+  color:white;
+  font-weight:900;
+  margin-bottom:10px;
+  text-align:left;
+}
+
+.age-input{
+  width:100%;
+  height:56px;
+  background:#0b1235;
+  color:white;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;
+  padding:0 16px;
+  font-size:16px;
+  outline:none;
+  margin-bottom:18px;
+}
+
+.age-warning{
+  background:rgba(255,213,74,.10);
+  border:1px solid rgba(255,213,74,.18);
+  color:#f4f4f4;
+  border-radius:20px;
+  padding:16px;
+  font-size:14px;
+  line-height:1.6;
+  margin-bottom:18px;
+}
+
+.age-warning strong{color:#ffd54a}
+
+.age-check{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  text-align:left;
+  color:#ddd;
+  font-size:14px;
+  line-height:1.5;
+  margin-bottom:22px;
+}
+
+.age-check input{
+  margin-top:4px;
+  transform:scale(1.25);
+}
+
+.age-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.enter-btn,
+.leave-btn{
+  min-height:54px;
+  border:none;
+  border-radius:18px;
+  font-weight:900;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.enter-btn{
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+}
+
+.leave-btn{
+  background:linear-gradient(145deg,#111827,#050505);
+  color:white;
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.cookie-note{
+  color:#9ca3af;
+  font-size:12px;
+  line-height:1.5;
+  margin-top:18px;
+}
+
+@media(max-width:600px){
+  .age-card{padding:24px;border-radius:28px}
+  .age-card h2{font-size:28px}
+  .age-actions{grid-template-columns:1fr}
+  .age-logo{width:92px;height:92px}
+}
+
 </style>
 </head>
 
 <body>
+
+<!-- =========================
+AGE GATE
+========================= -->
+<div class="age-gate" id="ageGate">
+  <div class="age-card">
+    <button class="age-close" onclick="leaveSite()">×</button>
+
+    <img src="/assets/logo/logo-badge.png" class="age-logo" alt="Nairobi Sweets">
+
+    <h2>Welcome to Nairobi Sweets</h2>
+    <p class="age-sub">Luxury discovery platform for adults only.</p>
+
+    <label class="age-label">🌍 Select your country</label>
+    <select id="countrySelect" class="age-input">
+      <option value="">Choose country</option>
+      <option>Kenya</option>
+      <option>Uganda</option>
+      <option>Tanzania</option>
+      <option>Rwanda</option>
+      <option>South Africa</option>
+      <option>Nigeria</option>
+      <option>Ghana</option>
+      <option>United Arab Emirates</option>
+      <option>United Kingdom</option>
+      <option>United States</option>
+    </select>
+
+    <div class="age-warning">
+      <strong>WARNING:</strong> This website may contain adult-oriented material.
+      Continue only if you are legally allowed to view this type of content in your location.
+    </div>
+
+    <label class="age-check">
+      <input type="checkbox" id="ageConfirm">
+      <span>I confirm that I am 18 years or older and accept responsibility for my own actions.</span>
+    </label>
+
+    <div class="age-actions">
+      <button onclick="enterSite()" class="enter-btn">Enter Nairobi Sweets</button>
+      <button onclick="leaveSite()" class="leave-btn">Leave Site</button>
+    </div>
+
+    <p class="cookie-note">
+      By entering, you agree to our cookie use, privacy notice, and platform disclaimer.
+    </p>
+  </div>
+</div>
+
 
 <header class="topbar">
   <a href="/" class="brand">
@@ -1131,6 +1338,54 @@ async function loadProfiles(){
   renderShorts(ALL_PROFILES);
   applyFilters();
 }
+
+
+/* =========================
+AGE GATE
+========================= */
+function showAgeGate(){
+  const verified = localStorage.getItem("nairobi_sweets_age_verified");
+  const verifiedAt = Number(localStorage.getItem("nairobi_sweets_age_verified_at") || 0);
+  const oneDay = 24 * 60 * 60 * 1000;
+
+  if(verified === "true" && Date.now() - verifiedAt < oneDay){
+    return;
+  }
+
+  const gate = document.getElementById("ageGate");
+  if(!gate) return;
+
+  gate.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function enterSite(){
+  const country = document.getElementById("countrySelect").value;
+  const confirm = document.getElementById("ageConfirm").checked;
+
+  if(!country){
+    alert("Please select your country first.");
+    return;
+  }
+
+  if(!confirm){
+    alert("Please confirm that you are 18 years or older.");
+    return;
+  }
+
+  localStorage.setItem("nairobi_sweets_country", country);
+  localStorage.setItem("nairobi_sweets_age_verified", "true");
+  localStorage.setItem("nairobi_sweets_age_verified_at", String(Date.now()));
+
+  document.getElementById("ageGate").classList.remove("active");
+  document.body.style.overflow = "";
+}
+
+function leaveSite(){
+  window.location.href = "https://www.google.com";
+}
+
+document.addEventListener("DOMContentLoaded", showAgeGate);
 
 loadProfiles();
 </script>
