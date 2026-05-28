@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Nairobi Sweets Vault</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#000814;color:#fff;font-family:Arial,Helvetica,sans-serif;padding-bottom:40px}
@@ -35,12 +36,24 @@ textarea{grid-column:1/-1;min-height:120px}
 .approve{background:#22c55e;color:#000;border-radius:12px;padding:12px}
 .unapprove{background:#ffd54a;color:#000;border-radius:12px;padding:12px}
 .delete{background:#ef4444;color:#fff;border-radius:12px;padding:12px}
+.edit-btn{width:100%;margin-top:14px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:14px;padding:14px;font-size:15px;box-shadow:0 10px 25px rgba(255,180,0,.25)}
 .status{margin-top:14px;color:#ffd54a;font-weight:900;min-height:24px}
 .small{font-size:12px;color:#aaa;margin-top:8px}
 .preview{margin-top:14px;display:grid;grid-template-columns:120px 120px;gap:14px}
 .preview img,.preview video{width:120px;height:120px;object-fit:cover;border-radius:16px;background:#020617;border:1px solid rgba(255,213,74,.15)}
+
+.edit-modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:999999;padding:20px}
+.edit-box{width:min(720px,95vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:28px;padding:24px}
+.edit-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.edit-top h2{color:#ffd54a;font-size:28px;margin:0}
+.edit-top button{background:none;color:white;border:none;font-size:28px}
+.edit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.edit-box textarea{grid-column:1/-1}
+.save-edit{width:100%;background:#22c55e;color:#000;border-radius:16px;padding:16px;font-size:16px;margin-top:10px}
+.close-edit{width:100%;background:#ef4444;color:white;border-radius:16px;padding:14px;font-size:15px;margin-top:10px}
+
 @media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
+@media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -71,17 +84,14 @@ if(entered !== ADMIN_PASSWORD){
   <input id="phone" placeholder="Phone">
   <input id="location" placeholder="Location">
   <input id="age" placeholder="Age">
-
   <input id="photo_url" placeholder="Photo URL">
   <input id="video_url" placeholder="Existing Reel / Video Public URL">
   <input id="slug" placeholder="SEO slug, auto if empty">
   <input id="availability" placeholder="Availability e.g. Online Now">
-
   <input id="languages" placeholder="Languages e.g. English, Swahili">
   <input id="nationality" placeholder="Nationality">
   <input id="orientation" placeholder="Orientation">
   <input id="height" placeholder="Height">
-
   <input id="incall_price" placeholder="Incall price">
   <input id="outcall_price" placeholder="Outcall price">
   <input id="services" placeholder="Services tags, comma separated">
@@ -116,7 +126,6 @@ if(entered !== ADMIN_PASSWORD){
 </div>
 
 <div class="preview" id="preview"></div>
-
 <button class="add" onclick="addProfile()">Add Profile</button>
 <div class="status" id="status"></div>
 </section>
@@ -128,6 +137,52 @@ if(entered !== ADMIN_PASSWORD){
 
 </div>
 
+<div class="edit-modal" id="editModal">
+  <div class="edit-box">
+    <div class="edit-top">
+      <h2>Edit Profile</h2>
+      <button onclick="closeEditModal()">✕</button>
+    </div>
+
+    <div class="edit-grid">
+      <input id="edit_stage_name" placeholder="Stage name">
+      <input id="edit_phone" placeholder="Phone">
+      <input id="edit_location" placeholder="Location">
+      <input id="edit_age" placeholder="Age">
+      <input id="edit_photo_url" placeholder="Photo URL">
+      <input id="edit_video_url" placeholder="Video URL">
+      <input id="edit_slug" placeholder="SEO slug">
+      <input id="edit_availability" placeholder="Availability">
+      <input id="edit_languages" placeholder="Languages">
+      <input id="edit_nationality" placeholder="Nationality">
+      <input id="edit_orientation" placeholder="Orientation">
+      <input id="edit_height" placeholder="Height">
+      <input id="edit_incall_price" placeholder="Incall price">
+      <input id="edit_outcall_price" placeholder="Outcall price">
+      <input id="edit_services" placeholder="Services, comma separated">
+
+      <select id="edit_plan">
+        <option value="featured">Featured</option>
+        <option value="vip">VIP</option>
+        <option value="vvip">VVIP</option>
+        <option value="signature">Signature</option>
+      </select>
+
+      <input id="edit_likes_count" type="number" placeholder="Likes">
+      <input id="edit_views_count" type="number" placeholder="Views">
+
+      <label class="checkrow"><input type="checkbox" id="edit_verified"> Verified</label>
+      <label class="checkrow"><input type="checkbox" id="edit_featured"> Featured</label>
+
+      <textarea id="edit_bio" placeholder="Bio"></textarea>
+      <textarea id="edit_about" placeholder="About"></textarea>
+    </div>
+
+    <button class="save-edit" onclick="saveProfileEdit()">Save Changes</button>
+    <button class="close-edit" onclick="closeEditModal()">Cancel</button>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
@@ -136,6 +191,8 @@ const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const list = document.getElementById("list");
 const statusBox = document.getElementById("status");
 const previewBox = document.getElementById("preview");
+
+let editingProfileId = null;
 
 function valueOf(id){
   const el = document.getElementById(id);
@@ -161,18 +218,17 @@ function cleanPhone(phone){
 }
 
 function makeSlug(text){
-  return String(text || "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g,"-")
-    .replace(/^-+|-+$/g,"");
+  return String(text || "").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 }
 
 function parseServices(text){
-  return String(text || "")
-    .split(",")
-    .map(s => s.trim())
-    .filter(Boolean);
+  return String(text || "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+function servicesToText(services){
+  if(Array.isArray(services)) return services.join(", ");
+  if(typeof services === "string") return services;
+  return "";
 }
 
 function imageOf(p){
@@ -190,21 +246,12 @@ function safeFileName(file){
 
 async function uploadFile(bucket,file){
   if(!file) return "";
-
   const fileName = safeFileName(file);
 
-  const { error } = await sb
-    .storage
-    .from(bucket)
-    .upload(fileName,file,{upsert:false});
-
+  const { error } = await sb.storage.from(bucket).upload(fileName,file,{upsert:false});
   if(error) throw error;
 
-  const { data } = sb
-    .storage
-    .from(bucket)
-    .getPublicUrl(fileName);
-
+  const { data } = sb.storage.from(bucket).getPublicUrl(fileName);
   return data.publicUrl;
 }
 
@@ -267,14 +314,11 @@ async function addProfile(){
       age: valueOf("age"),
       bio: valueOf("bio"),
       about: valueOf("about"),
-
       photo_url: finalPhotoUrl,
       image_url: finalPhotoUrl,
-
       video_url: finalVideoUrl,
       reel_url: finalVideoUrl,
       short_url: finalVideoUrl,
-
       plan: valueOf("plan") || "featured",
       services: parseServices(valueOf("services")),
       incall_price: valueOf("incall_price"),
@@ -284,16 +328,13 @@ async function addProfile(){
       orientation: valueOf("orientation"),
       height: valueOf("height"),
       availability: valueOf("availability") || "Online Now",
-
       verified: checkedOf("verified"),
       featured: checkedOf("featured"),
       slug: finalSlug,
-
       likes_count: numberOf("likes_count"),
       views_count: numberOf("views_count"),
       likes: numberOf("likes_count"),
       views: numberOf("views_count"),
-
       approved: true,
       created_at: new Date().toISOString()
     };
@@ -305,7 +346,7 @@ async function addProfile(){
       return;
     }
 
-    statusBox.textContent = "Profile + premium fields + reel saved successfully.";
+    statusBox.textContent = "Profile saved successfully.";
     clearForm();
     loadProfiles();
 
@@ -337,10 +378,7 @@ function clearForm(){
 async function loadProfiles(){
   list.innerHTML = `<div style="color:#ffd54a;font-weight:900">Loading...</div>`;
 
-  const { data,error } = await sb
-    .from("profiles")
-    .select("*")
-    .order("created_at",{ascending:false});
+  const { data,error } = await sb.from("profiles").select("*").order("created_at",{ascending:false});
 
   if(error){
     list.innerHTML = `<div style="color:#ff6b6b">${error.message}</div>`;
@@ -388,10 +426,99 @@ async function loadProfiles(){
             <button class="unapprove" onclick="unapproveProfile('${p.id}')">Hide</button>
             <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
           </div>
+
+          <button class="edit-btn" onclick="openEditModal('${p.id}')">✏ Edit Profile</button>
         </div>
       </article>
     `;
   }).join("");
+}
+
+async function openEditModal(id){
+  editingProfileId = id;
+
+  const { data,error } = await sb.from("profiles").select("*").eq("id",id).single();
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  document.getElementById("edit_stage_name").value = data.stage_name || "";
+  document.getElementById("edit_phone").value = data.phone || data.whatsapp || "";
+  document.getElementById("edit_location").value = data.location || "";
+  document.getElementById("edit_age").value = data.age || "";
+  document.getElementById("edit_photo_url").value = data.photo_url || data.image_url || "";
+  document.getElementById("edit_video_url").value = data.video_url || data.reel_url || data.short_url || "";
+  document.getElementById("edit_slug").value = data.slug || "";
+  document.getElementById("edit_availability").value = data.availability || "";
+  document.getElementById("edit_languages").value = data.languages || "";
+  document.getElementById("edit_nationality").value = data.nationality || "";
+  document.getElementById("edit_orientation").value = data.orientation || "";
+  document.getElementById("edit_height").value = data.height || "";
+  document.getElementById("edit_incall_price").value = data.incall_price || "";
+  document.getElementById("edit_outcall_price").value = data.outcall_price || "";
+  document.getElementById("edit_services").value = servicesToText(data.services);
+  document.getElementById("edit_plan").value = data.plan || "featured";
+  document.getElementById("edit_likes_count").value = data.likes_count || data.likes || 0;
+  document.getElementById("edit_views_count").value = data.views_count || data.views || 0;
+  document.getElementById("edit_verified").checked = Boolean(data.verified);
+  document.getElementById("edit_featured").checked = Boolean(data.featured);
+  document.getElementById("edit_bio").value = data.bio || "";
+  document.getElementById("edit_about").value = data.about || "";
+
+  document.getElementById("editModal").style.display = "flex";
+}
+
+function closeEditModal(){
+  document.getElementById("editModal").style.display = "none";
+}
+
+async function saveProfileEdit(){
+  const phoneClean = cleanPhone(valueOf("edit_phone"));
+  const finalSlug = valueOf("edit_slug") || makeSlug(valueOf("edit_stage_name") + "-" + valueOf("edit_location"));
+
+  const updates = {
+    stage_name: valueOf("edit_stage_name"),
+    phone: phoneClean,
+    whatsapp: phoneClean,
+    location: valueOf("edit_location"),
+    age: valueOf("edit_age"),
+    photo_url: valueOf("edit_photo_url"),
+    image_url: valueOf("edit_photo_url"),
+    video_url: valueOf("edit_video_url"),
+    reel_url: valueOf("edit_video_url"),
+    short_url: valueOf("edit_video_url"),
+    slug: finalSlug,
+    availability: valueOf("edit_availability") || "Online Now",
+    languages: valueOf("edit_languages"),
+    nationality: valueOf("edit_nationality"),
+    orientation: valueOf("edit_orientation"),
+    height: valueOf("edit_height"),
+    incall_price: valueOf("edit_incall_price"),
+    outcall_price: valueOf("edit_outcall_price"),
+    services: parseServices(valueOf("edit_services")),
+    plan: valueOf("edit_plan") || "featured",
+    likes_count: numberOf("edit_likes_count"),
+    views_count: numberOf("edit_views_count"),
+    likes: numberOf("edit_likes_count"),
+    views: numberOf("edit_views_count"),
+    verified: checkedOf("edit_verified"),
+    featured: checkedOf("edit_featured"),
+    bio: valueOf("edit_bio"),
+    about: valueOf("edit_about")
+  };
+
+  const { error } = await sb.from("profiles").update(updates).eq("id",editingProfileId);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  closeEditModal();
+  loadProfiles();
+  alert("Profile updated successfully.");
 }
 
 async function approveProfile(id){
