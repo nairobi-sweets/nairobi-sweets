@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nairobi Sweets | Verified Nairobi Profiles</title>
+<meta name="description" content="Luxury Nairobi profiles, VIP listings, WhatsApp access, shorts, reels, map and Sweet AI discovery.">
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:radial-gradient(circle at top,#0c1148 0%,#000 45%);
+  color:white;
+  font-family:Arial,Helvetica,sans-serif;
+  overflow-x:hidden;
+  padding-bottom:100px;
+}
+a{text-decoration:none;color:inherit}
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:999;
+  background:rgba(0,0,0,.96);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,213,74,.08);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 18px;
+  gap:14px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  min-width:0;
+}
+
+.brand-logo{
+  width:88px;
+  height:88px;
+  min-width:88px;
+  object-fit:cover;
+  border-radius:24px;
+  background:#050505;
+  border:2px solid rgba(255,190,70,.18);
+  box-shadow:
+    0 0 25px rgba(255,140,0,.45),
+    0 0 60px rgba(255,80,0,.22);
+}
+
+.brand-text{
+  display:flex;
+  flex-direction:column;
+  line-height:.88;
+}
+
+.brand-text span{
+  color:#ffd54a;
+  font-size:clamp(2rem,5vw,3.6rem);
+  font-weight:900;
+  letter-spacing:-2px;
+}
+
+.menu-btn{
+  width:72px;
+  height:72px;
+  min-width:72px;
+  border-radius:22px;
+  background:linear-gradient(180deg,#07145f,#02083d);
+  border:1px solid rgba(255,213,74,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.menu-btn span{
+  color:#ffd54a;
+  font-size:38px;
+  font-weight:900;
+}
+
+.mobile-menu{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.98);
+  z-index:2000;
+  transform:translateX(100%);
+  transition:.35s ease;
+  padding:34px;
+}
+
+.mobile-menu.active{transform:translateX(0)}
+
+.menu-close{
+  text-align:right;
+  color:#ffd54a;
+  font-size:44px;
+  margin-bottom:30px;
+  cursor:pointer;
+}
+
+.menu-links{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.menu-links a{
+  background:linear-gradient(180deg,#07145f,#02083d);
+  border:1px solid rgba(255,213,74,.08);
+  border-radius:20px;
+  padding:18px;
+  font-size:18px;
+  font-weight:900;
+}
+
+.hero{padding:20px 18px 12px}
+
+.hero-box{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border-radius:32px;
+  padding:34px 24px;
+  border:1px solid rgba(255,213,74,.08);
+  box-shadow:0 0 30px rgba(255,0,128,.12),0 25px 80px rgba(0,0,0,.5);
+}
+
+.hero-box h2{
+  color:#ffd54a;
+  font-size:clamp(52px,13vw,100px);
+  line-height:.9;
+  font-weight:900;
+  margin-bottom:18px;
+}
+
+.hero-box p{
+  color:#d9d9d9;
+  font-size:18px;
+  line-height:1.7;
+}
+
+.search-box{
+  width:100%;
+  margin-top:24px;
+  background:#020926;
+  border:1px solid rgba(255,255,255,.08);
+  color:white;
+  border-radius:18px;
+  padding:18px;
+  font-size:15px;
+  outline:none;
+}
+
+.filters{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  padding:14px 18px;
+  scrollbar-width:none;
+}
+
+.filters::-webkit-scrollbar{display:none}
+
+.filters button{
+  border:none;
+  background:linear-gradient(145deg,#1d243f,#08114f);
+  color:white;
+  border-radius:16px;
+  padding:14px 20px;
+  font-size:12px;
+  font-weight:900;
+  min-width:max-content;
+  border:1px solid rgba(255,255,255,.06);
+  cursor:pointer;
+}
+
+.filters button.active{
+  background:linear-gradient(145deg,#1db954,#117336);
+}
+
+.stats-wrap{
+  padding:0 18px 20px;
+}
+
+.stats-box{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border:1px solid rgba(255,213,74,.08);
+  border-radius:24px;
+  padding:18px;
+}
+
+.stats-label{
+  color:#d8d8d8;
+  font-size:13px;
+  font-weight:800;
+}
+
+.stats-number{
+  color:#ffd54a;
+  font-size:38px;
+  font-weight:900;
+  margin-top:6px;
+}
+
+.shorts-section{padding:4px 18px 26px}
+
+.shorts-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+
+.shorts-header h2{
+  color:#ffd54a;
+  font-size:28px;
+  font-weight:900;
+}
+
+.shorts-header a{
+  color:#ff4d8d;
+  font-size:13px;
+  font-weight:900;
+}
+
+.shorts-row{
+  display:flex;
+  gap:16px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.shorts-row::-webkit-scrollbar{display:none}
+
+.short-card{
+  position:relative;
+  min-width:190px;
+  width:190px;
+  height:330px;
+  overflow:hidden;
+  border-radius:26px;
+  background:#020617;
+  border:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;
+  cursor:pointer;
+}
+
+.short-card video,
+.short-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.short-overlay{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:16px;
+  background:linear-gradient(to top,rgba(0,0,0,.95),transparent);
+}
+
+.short-name{
+  font-size:18px;
+  font-weight:900;
+}
+
+.short-location{
+  color:#d5d5d5;
+  margin-top:5px;
+  font-size:12px;
+}
+
+.profiles{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(220px,1fr));
+  gap:22px;
+  padding:10px 18px 70px;
+}
+
+.card{
+  position:relative;
+  overflow:hidden;
+  border-radius:28px;
+  backdrop-filter:blur(12px);
+  background:linear-gradient(180deg,#020a56,#010633);
+  border:1px solid rgba(255,213,74,.08);
+  box-shadow:0 0 28px rgba(255,0,128,.08),0 18px 50px rgba(0,0,0,.45);
+  cursor:pointer;
+}
+
+.card-image{
+  width:100%;
+  aspect-ratio:4/4.4;
+  object-fit:cover;
+  display:block;
+  background:#020617;
+}
+
+.card-body{padding:16px}
+
+.card-name{
+  font-size:14px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.online{
+  color:#31ff71;
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:10px;
+}
+
+.location{
+  color:#d5d5d5;
+  font-size:10px;
+  margin-bottom:10px;
+}
+
+.phone{
+  color:#ffd54a;
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.bio{
+  color:#d2d2d2;
+  font-size:10px;
+  line-height:1.55;
+  margin-bottom:14px;
+}
+
+.engagement{
+  display:flex;
+  gap:8px;
+  color:#d0d0d0;
+  font-size:10px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+
+.featured-badge{
+  position:absolute;
+  top:14px;
+  right:14px;
+  background:rgba(0,0,0,.72);
+  color:#ffd54a;
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  z-index:5;
+}
+
+.online-dot{
+  position:absolute;
+  top:14px;
+  left:14px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#31ff71;
+  border:3px solid white;
+  z-index:5;
+}
+
+.action-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.call-btn,
+.wa-btn{
+  min-height:34px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-size:9px;
+  font-weight:800;
+}
+
+.call-btn{
+  background:linear-gradient(145deg,#08114f,#050717);
+  color:white;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.08),0 6px 18px rgba(0,0,0,.35);
+}
+
+.wa-btn{
+  background:linear-gradient(145deg,#0b5f2d,#06361b);
+  color:white;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.08),0 6px 18px rgba(0,0,0,.35);
+}
+
+.wa-btn img{
+  width:14px;
+  height:14px;
+}
+
+.disabled-contact{
+  grid-column:1/-1;
+  min-height:34px;
+  border-radius:16px;
+  background:#171717;
+  color:#777;
+  border:none;
+  font-size:9px;
+  font-weight:900;
+}
+
+.map-wrap{padding:0 18px 28px}
+
+.map-card{
+  overflow:hidden;
+  border-radius:28px;
+  border:1px solid rgba(255,213,74,.08);
+  background:linear-gradient(180deg,#020a56,#010633);
+}
+
+.map-header{
+  padding:22px;
+}
+
+.map-header h3{
+  color:#ffd54a;
+  font-size:26px;
+  margin-bottom:10px;
+}
+
+.map-header p{
+  color:#d8d8d8;
+  font-size:15px;
+  line-height:1.6;
+}
+
+.map-card iframe{
+  width:100%;
+  height:320px;
+  border:none;
+  display:block;
+}
+
+.disclaimer{padding:0 18px 80px}
+
+.disclaimer-box{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border-radius:30px;
+  padding:28px;
+  border:1px solid rgba(255,213,74,.08);
+}
+
+.disclaimer-box h3{
+  color:#ffd54a;
+  font-size:26px;
+  margin-bottom:18px;
+}
+
+.disclaimer-box p{
+  color:#d8d8d8;
+  line-height:1.8;
+  font-size:15px;
+}
+
+.sweet-ai{
+  position:fixed;
+  right:18px;
+  bottom:98px;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  overflow:hidden;
+  z-index:999;
+  cursor:pointer;
+  border:3px solid #7dffcf;
+  background:linear-gradient(145deg,#071a17,#120022);
+  box-shadow:0 0 22px rgba(125,255,207,.45),0 0 42px rgba(160,84,255,.28);
+  animation:sweetFloat 3s infinite ease-in-out;
+}
+
+.sweet-ai img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+@keyframes sweetFloat{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-7px)}
+  100%{transform:translateY(0)}
+}
+
+.sweet-panel{
+  position:fixed;
+  right:18px;
+  bottom:160px;
+  width:min(360px,92vw);
+  background:linear-gradient(180deg,#071a17,#120022);
+  border:1px solid rgba(125,255,207,.22);
+  border-radius:26px;
+  overflow:hidden;
+  z-index:1400;
+  display:none;
+  box-shadow:0 0 40px rgba(125,255,207,.18),0 0 60px rgba(160,84,255,.12);
+}
+
+.sweet-panel.active{display:block}
+
+.sweet-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 18px;
+  background:linear-gradient(90deg,#05110f,#1b0033);
+}
+
+.sweet-header h3{
+  color:#7dffcf;
+  font-size:20px;
+  font-weight:900;
+}
+
+.sweet-header button{
+  background:none;
+  border:none;
+  color:#b388ff;
+  font-size:24px;
+  cursor:pointer;
+}
+
+.sweet-body{padding:16px}
+
+.sweet-body input{
+  width:100%;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid rgba(125,255,207,.14);
+  background:#081412;
+  color:white;
+  outline:none;
+}
+
+.sweet-chips{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin:12px 0;
+  scrollbar-width:none;
+}
+
+.sweet-chips::-webkit-scrollbar{display:none}
+
+.sweet-chips button{
+  min-width:max-content;
+  border:none;
+  border-radius:999px;
+  padding:10px 12px;
+  background:linear-gradient(145deg,#0d2a24,#1b0033);
+  color:#7dffcf;
+  font-size:12px;
+  font-weight:900;
+  border:1px solid rgba(125,255,207,.12);
+  cursor:pointer;
+}
+
+.sweet-send{
+  width:100%;
+  border:none;
+  border-radius:16px;
+  padding:14px;
+  background:linear-gradient(145deg,#7dffcf,#a054ff);
+  color:#000;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.sweet-results{
+  margin-top:14px;
+  color:#d7f7ef;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.sweet-card{
+  margin:10px 0;
+  padding:10px;
+  border-radius:14px;
+  background:#0d2a24;
+  border:1px solid rgba(125,255,207,.12);
+}
+
+.sweet-card strong{color:#7dffcf}
+
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:76px;
+  background:rgba(0,0,0,.96);
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  z-index:999;
+  border-top:1px solid rgba(255,213,74,.08);
+}
+
+.bottom-nav button{
+  border:none;
+  background:none;
+  color:#ffd54a;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.loading,
+.empty{
+  grid-column:1/-1;
+  padding:50px;
+  color:#ffd54a;
+  font-weight:900;
+  text-align:center;
+}
+
+@media(min-width:1100px){
+  .hero,
+  .filters,
+  .stats-wrap,
+  .shorts-section,
+  .profiles,
+  .map-wrap,
+  .disclaimer{
+    padding-left:90px;
+    padding-right:90px;
+  }
+
+  .brand-logo{
+    width:70px;
+    height:70px;
+    min-width:70px;
+    border-radius:20px;
+  }
+
+  .brand-text span{
+    font-size:38px;
+  }
+
+  .menu-btn{
+    width:64px;
+    height:64px;
+    min-width:64px;
+  }
+}
+
+@media(max-width:1100px){
+  .profiles{grid-template-columns:repeat(3,minmax(220px,1fr))}
+}
+
+@media(max-width:900px){
+  .profiles{grid-template-columns:1fr}
+}
+
+
+/* =========================
+AGE GATE
+========================= */
+.age-gate{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(18px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.age-gate.active{display:flex}
+
+.age-card{
+  width:min(560px,94vw);
+  background:radial-gradient(circle at top,#101b69 0%,#050817 55%,#000 100%);
+  border:1px solid rgba(255,213,74,.18);
+  border-radius:34px;
+  padding:30px;
+  position:relative;
+  text-align:center;
+  box-shadow:0 0 35px rgba(255,180,0,.20),0 0 80px rgba(255,0,128,.12),0 30px 100px rgba(0,0,0,.8);
+}
+
+.age-close{
+  position:absolute;
+  top:18px;
+  right:18px;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#ffd54a;
+  font-size:30px;
+  cursor:pointer;
+}
+
+.age-logo{
+  width:110px;
+  height:110px;
+  border-radius:28px;
+  object-fit:cover;
+  margin-bottom:18px;
+  box-shadow:0 0 28px rgba(255,140,0,.45),0 0 60px rgba(255,80,0,.25);
+}
+
+.age-card h2{
+  color:#ffd54a;
+  font-size:34px;
+  font-weight:900;
+  line-height:1;
+  margin-bottom:10px;
+}
+
+.age-sub{
+  color:#d7d7d7;
+  font-size:15px;
+  margin-bottom:22px;
+}
+
+.age-label{
+  display:block;
+  color:white;
+  font-weight:900;
+  margin-bottom:10px;
+  text-align:left;
+}
+
+.age-input{
+  width:100%;
+  height:56px;
+  background:#0b1235;
+  color:white;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;
+  padding:0 16px;
+  font-size:16px;
+  outline:none;
+  margin-bottom:18px;
+}
+
+.age-warning{
+  background:rgba(255,213,74,.10);
+  border:1px solid rgba(255,213,74,.18);
+  color:#f4f4f4;
+  border-radius:20px;
+  padding:16px;
+  font-size:14px;
+  line-height:1.6;
+  margin-bottom:18px;
+}
+
+.age-warning strong{color:#ffd54a}
+
+.age-check{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  text-align:left;
+  color:#ddd;
+  font-size:14px;
+  line-height:1.5;
+  margin-bottom:22px;
+}
+
+.age-check input{
+  margin-top:4px;
+  transform:scale(1.25);
+}
+
+.age-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.enter-btn,
+.leave-btn{
+  min-height:54px;
+  border:none;
+  border-radius:18px;
+  font-weight:900;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.enter-btn{
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+}
+
+.leave-btn{
+  background:linear-gradient(145deg,#111827,#050505);
+  color:white;
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.cookie-note{
+  color:#9ca3af;
+  font-size:12px;
+  line-height:1.5;
+  margin-top:18px;
+}
+
+@media(max-width:600px){
+  .age-card{padding:24px;border-radius:28px}
+  .age-card h2{font-size:28px}
+  .age-actions{grid-template-columns:1fr}
+  .age-logo{width:92px;height:92px}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+AGE GATE
+========================= -->
+<div class="age-gate" id="ageGate">
+  <div class="age-card">
+    <button class="age-close" onclick="leaveSite()">×</button>
+
+    <img src="/assets/logo/logo-badge.png" class="age-logo" alt="Nairobi Sweets">
+
+    <h2>Welcome to Nairobi Sweets</h2>
+    <p class="age-sub">Luxury discovery platform for adults only.</p>
+
+    <label class="age-label">🌍 Select your country</label>
+    <select id="countrySelect" class="age-input">
+      <option value="">Choose country</option>
+      <option>Kenya</option>
+      <option>Uganda</option>
+      <option>Tanzania</option>
+      <option>Rwanda</option>
+      <option>South Africa</option>
+      <option>Nigeria</option>
+      <option>Ghana</option>
+      <option>United Arab Emirates</option>
+      <option>United Kingdom</option>
+      <option>United States</option>
+    </select>
+
+    <div class="age-warning">
+      <strong>WARNING:</strong> This website may contain adult-oriented material.
+      Continue only if you are legally allowed to view this type of content in your location.
+    </div>
+
+    <label class="age-check">
+      <input type="checkbox" id="ageConfirm">
+      <span>I confirm that I am 18 years or older and accept responsibility for my own actions.</span>
+    </label>
+
+    <div class="age-actions">
+      <button onclick="enterSite()" class="enter-btn">Enter Nairobi Sweets</button>
+      <button onclick="leaveSite()" class="leave-btn">Leave Site</button>
+    </div>
+
+    <p class="cookie-note">
+      By entering, you agree to our cookie use, privacy notice, and platform disclaimer.
+    </p>
+  </div>
+</div>
+
+
+<header class="topbar">
+  <a href="/" class="brand">
+    <img
+      src="/assets/logo/logo-badge.png"
+      onerror="this.src='/assets/logo/logo-badge.png'"
+      alt="Nairobi Sweets"
+      class="brand-logo"
+    >
+
+    <div class="brand-text">
+      <span>Nairobi</span>
+      <span>Sweets</span>
+    </div>
+  </a>
+
+  <div class="menu-btn" onclick="toggleMenu()">
+    <span>☰</span>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <div class="menu-close" onclick="toggleMenu()">✕</div>
+
+  <div class="menu-links">
+    <a href="/">🏠 Home</a>
+    <a href="/shorts.html">🔥 Shorts</a>
+    <a href="/reel.html">🎬 Reels</a>
+    <a href="/join.html">💎 Join</a>
+    <a href="/login.html">👤 Login</a>
+    <a href="/vault-8472.html">🔐 Admin</a>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-box">
+    <h2>Profiles</h2>
+    <p>Verified profiles, WhatsApp access, VIP listings, reels and luxury discovery.</p>
+
+    <input
+      type="text"
+      class="search-box"
+      id="searchInput"
+      placeholder="Search by name, bio, location..."
+    >
+  </div>
+</section>
+
+<div class="filters">
+  <button class="active" data-filter="home">HOME</button>
+  <button data-filter="vip">VIP</button>
+  <button data-filter="online">ONLINE</button>
+  <button data-filter="whatsapp">WHATSAPP</button>
+  <button data-filter="kilimani">KILIMANI</button>
+  <button data-filter="westlands">WESTLANDS</button>
+  <button data-filter="ruiru">RUIRU</button>
+  <button data-filter="kasarani">KASARANI</button>
+</div>
+
+<section class="stats-wrap">
+  <div class="stats-box">
+    <div class="stats-label">Total Profiles</div>
+    <div class="stats-number" id="profileCount">0</div>
+  </div>
+</section>
+
+<section class="shorts-section">
+  <div class="shorts-header">
+    <h2>🔥 Nairobi Shorts</h2>
+    <a href="/reel.html">Open Reels →</a>
+  </div>
+
+  <div class="shorts-row" id="shortsRow"></div>
+</section>
+
+<section class="profiles" id="profiles">
+  <div class="loading">Loading profiles...</div>
+</section>
+
+<section class="map-wrap">
+  <div class="map-card">
+    <div class="map-header">
+      <h3>Nairobi Coverage Map</h3>
+      <p>Explore active areas across Nairobi and nearby towns.</p>
+    </div>
+
+    <iframe
+      src="https://maps.google.com/maps?q=Nairobi&t=&z=11&ie=UTF8&iwloc=&output=embed"
+      loading="lazy"
+      allowfullscreen>
+    </iframe>
+  </div>
+</section>
+
+<section class="disclaimer">
+  <div class="disclaimer-box">
+    <h3>Disclaimer</h3>
+    <p>
+      Nairobi Sweets is an advertising and discovery platform only.
+      All profiles are independently managed. Users must act responsibly
+      and comply with all applicable laws and regulations.
+    </p>
+  </div>
+</section>
+
+<div class="sweet-ai" onclick="openSweet()">
+  <img src="/assets/logo/logo-badge.png" alt="Sweet AI">
+</div>
+
+<div class="sweet-panel" id="sweetPanel">
+  <div class="sweet-header">
+    <h3>Sweet AI ✨</h3>
+    <button onclick="closeSweet()">✕</button>
+  </div>
+
+  <div class="sweet-body">
+    <input id="sweetInput" placeholder="VIP in Kilimani, online now...">
+
+    <div class="sweet-chips">
+      <button onclick="quickAsk('VIP in Kilimani')">VIP Kilimani</button>
+      <button onclick="quickAsk('Online now')">Online Now</button>
+      <button onclick="quickAsk('WhatsApp Westlands')">WhatsApp Westlands</button>
+      <button onclick="quickAsk('Most liked')">Most Liked</button>
+    </div>
+
+    <button class="sweet-send" onclick="askSweet()">Ask Sweet</button>
+    <div id="sweetResults" class="sweet-results">Hi, I’m Sweet 💋</div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button onclick="window.location.href='/'">🏠</button>
+  <button onclick="window.location.href='/shorts.html'">🔥</button>
+  <button onclick="window.location.href='/reel.html'">🎬</button>
+  <button onclick="openSweet()">✨</button>
+  <button onclick="toggleMenu()">☰</button>
+</nav>
+
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const SITE_URL = "https://nairobi-sweets.com";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const profilesEl = document.getElementById("profiles");
+const shortsRow = document.getElementById("shortsRow");
+const searchInput = document.getElementById("searchInput");
+const profileCount = document.getElementById("profileCount");
+
+let ALL_PROFILES = [];
+let ACTIVE_FILTER = "home";
+
+function toggleMenu(){
+  document.getElementById("mobileMenu").classList.toggle("active");
+}
+
+function openSweet(){
+  document.getElementById("sweetPanel").classList.add("active");
+}
+
+function closeSweet(){
+  document.getElementById("sweetPanel").classList.remove("active");
+}
+
+function quickAsk(text){
+  document.getElementById("sweetInput").value = text;
+  askSweet();
+}
+
+function safePhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
+}
+
+function getImage(profile){
+  return (
+    profile.photo_url ||
+    profile.image_url ||
+    profile.profile_photo ||
+    profile.main_photo ||
+    profile.photo ||
+    profile.image ||
+    "/assets/logo/logo-badge.png"
+  );
+}
+
+function getVideo(profile){
+  return profile.video_url || profile.short_url || profile.reel_url || "";
+}
+
+function isVideo(url){
+  return /\.(mp4|webm|mov)$/i.test(String(url || ""));
+}
+
+function getName(profile){
+  return profile.stage_name || profile.name || profile.full_name || "Verified";
+}
+
+function getLocation(profile){
+  return profile.location || profile.town || profile.area || "Nairobi";
+}
+
+function getPlan(profile){
+  return String(profile.plan || profile.plan_name || profile.package || profile.tier || "").toLowerCase();
+}
+
+function getBio(profile){
+  return profile.bio || profile.description || profile.about || "Luxury Nairobi profile.";
+}
+
+function getBadge(profile){
+  const plan = getPlan(profile);
+  if(plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP";
+  if(plan.includes("vip")) return "✨ VIP";
+  return "✨ Featured";
+}
+
+function getLikes(profile){
+  return Number(profile.likes_count || profile.likes || 0);
+}
+
+function getViews(profile){
+  return Number(profile.views_count || profile.views || 0);
+}
+
+function compact(text,max=115){
+  text = String(text || "");
+  return text.length > max ? text.slice(0,max).trim() + "..." : text;
+}
+
+function whatsappMessage(profile){
+  return encodeURIComponent(
+`🔥 Nairobi Sweets
+
+Hi ${getName(profile)},
+
+I found your profile on Nairobi Sweets.
+
+🌍 ${SITE_URL}
+
+💎 Verified Profiles
+🔥 Nairobi Shorts
+🎬 Nairobi Reels`
+  );
+}
+
+
+async function trackEvent(eventType, profileId, profileName = ""){
+  const payload = {
+    profile_id: profileId,
+    profile_name: profileName || "",
+    event_type: eventType,
+    source_page: window.location.pathname,
+    created_at: new Date().toISOString()
+  };
+
+  try{
+    const { error } = await sb.from("analytics_events").insert(payload);
+    if(!error) return true;
+    console.log("analytics_events insert failed:", error.message);
+  }catch(err){
+    console.log("analytics_events error:", err);
+  }
+
+  try{
+    const { error } = await sb.from("profile_events").insert(payload);
+    if(!error) return true;
+    console.log("profile_events insert failed:", error.message);
+  }catch(err){
+    console.log("profile_events error:", err);
+  }
+
+  try{
+    const tableMap = {
+      profile_views: "profile_views",
+      profile_opens: "profile_views",
+      whatsapp_clicks: "whatsapp_clicks",
+      call_clicks: "call_clicks"
+    };
+    const table = tableMap[eventType];
+    if(table){
+      await sb.from(table).insert({ profile_id: profileId });
+    }
+  }catch(err){
+    console.log("fallback analytics error:", err);
+  }
+
+  return false;
+}
+
+async function handleTrackedLink(event,eventType,profileId,url,newTab=false){
+  event.preventDefault();
+  event.stopPropagation();
+  await trackEvent(eventType,profileId);
+  if(newTab){
+    window.open(url,"_blank","noopener");
+  }else{
+    window.location.href = url;
+  }
+  return false;
+}
+
+async function openProfileCard(profileId){
+  await trackEvent("profile_opens",profileId);
+  window.location.href = `/profile.html?id=${profileId}`;
+}
+
+function profileSearchText(profile){
+  return `
+    ${getName(profile)}
+    ${getLocation(profile)}
+    ${getBio(profile)}
+    ${getPlan(profile)}
+    ${profile.phone || ""}
+    ${profile.whatsapp || ""}
+  `.toLowerCase();
+}
+
+function renderShorts(list){
+  const shorts = list.slice(0,10);
+
+  if(!shorts.length){
+    shortsRow.innerHTML = `
+      <div class="short-card">
+        <img src="/assets/logo/logo-badge.png">
+        <div class="short-overlay">
+          <div class="short-name">No shorts yet</div>
+          <div class="short-location">📍 Nairobi</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  shortsRow.innerHTML = shorts.map(profile=>{
+    const media = getVideo(profile) || getImage(profile);
+
+    const mediaTag = isVideo(media)
+      ? `<video autoplay muted loop playsinline><source src="${media}" type="video/mp4"></video>`
+      : `<img src="${media}" onerror="this.src='/assets/logo/logo-badge.png'">`;
+
+    return `
+      <div class="short-card" onclick="window.location.href='/reel.html'">
+        ${mediaTag}
+        <div class="short-overlay">
+          <div class="short-name">${getName(profile)}</div>
+          <div class="short-location">📍 ${getLocation(profile)}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderProfiles(data){
+  profileCount.textContent = data.length.toLocaleString();
+
+  if(!data.length){
+    profilesEl.innerHTML = `<div class="empty">No profiles found.</div>`;
+    return;
+  }
+
+  profilesEl.innerHTML = data.map(profile=>{
+    const phone = safePhone(profile.phone || profile.whatsapp);
+
+    return `
+      <article class="card" onclick="openProfileCard('${profile.id}')">
+        <span class="online-dot"></span>
+        <div class="featured-badge">${getBadge(profile)}</div>
+
+        <img
+          src="${getImage(profile)}"
+          class="card-image"
+          loading="lazy"
+          alt="${getName(profile)}"
+          onerror="this.src='/assets/logo/logo-badge.png'"
+        >
+
+        <div class="card-body">
+          <div class="card-name">${getName(profile)}</div>
+          <div class="online">Online Now</div>
+          <div class="location">📍 ${getLocation(profile)}</div>
+          <div class="phone">📞 ${phone || "Hidden"}</div>
+          <div class="bio">${compact(getBio(profile))}</div>
+
+          <div class="engagement">
+            ❤️ ${getLikes(profile)}
+            •
+            👁️ ${getViews(profile)}
+          </div>
+
+          <div class="action-row">
+            ${
+              phone
+              ? `
+                <a class="call-btn" href="tel:${phone}" onclick="return handleTrackedLink(event,'call_clicks','${profile.id}','tel:${phone}',false)">☎ CALL</a>
+
+                <a
+                  class="wa-btn"
+                  href="https://wa.me/${phone}?text=${whatsappMessage(profile)}"
+                  target="_blank"
+                  rel="noopener"
+                  onclick="return handleTrackedLink(event,'whatsapp_clicks','${profile.id}','https://wa.me/${phone}?text=${whatsappMessage(profile)}',true)"
+                >
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
+                  WHATSAPP
+                </a>
+              `
+              : `<button class="disabled-contact">CONTACT HIDDEN</button>`
+            }
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function applyFilters(){
+  let list = [...ALL_PROFILES];
+  const q = searchInput.value.toLowerCase().trim();
+
+  if(ACTIVE_FILTER !== "home"){
+    list = list.filter(p=>{
+      if(ACTIVE_FILTER === "vip") return getPlan(p).includes("vip");
+      if(ACTIVE_FILTER === "online") return true;
+      if(ACTIVE_FILTER === "whatsapp") return Boolean(p.phone || p.whatsapp);
+      return profileSearchText(p).includes(ACTIVE_FILTER);
+    });
+  }
+
+  if(q){
+    list = list.filter(p=>profileSearchText(p).includes(q));
+  }
+
+  renderProfiles(list);
+}
+
+document.querySelectorAll(".filters button").forEach(button=>{
+  button.addEventListener("click",()=>{
+    document.querySelectorAll(".filters button").forEach(btn=>btn.classList.remove("active"));
+    button.classList.add("active");
+    ACTIVE_FILTER = button.dataset.filter || "home";
+    applyFilters();
+  });
+});
+
+searchInput.addEventListener("input",applyFilters);
+
+async function askSweet(){
+  const input = document.getElementById("sweetInput");
+  const results = document.getElementById("sweetResults");
+  const message = input.value.trim();
+
+  if(!message){
+    results.innerHTML = "Sweet needs a clue 💋";
+    return;
+  }
+
+  results.innerHTML = "Sweet is searching... ✨";
+
+  const q = message.toLowerCase();
+
+  let local = ALL_PROFILES.filter(p=>{
+    if(q.includes("vip")) return getPlan(p).includes("vip");
+    if(q.includes("whatsapp")) return Boolean(p.phone || p.whatsapp);
+    if(q.includes("online")) return true;
+    if(q.includes("liked")) return getLikes(p) > 0;
+    return profileSearchText(p).includes(q);
+  }).slice(0,4);
+
+  if(local.length){
+    results.innerHTML = local.map(p=>`
+      <div class="sweet-card" onclick="window.location.href='/reel.html'">
+        <strong>${getName(p)}</strong><br>
+        📍 ${getLocation(p)}<br>
+        📞 ${safePhone(p.phone || p.whatsapp) || "Hidden"}<br>
+        💎 ${getBadge(p)}
+      </div>
+    `).join("");
+    return;
+  }
+
+  try{
+    const response = await fetch("/.netlify/functions/sweet-chat",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message})
+    });
+
+    const data = await response.json();
+    results.innerHTML = data.reply || data.answer || "Sweet found something 💋";
+  }catch(error){
+    results.innerHTML = "No exact match yet 💔 Try VIP, Kilimani, Westlands, or Online.";
+  }
+}
+
+async function loadProfiles(){
+  profilesEl.innerHTML = `<div class="loading">Loading profiles...</div>`;
+
+  const {data,error} = await sb
+    .from("profiles")
+    .select("*")
+    .eq("approved",true)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    profilesEl.innerHTML = `<div class="empty" style="color:#ff5b5b;">Supabase error: ${error.message}</div>`;
+    return;
+  }
+
+  ALL_PROFILES = data || [];
+  renderShorts(ALL_PROFILES);
+  applyFilters();
+}
+
+
+/* =========================
+AGE GATE
+========================= */
+function showAgeGate(){
+  const verified = localStorage.getItem("nairobi_sweets_age_verified");
+  const verifiedAt = Number(localStorage.getItem("nairobi_sweets_age_verified_at") || 0);
+  const oneDay = 24 * 60 * 60 * 1000;
+
+  if(verified === "true" && Date.now() - verifiedAt < oneDay){
+    return;
+  }
+
+  const gate = document.getElementById("ageGate");
+  if(!gate) return;
+
+  gate.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function enterSite(){
+  const country = document.getElementById("countrySelect").value;
+  const confirm = document.getElementById("ageConfirm").checked;
+
+  if(!country){
+    alert("Please select your country first.");
+    return;
+  }
+
+  if(!confirm){
+    alert("Please confirm that you are 18 years or older.");
+    return;
+  }
+
+  localStorage.setItem("nairobi_sweets_country", country);
+  localStorage.setItem("nairobi_sweets_age_verified", "true");
+  localStorage.setItem("nairobi_sweets_age_verified_at", String(Date.now()));
+
+  document.getElementById("ageGate").classList.remove("active");
+  document.body.style.overflow = "";
+}
+
+function leaveSite(){
+  window.location.href = "https://www.google.com";
+}
+
+document.addEventListener("DOMContentLoaded", showAgeGate);
+
+loadProfiles();
+</script>
+
+</body>
+</html>
