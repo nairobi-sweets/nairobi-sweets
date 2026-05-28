@@ -7,3 +7,11 @@
 
 [functions."auto-expire-profiles"]
   schedule = "@hourly"
+
+[functions."refresh-trending-scores"]
+  schedule = "@hourly"
+
+[[redirects]]
+  from = "/profile/:id"
+  to = "/.netlify/functions/profile-share?id=:id"
+  status = 200
