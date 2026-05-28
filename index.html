@@ -1097,9 +1097,15 @@ function getBio(profile){
 }
 
 function getBadge(profile){
+  if((Number(profile.trending_score || 0)) >= 1000) return "🔥 TRENDING";
+  if(profile.verified) return "🛡️ VERIFIED";
+
   const plan = getPlan(profile);
-  if(plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP";
+  if(plan.includes("signature")) return "👑 SIGNATURE";
+  if(plan.includes("vvip")) return "👑 VVIP";
   if(plan.includes("vip")) return "✨ VIP";
+  if(plan.includes("featured")) return "🔥 FEATURED";
+
   return "✨ Featured";
 }
 
@@ -1134,7 +1140,15 @@ I found your profile on Nairobi Sweets.
 
 
 async function trackEvent(eventType, profileId, profileName = ""){
-  const payload = {
+  const analyticsPayload = {
+    profile_id: profileId,
+    profile_name: profileName || "",
+    event_name: eventType,
+    source_page: window.location.pathname,
+    created_at: new Date().toISOString()
+  };
+
+  const profileEventsPayload = {
     profile_id: profileId,
     profile_name: profileName || "",
     event_type: eventType,
@@ -1143,7 +1157,7 @@ async function trackEvent(eventType, profileId, profileName = ""){
   };
 
   try{
-    const { error } = await sb.from("analytics_events").insert(payload);
+    const { error } = await sb.from("analytics_events").insert(analyticsPayload);
     if(!error) return true;
     console.log("analytics_events insert failed:", error.message);
   }catch(err){
@@ -1151,7 +1165,7 @@ async function trackEvent(eventType, profileId, profileName = ""){
   }
 
   try{
-    const { error } = await sb.from("profile_events").insert(payload);
+    const { error } = await sb.from("profile_events").insert(profileEventsPayload);
     if(!error) return true;
     console.log("profile_events insert failed:", error.message);
   }catch(err){
@@ -1393,6 +1407,7 @@ async function loadProfiles(){
     .order("trending_score",{ascending:false})
     .order("boost_score",{ascending:false})
     .order("verified",{ascending:false})
+    .order("last_active",{ascending:false})
     .order("created_at",{ascending:false});
 
   if(error){
