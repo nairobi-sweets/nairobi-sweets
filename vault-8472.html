@@ -62,6 +62,7 @@ textarea{grid-column:1/-1;min-height:120px}
 .extend{background:#38bdf8;color:#00111f;border-radius:12px;padding:12px}
 .paid{background:#22c55e;color:#001b09;border-radius:12px;padding:12px}
 .expire{background:#f97316;color:#111;border-radius:12px;padding:12px}
+.renew-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#00e676,#00a152);color:#001b09;border-radius:14px;padding:14px;font-size:15px;box-shadow:0 10px 25px rgba(0,230,118,.22)}
 
 @media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
@@ -221,6 +222,34 @@ if(entered !== ADMIN_PASSWORD){
 
     <button class="save-edit" onclick="saveProfileEdit()">Save Changes</button>
     <button class="close-edit" onclick="closeEditModal()">Cancel</button>
+  </div>
+</div>
+
+<div class="edit-modal" id="renewModal">
+  <div class="edit-box">
+    <div class="edit-top">
+      <h2>Renew / Pay Now</h2>
+      <button onclick="closeRenewModal()">✕</button>
+    </div>
+
+    <div class="edit-grid">
+      <input id="renew_profile_id" placeholder="Profile ID" readonly>
+      <input id="renew_phone" placeholder="Phone e.g. 2547XXXXXXXX">
+
+      <select id="renew_plan">
+        <option value="featured">Featured - 1000 KES</option>
+        <option value="vip">VIP - 1500 KES</option>
+        <option value="vvip">VVIP - 3000 KES</option>
+        <option value="signature">Signature - 3000 KES</option>
+      </select>
+
+      <input id="renew_amount" type="number" placeholder="Amount" value="1500">
+
+      <div class="rank-help">This sends an M-Pesa STK push. When payment succeeds, mpesa-callback.js will mark the profile paid, active, approved and extend it by 7 days.</div>
+    </div>
+
+    <button class="save-edit" onclick="startRenewPayment()">Send M-Pesa STK</button>
+    <button class="close-edit" onclick="closeRenewModal()">Cancel</button>
   </div>
 </div>
 
@@ -625,6 +654,7 @@ async function loadProfiles(){
           </div>
 
           <button class="edit-btn" onclick="openEditModal('${p.id}')">✏ Edit Profile</button>
+          <button class="renew-btn" onclick="openRenewModal('${p.id}','${p.phone || p.whatsapp || ""}','${p.plan || "vip"}')">💰 Renew / Pay Now</button>
         </div>
       </article>
     `;
@@ -807,6 +837,71 @@ async function deleteProfile(id){
   const { error } = await sb.from("profiles").delete().eq("id",id);
   if(error) alert(error.message);
   loadProfiles();
+}
+
+
+function amountFromPlan(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature") || p.includes("vvip")) return 3000;
+  if(p.includes("vip")) return 1500;
+  if(p.includes("featured")) return 1000;
+  return 1500;
+}
+
+function openRenewModal(id, phone, plan){
+  const clean = cleanPhone(phone || "");
+  const finalPlan = plan || "vip";
+
+  document.getElementById("renew_profile_id").value = id;
+  document.getElementById("renew_phone").value = clean;
+  document.getElementById("renew_plan").value = finalPlan;
+  document.getElementById("renew_amount").value = amountFromPlan(finalPlan);
+  document.getElementById("renewModal").style.display = "flex";
+}
+
+function closeRenewModal(){
+  document.getElementById("renewModal").style.display = "none";
+}
+
+document.getElementById("renew_plan").addEventListener("change",()=>{
+  document.getElementById("renew_amount").value = amountFromPlan(valueOf("renew_plan"));
+});
+
+async function startRenewPayment(){
+  const profile_id = valueOf("renew_profile_id");
+  const phone = cleanPhone(valueOf("renew_phone"));
+  const plan = valueOf("renew_plan") || "vip";
+  const amount = numberOrDefault("renew_amount",amountFromPlan(plan));
+
+  if(!profile_id){
+    alert("Profile ID is required.");
+    return;
+  }
+
+  if(!phone){
+    alert("Phone number is required.");
+    return;
+  }
+
+  try{
+    const res = await fetch("/.netlify/functions/mpesa-stk-push",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ profile_id, phone, plan, amount })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok){
+      alert("STK failed: " + JSON.stringify(data));
+      return;
+    }
+
+    alert("M-Pesa STK sent. Complete payment on phone.");
+    closeRenewModal();
+  }catch(error){
+    alert("STK error: " + (error && error.message ? error.message : error));
+  }
 }
 
 loadProfiles();
