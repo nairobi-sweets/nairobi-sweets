@@ -1132,6 +1132,67 @@ I found your profile on Nairobi Sweets.
   );
 }
 
+
+async function trackEvent(eventType, profileId, profileName = ""){
+  const payload = {
+    profile_id: profileId,
+    profile_name: profileName || "",
+    event_type: eventType,
+    source_page: window.location.pathname,
+    created_at: new Date().toISOString()
+  };
+
+  try{
+    const { error } = await sb.from("analytics_events").insert(payload);
+    if(!error) return true;
+    console.log("analytics_events insert failed:", error.message);
+  }catch(err){
+    console.log("analytics_events error:", err);
+  }
+
+  try{
+    const { error } = await sb.from("profile_events").insert(payload);
+    if(!error) return true;
+    console.log("profile_events insert failed:", error.message);
+  }catch(err){
+    console.log("profile_events error:", err);
+  }
+
+  try{
+    const tableMap = {
+      profile_views: "profile_views",
+      profile_opens: "profile_views",
+      whatsapp_clicks: "whatsapp_clicks",
+      call_clicks: "call_clicks"
+    };
+    const table = tableMap[eventType];
+    if(table){
+      await sb.from(table).insert({ profile_id: profileId });
+    }
+  }catch(err){
+    console.log("fallback analytics error:", err);
+  }
+
+  return false;
+}
+
+async function handleTrackedLink(event,eventType,profileId,url,newTab=false){
+  event.preventDefault();
+  event.stopPropagation();
+  await trackEvent(eventType,profileId);
+  if(newTab){
+    window.open(url,"_blank","noopener");
+  }else{
+    window.location.href = url;
+  }
+  return false;
+}
+
+async function openProfileCard(profileId){
+  await trackEvent("profile_opens",profileId);
+  window.location.href = `/profile.html?id=${profileId}`;
+}
+
 function profileSearchText(profile){
   return `
     ${getName(profile)}
@@ -1178,17 +1239,6 @@ function renderShorts(list){
   }).join("");
 }
 
-
-async function trackProfileEvent(profileId,type){
-  const table = type === "whatsapp" ? "whatsapp_clicks" : "call_clicks";
-
-  try{
-    await sb.from(table).insert({ profile_id: profileId });
-  }catch(error){
-    console.warn("Analytics tracking failed:", error && error.message ? error.message : error);
-  }
-}
-
 function renderProfiles(data){
   profileCount.textContent = data.length.toLocaleString();
 
@@ -1201,7 +1251,7 @@ function renderProfiles(data){
     const phone = safePhone(profile.phone || profile.whatsapp);
 
     return `
-      <article class="card" onclick="window.location.href='/profile.html?id=${profile.id}'">
+      <article class="card" onclick="openProfileCard('${profile.id}')">
         <span class="online-dot"></span>
         <div class="featured-badge">${getBadge(profile)}</div>
 
@@ -1230,14 +1280,14 @@ function renderProfiles(data){
             ${
               phone
               ? `
-                <a class="call-btn" href="tel:${phone}" onclick="event.stopPropagation(); trackProfileEvent('${profile.id}','call')">☎ CALL</a>
+                <a class="call-btn" href="tel:${phone}" onclick="return handleTrackedLink(event,'call_clicks','${profile.id}','tel:${phone}',false)">☎ CALL</a>
 
                 <a
                   class="wa-btn"
                   href="https://wa.me/${phone}?text=${whatsappMessage(profile)}"
                   target="_blank"
                   rel="noopener"
-                  onclick="event.stopPropagation(); trackProfileEvent('${profile.id}','whatsapp')"
+                  onclick="return handleTrackedLink(event,'whatsapp_clicks','${profile.id}','https://wa.me/${phone}?text=${whatsappMessage(profile)}',true)"
                 >
                   <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
                   WHATSAPP
