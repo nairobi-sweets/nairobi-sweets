@@ -334,8 +334,25 @@ ${profileUrl(p)}
   );
 }
 
+
+async function trackProfileEvent(profileId,type){
+  const table = type === "whatsapp" ? "whatsapp_clicks" : "call_clicks";
+
+  try{
+    await sb.from(table).insert({ profile_id: profileId });
+  }catch(error){
+    console.warn("Analytics tracking failed:", error && error.message ? error.message : error);
+  }
+}
+
 async function incrementViews(p){
   const newViews = getViews(p) + 1;
+
+  try{
+    await sb.from("profile_views").insert({ profile_id:p.id });
+  }catch(error){
+    console.warn("Profile view analytics failed:", error && error.message ? error.message : error);
+  }
 
   try{
     await sb.rpc("increment_profile_views",{p_profile_id:p.id});
@@ -415,8 +432,8 @@ function render(p){
           ${
             phone
             ? `
-              <a class="action call" href="tel:${phone}">☎ CALL</a>
-              <a class="action whatsapp" href="https://wa.me/${phone}?text=${whatsappText(p)}" target="_blank" rel="noopener">💬 WHATSAPP</a>
+              <a class="action call" href="tel:${phone}" onclick="trackProfileEvent('${p.id}','call')">☎ CALL</a>
+              <a class="action whatsapp" href="https://wa.me/${phone}?text=${whatsappText(p)}" target="_blank" rel="noopener" onclick="trackProfileEvent('${p.id}','whatsapp')">💬 WHATSAPP</a>
             `
             : `<button class="action call">Contact hidden</button>`
           }
