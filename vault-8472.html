@@ -51,21 +51,10 @@ textarea{grid-column:1/-1;min-height:120px}
 .edit-box textarea{grid-column:1/-1}
 .save-edit{width:100%;background:#22c55e;color:#000;border-radius:16px;padding:16px;font-size:16px;margin-top:10px}
 .close-edit{width:100%;background:#ef4444;color:white;border-radius:16px;padding:14px;font-size:15px;margin-top:10px}
-
-
-.analytics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
-.analytics-card{background:linear-gradient(180deg,#08122f,#030821);border:1px solid rgba(255,213,74,.12);border-radius:22px;padding:20px}
-.analytics-card small{display:block;color:#aaa;font-size:13px;font-weight:900;margin-bottom:8px}
-.analytics-card strong{display:block;color:#ffd54a;font-size:34px;font-weight:900}
-.analytics-list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.analytics-list-box{background:#08122f;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:18px}
-.analytics-list-box h3{color:#ffd54a;font-size:18px;margin-bottom:12px}
-.analytics-row{display:flex;justify-content:space-between;gap:12px;color:#ddd;border-bottom:1px solid rgba(255,255,255,.07);padding:9px 0;font-size:14px}
-.analytics-row:last-child{border-bottom:none}
-.analytics-row b{color:#fff}
+.rank-help{grid-column:1/-1;background:rgba(255,213,74,.09);border:1px solid rgba(255,213,74,.18);border-radius:16px;padding:14px;color:#ffd54a;font-size:13px;font-weight:900;line-height:1.5}
 
 @media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid,.analytics-grid,.analytics-list{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
+@media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -87,35 +76,6 @@ if(entered !== ADMIN_PASSWORD){
 </header>
 
 <div class="wrap">
-
-
-<section class="panel">
-<h2>Analytics Dashboard</h2>
-
-<div class="analytics-grid">
-  <div class="analytics-card"><small>Total Profile Views</small><strong id="analyticsViews">0</strong></div>
-  <div class="analytics-card"><small>WhatsApp Clicks</small><strong id="analyticsWhatsapp">0</strong></div>
-  <div class="analytics-card"><small>Call Clicks</small><strong id="analyticsCalls">0</strong></div>
-  <div class="analytics-card"><small>Total Profiles</small><strong id="analyticsProfiles">0</strong></div>
-</div>
-
-<div class="analytics-list">
-  <div class="analytics-list-box">
-    <h3>🔥 Most Viewed</h3>
-    <div id="topViews"><div class="analytics-row"><span>No data yet</span><b>0</b></div></div>
-  </div>
-
-  <div class="analytics-list-box">
-    <h3>💬 Most WhatsApp Clicks</h3>
-    <div id="topWhatsapp"><div class="analytics-row"><span>No data yet</span><b>0</b></div></div>
-  </div>
-
-  <div class="analytics-list-box">
-    <h3>☎ Most Calls</h3>
-    <div id="topCalls"><div class="analytics-row"><span>No data yet</span><b>0</b></div></div>
-  </div>
-</div>
-</section>
 
 <section class="panel">
 <h2>Add New Profile</h2>
@@ -146,6 +106,12 @@ if(entered !== ADMIN_PASSWORD){
 
   <input id="likes_count" type="number" value="0" placeholder="Likes">
   <input id="views_count" type="number" value="0" placeholder="Views">
+  <input id="plan_rank" type="number" value="2" placeholder="Plan rank">
+  <input id="boost_score" type="number" value="100" placeholder="Boost score">
+  <input id="trending_score" type="number" value="0" placeholder="Trending score">
+  <input id="last_active" type="datetime-local" placeholder="Last active">
+
+  <div class="rank-help">Ranking guide: Signature/VVIP rank 4, VIP rank 3, Featured rank 2. Higher boost + trending = higher homepage position.</div>
 
   <label class="checkrow"><input type="checkbox" id="verified"> Verified</label>
   <label class="checkrow"><input type="checkbox" id="featured"> Featured</label>
@@ -211,6 +177,12 @@ if(entered !== ADMIN_PASSWORD){
 
       <input id="edit_likes_count" type="number" placeholder="Likes">
       <input id="edit_views_count" type="number" placeholder="Views">
+      <input id="edit_plan_rank" type="number" placeholder="Plan rank">
+      <input id="edit_boost_score" type="number" placeholder="Boost score">
+      <input id="edit_trending_score" type="number" placeholder="Trending score">
+      <input id="edit_last_active" type="datetime-local" placeholder="Last active">
+
+      <div class="rank-help">Control homepage order here. Use Signature/VVIP = 4, VIP = 3, Featured = 2. Trending score can be manually boosted.</div>
 
       <label class="checkrow"><input type="checkbox" id="edit_verified"> Verified</label>
       <label class="checkrow"><input type="checkbox" id="edit_featured"> Featured</label>
@@ -248,6 +220,85 @@ function checkedOf(id){
 function numberOf(id){
   const el = document.getElementById(id);
   return el ? Number(el.value || 0) : 0;
+}
+
+function numberOrDefault(id,fallback){
+  const el = document.getElementById(id);
+  if(!el) return fallback;
+  const raw = String(el.value || "").trim();
+  return raw === "" ? fallback : Number(raw);
+}
+
+function rankFromPlan(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature") || p.includes("vvip")) return 4;
+  if(p.includes("vip")) return 3;
+  if(p.includes("featured")) return 2;
+  return 1;
+}
+
+function boostFromPlan(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature") || p.includes("vvip")) return 600;
+  if(p.includes("vip")) return 300;
+  if(p.includes("featured")) return 100;
+  return 0;
+}
+
+function trendingFormula(planRank,boostScore,views,likes,verified,featured){
+  return Number(boostScore || 0)
+    + Number(views || 0) * 2
+    + Number(likes || 0) * 5
+    + Number(planRank || 0) * 50
+    + (verified ? 80 : 0)
+    + (featured ? 60 : 0);
+}
+
+function toDatetimeLocal(value){
+  if(!value) return "";
+  const d = new Date(value);
+  if(Number.isNaN(d.getTime())) return "";
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0,16);
+}
+
+function fromDatetimeLocal(value){
+  if(!value) return new Date().toISOString();
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+}
+
+function syncRanking(prefix=""){
+  const planId = prefix ? "edit_plan" : "plan";
+  const rankId = prefix ? "edit_plan_rank" : "plan_rank";
+  const boostId = prefix ? "edit_boost_score" : "boost_score";
+  const trendingId = prefix ? "edit_trending_score" : "trending_score";
+  const likesId = prefix ? "edit_likes_count" : "likes_count";
+  const viewsId = prefix ? "edit_views_count" : "views_count";
+  const verifiedId = prefix ? "edit_verified" : "verified";
+  const featuredId = prefix ? "edit_featured" : "featured";
+
+  const plan = valueOf(planId);
+  const rank = rankFromPlan(plan);
+  const boost = boostFromPlan(plan);
+
+  const rankEl = document.getElementById(rankId);
+  const boostEl = document.getElementById(boostId);
+  const trendingEl = document.getElementById(trendingId);
+
+  if(rankEl) rankEl.value = rank;
+  if(boostEl) boostEl.value = boost;
+
+  if(trendingEl){
+    trendingEl.value = trendingFormula(
+      rank,
+      boost,
+      numberOf(viewsId),
+      numberOf(likesId),
+      checkedOf(verifiedId),
+      checkedOf(featuredId)
+    );
+  }
 }
 
 function cleanPhone(phone){
@@ -319,6 +370,12 @@ function previewFiles(){
 
 document.getElementById("photoUpload").addEventListener("change",previewFiles);
 document.getElementById("reelUpload").addEventListener("change",previewFiles);
+document.getElementById("plan").addEventListener("change",()=>syncRanking(""));
+document.getElementById("verified").addEventListener("change",()=>syncRanking(""));
+document.getElementById("featured").addEventListener("change",()=>syncRanking(""));
+document.getElementById("edit_plan").addEventListener("change",()=>syncRanking("edit_"));
+document.getElementById("edit_verified").addEventListener("change",()=>syncRanking("edit_"));
+document.getElementById("edit_featured").addEventListener("change",()=>syncRanking("edit_"));
 
 async function addProfile(){
   statusBox.textContent = "Saving profile...";
@@ -336,6 +393,13 @@ async function addProfile(){
     const stageName = valueOf("stage_name");
     const phoneClean = cleanPhone(valueOf("phone"));
     const finalSlug = valueOf("slug") || makeSlug(stageName + "-" + valueOf("location"));
+    const planValue = valueOf("plan") || "featured";
+    const finalPlanRank = numberOrDefault("plan_rank",rankFromPlan(planValue));
+    const finalBoostScore = numberOrDefault("boost_score",boostFromPlan(planValue));
+    const finalTrendingScore = numberOrDefault(
+      "trending_score",
+      trendingFormula(finalPlanRank,finalBoostScore,numberOf("views_count"),numberOf("likes_count"),checkedOf("verified"),checkedOf("featured"))
+    );
 
     if(!stageName){
       statusBox.textContent = "Stage name is required.";
@@ -360,7 +424,11 @@ async function addProfile(){
       video_url: finalVideoUrl,
       reel_url: finalVideoUrl,
       short_url: finalVideoUrl,
-      plan: valueOf("plan") || "featured",
+      plan: planValue,
+      plan_rank: finalPlanRank,
+      boost_score: finalBoostScore,
+      trending_score: finalTrendingScore,
+      last_active: fromDatetimeLocal(valueOf("last_active")),
       services: parseServices(valueOf("services")),
       incall_price: valueOf("incall_price"),
       outcall_price: valueOf("outcall_price"),
@@ -400,7 +468,7 @@ function clearForm(){
   [
     "stage_name","phone","location","age","photo_url","video_url","slug",
     "availability","languages","nationality","orientation","height",
-    "incall_price","outcall_price","services","bio","about"
+    "incall_price","outcall_price","services","bio","about","last_active"
   ].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value = "";
@@ -408,6 +476,9 @@ function clearForm(){
 
   document.getElementById("likes_count").value = 0;
   document.getElementById("views_count").value = 0;
+  document.getElementById("plan_rank").value = 2;
+  document.getElementById("boost_score").value = 100;
+  document.getElementById("trending_score").value = 0;
   document.getElementById("plan").value = "featured";
   document.getElementById("verified").checked = false;
   document.getElementById("featured").checked = false;
@@ -416,77 +487,17 @@ function clearForm(){
   previewBox.innerHTML = "";
 }
 
-
-function setText(id,value){
-  const el = document.getElementById(id);
-  if(el) el.textContent = value;
-}
-
-function countByProfile(rows){
-  const counts = {};
-  (rows || []).forEach(row=>{
-    const id = String(row.profile_id || "");
-    if(!id) return;
-    counts[id] = (counts[id] || 0) + 1;
-  });
-  return counts;
-}
-
-function renderTopList(elementId,counts,profiles){
-  const el = document.getElementById(elementId);
-  if(!el) return;
-
-  const nameById = {};
-  (profiles || []).forEach(p=>{
-    nameById[String(p.id)] = p.stage_name || p.name || "Verified";
-  });
-
-  const rows = Object.entries(counts)
-    .sort((a,b)=>b[1]-a[1])
-    .slice(0,5);
-
-  if(!rows.length){
-    el.innerHTML = `<div class="analytics-row"><span>No data yet</span><b>0</b></div>`;
-    return;
-  }
-
-  el.innerHTML = rows.map(([profileId,total])=>`
-    <div class="analytics-row">
-      <span>${nameById[profileId] || "Profile " + profileId}</span>
-      <b>${total}</b>
-    </div>
-  `).join("");
-}
-
-async function loadAnalytics(profiles){
-  try{
-    const [viewsRes, whatsappRes, callsRes] = await Promise.all([
-      sb.from("profile_views").select("profile_id"),
-      sb.from("whatsapp_clicks").select("profile_id"),
-      sb.from("call_clicks").select("profile_id")
-    ]);
-
-    const viewsRows = viewsRes.data || [];
-    const whatsappRows = whatsappRes.data || [];
-    const callRows = callsRes.data || [];
-
-    setText("analyticsViews", viewsRows.length.toLocaleString());
-    setText("analyticsWhatsapp", whatsappRows.length.toLocaleString());
-    setText("analyticsCalls", callRows.length.toLocaleString());
-    setText("analyticsProfiles", (profiles || []).length.toLocaleString());
-
-    renderTopList("topViews", countByProfile(viewsRows), profiles);
-    renderTopList("topWhatsapp", countByProfile(whatsappRows), profiles);
-    renderTopList("topCalls", countByProfile(callRows), profiles);
-  }catch(error){
-    console.warn("Analytics dashboard failed:", error && error.message ? error.message : error);
-  }
-}
-
 async function loadProfiles(){
   list.innerHTML = `<div style="color:#ffd54a;font-weight:900">Loading...</div>`;
 
-  const { data,error } = await sb.from("profiles").select("*").order("created_at",{ascending:false});
+  const { data,error } = await sb
+    .from("profiles")
+    .select("*")
+    .order("plan_rank",{ascending:false})
+    .order("trending_score",{ascending:false})
+    .order("boost_score",{ascending:false})
+    .order("verified",{ascending:false})
+    .order("created_at",{ascending:false});
 
   if(error){
     list.innerHTML = `<div style="color:#ff6b6b">${error.message}</div>`;
@@ -495,11 +506,8 @@ async function loadProfiles(){
 
   if(!data || !data.length){
     list.innerHTML = `<div>No profiles yet.</div>`;
-    loadAnalytics([]);
     return;
   }
-
-  loadAnalytics(data);
 
   list.innerHTML = data.map(p=>{
     const video = videoOf(p);
@@ -525,6 +533,9 @@ async function loadProfiles(){
             ⭐ Featured: ${p.featured ? "Yes" : "No"}<br>
             🎬 Reel: ${video ? "Yes" : "No"}<br>
             🔗 Slug: ${p.slug || "none"}<br>
+            🧠 Rank: ${p.plan_rank || 0} · 🚀 Boost: ${p.boost_score || 0}<br>
+            🔥 Trending: ${p.trending_score || 0}<br>
+            🕒 Active: ${p.last_active ? new Date(p.last_active).toLocaleString() : "not set"}<br>
             ❤️ ${p.likes_count || p.likes || 0} · 👁️ ${p.views_count || p.views || 0}
           </div>
 
@@ -573,6 +584,10 @@ async function openEditModal(id){
   document.getElementById("edit_plan").value = data.plan || "featured";
   document.getElementById("edit_likes_count").value = data.likes_count || data.likes || 0;
   document.getElementById("edit_views_count").value = data.views_count || data.views || 0;
+  document.getElementById("edit_plan_rank").value = data.plan_rank ?? rankFromPlan(data.plan || "featured");
+  document.getElementById("edit_boost_score").value = data.boost_score ?? boostFromPlan(data.plan || "featured");
+  document.getElementById("edit_trending_score").value = data.trending_score ?? trendingFormula(rankFromPlan(data.plan || "featured"),boostFromPlan(data.plan || "featured"),data.views_count || data.views || 0,data.likes_count || data.likes || 0,Boolean(data.verified),Boolean(data.featured));
+  document.getElementById("edit_last_active").value = toDatetimeLocal(data.last_active || data.created_at);
   document.getElementById("edit_verified").checked = Boolean(data.verified);
   document.getElementById("edit_featured").checked = Boolean(data.featured);
   document.getElementById("edit_bio").value = data.bio || "";
@@ -588,6 +603,13 @@ function closeEditModal(){
 async function saveProfileEdit(){
   const phoneClean = cleanPhone(valueOf("edit_phone"));
   const finalSlug = valueOf("edit_slug") || makeSlug(valueOf("edit_stage_name") + "-" + valueOf("edit_location"));
+  const planValue = valueOf("edit_plan") || "featured";
+  const finalPlanRank = numberOrDefault("edit_plan_rank",rankFromPlan(planValue));
+  const finalBoostScore = numberOrDefault("edit_boost_score",boostFromPlan(planValue));
+  const finalTrendingScore = numberOrDefault(
+    "edit_trending_score",
+    trendingFormula(finalPlanRank,finalBoostScore,numberOf("edit_views_count"),numberOf("edit_likes_count"),checkedOf("edit_verified"),checkedOf("edit_featured"))
+  );
 
   const updates = {
     stage_name: valueOf("edit_stage_name"),
@@ -609,7 +631,11 @@ async function saveProfileEdit(){
     incall_price: valueOf("edit_incall_price"),
     outcall_price: valueOf("edit_outcall_price"),
     services: parseServices(valueOf("edit_services")),
-    plan: valueOf("edit_plan") || "featured",
+    plan: planValue,
+    plan_rank: finalPlanRank,
+    boost_score: finalBoostScore,
+    trending_score: finalTrendingScore,
+    last_active: fromDatetimeLocal(valueOf("edit_last_active")),
     likes_count: numberOf("edit_likes_count"),
     views_count: numberOf("edit_views_count"),
     likes: numberOf("edit_likes_count"),
