@@ -53,30 +53,16 @@ textarea{grid-column:1/-1;min-height:120px}
 .close-edit{width:100%;background:#ef4444;color:white;border-radius:16px;padding:14px;font-size:15px;margin-top:10px}
 .rank-help{grid-column:1/-1;background:rgba(255,213,74,.09);border:1px solid rgba(255,213,74,.18);border-radius:16px;padding:14px;color:#ffd54a;font-size:13px;font-weight:900;line-height:1.5}
 
-.revenue-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
-.revenue-card{background:linear-gradient(180deg,#07143a,#03081f);border:1px solid rgba(255,213,74,.14);border-radius:22px;padding:20px;box-shadow:0 12px 35px rgba(0,0,0,.35)}
-.revenue-label{color:#cbd5e1;font-size:13px;font-weight:900;margin-bottom:10px}
-.revenue-number{color:#ffd54a;font-size:34px;font-weight:900;line-height:1}
-.revenue-sub{color:#94a3b8;font-size:12px;margin-top:10px;line-height:1.5}
-.revenue-list{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:14px}
-.revenue-box{background:#08122f;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:16px}
-.revenue-box h3{color:#ffd54a;font-size:18px;margin-bottom:12px}
-.revenue-row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.08);padding:9px 0;color:#e5e7eb;font-size:13px}
-.revenue-row:last-child{border-bottom:none}
-.revenue-muted{color:#94a3b8;font-size:13px;line-height:1.5}
-@media(max-width:1100px){.revenue-grid,.revenue-list{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:700px){.revenue-grid,.revenue-list{grid-template-columns:1fr}}
+.renew-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#00e676,#00a152);color:#000;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.whatsapp-reminder-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#25D366,#128C7E);color:#fff;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.extend-btn{background:#06b6d4;color:#000;border-radius:12px;padding:12px}
+.paid-btn{background:#22c55e;color:#000;border-radius:12px;padding:12px}
+.expire-btn{background:#f59e0b;color:#000;border-radius:12px;padding:12px}
+.expiry-pill{display:inline-block;margin-top:8px;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px}
+.expiry-active{background:rgba(34,197,94,.16);color:#22c55e}
+.expiry-expired{background:rgba(239,68,68,.16);color:#ff6b6b}
+.expiry-soon{background:rgba(245,158,11,.16);color:#fbbf24}
 
-
-.expiry-pill{display:inline-block;margin-top:10px;padding:8px 10px;border-radius:999px;font-size:12px;font-weight:900}
-.expiry-active{background:rgba(34,197,94,.18);color:#86efac;border:1px solid rgba(34,197,94,.35)}
-.expiry-soon{background:rgba(255,213,74,.16);color:#ffd54a;border:1px solid rgba(255,213,74,.35)}
-.expiry-expired{background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.35)}
-.renew-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
-.extend{background:#38bdf8;color:#00111f;border-radius:12px;padding:12px}
-.paid{background:#22c55e;color:#001b09;border-radius:12px;padding:12px}
-.expire{background:#f97316;color:#111;border-radius:12px;padding:12px}
-.renew-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#00e676,#00a152);color:#001b09;border-radius:14px;padding:14px;font-size:15px;box-shadow:0 10px 25px rgba(0,230,118,.22)}
 
 @media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
@@ -97,78 +83,10 @@ if(entered !== ADMIN_PASSWORD){
 
 <header>
   <h1>Nairobi Sweets Vault</h1>
-  <button class="refresh" onclick="loadRevenueDashboard(); loadProfiles();">Refresh</button>
+  <button class="refresh" onclick="loadProfiles()">Refresh</button>
 </header>
 
 <div class="wrap">
-
-<section class="panel" id="revenuePanel">
-<h2>Revenue Dashboard</h2>
-
-<div class="revenue-grid">
-  <div class="revenue-card">
-    <div class="revenue-label">💰 Weekly Revenue</div>
-    <div class="revenue-number" id="weeklyRevenue">KES 0</div>
-    <div class="revenue-sub">Paid payments in the last 7 days</div>
-  </div>
-
-  <div class="revenue-card">
-    <div class="revenue-label">💳 Paid Profiles</div>
-    <div class="revenue-number" id="paidProfilesCount">0</div>
-    <div class="revenue-sub">Profiles with payment_status = paid</div>
-  </div>
-
-  <div class="revenue-card">
-    <div class="revenue-label">⌛ Expiring Soon</div>
-    <div class="revenue-number" id="expiringSoonCount">0</div>
-    <div class="revenue-sub">Profiles expiring within 48 hours</div>
-  </div>
-
-  <div class="revenue-card">
-    <div class="revenue-label">❌ Expired Profiles</div>
-    <div class="revenue-number" id="expiredProfilesCount">0</div>
-    <div class="revenue-sub">Hidden until renewed</div>
-  </div>
-
-  <div class="revenue-card">
-    <div class="revenue-label">🏦 Total Revenue</div>
-    <div class="revenue-number" id="totalRevenue">KES 0</div>
-    <div class="revenue-sub">All paid payments recorded</div>
-  </div>
-
-  <div class="revenue-card">
-    <div class="revenue-label">🧾 Pending Payments</div>
-    <div class="revenue-number" id="pendingPaymentsCount">0</div>
-    <div class="revenue-sub">STK sent, waiting callback</div>
-  </div>
-
-  <div class="revenue-card">
-    <div class="revenue-label">👑 Top Plan</div>
-    <div class="revenue-number" id="topPlanName">—</div>
-    <div class="revenue-sub" id="topPlanSub">No paid plan data yet</div>
-  </div>
-
-  <div class="revenue-card">
-    <div class="revenue-label">🔥 Active Listings</div>
-    <div class="revenue-number" id="activeListingsCount">0</div>
-    <div class="revenue-sub">Approved and not expired</div>
-  </div>
-</div>
-
-<div class="revenue-list">
-  <div class="revenue-box">
-    <h3>Recent Paid Payments</h3>
-    <div id="recentPaymentsList" class="revenue-muted">Loading...</div>
-  </div>
-
-  <div class="revenue-box">
-    <h3>Expiring Soon</h3>
-    <div id="expiringSoonList" class="revenue-muted">Loading...</div>
-  </div>
-</div>
-
-<div class="status" id="revenueStatus"></div>
-</section>
 
 <section class="panel">
 <h2>Add New Profile</h2>
@@ -203,15 +121,17 @@ if(entered !== ADMIN_PASSWORD){
   <input id="boost_score" type="number" value="100" placeholder="Boost score">
   <input id="trending_score" type="number" value="0" placeholder="Trending score">
   <input id="last_active" type="datetime-local" placeholder="Last active">
-  <input id="plan_started_at" type="datetime-local" placeholder="Plan started at">
-  <input id="plan_expires_at" type="datetime-local" placeholder="Plan expires at">
+  <input id="plan_started_at" type="datetime-local" placeholder="Plan started">
+  <input id="plan_expires_at" type="datetime-local" placeholder="Plan expires">
+
   <select id="payment_status">
     <option value="unpaid">Unpaid</option>
     <option value="paid">Paid</option>
     <option value="pending">Pending</option>
     <option value="expired">Expired</option>
   </select>
-  <label class="checkrow"><input type="checkbox" id="is_expired"> Is expired</label>
+
+  <label class="checkrow"><input type="checkbox" id="is_expired"> Expired</label>
 
   <div class="rank-help">Ranking guide: Signature/VVIP rank 4, VIP rank 3, Featured rank 2. Higher boost + trending = higher homepage position.</div>
 
@@ -283,15 +203,17 @@ if(entered !== ADMIN_PASSWORD){
       <input id="edit_boost_score" type="number" placeholder="Boost score">
       <input id="edit_trending_score" type="number" placeholder="Trending score">
       <input id="edit_last_active" type="datetime-local" placeholder="Last active">
-      <input id="edit_plan_started_at" type="datetime-local" placeholder="Plan started at">
-      <input id="edit_plan_expires_at" type="datetime-local" placeholder="Plan expires at">
+      <input id="edit_plan_started_at" type="datetime-local" placeholder="Plan started">
+      <input id="edit_plan_expires_at" type="datetime-local" placeholder="Plan expires">
+
       <select id="edit_payment_status">
         <option value="unpaid">Unpaid</option>
         <option value="paid">Paid</option>
         <option value="pending">Pending</option>
         <option value="expired">Expired</option>
       </select>
-      <label class="checkrow"><input type="checkbox" id="edit_is_expired"> Is expired</label>
+
+      <label class="checkrow"><input type="checkbox" id="edit_is_expired"> Expired</label>
 
       <div class="rank-help">Control homepage order here. Use Signature/VVIP = 4, VIP = 3, Featured = 2. Trending score can be manually boosted.</div>
 
@@ -307,6 +229,7 @@ if(entered !== ADMIN_PASSWORD){
   </div>
 </div>
 
+
 <div class="edit-modal" id="renewModal">
   <div class="edit-box">
     <div class="edit-top">
@@ -318,16 +241,18 @@ if(entered !== ADMIN_PASSWORD){
       <input id="renew_profile_id" placeholder="Profile ID" readonly>
       <input id="renew_phone" placeholder="Phone e.g. 2547XXXXXXXX">
 
-      <select id="renew_plan">
+      <select id="renew_plan" onchange="syncRenewAmount()">
         <option value="featured">Featured - 1000 KES</option>
         <option value="vip">VIP - 1500 KES</option>
         <option value="vvip">VVIP - 3000 KES</option>
         <option value="signature">Signature - 3000 KES</option>
       </select>
 
-      <input id="renew_amount" type="number" placeholder="Amount" value="1500">
+      <input id="renew_amount" type="number" placeholder="Amount">
+    </div>
 
-      <div class="rank-help">This sends an M-Pesa STK push. When payment succeeds, mpesa-callback.js will mark the profile paid, active, approved and extend it by 7 days.</div>
+    <div class="rank-help" style="margin-top:12px">
+      This sends an M-Pesa STK push. When payment succeeds, mpesa-callback.js marks the profile paid, active, approved and extends it by 7 days.
     </div>
 
     <button class="save-edit" onclick="startRenewPayment()">Send M-Pesa STK</button>
@@ -407,32 +332,48 @@ function fromDatetimeLocal(value){
   return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
 }
 
-function addDaysISO(days){
-  const d = new Date();
-  d.setDate(d.getDate() + days);
+function planAmount(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature") || p.includes("vvip")) return 3000;
+  if(p.includes("vip")) return 1500;
+  if(p.includes("featured")) return 1000;
+  return 1500;
+}
+
+function addDaysISO(base,days){
+  const start = base ? new Date(base) : new Date();
+  const d = Number.isNaN(start.getTime()) ? new Date() : start;
+  d.setDate(d.getDate() + Number(days || 7));
   return d.toISOString();
 }
 
-function expiryState(p){
-  if(p.is_expired) return {label:"Expired", cls:"expiry-expired", days:0};
-  if(!p.plan_expires_at) return {label:"No expiry set", cls:"expiry-soon", days:null};
-  const diff = new Date(p.plan_expires_at).getTime() - Date.now();
-  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-  if(days <= 0) return {label:"Expired", cls:"expiry-expired", days};
-  if(days <= 2) return {label:`Expires in ${days} day${days===1?"":"s"}`, cls:"expiry-soon", days};
-  return {label:`Active: ${days} days left`, cls:"expiry-active", days};
+function expiryInfo(p){
+  const expired = Boolean(p.is_expired) || String(p.payment_status || "").toLowerCase() === "expired";
+  const raw = p.plan_expires_at || p.expiry_date || "";
+  if(!raw){
+    return {label:"No expiry set", klass:"expiry-soon", days:null, raw:""};
+  }
+
+  const exp = new Date(raw);
+  if(Number.isNaN(exp.getTime())){
+    return {label:"Invalid expiry", klass:"expiry-soon", days:null, raw};
+  }
+
+  const diff = Math.ceil((exp.getTime() - Date.now()) / 86400000);
+
+  if(expired || diff < 0){
+    return {label:"Expired", klass:"expiry-expired", days:diff, raw};
+  }
+
+  if(diff <= 2){
+    return {label:`Expiring soon: ${diff} day${diff === 1 ? "" : "s"} left`, klass:"expiry-soon", days:diff, raw};
+  }
+
+  return {label:`Active: ${diff} days left`, klass:"expiry-active", days:diff, raw};
 }
 
-function expiryPayload(startId,expiresId,statusId,expiredId){
-  const started = valueOf(startId) ? fromDatetimeLocal(valueOf(startId)) : new Date().toISOString();
-  const expires = valueOf(expiresId) ? fromDatetimeLocal(valueOf(expiresId)) : addDaysISO(7);
-  const expired = checkedOf(expiredId) || new Date(expires).getTime() <= Date.now();
-  return {
-    plan_started_at: started,
-    plan_expires_at: expires,
-    payment_status: valueOf(statusId) || "unpaid",
-    is_expired: expired
-  };
+function escapeAttr(value){
+  return String(value || "").replace(/'/g,"&#39;").replace(/"/g,"&quot;");
 }
 
 function syncRanking(prefix=""){
@@ -544,10 +485,6 @@ document.getElementById("edit_plan").addEventListener("change",()=>syncRanking("
 document.getElementById("edit_verified").addEventListener("change",()=>syncRanking("edit_"));
 document.getElementById("edit_featured").addEventListener("change",()=>syncRanking("edit_"));
 
-document.getElementById("plan_started_at").value = toDatetimeLocal(new Date().toISOString());
-document.getElementById("plan_expires_at").value = toDatetimeLocal(addDaysISO(7));
-document.getElementById("last_active").value = toDatetimeLocal(new Date().toISOString());
-
 async function addProfile(){
   statusBox.textContent = "Saving profile...";
 
@@ -600,7 +537,11 @@ async function addProfile(){
       boost_score: finalBoostScore,
       trending_score: finalTrendingScore,
       last_active: fromDatetimeLocal(valueOf("last_active")),
-      ...expiryPayload("plan_started_at","plan_expires_at","payment_status","is_expired"),
+      plan_started_at: fromDatetimeLocal(valueOf("plan_started_at")),
+      plan_expires_at: valueOf("plan_expires_at") ? fromDatetimeLocal(valueOf("plan_expires_at")) : addDaysISO(new Date().toISOString(),7),
+      expiry_date: valueOf("plan_expires_at") ? fromDatetimeLocal(valueOf("plan_expires_at")) : addDaysISO(new Date().toISOString(),7),
+      payment_status: valueOf("payment_status") || "unpaid",
+      is_expired: checkedOf("is_expired"),
       services: parseServices(valueOf("services")),
       incall_price: valueOf("incall_price"),
       outcall_price: valueOf("outcall_price"),
@@ -629,8 +570,7 @@ async function addProfile(){
 
     statusBox.textContent = "Profile saved successfully.";
     clearForm();
-    loadRevenueDashboard();
-loadProfiles();
+    loadProfiles();
 
   }catch(error){
     statusBox.textContent = "Upload error: " + (error && error.message ? error.message : error);
@@ -662,109 +602,7 @@ function clearForm(){
   previewBox.innerHTML = "";
 }
 
-
-function money(amount){
-  return "KES " + Number(amount || 0).toLocaleString();
-}
-
-function daysLeftText(dateValue){
-  if(!dateValue) return "No expiry set";
-  const diff = new Date(dateValue).getTime() - Date.now();
-  const days = Math.ceil(diff / 86400000);
-  if(days < 0) return Math.abs(days) + " days expired";
-  if(days === 0) return "Expires today";
-  if(days === 1) return "1 day left";
-  return days + " days left";
-}
-
-function setText(id,value){
-  const el = document.getElementById(id);
-  if(el) el.textContent = value;
-}
-
-async function loadRevenueDashboard(){
-  const revenueStatus = document.getElementById("revenueStatus");
-  if(revenueStatus) revenueStatus.textContent = "Loading revenue dashboard...";
-
-  try{
-    const [{data:profiles,error:profilesError},{data:payments,error:paymentsError}] = await Promise.all([
-      sb.from("profiles").select("id,stage_name,phone,plan,payment_status,is_expired,approved,plan_expires_at,amount,created_at"),
-      sb.from("payments").select("id,profile_id,plan,package,amount,status,phone,payer_phone,mpesa_receipt,paid_at,created_at").order("created_at",{ascending:false}).limit(500)
-    ]);
-
-    if(profilesError) throw profilesError;
-    if(paymentsError) throw paymentsError;
-
-    const profileRows = profiles || [];
-    const paymentRows = payments || [];
-    const now = Date.now();
-    const sevenDaysAgo = now - 7 * 86400000;
-    const twoDaysFromNow = now + 2 * 86400000;
-
-    const paidPayments = paymentRows.filter(p => String(p.status || "").toLowerCase() === "paid");
-    const weeklyPaid = paidPayments.filter(p => new Date(p.paid_at || p.created_at || 0).getTime() >= sevenDaysAgo);
-    const pendingPayments = paymentRows.filter(p => String(p.status || "").toLowerCase() === "pending");
-
-    const totalRevenue = paidPayments.reduce((sum,p)=>sum + Number(p.amount || 0),0);
-    const weeklyRevenue = weeklyPaid.reduce((sum,p)=>sum + Number(p.amount || 0),0);
-
-    const paidProfiles = profileRows.filter(p => String(p.payment_status || "").toLowerCase() === "paid");
-    const activeListings = profileRows.filter(p => p.approved === true && p.is_expired !== true);
-    const expiredProfiles = profileRows.filter(p => p.is_expired === true || String(p.payment_status || "").toLowerCase() === "expired");
-    const expiringSoon = profileRows
-      .filter(p => p.plan_expires_at && p.is_expired !== true)
-      .filter(p => {
-        const t = new Date(p.plan_expires_at).getTime();
-        return t >= now && t <= twoDaysFromNow;
-      })
-      .sort((a,b)=>new Date(a.plan_expires_at)-new Date(b.plan_expires_at));
-
-    const planTotals = {};
-    paidPayments.forEach(p=>{
-      const plan = String(p.plan || p.package || "unknown").toLowerCase();
-      planTotals[plan] = (planTotals[plan] || 0) + Number(p.amount || 0);
-    });
-    const topPlan = Object.entries(planTotals).sort((a,b)=>b[1]-a[1])[0];
-
-    setText("weeklyRevenue",money(weeklyRevenue));
-    setText("paidProfilesCount",paidProfiles.length.toLocaleString());
-    setText("expiringSoonCount",expiringSoon.length.toLocaleString());
-    setText("expiredProfilesCount",expiredProfiles.length.toLocaleString());
-    setText("totalRevenue",money(totalRevenue));
-    setText("pendingPaymentsCount",pendingPayments.length.toLocaleString());
-    setText("activeListingsCount",activeListings.length.toLocaleString());
-
-    if(topPlan){
-      setText("topPlanName",topPlan[0].toUpperCase());
-      setText("topPlanSub",money(topPlan[1]) + " collected");
-    }else{
-      setText("topPlanName","—");
-      setText("topPlanSub","No paid plan data yet");
-    }
-
-    const profileById = Object.fromEntries(profileRows.map(p=>[String(p.id),p]));
-    const recentPaid = paidPayments.slice(0,6);
-
-    document.getElementById("recentPaymentsList").innerHTML = recentPaid.length
-      ? recentPaid.map(p=>{
-          const profile = profileById[String(p.profile_id)] || {};
-          return `<div class="revenue-row"><span>${profile.stage_name || "Profile #" + (p.profile_id || "?")}<br><small>${p.mpesa_receipt || p.phone || p.payer_phone || "paid"}</small></span><strong>${money(p.amount)}</strong></div>`;
-        }).join("")
-      : "No paid payments yet.";
-
-    document.getElementById("expiringSoonList").innerHTML = expiringSoon.length
-      ? expiringSoon.slice(0,8).map(p=>`<div class="revenue-row"><span>${p.stage_name || "Unnamed"}<br><small>${daysLeftText(p.plan_expires_at)}</small></span><strong>${String(p.plan || "plan").toUpperCase()}</strong></div>`).join("")
-      : "No profiles expiring within 48 hours.";
-
-    if(revenueStatus) revenueStatus.textContent = "Revenue dashboard updated.";
-  }catch(error){
-    console.log("Revenue dashboard error:",error);
-    if(revenueStatus) revenueStatus.textContent = "Revenue dashboard error: " + (error.message || error);
-  }
-}
-
 async function loadProfiles(){
-  await autoExpireProfiles();
   list.innerHTML = `<div style="color:#ffd54a;font-weight:900">Loading...</div>`;
 
   const { data,error } = await sb
@@ -789,7 +627,7 @@ async function loadProfiles(){
   list.innerHTML = data.map(p=>{
     const video = videoOf(p);
     const services = Array.isArray(p.services) ? p.services : [];
-    const exp = expiryState(p);
+    const exp = expiryInfo(p);
 
     return `
       <article class="card">
@@ -815,9 +653,10 @@ async function loadProfiles(){
             🔥 Trending: ${p.trending_score || 0}<br>
             🕒 Active: ${p.last_active ? new Date(p.last_active).toLocaleString() : "not set"}<br>
             💳 Payment: ${p.payment_status || "unpaid"}<br>
-            📅 Started: ${p.plan_started_at ? new Date(p.plan_started_at).toLocaleDateString() : "not set"}<br>
-            ⏳ Expires: ${p.plan_expires_at ? new Date(p.plan_expires_at).toLocaleDateString() : "not set"}<br>
-            <span class="expiry-pill ${exp.cls}">${exp.label}</span><br>
+            🚦 Expired: ${p.is_expired ? "Yes" : "No"}<br>
+            ▶ Started: ${p.plan_started_at ? new Date(p.plan_started_at).toLocaleDateString() : "not set"}<br>
+            ⏳ Expires: ${p.plan_expires_at || p.expiry_date ? new Date(p.plan_expires_at || p.expiry_date).toLocaleDateString() : "not set"}<br>
+            <span class="expiry-pill ${exp.klass}">${exp.label}</span><br>
             ❤️ ${p.likes_count || p.likes || 0} · 👁️ ${p.views_count || p.views || 0}
           </div>
 
@@ -829,16 +668,14 @@ async function loadProfiles(){
             <button class="approve" onclick="approveProfile('${p.id}')">Approve</button>
             <button class="unapprove" onclick="unapproveProfile('${p.id}')">Hide</button>
             <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
-          </div>
-
-          <div class="renew-actions">
-            <button class="extend" onclick="extendProfile('${p.id}',7)">+7 Days</button>
-            <button class="paid" onclick="markPaid('${p.id}')">Mark Paid</button>
-            <button class="expire" onclick="markExpired('${p.id}')">Expire</button>
+            <button class="extend-btn" onclick="extendProfileDays('${p.id}',7)">+7 Days</button>
+            <button class="paid-btn" onclick="markProfilePaid('${p.id}')">Mark Paid</button>
+            <button class="expire-btn" onclick="markProfileExpired('${p.id}')">Expire</button>
           </div>
 
           <button class="edit-btn" onclick="openEditModal('${p.id}')">✏ Edit Profile</button>
-          <button class="renew-btn" onclick="openRenewModal('${p.id}','${p.phone || p.whatsapp || ""}','${p.plan || "vip"}')">💰 Renew / Pay Now</button>
+          <button class="renew-btn" onclick="openRenewModal('${p.id}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}')">💰 Renew / Pay Now</button>
+          <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.plan_expires_at || p.expiry_date || "")}')">📲 Send Renewal Reminder</button>
         </div>
       </article>
     `;
@@ -877,8 +714,8 @@ async function openEditModal(id){
   document.getElementById("edit_boost_score").value = data.boost_score ?? boostFromPlan(data.plan || "featured");
   document.getElementById("edit_trending_score").value = data.trending_score ?? trendingFormula(rankFromPlan(data.plan || "featured"),boostFromPlan(data.plan || "featured"),data.views_count || data.views || 0,data.likes_count || data.likes || 0,Boolean(data.verified),Boolean(data.featured));
   document.getElementById("edit_last_active").value = toDatetimeLocal(data.last_active || data.created_at);
-  document.getElementById("edit_plan_started_at").value = toDatetimeLocal(data.plan_started_at || data.created_at);
-  document.getElementById("edit_plan_expires_at").value = toDatetimeLocal(data.plan_expires_at);
+  document.getElementById("edit_plan_started_at").value = toDatetimeLocal(data.plan_started_at || data.paid_at || data.created_at);
+  document.getElementById("edit_plan_expires_at").value = toDatetimeLocal(data.plan_expires_at || data.expiry_date);
   document.getElementById("edit_payment_status").value = data.payment_status || "unpaid";
   document.getElementById("edit_is_expired").checked = Boolean(data.is_expired);
   document.getElementById("edit_verified").checked = Boolean(data.verified);
@@ -929,7 +766,11 @@ async function saveProfileEdit(){
     boost_score: finalBoostScore,
     trending_score: finalTrendingScore,
     last_active: fromDatetimeLocal(valueOf("edit_last_active")),
-    ...expiryPayload("edit_plan_started_at","edit_plan_expires_at","edit_payment_status","edit_is_expired"),
+    plan_started_at: fromDatetimeLocal(valueOf("edit_plan_started_at")),
+    plan_expires_at: valueOf("edit_plan_expires_at") ? fromDatetimeLocal(valueOf("edit_plan_expires_at")) : null,
+    expiry_date: valueOf("edit_plan_expires_at") ? fromDatetimeLocal(valueOf("edit_plan_expires_at")) : null,
+    payment_status: valueOf("edit_payment_status") || "unpaid",
+    is_expired: checkedOf("edit_is_expired"),
     likes_count: numberOf("edit_likes_count"),
     views_count: numberOf("edit_views_count"),
     likes: numberOf("edit_likes_count"),
@@ -953,57 +794,154 @@ async function saveProfileEdit(){
 }
 
 
-async function extendProfile(id,days){
-  const { data,error } = await sb.from("profiles").select("plan_expires_at").eq("id",id).single();
-  if(error){ alert(error.message); return; }
-  const base = data?.plan_expires_at && new Date(data.plan_expires_at).getTime() > Date.now()
-    ? new Date(data.plan_expires_at)
-    : new Date();
-  base.setDate(base.getDate() + days);
-  const { error:updateError } = await sb.from("profiles").update({
-    plan_expires_at: base.toISOString(),
-    payment_status: "paid",
-    is_expired: false,
-    approved: true
-  }).eq("id",id);
-  if(updateError) alert(updateError.message);
+async function extendProfileDays(id,days=7){
+  const { data,error } = await sb
+    .from("profiles")
+    .select("plan_expires_at, expiry_date, plan, views_count, likes_count, verified, featured, boost_score, plan_rank")
+    .eq("id",id)
+    .single();
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  const currentExpiry = data.plan_expires_at || data.expiry_date;
+  const base = currentExpiry && new Date(currentExpiry) > new Date() ? currentExpiry : new Date().toISOString();
+  const expiresAt = addDaysISO(base,days);
+
+  const rank = data.plan_rank || rankFromPlan(data.plan);
+  const boost = data.boost_score || boostFromPlan(data.plan);
+  const trending = trendingFormula(rank,boost,data.views_count || 0,data.likes_count || 0,Boolean(data.verified),Boolean(data.featured));
+
+  const { error:updateError } = await sb
+    .from("profiles")
+    .update({
+      approved:true,
+      is_expired:false,
+      payment_status:"paid",
+      plan_started_at:new Date().toISOString(),
+      plan_expires_at:expiresAt,
+      expiry_date:expiresAt,
+      last_active:new Date().toISOString(),
+      trending_score:trending
+    })
+    .eq("id",id);
+
+  if(updateError){
+    alert(updateError.message);
+    return;
+  }
+
+  loadProfiles();
+  alert(`Profile extended by ${days} days.`);
+}
+
+async function markProfilePaid(id){
+  await extendProfileDays(id,7);
+}
+
+async function markProfileExpired(id){
+  const ok = confirm("Mark this profile as expired and hide it?");
+  if(!ok) return;
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      approved:false,
+      is_expired:true,
+      payment_status:"expired",
+      boost_score:0,
+      trending_score:0,
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
   loadProfiles();
 }
 
-async function markPaid(id){
-  const now = new Date();
-  const expires = new Date();
-  expires.setDate(expires.getDate() + 7);
-  const { error } = await sb.from("profiles").update({
-    payment_status: "paid",
-    plan_started_at: now.toISOString(),
-    plan_expires_at: expires.toISOString(),
-    is_expired: false,
-    approved: true
-  }).eq("id",id);
-  if(error) alert(error.message);
-  loadProfiles();
+function openRenewModal(id, phone, plan){
+  document.getElementById("renew_profile_id").value = id;
+  document.getElementById("renew_phone").value = cleanPhone(phone || "");
+  document.getElementById("renew_plan").value = String(plan || "vip").toLowerCase();
+  syncRenewAmount();
+  document.getElementById("renewModal").style.display = "flex";
 }
 
-async function markExpired(id){
-  const { error } = await sb.from("profiles").update({
-    payment_status: "expired",
-    is_expired: true,
-    approved: false
-  }).eq("id",id);
-  if(error) alert(error.message);
-  loadProfiles();
+function closeRenewModal(){
+  document.getElementById("renewModal").style.display = "none";
 }
 
-async function autoExpireProfiles(){
-  await sb.from("profiles")
-    .update({ is_expired:true, payment_status:"expired", approved:false })
-    .lt("plan_expires_at", new Date().toISOString())
-    .eq("is_expired", false);
+function syncRenewAmount(){
+  document.getElementById("renew_amount").value = planAmount(valueOf("renew_plan"));
 }
+
+async function startRenewPayment(){
+  const profile_id = valueOf("renew_profile_id");
+  const phone = cleanPhone(valueOf("renew_phone"));
+  const plan = valueOf("renew_plan") || "vip";
+  const amount = Number(valueOf("renew_amount") || planAmount(plan));
+
+  if(!profile_id || !phone){
+    alert("Profile ID and phone are required.");
+    return;
+  }
+
+  const res = await fetch("/.netlify/functions/mpesa-stk-push",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({profile_id,phone,plan,amount})
+  });
+
+  const data = await res.json();
+
+  if(!res.ok){
+    alert("STK failed: " + JSON.stringify(data));
+    return;
+  }
+
+  alert("M-Pesa STK sent. Complete payment on phone.");
+  closeRenewModal();
+}
+
+function sendRenewalReminder(name, phone, plan, expiresAt){
+  const clean = cleanPhone(phone || "");
+
+  if(!clean){
+    alert("No phone number found for this profile.");
+    return;
+  }
+
+  const expiryText = expiresAt
+    ? new Date(expiresAt).toLocaleDateString()
+    : "soon";
+
+  const amount = planAmount(plan);
+
+  const message = encodeURIComponent(
+`Hi ${name},
+
+Your Nairobi Sweets listing expires on ${expiryText}.
+
+Plan: ${String(plan || "VIP").toUpperCase()}
+Renewal Amount: KES ${amount}
+
+Please renew early so your profile stays live on Nairobi Sweets.
+
+Reply here when ready.`
+  );
+
+  window.open(`https://wa.me/${clean}?text=${message}`,"_blank","noopener");
+}
+
 
 async function approveProfile(id){
-  const { error } = await sb.from("profiles").update({ approved:true, is_expired:false }).eq("id",id);
+  const { error } = await sb.from("profiles").update({ approved:true }).eq("id",id);
   if(error) alert(error.message);
   loadProfiles();
 }
@@ -1021,71 +959,6 @@ async function deleteProfile(id){
   const { error } = await sb.from("profiles").delete().eq("id",id);
   if(error) alert(error.message);
   loadProfiles();
-}
-
-
-function amountFromPlan(plan){
-  const p = String(plan || "").toLowerCase();
-  if(p.includes("signature") || p.includes("vvip")) return 3000;
-  if(p.includes("vip")) return 1500;
-  if(p.includes("featured")) return 1000;
-  return 1500;
-}
-
-function openRenewModal(id, phone, plan){
-  const clean = cleanPhone(phone || "");
-  const finalPlan = plan || "vip";
-
-  document.getElementById("renew_profile_id").value = id;
-  document.getElementById("renew_phone").value = clean;
-  document.getElementById("renew_plan").value = finalPlan;
-  document.getElementById("renew_amount").value = amountFromPlan(finalPlan);
-  document.getElementById("renewModal").style.display = "flex";
-}
-
-function closeRenewModal(){
-  document.getElementById("renewModal").style.display = "none";
-}
-
-document.getElementById("renew_plan").addEventListener("change",()=>{
-  document.getElementById("renew_amount").value = amountFromPlan(valueOf("renew_plan"));
-});
-
-async function startRenewPayment(){
-  const profile_id = valueOf("renew_profile_id");
-  const phone = cleanPhone(valueOf("renew_phone"));
-  const plan = valueOf("renew_plan") || "vip";
-  const amount = numberOrDefault("renew_amount",amountFromPlan(plan));
-
-  if(!profile_id){
-    alert("Profile ID is required.");
-    return;
-  }
-
-  if(!phone){
-    alert("Phone number is required.");
-    return;
-  }
-
-  try{
-    const res = await fetch("/.netlify/functions/mpesa-stk-push",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ profile_id, phone, plan, amount })
-    });
-
-    const data = await res.json();
-
-    if(!res.ok){
-      alert("STK failed: " + JSON.stringify(data));
-      return;
-    }
-
-    alert("M-Pesa STK sent. Complete payment on phone.");
-    closeRenewModal();
-  }catch(error){
-    alert("STK error: " + (error && error.message ? error.message : error));
-  }
 }
 
 loadProfiles();
