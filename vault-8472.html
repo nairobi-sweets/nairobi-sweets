@@ -52,8 +52,20 @@ textarea{grid-column:1/-1;min-height:120px}
 .save-edit{width:100%;background:#22c55e;color:#000;border-radius:16px;padding:16px;font-size:16px;margin-top:10px}
 .close-edit{width:100%;background:#ef4444;color:white;border-radius:16px;padding:14px;font-size:15px;margin-top:10px}
 
+
+.analytics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.analytics-card{background:linear-gradient(180deg,#08122f,#030821);border:1px solid rgba(255,213,74,.12);border-radius:22px;padding:20px}
+.analytics-card small{display:block;color:#aaa;font-size:13px;font-weight:900;margin-bottom:8px}
+.analytics-card strong{display:block;color:#ffd54a;font-size:34px;font-weight:900}
+.analytics-list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.analytics-list-box{background:#08122f;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:18px}
+.analytics-list-box h3{color:#ffd54a;font-size:18px;margin-bottom:12px}
+.analytics-row{display:flex;justify-content:space-between;gap:12px;color:#ddd;border-bottom:1px solid rgba(255,255,255,.07);padding:9px 0;font-size:14px}
+.analytics-row:last-child{border-bottom:none}
+.analytics-row b{color:#fff}
+
 @media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
+@media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid,.analytics-grid,.analytics-list{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -75,6 +87,35 @@ if(entered !== ADMIN_PASSWORD){
 </header>
 
 <div class="wrap">
+
+
+<section class="panel">
+<h2>Analytics Dashboard</h2>
+
+<div class="analytics-grid">
+  <div class="analytics-card"><small>Total Profile Views</small><strong id="analyticsViews">0</strong></div>
+  <div class="analytics-card"><small>WhatsApp Clicks</small><strong id="analyticsWhatsapp">0</strong></div>
+  <div class="analytics-card"><small>Call Clicks</small><strong id="analyticsCalls">0</strong></div>
+  <div class="analytics-card"><small>Total Profiles</small><strong id="analyticsProfiles">0</strong></div>
+</div>
+
+<div class="analytics-list">
+  <div class="analytics-list-box">
+    <h3>🔥 Most Viewed</h3>
+    <div id="topViews"><div class="analytics-row"><span>No data yet</span><b>0</b></div></div>
+  </div>
+
+  <div class="analytics-list-box">
+    <h3>💬 Most WhatsApp Clicks</h3>
+    <div id="topWhatsapp"><div class="analytics-row"><span>No data yet</span><b>0</b></div></div>
+  </div>
+
+  <div class="analytics-list-box">
+    <h3>☎ Most Calls</h3>
+    <div id="topCalls"><div class="analytics-row"><span>No data yet</span><b>0</b></div></div>
+  </div>
+</div>
+</section>
 
 <section class="panel">
 <h2>Add New Profile</h2>
@@ -375,6 +416,73 @@ function clearForm(){
   previewBox.innerHTML = "";
 }
 
+
+function setText(id,value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value;
+}
+
+function countByProfile(rows){
+  const counts = {};
+  (rows || []).forEach(row=>{
+    const id = String(row.profile_id || "");
+    if(!id) return;
+    counts[id] = (counts[id] || 0) + 1;
+  });
+  return counts;
+}
+
+function renderTopList(elementId,counts,profiles){
+  const el = document.getElementById(elementId);
+  if(!el) return;
+
+  const nameById = {};
+  (profiles || []).forEach(p=>{
+    nameById[String(p.id)] = p.stage_name || p.name || "Verified";
+  });
+
+  const rows = Object.entries(counts)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,5);
+
+  if(!rows.length){
+    el.innerHTML = `<div class="analytics-row"><span>No data yet</span><b>0</b></div>`;
+    return;
+  }
+
+  el.innerHTML = rows.map(([profileId,total])=>`
+    <div class="analytics-row">
+      <span>${nameById[profileId] || "Profile " + profileId}</span>
+      <b>${total}</b>
+    </div>
+  `).join("");
+}
+
+async function loadAnalytics(profiles){
+  try{
+    const [viewsRes, whatsappRes, callsRes] = await Promise.all([
+      sb.from("profile_views").select("profile_id"),
+      sb.from("whatsapp_clicks").select("profile_id"),
+      sb.from("call_clicks").select("profile_id")
+    ]);
+
+    const viewsRows = viewsRes.data || [];
+    const whatsappRows = whatsappRes.data || [];
+    const callRows = callsRes.data || [];
+
+    setText("analyticsViews", viewsRows.length.toLocaleString());
+    setText("analyticsWhatsapp", whatsappRows.length.toLocaleString());
+    setText("analyticsCalls", callRows.length.toLocaleString());
+    setText("analyticsProfiles", (profiles || []).length.toLocaleString());
+
+    renderTopList("topViews", countByProfile(viewsRows), profiles);
+    renderTopList("topWhatsapp", countByProfile(whatsappRows), profiles);
+    renderTopList("topCalls", countByProfile(callRows), profiles);
+  }catch(error){
+    console.warn("Analytics dashboard failed:", error && error.message ? error.message : error);
+  }
+}
+
 async function loadProfiles(){
   list.innerHTML = `<div style="color:#ffd54a;font-weight:900">Loading...</div>`;
 
@@ -387,8 +495,11 @@ async function loadProfiles(){
 
   if(!data || !data.length){
     list.innerHTML = `<div>No profiles yet.</div>`;
+    loadAnalytics([]);
     return;
   }
+
+  loadAnalytics(data);
 
   list.innerHTML = data.map(p=>{
     const video = videoOf(p);
