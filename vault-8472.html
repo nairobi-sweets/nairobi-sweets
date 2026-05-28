@@ -675,7 +675,7 @@ async function loadProfiles(){
 
           <button class="edit-btn" onclick="openEditModal('${p.id}')">✏ Edit Profile</button>
           <button class="renew-btn" onclick="openRenewModal('${p.id}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}')">💰 Renew / Pay Now</button>
-          <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.plan_expires_at || p.expiry_date || "")}')">📲 Send Renewal Reminder</button>
+          <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.plan_expires_at || p.expiry_date || "")}','${p.id}','${escapeAttr(p.slug || "")}')">📲 Send Renewal Reminder</button>
         </div>
       </article>
     `;
@@ -909,7 +909,7 @@ async function startRenewPayment(){
   closeRenewModal();
 }
 
-function sendRenewalReminder(name, phone, plan, expiresAt){
+function sendRenewalReminder(name, phone, plan, expiresAt, profileId, slug){
   const clean = cleanPhone(phone || "");
 
   if(!clean){
@@ -923,6 +923,10 @@ function sendRenewalReminder(name, phone, plan, expiresAt){
 
   const amount = planAmount(plan);
 
+  const profileLink = slug
+    ? `https://nairobi-sweets.com/profile.html?slug=${encodeURIComponent(slug)}`
+    : `https://nairobi-sweets.com/profile.html?id=${encodeURIComponent(profileId || "")}`;
+
   const message = encodeURIComponent(
 `Hi ${name},
 
@@ -930,6 +934,9 @@ Your Nairobi Sweets listing expires on ${expiryText}.
 
 Plan: ${String(plan || "VIP").toUpperCase()}
 Renewal Amount: KES ${amount}
+
+Your profile link:
+${profileLink}
 
 Please renew early so your profile stays live on Nairobi Sweets.
 
