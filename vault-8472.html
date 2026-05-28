@@ -53,6 +53,16 @@ textarea{grid-column:1/-1;min-height:120px}
 .close-edit{width:100%;background:#ef4444;color:white;border-radius:16px;padding:14px;font-size:15px;margin-top:10px}
 .rank-help{grid-column:1/-1;background:rgba(255,213,74,.09);border:1px solid rgba(255,213,74,.18);border-radius:16px;padding:14px;color:#ffd54a;font-size:13px;font-weight:900;line-height:1.5}
 
+
+.expiry-pill{display:inline-block;margin-top:10px;padding:8px 10px;border-radius:999px;font-size:12px;font-weight:900}
+.expiry-active{background:rgba(34,197,94,.18);color:#86efac;border:1px solid rgba(34,197,94,.35)}
+.expiry-soon{background:rgba(255,213,74,.16);color:#ffd54a;border:1px solid rgba(255,213,74,.35)}
+.expiry-expired{background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.35)}
+.renew-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+.extend{background:#38bdf8;color:#00111f;border-radius:12px;padding:12px}
+.paid{background:#22c55e;color:#001b09;border-radius:12px;padding:12px}
+.expire{background:#f97316;color:#111;border-radius:12px;padding:12px}
+
 @media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
 </style>
@@ -110,6 +120,15 @@ if(entered !== ADMIN_PASSWORD){
   <input id="boost_score" type="number" value="100" placeholder="Boost score">
   <input id="trending_score" type="number" value="0" placeholder="Trending score">
   <input id="last_active" type="datetime-local" placeholder="Last active">
+  <input id="plan_started_at" type="datetime-local" placeholder="Plan started at">
+  <input id="plan_expires_at" type="datetime-local" placeholder="Plan expires at">
+  <select id="payment_status">
+    <option value="unpaid">Unpaid</option>
+    <option value="paid">Paid</option>
+    <option value="pending">Pending</option>
+    <option value="expired">Expired</option>
+  </select>
+  <label class="checkrow"><input type="checkbox" id="is_expired"> Is expired</label>
 
   <div class="rank-help">Ranking guide: Signature/VVIP rank 4, VIP rank 3, Featured rank 2. Higher boost + trending = higher homepage position.</div>
 
@@ -181,6 +200,15 @@ if(entered !== ADMIN_PASSWORD){
       <input id="edit_boost_score" type="number" placeholder="Boost score">
       <input id="edit_trending_score" type="number" placeholder="Trending score">
       <input id="edit_last_active" type="datetime-local" placeholder="Last active">
+      <input id="edit_plan_started_at" type="datetime-local" placeholder="Plan started at">
+      <input id="edit_plan_expires_at" type="datetime-local" placeholder="Plan expires at">
+      <select id="edit_payment_status">
+        <option value="unpaid">Unpaid</option>
+        <option value="paid">Paid</option>
+        <option value="pending">Pending</option>
+        <option value="expired">Expired</option>
+      </select>
+      <label class="checkrow"><input type="checkbox" id="edit_is_expired"> Is expired</label>
 
       <div class="rank-help">Control homepage order here. Use Signature/VVIP = 4, VIP = 3, Featured = 2. Trending score can be manually boosted.</div>
 
@@ -266,6 +294,34 @@ function fromDatetimeLocal(value){
   if(!value) return new Date().toISOString();
   const d = new Date(value);
   return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+}
+
+function addDaysISO(days){
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString();
+}
+
+function expiryState(p){
+  if(p.is_expired) return {label:"Expired", cls:"expiry-expired", days:0};
+  if(!p.plan_expires_at) return {label:"No expiry set", cls:"expiry-soon", days:null};
+  const diff = new Date(p.plan_expires_at).getTime() - Date.now();
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  if(days <= 0) return {label:"Expired", cls:"expiry-expired", days};
+  if(days <= 2) return {label:`Expires in ${days} day${days===1?"":"s"}`, cls:"expiry-soon", days};
+  return {label:`Active: ${days} days left`, cls:"expiry-active", days};
+}
+
+function expiryPayload(startId,expiresId,statusId,expiredId){
+  const started = valueOf(startId) ? fromDatetimeLocal(valueOf(startId)) : new Date().toISOString();
+  const expires = valueOf(expiresId) ? fromDatetimeLocal(valueOf(expiresId)) : addDaysISO(7);
+  const expired = checkedOf(expiredId) || new Date(expires).getTime() <= Date.now();
+  return {
+    plan_started_at: started,
+    plan_expires_at: expires,
+    payment_status: valueOf(statusId) || "unpaid",
+    is_expired: expired
+  };
 }
 
 function syncRanking(prefix=""){
@@ -377,6 +433,10 @@ document.getElementById("edit_plan").addEventListener("change",()=>syncRanking("
 document.getElementById("edit_verified").addEventListener("change",()=>syncRanking("edit_"));
 document.getElementById("edit_featured").addEventListener("change",()=>syncRanking("edit_"));
 
+document.getElementById("plan_started_at").value = toDatetimeLocal(new Date().toISOString());
+document.getElementById("plan_expires_at").value = toDatetimeLocal(addDaysISO(7));
+document.getElementById("last_active").value = toDatetimeLocal(new Date().toISOString());
+
 async function addProfile(){
   statusBox.textContent = "Saving profile...";
 
@@ -429,6 +489,7 @@ async function addProfile(){
       boost_score: finalBoostScore,
       trending_score: finalTrendingScore,
       last_active: fromDatetimeLocal(valueOf("last_active")),
+      ...expiryPayload("plan_started_at","plan_expires_at","payment_status","is_expired"),
       services: parseServices(valueOf("services")),
       incall_price: valueOf("incall_price"),
       outcall_price: valueOf("outcall_price"),
@@ -468,7 +529,7 @@ function clearForm(){
   [
     "stage_name","phone","location","age","photo_url","video_url","slug",
     "availability","languages","nationality","orientation","height",
-    "incall_price","outcall_price","services","bio","about","last_active"
+    "incall_price","outcall_price","services","bio","about","last_active","plan_started_at","plan_expires_at"
   ].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value = "";
@@ -482,12 +543,15 @@ function clearForm(){
   document.getElementById("plan").value = "featured";
   document.getElementById("verified").checked = false;
   document.getElementById("featured").checked = false;
+  document.getElementById("is_expired").checked = false;
+  document.getElementById("payment_status").value = "unpaid";
   document.getElementById("photoUpload").value = "";
   document.getElementById("reelUpload").value = "";
   previewBox.innerHTML = "";
 }
 
 async function loadProfiles(){
+  await autoExpireProfiles();
   list.innerHTML = `<div style="color:#ffd54a;font-weight:900">Loading...</div>`;
 
   const { data,error } = await sb
@@ -512,6 +576,7 @@ async function loadProfiles(){
   list.innerHTML = data.map(p=>{
     const video = videoOf(p);
     const services = Array.isArray(p.services) ? p.services : [];
+    const exp = expiryState(p);
 
     return `
       <article class="card">
@@ -536,6 +601,10 @@ async function loadProfiles(){
             🧠 Rank: ${p.plan_rank || 0} · 🚀 Boost: ${p.boost_score || 0}<br>
             🔥 Trending: ${p.trending_score || 0}<br>
             🕒 Active: ${p.last_active ? new Date(p.last_active).toLocaleString() : "not set"}<br>
+            💳 Payment: ${p.payment_status || "unpaid"}<br>
+            📅 Started: ${p.plan_started_at ? new Date(p.plan_started_at).toLocaleDateString() : "not set"}<br>
+            ⏳ Expires: ${p.plan_expires_at ? new Date(p.plan_expires_at).toLocaleDateString() : "not set"}<br>
+            <span class="expiry-pill ${exp.cls}">${exp.label}</span><br>
             ❤️ ${p.likes_count || p.likes || 0} · 👁️ ${p.views_count || p.views || 0}
           </div>
 
@@ -547,6 +616,12 @@ async function loadProfiles(){
             <button class="approve" onclick="approveProfile('${p.id}')">Approve</button>
             <button class="unapprove" onclick="unapproveProfile('${p.id}')">Hide</button>
             <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
+          </div>
+
+          <div class="renew-actions">
+            <button class="extend" onclick="extendProfile('${p.id}',7)">+7 Days</button>
+            <button class="paid" onclick="markPaid('${p.id}')">Mark Paid</button>
+            <button class="expire" onclick="markExpired('${p.id}')">Expire</button>
           </div>
 
           <button class="edit-btn" onclick="openEditModal('${p.id}')">✏ Edit Profile</button>
@@ -588,6 +663,10 @@ async function openEditModal(id){
   document.getElementById("edit_boost_score").value = data.boost_score ?? boostFromPlan(data.plan || "featured");
   document.getElementById("edit_trending_score").value = data.trending_score ?? trendingFormula(rankFromPlan(data.plan || "featured"),boostFromPlan(data.plan || "featured"),data.views_count || data.views || 0,data.likes_count || data.likes || 0,Boolean(data.verified),Boolean(data.featured));
   document.getElementById("edit_last_active").value = toDatetimeLocal(data.last_active || data.created_at);
+  document.getElementById("edit_plan_started_at").value = toDatetimeLocal(data.plan_started_at || data.created_at);
+  document.getElementById("edit_plan_expires_at").value = toDatetimeLocal(data.plan_expires_at);
+  document.getElementById("edit_payment_status").value = data.payment_status || "unpaid";
+  document.getElementById("edit_is_expired").checked = Boolean(data.is_expired);
   document.getElementById("edit_verified").checked = Boolean(data.verified);
   document.getElementById("edit_featured").checked = Boolean(data.featured);
   document.getElementById("edit_bio").value = data.bio || "";
@@ -636,6 +715,7 @@ async function saveProfileEdit(){
     boost_score: finalBoostScore,
     trending_score: finalTrendingScore,
     last_active: fromDatetimeLocal(valueOf("edit_last_active")),
+    ...expiryPayload("edit_plan_started_at","edit_plan_expires_at","edit_payment_status","edit_is_expired"),
     likes_count: numberOf("edit_likes_count"),
     views_count: numberOf("edit_views_count"),
     likes: numberOf("edit_likes_count"),
@@ -658,8 +738,58 @@ async function saveProfileEdit(){
   alert("Profile updated successfully.");
 }
 
+
+async function extendProfile(id,days){
+  const { data,error } = await sb.from("profiles").select("plan_expires_at").eq("id",id).single();
+  if(error){ alert(error.message); return; }
+  const base = data?.plan_expires_at && new Date(data.plan_expires_at).getTime() > Date.now()
+    ? new Date(data.plan_expires_at)
+    : new Date();
+  base.setDate(base.getDate() + days);
+  const { error:updateError } = await sb.from("profiles").update({
+    plan_expires_at: base.toISOString(),
+    payment_status: "paid",
+    is_expired: false,
+    approved: true
+  }).eq("id",id);
+  if(updateError) alert(updateError.message);
+  loadProfiles();
+}
+
+async function markPaid(id){
+  const now = new Date();
+  const expires = new Date();
+  expires.setDate(expires.getDate() + 7);
+  const { error } = await sb.from("profiles").update({
+    payment_status: "paid",
+    plan_started_at: now.toISOString(),
+    plan_expires_at: expires.toISOString(),
+    is_expired: false,
+    approved: true
+  }).eq("id",id);
+  if(error) alert(error.message);
+  loadProfiles();
+}
+
+async function markExpired(id){
+  const { error } = await sb.from("profiles").update({
+    payment_status: "expired",
+    is_expired: true,
+    approved: false
+  }).eq("id",id);
+  if(error) alert(error.message);
+  loadProfiles();
+}
+
+async function autoExpireProfiles(){
+  await sb.from("profiles")
+    .update({ is_expired:true, payment_status:"expired", approved:false })
+    .lt("plan_expires_at", new Date().toISOString())
+    .eq("is_expired", false);
+}
+
 async function approveProfile(id){
-  const { error } = await sb.from("profiles").update({ approved:true }).eq("id",id);
+  const { error } = await sb.from("profiles").update({ approved:true, is_expired:false }).eq("id",id);
   if(error) alert(error.message);
   loadProfiles();
 }
