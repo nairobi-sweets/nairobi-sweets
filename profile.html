@@ -335,24 +335,62 @@ ${profileUrl(p)}
 }
 
 
-async function trackProfileEvent(profileId,type){
-  const table = type === "whatsapp" ? "whatsapp_clicks" : "call_clicks";
+async function trackEvent(eventType, profileId, profileName = ""){
+  const payload = {
+    profile_id: profileId,
+    profile_name: profileName || "",
+    event_type: eventType,
+    source_page: window.location.pathname,
+    created_at: new Date().toISOString()
+  };
 
   try{
-    await sb.from(table).insert({ profile_id: profileId });
-  }catch(error){
-    console.warn("Analytics tracking failed:", error && error.message ? error.message : error);
+    const { error } = await sb.from("analytics_events").insert(payload);
+    if(!error) return true;
+    console.log("analytics_events insert failed:", error.message);
+  }catch(err){
+    console.log("analytics_events error:", err);
   }
+
+  try{
+    const { error } = await sb.from("profile_events").insert(payload);
+    if(!error) return true;
+    console.log("profile_events insert failed:", error.message);
+  }catch(err){
+    console.log("profile_events error:", err);
+  }
+
+  try{
+    const tableMap = {
+      profile_views: "profile_views",
+      profile_opens: "profile_views",
+      whatsapp_clicks: "whatsapp_clicks",
+      call_clicks: "call_clicks"
+    };
+    const table = tableMap[eventType];
+    if(table){
+      await sb.from(table).insert({ profile_id: profileId });
+    }
+  }catch(err){
+    console.log("fallback analytics error:", err);
+  }
+
+  return false;
+}
+
+async function handleTrackedLink(event,eventType,profileId,url,newTab=false){
+  event.preventDefault();
+  await trackEvent(eventType,profileId,document.title.replace(" | Nairobi Sweets", ""));
+  if(newTab){
+    window.open(url,"_blank","noopener");
+  }else{
+    window.location.href = url;
+  }
+  return false;
 }
 
 async function incrementViews(p){
   const newViews = getViews(p) + 1;
-
-  try{
-    await sb.from("profile_views").insert({ profile_id:p.id });
-  }catch(error){
-    console.warn("Profile view analytics failed:", error && error.message ? error.message : error);
-  }
 
   try{
     await sb.rpc("increment_profile_views",{p_profile_id:p.id});
@@ -432,8 +470,8 @@ function render(p){
           ${
             phone
             ? `
-              <a class="action call" href="tel:${phone}" onclick="trackProfileEvent('${p.id}','call')">☎ CALL</a>
-              <a class="action whatsapp" href="https://wa.me/${phone}?text=${whatsappText(p)}" target="_blank" rel="noopener" onclick="trackProfileEvent('${p.id}','whatsapp')">💬 WHATSAPP</a>
+              <a class="action call" href="tel:${phone}" onclick="return handleTrackedLink(event,'call_clicks','${p.id}','tel:${phone}',false)">☎ CALL</a>
+              <a class="action whatsapp" href="https://wa.me/${phone}?text=${whatsappText(p)}" target="_blank" rel="noopener" onclick="return handleTrackedLink(event,'whatsapp_clicks','${p.id}','https://wa.me/${phone}?text=${whatsappText(p)}',true)">💬 WHATSAPP</a>
             `
             : `<button class="action call">Contact hidden</button>`
           }
@@ -495,6 +533,7 @@ function render(p){
   `;
 
   incrementViews(p);
+  trackEvent("profile_views",p.id,getName(p));
 }
 
 async function loadProfile(){
