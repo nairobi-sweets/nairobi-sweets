@@ -1,3 +1,4 @@
+```toml
 [build]
   publish = "."
   functions = "netlify/functions"
@@ -5,13 +6,25 @@
 [functions]
   node_bundler = "esbuild"
 
+# Auto-expire expired profiles every hour
 [functions."auto-expire-profiles"]
   schedule = "@hourly"
 
+# Refresh trending rankings every hour
 [functions."refresh-trending-scores"]
   schedule = "@hourly"
+
+# Renewal reminder worker every morning
+[functions."renewal-reminder-worker"]
+  schedule = "0 9 * * *"
 
 [[redirects]]
   from = "/profile/:id"
   to = "/.netlify/functions/profile-share?id=:id"
   status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
