@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Nairobi Sweets | Trending Profiles</title>
+<meta name="description" content="Trending Nairobi Sweets profiles ranked by views, WhatsApp clicks, calls, shares and video plays.">
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:radial-gradient(circle at top,#0c1148 0%,#000 48%);color:#fff;font-family:Arial,Helvetica,sans-serif;padding-bottom:90px}
+a{text-decoration:none;color:inherit}
+.topbar{position:sticky;top:0;z-index:99;background:#000;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,213,74,.12)}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:70px;height:70px;border-radius:20px;object-fit:cover}
+.brand h1{color:#ffd54a;font-size:34px;line-height:.9}
+.home{background:#06105a;color:#ffd54a;border:1px solid rgba(255,213,74,.15);border-radius:18px;padding:14px 18px;font-weight:900}
+.hero{padding:28px 18px}
+.hero-box{max-width:1200px;margin:auto;background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.1);border-radius:30px;padding:28px}
+.hero-box h2{font-size:52px;color:#ffd54a;margin-bottom:10px}
+.hero-box p{color:#ddd;line-height:1.6}
+.tabs{max-width:1200px;margin:0 auto 20px;padding:0 18px;display:flex;gap:10px;overflow:auto}
+.tabs button{min-width:max-content;border:0;border-radius:999px;padding:13px 18px;font-weight:900;background:#101a52;color:white;cursor:pointer}
+.tabs button.active{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.grid{max-width:1200px;margin:auto;padding:0 18px 40px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{position:relative;background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.1);border-radius:26px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.45);cursor:pointer}
+.card img{width:100%;height:260px;object-fit:cover;background:#020617}
+.body{padding:16px}
+.rank{position:absolute;top:12px;left:12px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:900;z-index:3}
+.badge{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.75);color:#ffd54a;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:900;z-index:3}
+.name{font-size:22px;font-weight:900;color:#ffd54a;margin-bottom:8px}
+.meta{color:#ddd;font-size:14px;line-height:1.6;margin-bottom:12px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.stat{background:#06103e;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:10px}
+.stat small{display:block;color:#aaa;font-size:11px;margin-bottom:5px}
+.stat strong{color:#ffd54a;font-size:20px}
+.empty{grid-column:1/-1;text-align:center;color:#ffd54a;font-weight:900;padding:60px}
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;height:76px;background:rgba(0,0,0,.96);display:flex;align-items:center;justify-content:space-around;border-top:1px solid rgba(255,213,74,.08)}
+.bottom-nav a{color:#ffd54a;font-size:24px}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.hero-box h2{font-size:40px}.brand h1{font-size:28px}.logo{width:58px;height:58px}.card img{height:340px}}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <a href="/" class="brand">
+    <img src="/assets/logo/logo-badge.png" class="logo" alt="Nairobi Sweets">
+    <h1>Nairobi<br>Sweets</h1>
+  </a>
+  <a href="/" class="home">Home</a>
+</header>
+
+<section class="hero">
+  <div class="hero-box">
+    <h2>🔥 Trending</h2>
+    <p>Live leaderboard ranked by profile views, WhatsApp clicks, calls, shares and video plays.</p>
+  </div>
+</section>
+
+<div class="tabs">
+  <button class="active" data-sort="trending_score">🔥 Overall</button>
+  <button data-sort="views">👁 Views</button>
+  <button data-sort="whatsapp_clicks">💬 WhatsApp</button>
+  <button data-sort="call_clicks">☎ Calls</button>
+  <button data-sort="share_clicks">🔗 Shares</button>
+  <button data-sort="video_plays">🎬 Videos</button>
+</div>
+
+<section class="grid" id="grid">
+  <div class="empty">Loading trending profiles...</div>
+</section>
+
+<nav class="bottom-nav">
+  <a href="/">🏠</a>
+  <a href="/trending.html">🔥</a>
+  <a href="/reel.html">🎬</a>
+  <a href="/join.html">➕</a>
+  <a href="/vault-8472.html">☰</a>
+</nav>
+
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+
+const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const grid = document.getElementById("grid");
+let rows = [];
+let sortKey = "trending_score";
+
+function img(p){
+  return p.photo_url || p.image_url || p.profile_photo || p.main_photo || p.photo || p.image || "/assets/logo/logo-badge.png";
+}
+
+function nameOf(p){
+  return p.stage_name || p.name || "Verified";
+}
+
+function locOf(p){
+  return p.location || p.town || "Nairobi";
+}
+
+function planOf(p){
+  return String(p.plan || "featured").toUpperCase();
+}
+
+function n(v){return Number(v || 0)}
+
+function rankLabel(i){
+  if(i===0) return "👑 #1";
+  if(i===1) return "🥈 #2";
+  if(i===2) return "🥉 #3";
+  return `#${i+1}`;
+}
+
+function render(){
+  const sorted = [...rows].sort((a,b)=>n(b[sortKey])-n(a[sortKey]));
+
+  if(!sorted.length){
+    grid.innerHTML = `<div class="empty">No trending data yet.</div>`;
+    return;
+  }
+
+  grid.innerHTML = sorted.map((p,i)=>`
+    <article class="card" onclick="location.href='/profile.html?id=${p.id}'">
+      <div class="rank">${rankLabel(i)} TRENDING</div>
+      <div class="badge">${planOf(p)}</div>
+      <img src="${img(p)}" onerror="this.src='/assets/logo/logo-badge.png'" alt="${nameOf(p)}">
+
+      <div class="body">
+        <div class="name">${nameOf(p)}</div>
+        <div class="meta">
+          📍 ${locOf(p)}<br>
+          🔥 Score: ${n(p.trending_score)}
+        </div>
+
+        <div class="stats">
+          <div class="stat"><small>Views</small><strong>${n(p.views)}</strong></div>
+          <div class="stat"><small>WhatsApp</small><strong>${n(p.whatsapp_clicks)}</strong></div>
+          <div class="stat"><small>Calls</small><strong>${n(p.call_clicks)}</strong></div>
+          <div class="stat"><small>Shares</small><strong>${n(p.share_clicks)}</strong></div>
+          <div class="stat"><small>Video Plays</small><strong>${n(p.video_plays)}</strong></div>
+          <div class="stat"><small>Likes</small><strong>${n(p.likes_count || p.likes)}</strong></div>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+async function loadTrending(){
+  grid.innerHTML = `<div class="empty">Loading leaderboard...</div>`;
+
+  const {data,error} = await sb
+    .from("profiles")
+    .select(`
+      *,
+      profile_analytics_summary(
+        views,
+        whatsapp_clicks,
+        call_clicks,
+        share_clicks,
+        video_plays,
+        last_event_at
+      )
+    `)
+    .eq("approved",true)
+    .eq("is_expired",false)
+    .order("trending_score",{ascending:false})
+    .limit(60);
+
+  if(error){
+    grid.innerHTML = `<div class="empty">Error: ${error.message}</div>`;
+    return;
+  }
+
+  rows = (data || []).map(p=>{
+    const a = Array.isArray(p.profile_analytics_summary)
+      ? p.profile_analytics_summary[0]
+      : p.profile_analytics_summary;
+
+    return {
+      ...p,
+      views: a?.views || 0,
+      whatsapp_clicks: a?.whatsapp_clicks || 0,
+      call_clicks: a?.call_clicks || 0,
+      share_clicks: a?.share_clicks || 0,
+      video_plays: a?.video_plays || 0,
+      last_event_at: a?.last_event_at || null
+    };
+  });
+
+  render();
+}
+
+document.querySelectorAll(".tabs button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    sortKey = btn.dataset.sort;
+    render();
+  });
+});
+
+loadTrending();
+</script>
+
+</body>
+</html>
