@@ -4,6 +4,9 @@ exports.handler = async (event) => {
     if (event.httpMethod !== "POST") {
       return {
         statusCode: 405,
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           ok: false,
           message: "Method not allowed"
@@ -12,21 +15,29 @@ exports.handler = async (event) => {
     }
 
     const body = JSON.parse(event.body || "{}");
-    const password = body.password || "";
+    const password = String(body.password || "").trim();
 
-    if (!process.env.VAULT_PASSWORD) {
+    const vaultPassword = process.env.VAULT_PASSWORD;
+
+    if (!vaultPassword) {
       return {
         statusCode: 500,
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           ok: false,
-          message: "VAULT_PASSWORD not configured"
+          message: "VAULT_PASSWORD environment variable not configured"
         })
       };
     }
 
-    if (password !== process.env.VAULT_PASSWORD) {
+    if (password !== vaultPassword) {
       return {
         statusCode: 401,
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           ok: false,
           message: "Invalid password"
@@ -36,9 +47,13 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         ok: true,
-        message: "Vault unlocked"
+        message: "Vault unlocked",
+        timestamp: new Date().toISOString()
       })
     };
 
@@ -46,6 +61,9 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 500,
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         ok: false,
         message: error.message
