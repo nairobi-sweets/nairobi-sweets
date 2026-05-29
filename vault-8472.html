@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Nairobi Sweets Vault</title>
+<meta name="robots" content="noindex,nofollow">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -93,15 +94,84 @@ textarea{grid-column:1/-1;min-height:120px}
 
 <body>
 
-<script>
-const ADMIN_PASSWORD = "1586758672";
-const entered = prompt("Enter Nairobi Sweets Vault Password");
+<div id="vaultLock" style="
+  position:fixed;
+  inset:0;
+  background:#000814;
+  z-index:9999999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+">
+  <div style="
+    width:min(450px,95vw);
+    background:linear-gradient(180deg,#020a56,#010633);
+    border:1px solid rgba(255,213,74,.15);
+    border-radius:28px;
+    padding:30px;
+    box-shadow:0 0 40px rgba(255,213,74,.14),0 30px 90px rgba(0,0,0,.75);
+  ">
+    <h2 style="
+      color:#ffd54a;
+      text-align:center;
+      margin-bottom:12px;
+      font-size:32px;
+      font-family:Arial,Helvetica,sans-serif;
+    ">🔐 Nairobi Sweets Vault</h2>
 
-if(entered !== ADMIN_PASSWORD){
-  document.body.innerHTML = `<div style="height:100vh;background:#000;color:#ff3b3b;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;font-family:Arial;text-align:center;padding:30px;">ACCESS DENIED</div>`;
-  throw new Error("Unauthorized");
-}
-</script>
+    <p style="
+      color:#ddd;
+      text-align:center;
+      margin-bottom:18px;
+      font-family:Arial,Helvetica,sans-serif;
+      line-height:1.5;
+    ">Enter your admin password to unlock the dashboard.</p>
+
+    <input
+      id="vaultPassword"
+      type="password"
+      placeholder="Enter Admin Password"
+      autocomplete="current-password"
+      style="
+        width:100%;
+        padding:18px;
+        border-radius:16px;
+        border:1px solid rgba(255,255,255,.14);
+        background:#08122f;
+        color:white;
+        margin-bottom:14px;
+        outline:none;
+        font-size:16px;
+      "
+      onkeydown="if(event.key==='Enter') unlockVault()"
+    >
+
+    <button
+      onclick="unlockVault()"
+      style="
+        width:100%;
+        padding:18px;
+        border:none;
+        border-radius:16px;
+        background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+        color:#000;
+        font-weight:900;
+        font-size:16px;
+        cursor:pointer;
+      "
+    >Unlock Vault</button>
+
+    <div id="vaultError" style="
+      margin-top:14px;
+      color:#ff6b6b;
+      font-weight:700;
+      text-align:center;
+      min-height:20px;
+      font-family:Arial,Helvetica,sans-serif;
+    "></div>
+  </div>
+</div>
 
 <header>
   <h1>Nairobi Sweets Vault</h1>
@@ -1021,6 +1091,52 @@ async function deleteProfile(id){
 }
 
 loadProfiles();
+</script>
+
+<script>
+async function unlockVault(){
+  const password = document.getElementById("vaultPassword").value.trim();
+  const errorBox = document.getElementById("vaultError");
+
+  if(!password){
+    errorBox.textContent = "Enter password.";
+    return;
+  }
+
+  errorBox.textContent = "Checking...";
+
+  try{
+    const response = await fetch("/.netlify/functions/vault-login",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ password })
+    });
+
+    let data = {};
+    try{
+      data = await response.json();
+    }catch(parseError){
+      data = { ok:false, message:"Invalid server response" };
+    }
+
+    if(!response.ok || !data.ok){
+      errorBox.textContent = data.message || "Access denied.";
+      return;
+    }
+
+    sessionStorage.setItem("vault_unlocked","true");
+    document.getElementById("vaultLock").style.display = "none";
+  }catch(error){
+    errorBox.textContent = "Vault authentication failed.";
+  }
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+  const lock = document.getElementById("vaultLock");
+  if(lock && sessionStorage.getItem("vault_unlocked") === "true"){
+    lock.style.display = "none";
+  }
+});
 </script>
 
 </body>
