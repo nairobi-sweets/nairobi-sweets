@@ -924,8 +924,8 @@ function sendRenewalReminder(name, phone, plan, expiresAt, profileId, slug){
   const amount = planAmount(plan);
 
   const profileLink = slug
-    ? `https://nairobi-sweets.com/profile.html?slug=${encodeURIComponent(slug)}`
-    : `https://nairobi-sweets.com/profile.html?id=${encodeURIComponent(profileId || "")}`;
+    ? `https://nairobi-sweets.com/profile/${encodeURIComponent(slug)}`
+    : `https://nairobi-sweets.com/profile/${encodeURIComponent(profileId || "")}`;
 
   const message = encodeURIComponent(
 `Hi ${name},
