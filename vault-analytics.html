@@ -42,6 +42,7 @@ h1{color:#ffd54a;font-size:34px;font-weight:900}
 }
 .gold{background:#ffd54a;color:#000}
 .blue{background:#06b6d4;color:#000}
+.green{background:#22c55e;color:#000}
 .wrap{padding:28px}
 .stats{
   display:grid;
@@ -82,6 +83,7 @@ h1{color:#ffd54a;font-size:34px;font-weight:900}
 .row{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   gap:14px;
   padding:14px 0;
   border-bottom:1px solid rgba(255,255,255,.08);
@@ -89,6 +91,8 @@ h1{color:#ffd54a;font-size:34px;font-weight:900}
 }
 .row:last-child{border-bottom:none}
 .row strong{color:#fff}
+.row small{color:#aaa;display:block;margin-top:4px;font-size:12px}
+.renew-btn{margin-left:10px;padding:8px 12px;border:none;border-radius:10px;background:#22c55e;color:#000;font-weight:900;cursor:pointer}
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{
   text-align:left;
@@ -133,6 +137,7 @@ h1{color:#ffd54a;font-size:34px;font-weight:900}
   <div class="nav">
     <a class="btn blue" href="/vault-8472.html">← Back to Vault</a>
     <button class="btn gold" onclick="loadDashboard()">Refresh</button>
+    <button class="btn green" onclick="runAutoRenewNow()">Auto-Renew Now</button>
   </div>
 </header>
 
@@ -251,6 +256,14 @@ function money(amount){
 function setText(id,value){
   const el = document.getElementById(id);
   if(el) el.textContent = value;
+}
+
+function cleanPhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
 }
 
 function planAmount(plan){
@@ -386,18 +399,29 @@ function renderRenewalQueue(profiles){
       const expiry = p.plan_expires_at || p.expiry_date || null;
       return {...p, expiry, days:daysLeft(expiry)};
     })
-    .filter(p=>p.days !== null && p.days >= 0 && p.days <= 3)
+    .filter(p=>p.days !== null && p.days >= 0 && p.days <= 7)
     .sort((a,b)=>a.days-b.days);
 
-  document.getElementById("renewalQueue").innerHTML =
-    rows.length
-      ? rows.map(p=>`
-        <div class="row">
-          <strong>${p.stage_name || "Verified"}</strong>
-          <span class="pill">${p.days} days</span>
-        </div>
-      `).join("")
-      : `<div class="error">No urgent renewals.</div>`;
+  const box = document.getElementById("renewalQueue");
+
+  if(!rows.length){
+    box.innerHTML = `<div class="error">No renewals due.</div>`;
+    return;
+  }
+
+  box.innerHTML = rows.map(p=>`
+    <div class="row">
+      <div>
+        <strong>${p.stage_name || "Verified"}</strong>
+        <small>${String(p.plan || "featured").toUpperCase()} · ${cleanPhone(p.phone || p.whatsapp) || "No phone"}</small>
+      </div>
+
+      <div>
+        <span class="pill">${p.days} day${p.days === 1 ? "" : "s"}</span>
+        <button class="renew-btn" onclick="sendRenewalSTK('${p.id}')">Renew</button>
+      </div>
+    </div>
+  `).join("");
 }
 
 function renderTopEarningPlans(profiles){
@@ -426,6 +450,90 @@ function renderTopEarningPlans(profiles){
         </div>
       `).join("")
       : `<div class="error">No earning plans yet.</div>`;
+}
+
+async function sendRenewalSTK(profileId){
+  try{
+    const { data,error } = await sb
+      .from("profiles")
+      .select("*")
+      .eq("id",profileId)
+      .single();
+
+    if(error){
+      alert(error.message);
+      return;
+    }
+
+    const phone = cleanPhone(data.phone || data.whatsapp);
+
+    if(!phone){
+      alert("No phone number found for this profile.");
+      return;
+    }
+
+    const amount = planAmount(data.plan);
+
+    const ok = confirm(
+      "Send M-Pesa renewal STK?\n\n" +
+      "Profile: " + (data.stage_name || "Profile") + "\n" +
+      "Phone: " + phone + "\n" +
+      "Amount: " + money(amount)
+    );
+
+    if(!ok) return;
+
+    const res = await fetch("/.netlify/functions/mpesa-stk-push",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        profile_id:data.id,
+        phone,
+        amount,
+        plan:data.plan || "vip",
+        reason:"renewal_queue"
+      })
+    });
+
+    const json = await res.json().catch(()=>({}));
+
+    if(!res.ok){
+      alert("STK failed: " + JSON.stringify(json));
+      return;
+    }
+
+    alert("Renewal STK sent.");
+
+  }catch(error){
+    alert("Renewal error: " + error.message);
+  }
+}
+
+async function runAutoRenewNow(){
+  const ok = confirm("Run auto-renew check now?");
+  if(!ok) return;
+
+  try{
+    const res = await fetch("/.netlify/functions/auto-renew-check");
+    const data = await res.json();
+
+    if(!data.ok){
+      alert("Auto-renew failed: " + data.message);
+      return;
+    }
+
+    alert(
+      "Auto-renew complete.\nChecked: " +
+      data.checked +
+      "\nAttempts: " +
+      (data.attempted || 0)
+    );
+
+    loadDashboard();
+
+  }catch(error){
+    alert("Auto-renew error: " + error.message);
+  }
 }
 
 async function loadAnalyticsSummary(){
