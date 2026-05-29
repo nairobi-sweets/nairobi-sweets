@@ -16,16 +16,10 @@ const supabase = createClient(
 
 function cleanPhone(phone) {
   let p = String(phone || "").replace(/\D/g, "");
-
   if (!p) return "";
 
-  if (p.startsWith("0")) {
-    p = "254" + p.slice(1);
-  }
-
-  if (p.startsWith("7") || p.startsWith("1")) {
-    p = "254" + p;
-  }
+  if (p.startsWith("0")) p = "254" + p.slice(1);
+  if (p.startsWith("7") || p.startsWith("1")) p = "254" + p;
 
   return p;
 }
@@ -43,7 +37,23 @@ function planAmount(plan) {
 exports.handler = async (event) => {
   try {
     if (event.httpMethod !== "POST") {
-      return json(405, { error: "Method not allowed" });
+      return json(405, {
+        ok: false,
+        error: "Method not allowed",
+      });
+    }
+
+    if (
+      !process.env.SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      !process.env.MPESA_CONSUMER_KEY ||
+      !process.env.MPESA_CONSUMER_SECRET ||
+      !process.env.MPESA_PASSKEY
+    ) {
+      return json(500, {
+        ok: false,
+        error: "Missing required environment variables",
+      });
     }
 
     const body = JSON.parse(event.body || "{}");
@@ -52,31 +62,43 @@ exports.handler = async (event) => {
     const profileId = body.profile_id || body.profileId || null;
     const plan = body.plan || body.package || "vip";
     const amount = Number(body.amount || planAmount(plan));
+    const reason = body.reason || "manual_payment";
 
     if (!phone) {
-      return json(400, { error: "Phone number is required" });
+      return json(400, {
+        ok: false,
+        error: "Phone number is required",
+      });
     }
 
     if (!profileId) {
-      return json(400, { error: "profile_id is required" });
+      return json(400, {
+        ok: false,
+        error: "profile_id is required",
+      });
     }
 
-    const consumerKey = process.env.MPESA_CONSUMER_KEY;
-    const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
+    if (!amount || amount < 1) {
+      return json(400, {
+        ok: false,
+        error: "Valid amount is required",
+      });
+    }
 
     const shortcode = process.env.MPESA_SHORTCODE || "174379";
-
-    const passkey =
-      process.env.MPESA_PASSKEY ||
-      "bfb279f9aa9bdbcf158e97ddf0f0d5e0f5f1d7f0d1b0c0";
+    const passkey = process.env.MPESA_PASSKEY;
 
     const baseUrl =
       process.env.MPESA_ENV === "production"
         ? "https://api.safaricom.co.ke"
         : "https://sandbox.safaricom.co.ke";
 
+    const callbackUrl =
+      process.env.MPESA_CALLBACK_URL ||
+      "https://nairobi-sweets.com/.netlify/functions/mpesa-callback";
+
     const auth = Buffer.from(
-      `${consumerKey}:${consumerSecret}`
+      `${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRET}`
     ).toString("base64");
 
     const tokenResponse = await axios.get(
@@ -99,6 +121,8 @@ exports.handler = async (event) => {
       shortcode + passkey + timestamp
     ).toString("base64");
 
+    const accountReference = `NairobiSweets-${profileId}`;
+
     const stkPayload = {
       BusinessShortCode: shortcode,
       Password: password,
@@ -108,13 +132,10 @@ exports.handler = async (event) => {
       PartyA: phone,
       PartyB: shortcode,
       PhoneNumber: phone,
-      CallBackURL:
-        "https://nairobi-sweets.com/.netlify/functions/mpesa-callback",
-      AccountReference: `NairobiSweets-${profileId}`,
+      CallBackURL: callbackUrl,
+      AccountReference: accountReference,
       TransactionDesc: `${plan} Profile Payment`,
     };
-
-    console.log("Sending STK push:", stkPayload);
 
     const stkResponse = await axios.post(
       `${baseUrl}/mpesa/stkpush/v1/processrequest`,
@@ -122,49 +143,86 @@ exports.handler = async (event) => {
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
       }
     );
 
-    console.log("STK response:", stkResponse.data);
+    const checkoutRequestID = stkResponse.data.CheckoutRequestID || null;
+    const merchantRequestID = stkResponse.data.MerchantRequestID || null;
 
-    const checkoutRequestID = stkResponse.data.CheckoutRequestID;
-    const merchantRequestID = stkResponse.data.MerchantRequestID;
+    const paymentPayload = {
+      profile_id: String(profileId),
+      plan,
+      package: plan,
+      amount,
+      phone,
+      payer_phone: phone,
+      status: "pending",
+      reason,
+
+      merchant_request_id: merchantRequestID,
+      checkout_request_id: checkoutRequestID,
+
+      response_code: stkResponse.data.ResponseCode || null,
+      response_description: stkResponse.data.ResponseDescription || null,
+      customer_message: stkResponse.data.CustomerMessage || null,
+
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
 
     const { error: paymentError } = await supabase
       .from("payments")
+      .insert(paymentPayload);
+
+    const { error: requestError } = await supabase
+      .from("payment_requests")
       .insert({
-        profile_id: profileId,
+        profile_id: String(profileId),
         plan,
         package: plan,
         amount,
         phone,
-        payer_phone: phone,
         status: "pending",
+        reason,
 
         merchant_request_id: merchantRequestID,
         checkout_request_id: checkoutRequestID,
+
+        MerchantRequestID: merchantRequestID,
+        CheckoutRequestID: checkoutRequestID,
 
         response_code: stkResponse.data.ResponseCode || null,
         response_description: stkResponse.data.ResponseDescription || null,
         customer_message: stkResponse.data.CustomerMessage || null,
 
+        raw_response: stkResponse.data,
+
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
 
-    if (paymentError) {
-      console.log("Payment insert error:", paymentError);
-
+    if (paymentError || requestError) {
       return json(200, {
-        ...stkResponse.data,
-        warning: "STK sent but payment row was not saved",
-        payment_error: paymentError.message,
+        ok: true,
+        warning: "STK sent, but one or more database rows failed to save",
+        payment_error: paymentError ? paymentError.message : null,
+        payment_request_error: requestError ? requestError.message : null,
+        profile_id: profileId,
+        plan,
+        amount,
+        phone,
+        checkout_request_id: checkoutRequestID,
+        merchant_request_id: merchantRequestID,
+        mpesa: stkResponse.data,
       });
     }
 
     return json(200, {
+      ok: true,
       success: true,
+      message: "STK push sent successfully",
       profile_id: profileId,
       plan,
       amount,
@@ -173,13 +231,12 @@ exports.handler = async (event) => {
       merchant_request_id: merchantRequestID,
       mpesa: stkResponse.data,
     });
+
   } catch (error) {
-    console.log(
-      "STK push error:",
-      error.response?.data || error.message
-    );
+    console.log("STK push error:", error.response?.data || error.message);
 
     return json(500, {
+      ok: false,
       error: error.response?.data || error.message,
     });
   }
