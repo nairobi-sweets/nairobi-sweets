@@ -363,6 +363,35 @@ a{text-decoration:none;color:inherit}
   z-index:5;
 }
 
+
+.trend-rank-badge{
+  position:absolute;
+  top:44px;
+  left:14px;
+  z-index:6;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.2px;
+  color:#000;
+  box-shadow:0 0 22px rgba(255,190,70,.34);
+  backdrop-filter:blur(10px);
+}
+
+.trend-rank-1{
+  background:linear-gradient(135deg,#fff4a8,#ffd54a,#ff9f1c);
+}
+
+.trend-rank-2{
+  background:linear-gradient(135deg,#f8fafc,#cbd5e1,#94a3b8);
+}
+
+.trend-rank-3{
+  background:linear-gradient(135deg,#f7c58a,#cd7f32,#8a4b16);
+  color:white;
+}
+
 .online-dot{
   position:absolute;
   top:14px;
@@ -1253,6 +1282,23 @@ function renderShorts(list){
   }).join("");
 }
 
+
+function trendRankBadge(index){
+  if(index === 0){
+    return `<div class="trend-rank-badge trend-rank-1">🥇 #1 TRENDING</div>`;
+  }
+
+  if(index === 1){
+    return `<div class="trend-rank-badge trend-rank-2">🥈 #2 TRENDING</div>`;
+  }
+
+  if(index === 2){
+    return `<div class="trend-rank-badge trend-rank-3">🥉 #3 TRENDING</div>`;
+  }
+
+  return "";
+}
+
 function renderProfiles(data){
   profileCount.textContent = data.length.toLocaleString();
 
@@ -1261,12 +1307,13 @@ function renderProfiles(data){
     return;
   }
 
-  profilesEl.innerHTML = data.map(profile=>{
+  profilesEl.innerHTML = data.map((profile,index)=>{
     const phone = safePhone(profile.phone || profile.whatsapp);
 
     return `
       <article class="card" onclick="openProfileCard('${profile.id}')">
         <span class="online-dot"></span>
+        ${trendRankBadge(index)}
         <div class="featured-badge">${getBadge(profile)}</div>
 
         <img
