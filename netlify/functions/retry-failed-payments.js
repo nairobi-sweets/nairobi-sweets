@@ -23,10 +23,22 @@ function planAmount(plan){
 }
 
 exports.handler = async () => {
-  try {
-    const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+  try{
+    if(!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY){
+      return {
+        statusCode:500,
+        body:JSON.stringify({
+          ok:false,
+          message:"Missing Supabase environment variables"
+        })
+      };
+    }
 
-    const { data: failed, error } = await sb
+    const since =
+      new Date(Date.now() - 48 * 60 * 60 * 1000)
+        .toISOString();
+
+    const { data:failed, error } = await sb
       .from("payment_requests")
       .select("*")
       .eq("status","failed")
@@ -53,11 +65,15 @@ exports.handler = async () => {
         continue;
       }
 
-      const { data: existingRetry } = await sb
+      const sixHoursAgo =
+        new Date(Date.now() - 6 * 60 * 60 * 1000)
+          .toISOString();
+
+      const { data:existingRetry } = await sb
         .from("failed_payment_recovery_logs")
         .select("*")
         .eq("payment_request_id",String(item.id))
-        .gte("created_at",new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString())
+        .gte("created_at",sixHoursAgo)
         .limit(1)
         .maybeSingle();
 
@@ -65,48 +81,61 @@ exports.handler = async () => {
         results.push({
           payment_request_id:item.id,
           ok:false,
-          message:"Skipped, retried within last 6 hours"
+          message:"Skipped, already retried within last 6 hours"
         });
         continue;
       }
 
-      const res = await fetch(`${SITE_URL}/.netlify/functions/mpesa-stk-push`,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          profile_id:profileId,
-          phone,
-          plan,
-          amount,
-          reason:"failed_payment_recovery"
-        })
-      });
+      const res = await fetch(
+        `${SITE_URL}/.netlify/functions/mpesa-stk-push`,
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            profile_id:profileId,
+            phone,
+            plan,
+            amount,
+            reason:"failed_payment_recovery"
+          })
+        }
+      );
 
       const json = await res.json().catch(()=>({}));
 
-      await sb.from("failed_payment_recovery_logs").insert({
-        payment_request_id:String(item.id),
-        profile_id:String(profileId),
-        profile_name:item.profile_name || null,
-        phone,
-        plan,
-        amount,
-        old_status:item.status,
-        recovery_status:res.ok ? "retry_stk_sent" : "retry_failed",
-        response:json,
-        created_at:new Date().toISOString()
-      });
+      await sb
+        .from("failed_payment_recovery_logs")
+        .insert({
+          payment_request_id:String(item.id),
+          profile_id:String(profileId),
+          profile_name:item.profile_name || null,
+          phone,
+          plan,
+          amount,
+          old_status:item.status,
+          recovery_status:res.ok ? "retry_stk_sent" : "retry_failed",
+          response:json,
+          created_at:new Date().toISOString()
+        });
 
-      await sb.from("admin_audit_logs").insert({
-        action:res.ok ? "failed_payment_retry_sent" : "failed_payment_retry_failed",
-        admin_name:"Failed Payment Recovery",
-        profile_id:String(profileId),
-        profile_name:item.profile_name || null,
-        details:res.ok
-          ? `Retry STK sent for KES ${amount}`
-          : `Retry failed: ${JSON.stringify(json)}`,
-        created_at:new Date().toISOString()
-      }).then(()=>null).catch(()=>null);
+      await sb
+        .from("admin_audit_logs")
+        .insert({
+          action:res.ok
+            ? "failed_payment_retry_sent"
+            : "failed_payment_retry_failed",
+          admin_name:"Failed Payment Recovery",
+          profile_id:String(profileId),
+          profile_name:item.profile_name || null,
+          details:res.ok
+            ? `Retry STK sent for KES ${amount}`
+            : `Retry failed: ${JSON.stringify(json)}`,
+          created_at:new Date().toISOString()
+        })
+        .then(()=>null)
+        .catch(()=>null);
 
       results.push({
         payment_request_id:item.id,
@@ -128,7 +157,7 @@ exports.handler = async () => {
       })
     };
 
-  } catch(error){
+  }catch(error){
     return {
       statusCode:500,
       body:JSON.stringify({
