@@ -91,8 +91,22 @@ h1{color:#ffd54a;font-size:34px;font-weight:900}
 }
 .row:last-child{border-bottom:none}
 .row strong{color:#fff}
-.row small{color:#aaa;display:block;margin-top:4px;font-size:12px}
-.renew-btn{margin-left:10px;padding:8px 12px;border:none;border-radius:10px;background:#22c55e;color:#000;font-weight:900;cursor:pointer}
+.row small{
+  color:#aaa;
+  display:block;
+  margin-top:4px;
+  font-size:12px;
+}
+.renew-btn{
+  margin-left:10px;
+  padding:8px 12px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  color:#000;
+  font-weight:900;
+  cursor:pointer;
+}
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{
   text-align:left;
@@ -125,6 +139,8 @@ h1{color:#ffd54a;font-size:34px;font-weight:900}
   h1{font-size:26px}
   .stats{grid-template-columns:1fr}
   .wrap{padding:18px}
+  .row{align-items:flex-start;flex-direction:column}
+  .renew-btn{margin-left:0;margin-top:8px}
 }
 </style>
 </head>
@@ -237,6 +253,11 @@ h1{color:#ffd54a;font-size:34px;font-weight:900}
   <div class="panel">
     <h2>🏆 Top Earning Plans</h2>
     <div id="topEarningPlans" class="loading">Loading...</div>
+  </div>
+
+  <div class="panel">
+    <h2>🔁 Recent Renewal Logs</h2>
+    <div id="renewalLogs" class="loading">Loading...</div>
   </div>
 
 </section>
@@ -394,31 +415,49 @@ function renderExpiringSoon(profiles){
 }
 
 function renderRenewalQueue(profiles){
-  const rows = profiles
-    .map(p=>{
-      const expiry = p.plan_expires_at || p.expiry_date || null;
-      return {...p, expiry, days:daysLeft(expiry)};
+  const renewals = profiles
+    .map(profile=>{
+      const expiry = profile.plan_expires_at || profile.expiry_date || null;
+      if(!expiry) return null;
+
+      return {
+        ...profile,
+        expiry,
+        days:daysLeft(expiry)
+      };
     })
-    .filter(p=>p.days !== null && p.days >= 0 && p.days <= 7)
+    .filter(Boolean)
+    .filter(profile=>profile.days !== null && profile.days >= 0 && profile.days <= 7)
     .sort((a,b)=>a.days-b.days);
 
   const box = document.getElementById("renewalQueue");
 
-  if(!rows.length){
+  if(!renewals.length){
     box.innerHTML = `<div class="error">No renewals due.</div>`;
     return;
   }
 
-  box.innerHTML = rows.map(p=>`
+  box.innerHTML = renewals.map(profile=>`
     <div class="row">
       <div>
-        <strong>${p.stage_name || "Verified"}</strong>
-        <small>${String(p.plan || "featured").toUpperCase()} · ${cleanPhone(p.phone || p.whatsapp) || "No phone"}</small>
+        <strong>${profile.stage_name || "Profile"}</strong>
+        <small>
+          ${String(profile.plan || "featured").toUpperCase()} ·
+          ${cleanPhone(profile.phone || profile.whatsapp) || "No phone"}
+        </small>
       </div>
 
       <div>
-        <span class="pill">${p.days} day${p.days === 1 ? "" : "s"}</span>
-        <button class="renew-btn" onclick="sendRenewalSTK('${p.id}')">Renew</button>
+        <span class="pill">
+          ${profile.days} day${profile.days === 1 ? "" : "s"}
+        </span>
+
+        <button
+          class="renew-btn"
+          onclick="sendRenewalSTK('${profile.id}')"
+        >
+          Renew
+        </button>
       </div>
     </div>
   `).join("");
@@ -483,7 +522,7 @@ async function sendRenewalSTK(profileId){
 
     if(!ok) return;
 
-    const res = await fetch("/.netlify/functions/mpesa-stk-push",{
+    const response = await fetch("/.netlify/functions/mpesa-stk-push",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
@@ -495,14 +534,15 @@ async function sendRenewalSTK(profileId){
       })
     });
 
-    const json = await res.json().catch(()=>({}));
+    const result = await response.json().catch(()=>({}));
 
-    if(!res.ok){
-      alert("STK failed: " + JSON.stringify(json));
+    if(!response.ok){
+      alert("STK failed: " + JSON.stringify(result));
       return;
     }
 
     alert("Renewal STK sent.");
+    await loadRenewalLogs();
 
   }catch(error){
     alert("Renewal error: " + error.message);
@@ -526,13 +566,53 @@ async function runAutoRenewNow(){
       "Auto-renew complete.\nChecked: " +
       data.checked +
       "\nAttempts: " +
-      (data.attempted || 0)
+      data.attempted
     );
 
+    await loadRenewalLogs();
     loadDashboard();
 
   }catch(error){
     alert("Auto-renew error: " + error.message);
+  }
+}
+
+async function loadRenewalLogs(){
+  const box = document.getElementById("renewalLogs");
+  if(!box) return;
+
+  try{
+    const { data,error } = await sb
+      .from("auto_renew_logs")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(20);
+
+    if(error){
+      box.innerHTML = `<div class="error">${error.message}</div>`;
+      return;
+    }
+
+    box.innerHTML = (data || []).length
+      ? data.map(log=>`
+        <div class="row">
+          <div>
+            <strong>${log.profile_name || "Profile"}</strong>
+            <small>
+              ${log.phone || ""} ·
+              ${String(log.plan || "").toUpperCase()} ·
+              ${log.created_at ? new Date(log.created_at).toLocaleString() : ""}
+            </small>
+          </div>
+          <span class="pill">
+            ${log.status || "unknown"} · ${money(log.amount || 0)}
+          </span>
+        </div>
+      `).join("")
+      : `<div class="error">No renewal logs yet.</div>`;
+
+  }catch(error){
+    box.innerHTML = `<div class="error">${error.message}</div>`;
   }
 }
 
@@ -650,6 +730,7 @@ async function loadDashboard(){
 
   await loadAnalyticsSummary();
   await loadRevenueCards();
+  await loadRenewalLogs();
 }
 
 loadDashboard();
