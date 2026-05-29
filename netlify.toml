@@ -1,6 +1,45 @@
 [build]
-  publish = "."
-  functions = "netlify/functions"
+publish = "."
+functions = "netlify/functions"
 
-[functions."auto-renew-check"]
-  schedule = "0 8 * * *"
+[functions]
+node_bundler = "esbuild"
+
+[[redirects]]
+from = "/profile/:id"
+to = "/profile.html?id=:id"
+status = 200
+
+[[redirects]]
+from = "/trending"
+to = "/trending.html"
+status = 200
+
+[[redirects]]
+from = "/vault"
+to = "/vault-8472.html"
+status = 200
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "SAMEORIGIN"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[scheduled.functions]]
+name = "refresh-trending"
+cron = "*/15 * * * *"
+
+[[scheduled.functions]]
+name = "renewal-reminder-worker"
+cron = "0 9 * * *"
+
+[[scheduled.functions]]
+name = "auto-expire-profiles"
+cron = "0 0 * * *"
+
+[[scheduled.functions]]
+name = "auto-renew"
+cron = "0 */6 * * *"
