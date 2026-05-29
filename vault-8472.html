@@ -87,8 +87,51 @@ textarea{grid-column:1/-1;min-height:120px}
 }
 
 
-@media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
+.dashboard-stats{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:16px;
+  padding:22px 28px 0;
+  background:#000814;
+}
+.stat-card{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:24px;
+  padding:22px;
+  box-shadow:0 18px 50px rgba(0,0,0,.35);
+}
+.stat-card h3{
+  color:#aaa;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin-bottom:10px;
+}
+.stat-card div{
+  color:#ffd54a;
+  font-size:30px;
+  font-weight:900;
+}
+.header-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.header-link{
+  background:#06b6d4;
+  color:#000;
+  border-radius:16px;
+  padding:16px 22px;
+  font-size:16px;
+  font-weight:900;
+  text-decoration:none;
+}
+
+
+@media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}.dashboard-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid,.dashboard-stats{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.dashboard-stats{padding:18px}}
 </style>
 </head>
 
@@ -106,8 +149,40 @@ textarea{grid-column:1/-1;min-height:120px}
 
 <header>
   <h1>Nairobi Sweets Vault</h1>
-  <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="refresh" onclick="loadProfiles()">Refresh</button><button class="refresh" onclick="logoutVault()" style="background:#ef4444;color:white">Logout</button></div>
+  <div class="header-actions">
+    <a class="header-link" href="/vault-analytics.html">📊 Analytics</a>
+    <button class="refresh" onclick="loadProfiles();loadDashboardStats();">Refresh</button>
+    <button class="refresh" onclick="runAutoRenewNow()" style="background:#22c55e;color:#000">Auto-Renew Now</button>
+    <button class="refresh" onclick="logoutVault()" style="background:#ef4444;color:white">Logout</button>
+  </div>
 </header>
+
+<section class="dashboard-stats" id="dashboardStats">
+  <div class="stat-card">
+    <h3>Total Profiles</h3>
+    <div id="statTotal">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Active Profiles</h3>
+    <div id="statActive">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Paid Profiles</h3>
+    <div id="statPaid">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Expired Profiles</h3>
+    <div id="statExpired">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Revenue Estimate</h3>
+    <div id="statRevenue">KES 0</div>
+  </div>
+</section>
 
 <div class="wrap">
 
@@ -1126,7 +1201,89 @@ async function deleteProfile(id){
   loadProfiles();
 }
 
+
+function vaultPlanAmount(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature") || p.includes("vvip")) return 3000;
+  if(p.includes("vip")) return 1500;
+  if(p.includes("featured")) return 1000;
+  return 0;
+}
+
+function setVaultStat(id,value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value;
+}
+
+async function loadDashboardStats(){
+  try{
+    const { data,error } = await sb
+      .from("profiles")
+      .select("approved,is_expired,payment_status,plan");
+
+    if(error) throw error;
+
+    const profiles = data || [];
+    const total = profiles.length;
+
+    const active = profiles.filter(p =>
+      p.approved === true && p.is_expired !== true
+    ).length;
+
+    const paid = profiles.filter(p =>
+      String(p.payment_status || "").toLowerCase() === "paid"
+    ).length;
+
+    const expired = profiles.filter(p =>
+      p.is_expired === true ||
+      String(p.payment_status || "").toLowerCase() === "expired"
+    ).length;
+
+    const revenue = profiles
+      .filter(p => String(p.payment_status || "").toLowerCase() === "paid")
+      .reduce((sum,p) => sum + vaultPlanAmount(p.plan),0);
+
+    setVaultStat("statTotal", total.toLocaleString());
+    setVaultStat("statActive", active.toLocaleString());
+    setVaultStat("statPaid", paid.toLocaleString());
+    setVaultStat("statExpired", expired.toLocaleString());
+    setVaultStat("statRevenue", "KES " + revenue.toLocaleString());
+
+  }catch(error){
+    console.log("Dashboard stats error:", error.message);
+  }
+}
+
+async function runAutoRenewNow(){
+  const ok = confirm("Run auto-renew check now?");
+  if(!ok) return;
+
+  try{
+    const res = await fetch("/.netlify/functions/auto-renew-check");
+    const data = await res.json();
+
+    if(!data.ok){
+      alert("Auto-renew failed: " + (data.message || "Unknown error"));
+      return;
+    }
+
+    alert(
+      "Auto-renew complete.\nChecked: " +
+      (data.checked || 0) +
+      "\nAttempts: " +
+      (data.attempted || (data.results ? data.results.length : 0))
+    );
+
+    if(typeof loadProfiles === "function") loadProfiles();
+    loadDashboardStats();
+
+  }catch(error){
+    alert("Auto-renew error: " + error.message);
+  }
+}
+
 loadProfiles();
+loadDashboardStats();
 </script>
 
 </body>
