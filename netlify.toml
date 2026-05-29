@@ -2,10 +2,5 @@
   publish = "."
   functions = "netlify/functions"
 
-[functions]
-  node_bundler = "esbuild"
-
-[[redirects]]
-  from = "/profile/:id"
-  to = "/.netlify/functions/profile-share?id=:id"
-  status = 200
+[functions."auto-renew-check"]
+  schedule = "0 8 * * *"
