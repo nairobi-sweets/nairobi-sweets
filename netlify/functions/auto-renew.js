@@ -2,6 +2,7 @@ const { createClient } = require("@supabase/supabase-js");
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SITE_URL = process.env.URL || "https://nairobi-sweets.com";
 
 const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -23,6 +24,16 @@ function planAmount(plan) {
 
 exports.handler = async () => {
   try {
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          ok: false,
+          message: "Missing Supabase environment variables"
+        })
+      };
+    }
+
     const now = new Date();
     const soon = new Date();
     soon.setDate(now.getDate() + 3);
@@ -38,42 +49,85 @@ exports.handler = async () => {
 
     const results = [];
 
-    for (const p of profiles || []) {
-      const phone = cleanPhone(p.phone || p.whatsapp);
-      if (!phone) continue;
+    for (const profile of profiles || []) {
+      const phone = cleanPhone(profile.phone || profile.whatsapp);
 
-      const amount = planAmount(p.plan);
+      if (!phone) {
+        results.push({
+          profile_id: profile.id,
+          name: profile.stage_name,
+          ok: false,
+          message: "No phone found"
+        });
+        continue;
+      }
 
-      const res = await fetch(`${process.env.URL}/.netlify/functions/mpesa-stk-push`, {
+      const amount = planAmount(profile.plan);
+
+      const { data: recentRenewal } = await sb
+        .from("auto_renew_logs")
+        .select("*")
+        .eq("profile_id", String(profile.id))
+        .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (recentRenewal) {
+        results.push({
+          profile_id: profile.id,
+          name: profile.stage_name,
+          ok: false,
+          message: "Skipped, renewal already attempted in last 24 hours"
+        });
+        continue;
+      }
+
+      const response = await fetch(`${SITE_URL}/.netlify/functions/mpesa-stk-push`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
-          profile_id: p.id,
+          profile_id: profile.id,
           phone,
-          plan: p.plan || "vip",
+          plan: profile.plan || "vip",
           amount,
           reason: "auto_renewal"
         })
       });
 
-      const json = await res.json().catch(() => ({}));
+      const json = await response.json().catch(() => ({}));
 
-      results.push({
-        profile_id: p.id,
-        name: p.stage_name,
+      await sb.from("auto_renew_logs").insert({
+        profile_id: String(profile.id),
+        profile_name: profile.stage_name || null,
         phone,
+        plan: profile.plan || "vip",
         amount,
-        ok: res.ok,
-        response: json
+        status: response.ok ? "stk_sent" : "failed",
+        response: json,
+        created_at: new Date().toISOString()
       });
 
       await sb.from("admin_audit_logs").insert({
-        action: "auto_renew_stk_sent",
+        action: response.ok ? "auto_renew_stk_sent" : "auto_renew_failed",
         admin_name: "Auto-Renew Engine",
-        profile_id: String(p.id),
-        profile_name: p.stage_name || null,
-        details: `Auto-renew STK sent for KES ${amount}`,
+        profile_id: String(profile.id),
+        profile_name: profile.stage_name || null,
+        details: response.ok
+          ? `Auto-renew STK sent for KES ${amount}`
+          : `Auto-renew failed: ${JSON.stringify(json)}`,
         created_at: new Date().toISOString()
+      });
+
+      results.push({
+        profile_id: profile.id,
+        name: profile.stage_name,
+        phone,
+        amount,
+        ok: response.ok,
+        response: json
       });
     }
 
@@ -81,7 +135,8 @@ exports.handler = async () => {
       statusCode: 200,
       body: JSON.stringify({
         ok: true,
-        checked: profiles?.length || 0,
+        checked: profiles.length,
+        attempted: results.length,
         results
       })
     };
