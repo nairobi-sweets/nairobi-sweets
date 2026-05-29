@@ -1,9 +1,13 @@
-exports.handler = async function (event) {
+exports.handler = async (event) => {
   try {
+
     if (event.httpMethod !== "POST") {
       return {
         statusCode: 405,
-        body: JSON.stringify({ ok: false, message: "Method not allowed" }),
+        body: JSON.stringify({
+          ok: false,
+          message: "Method not allowed"
+        })
       };
     }
 
@@ -13,14 +17,20 @@ exports.handler = async function (event) {
     if (!process.env.VAULT_PASSWORD) {
       return {
         statusCode: 500,
-        body: JSON.stringify({ ok: false, message: "Vault password not set" }),
+        body: JSON.stringify({
+          ok: false,
+          message: "VAULT_PASSWORD not configured"
+        })
       };
     }
 
     if (password !== process.env.VAULT_PASSWORD) {
       return {
         statusCode: 401,
-        body: JSON.stringify({ ok: false, message: "Wrong password" }),
+        body: JSON.stringify({
+          ok: false,
+          message: "Invalid password"
+        })
       };
     }
 
@@ -28,13 +38,19 @@ exports.handler = async function (event) {
       statusCode: 200,
       body: JSON.stringify({
         ok: true,
-        token: "vault-unlocked",
-      }),
+        message: "Vault unlocked"
+      })
     };
+
   } catch (error) {
+
     return {
       statusCode: 500,
-      body: JSON.stringify({ ok: false, message: error.message }),
+      body: JSON.stringify({
+        ok: false,
+        message: error.message
+      })
     };
+
   }
 };
