@@ -154,6 +154,7 @@ h1{color:#ffd54a;font-size:34px;font-weight:900}
     <a class="btn blue" href="/vault-8472.html">← Back to Vault</a>
     <button class="btn gold" onclick="loadDashboard()">Refresh</button>
     <button class="btn green" onclick="runAutoRenewNow()">Auto-Renew Now</button>
+    <button class="btn" style="background:#f59e0b;color:#000" onclick="retryFailedPaymentsNow()">Retry Failed Payments</button>
   </div>
 </header>
 
@@ -613,6 +614,40 @@ async function loadRenewalLogs(){
 
   }catch(error){
     box.innerHTML = `<div class="error">${error.message}</div>`;
+  }
+}
+
+
+async function retryFailedPaymentsNow(){
+  const ok = confirm("Retry failed payments now?");
+  if(!ok) return;
+
+  try{
+    const res = await fetch("/.netlify/functions/retry-failed-payments");
+    const data = await res.json();
+
+    if(!data.ok){
+      alert("Recovery failed: " + data.message);
+      return;
+    }
+
+    alert(
+      "Recovery complete.\nChecked: " +
+      data.checked +
+      "\nAttempts: " +
+      data.attempted
+    );
+
+    if(typeof loadRenewalLogs === "function"){
+      await loadRenewalLogs();
+    }
+
+    if(typeof loadDashboard === "function"){
+      loadDashboard();
+    }
+
+  }catch(error){
+    alert("Recovery error: " + error.message);
   }
 }
 
