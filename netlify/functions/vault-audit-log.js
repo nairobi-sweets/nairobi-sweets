@@ -31,7 +31,7 @@ exports.handler = async (event) => {
         body: JSON.stringify({
           ok: false,
           message:
-            "Supabase environment variables missing"
+            "Missing Supabase environment variables"
         })
       };
     }
@@ -102,7 +102,8 @@ exports.handler = async (event) => {
           "application/json"
       },
       body: JSON.stringify({
-        ok: true
+        ok: true,
+        message: "Audit log saved"
       })
     };
 
