@@ -63,6 +63,28 @@ textarea{grid-column:1/-1;min-height:120px}
 .expiry-expired{background:rgba(239,68,68,.16);color:#ff6b6b}
 .expiry-soon{background:rgba(245,158,11,.16);color:#fbbf24}
 
+.analytics-strip{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+.analytics-pill{
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,213,74,.14);
+  border-radius:12px;
+  padding:10px;
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+}
+.analytics-pill strong{
+  color:#ffd54a;
+  font-size:18px;
+  display:block;
+  margin-top:3px;
+}
+
 
 @media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
@@ -624,10 +646,30 @@ async function loadProfiles(){
     return;
   }
 
+  const { data:analyticsRows, error:analyticsError } = await sb
+    .from("profile_analytics_summary")
+    .select("*");
+
+  if(analyticsError){
+    console.log("Analytics summary load error:", analyticsError.message);
+  }
+
+  const analyticsMap = {};
+  (analyticsRows || []).forEach(row=>{
+    analyticsMap[String(row.profile_id)] = row;
+  });
+
   list.innerHTML = data.map(p=>{
     const video = videoOf(p);
     const services = Array.isArray(p.services) ? p.services : [];
     const exp = expiryInfo(p);
+    const stats = analyticsMap[String(p.id)] || {};
+    const statViews = Number(stats.views || 0);
+    const statWhatsApp = Number(stats.whatsapp_clicks || 0);
+    const statCalls = Number(stats.call_clicks || 0);
+    const statShares = Number(stats.share_clicks || 0);
+    const statVideos = Number(stats.video_plays || 0);
+    const lastEvent = stats.last_event_at ? new Date(stats.last_event_at).toLocaleString() : "No events yet";
 
     return `
       <article class="card">
@@ -657,7 +699,17 @@ async function loadProfiles(){
             ▶ Started: ${p.plan_started_at ? new Date(p.plan_started_at).toLocaleDateString() : "not set"}<br>
             ⏳ Expires: ${p.plan_expires_at || p.expiry_date ? new Date(p.plan_expires_at || p.expiry_date).toLocaleDateString() : "not set"}<br>
             <span class="expiry-pill ${exp.klass}">${exp.label}</span><br>
-            ❤️ ${p.likes_count || p.likes || 0} · 👁️ ${p.views_count || p.views || 0}
+            ❤️ ${p.likes_count || p.likes || 0} · 👁️ ${p.views_count || p.views || 0}<br>
+            🧾 Last event: ${lastEvent}
+          </div>
+
+          <div class="analytics-strip">
+            <div class="analytics-pill">👁 Views<strong>${statViews}</strong></div>
+            <div class="analytics-pill">💬 WhatsApp<strong>${statWhatsApp}</strong></div>
+            <div class="analytics-pill">☎ Calls<strong>${statCalls}</strong></div>
+            <div class="analytics-pill">🔗 Shares<strong>${statShares}</strong></div>
+            <div class="analytics-pill">🎬 Video Plays<strong>${statVideos}</strong></div>
+            <div class="analytics-pill">🔥 Score<strong>${p.trending_score || 0}</strong></div>
           </div>
 
           <div class="tags">
