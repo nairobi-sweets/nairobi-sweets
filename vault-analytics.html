@@ -31,16 +31,8 @@ header{
   gap:14px;
   flex-wrap:wrap;
 }
-h1{
-  color:#ffd54a;
-  font-size:34px;
-  font-weight:900;
-}
-.nav{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
+h1{color:#ffd54a;font-size:34px;font-weight:900}
+.nav{display:flex;gap:10px;flex-wrap:wrap}
 .btn{
   border:none;
   border-radius:16px;
@@ -50,7 +42,6 @@ h1{
 }
 .gold{background:#ffd54a;color:#000}
 .blue{background:#06b6d4;color:#000}
-.red{background:#ef4444;color:#fff}
 .wrap{padding:28px}
 .stats{
   display:grid;
@@ -58,7 +49,7 @@ h1{
   gap:18px;
   margin-bottom:28px;
 }
-.card{
+.card,.panel{
   background:linear-gradient(180deg,#020a56,#010633);
   border:1px solid rgba(255,213,74,.12);
   border-radius:26px;
@@ -76,17 +67,12 @@ h1{
   color:#ffd54a;
   font-size:38px;
   font-weight:900;
+  word-break:break-word;
 }
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:22px;
-}
-.panel{
-  background:linear-gradient(180deg,#020a56,#010633);
-  border:1px solid rgba(255,213,74,.12);
-  border-radius:28px;
-  padding:24px;
 }
 .panel h2{
   color:#ffd54a;
@@ -103,12 +89,8 @@ h1{
 }
 .row:last-child{border-bottom:none}
 .row strong{color:#fff}
-.table{
-  width:100%;
-  border-collapse:collapse;
-}
-.table th,
-.table td{
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{
   text-align:left;
   padding:13px;
   border-bottom:1px solid rgba(255,255,255,.08);
@@ -128,16 +110,9 @@ h1{
   font-size:12px;
   font-weight:900;
 }
-.loading{
-  color:#ffd54a;
-  font-weight:900;
-  padding:20px;
-}
-.error{
-  color:#ff6b6b;
-  font-weight:900;
-  padding:20px;
-}
+.loading{color:#ffd54a;font-weight:900;padding:20px}
+.error{color:#ff6b6b;font-weight:900;padding:20px}
+
 @media(max-width:1000px){
   .stats{grid-template-columns:repeat(2,1fr)}
   .grid{grid-template-columns:1fr}
@@ -163,71 +138,103 @@ h1{
 
 <div class="wrap">
 
-  <section class="stats">
-    <div class="card">
-      <div class="label">Total Profiles</div>
-      <div class="value" id="totalProfiles">0</div>
-    </div>
+<section class="stats">
 
-    <div class="card">
-      <div class="label">Active Profiles</div>
-      <div class="value" id="activeProfiles">0</div>
-    </div>
+  <div class="card">
+    <div class="label">Total Profiles</div>
+    <div class="value" id="totalProfiles">0</div>
+  </div>
 
-    <div class="card">
-      <div class="label">Expired Profiles</div>
-      <div class="value" id="expiredProfiles">0</div>
-    </div>
+  <div class="card">
+    <div class="label">Active Profiles</div>
+    <div class="value" id="activeProfiles">0</div>
+  </div>
 
-    <div class="card">
-      <div class="label">Paid Profiles</div>
-      <div class="value" id="paidProfiles">0</div>
-    </div>
+  <div class="card">
+    <div class="label">Expired Profiles</div>
+    <div class="value" id="expiredProfiles">0</div>
+  </div>
 
-    <div class="card">
-      <div class="label">Estimated Revenue</div>
-      <div class="value" id="estimatedRevenue">KES 0</div>
-    </div>
+  <div class="card">
+    <div class="label">Paid Profiles</div>
+    <div class="value" id="paidProfiles">0</div>
+  </div>
 
-    <div class="card">
-      <div class="label">WhatsApp Clicks</div>
-      <div class="value" id="whatsappClicks">0</div>
-    </div>
+  <div class="card">
+    <div class="label">Estimated Revenue</div>
+    <div class="value" id="estimatedRevenue">KES 0</div>
+  </div>
 
-    <div class="card">
-      <div class="label">Call Clicks</div>
-      <div class="value" id="callClicks">0</div>
-    </div>
+  <div class="card">
+    <div class="label">Today&apos;s Revenue</div>
+    <div class="value" id="todayRevenue">KES 0</div>
+  </div>
 
-    <div class="card">
-      <div class="label">Total Views</div>
-      <div class="value" id="totalViews">0</div>
-    </div>
-  </section>
+  <div class="card">
+    <div class="label">Weekly Revenue</div>
+    <div class="value" id="weeklyRevenue">KES 0</div>
+  </div>
 
-  <section class="grid">
+  <div class="card">
+    <div class="label">Monthly Revenue</div>
+    <div class="value" id="monthlyRevenue">KES 0</div>
+  </div>
 
-    <div class="panel">
-      <h2>💎 Plan Breakdown</h2>
-      <div id="planBreakdown" class="loading">Loading...</div>
-    </div>
+  <div class="card">
+    <div class="label">Total Real Revenue</div>
+    <div class="value" id="realRevenue">KES 0</div>
+  </div>
 
-    <div class="panel">
-      <h2>💰 Revenue Breakdown</h2>
-      <div id="revenueBreakdown" class="loading">Loading...</div>
-    </div>
+  <div class="card">
+    <div class="label">WhatsApp Clicks</div>
+    <div class="value" id="whatsappClicks">0</div>
+  </div>
 
-    <div class="panel">
-      <h2>🔥 Top Viewed Profiles</h2>
-      <div id="topProfiles" class="loading">Loading...</div>
-    </div>
+  <div class="card">
+    <div class="label">Call Clicks</div>
+    <div class="value" id="callClicks">0</div>
+  </div>
 
-    <div class="panel">
-      <h2>⏳ Expiring Soon</h2>
-      <div id="expiringSoon" class="loading">Loading...</div>
-    </div>
+  <div class="card">
+    <div class="label">Total Views</div>
+    <div class="value" id="totalViews">0</div>
+  </div>
 
-  </section>
+</section>
+
+<section class="grid">
+
+  <div class="panel">
+    <h2>💎 Plan Breakdown</h2>
+    <div id="planBreakdown" class="loading">Loading...</div>
+  </div>
+
+  <div class="panel">
+    <h2>💰 Revenue Breakdown</h2>
+    <div id="revenueBreakdown" class="loading">Loading...</div>
+  </div>
+
+  <div class="panel">
+    <h2>🔥 Top Viewed Profiles</h2>
+    <div id="topProfiles" class="loading">Loading...</div>
+  </div>
+
+  <div class="panel">
+    <h2>⏳ Expiring Soon</h2>
+    <div id="expiringSoon" class="loading">Loading...</div>
+  </div>
+
+  <div class="panel">
+    <h2>📲 Renewal Queue</h2>
+    <div id="renewalQueue" class="loading">Loading...</div>
+  </div>
+
+  <div class="panel">
+    <h2>🏆 Top Earning Plans</h2>
+    <div id="topEarningPlans" class="loading">Loading...</div>
+  </div>
+
+</section>
 
 </div>
 
@@ -235,24 +242,10 @@ h1{
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
 
-const sb = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 function money(amount){
   return "KES " + Number(amount || 0).toLocaleString();
-}
-
-function planAmount(plan){
-  const p = String(plan || "").toLowerCase();
-
-  if(p.includes("signature")) return 3000;
-  if(p.includes("vvip")) return 3000;
-  if(p.includes("vip")) return 1500;
-  if(p.includes("featured")) return 1000;
-
-  return 0;
 }
 
 function setText(id,value){
@@ -260,41 +253,40 @@ function setText(id,value){
   if(el) el.textContent = value;
 }
 
+function planAmount(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature")) return 3000;
+  if(p.includes("vvip")) return 3000;
+  if(p.includes("vip")) return 1500;
+  if(p.includes("featured")) return 1000;
+  return 0;
+}
+
 function daysLeft(dateValue){
   if(!dateValue) return null;
-
   const d = new Date(dateValue);
-
   if(Number.isNaN(d.getTime())) return null;
-
-  return Math.ceil(
-    (d.getTime() - Date.now()) / 86400000
-  );
+  return Math.ceil((d.getTime() - Date.now()) / 86400000);
 }
 
 function renderPlanBreakdown(profiles){
   const counts = {};
 
   profiles.forEach(p=>{
-    const plan =
-      String(p.plan || "unknown")
-        .toLowerCase();
-
+    const plan = String(p.plan || "unknown").toLowerCase();
     counts[plan] = (counts[plan] || 0) + 1;
   });
 
-  const rows =
-    Object.entries(counts)
-      .sort((a,b)=>b[1]-a[1]);
+  const rows = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
 
   document.getElementById("planBreakdown").innerHTML =
     rows.length
       ? rows.map(([plan,count])=>`
-          <div class="row">
-            <strong>${plan.toUpperCase()}</strong>
-            <span class="pill">${count}</span>
-          </div>
-        `).join("")
+        <div class="row">
+          <strong>${plan.toUpperCase()}</strong>
+          <span class="pill">${count}</span>
+        </div>
+      `).join("")
       : `<div class="error">No plan data found.</div>`;
 }
 
@@ -304,112 +296,143 @@ function renderRevenueBreakdown(profiles){
   profiles
     .filter(p=>String(p.payment_status || "").toLowerCase() === "paid")
     .forEach(p=>{
-      const plan =
-        String(p.plan || "unknown")
-          .toLowerCase();
-
-      revenue[plan] =
-        (revenue[plan] || 0) + planAmount(plan);
+      const plan = String(p.plan || "unknown").toLowerCase();
+      revenue[plan] = (revenue[plan] || 0) + planAmount(plan);
     });
 
-  const rows =
-    Object.entries(revenue)
-      .sort((a,b)=>b[1]-a[1]);
+  const rows = Object.entries(revenue).sort((a,b)=>b[1]-a[1]);
 
   document.getElementById("revenueBreakdown").innerHTML =
     rows.length
       ? rows.map(([plan,total])=>`
-          <div class="row">
-            <strong>${plan.toUpperCase()}</strong>
-            <span class="pill">${money(total)}</span>
-          </div>
-        `).join("")
+        <div class="row">
+          <strong>${plan.toUpperCase()}</strong>
+          <span class="pill">${money(total)}</span>
+        </div>
+      `).join("")
       : `<div class="error">No paid revenue yet.</div>`;
 }
 
 function renderTopProfiles(profiles){
-  const rows =
-    [...profiles]
-      .sort((a,b)=>
-        Number(b.views_count || b.views || 0) -
-        Number(a.views_count || a.views || 0)
-      )
-      .slice(0,10);
+  const rows = [...profiles]
+    .sort((a,b)=>
+      Number(b.views_count || b.views || 0) -
+      Number(a.views_count || a.views || 0)
+    )
+    .slice(0,10);
 
   document.getElementById("topProfiles").innerHTML =
     rows.length
       ? `
-        <table class="table">
-          <thead>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Plan</th>
+            <th>Views</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(p=>`
             <tr>
-              <th>Name</th>
-              <th>Plan</th>
-              <th>Views</th>
+              <td>${p.stage_name || "Verified"}</td>
+              <td>${p.plan || "featured"}</td>
+              <td>${Number(p.views_count || p.views || 0).toLocaleString()}</td>
             </tr>
-          </thead>
-          <tbody>
-            ${rows.map(p=>`
-              <tr>
-                <td>${p.stage_name || "Verified"}</td>
-                <td>${p.plan || "featured"}</td>
-                <td>${Number(p.views_count || p.views || 0).toLocaleString()}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
+          `).join("")}
+        </tbody>
+      </table>
       `
       : `<div class="error">No profiles found.</div>`;
 }
 
 function renderExpiringSoon(profiles){
-  const rows =
-    profiles
-      .map(p=>{
-        const expiry =
-          p.plan_expires_at ||
-          p.expiry_date ||
-          null;
-
-        return {
-          ...p,
-          expiry,
-          days: daysLeft(expiry)
-        };
-      })
-      .filter(p=>p.days !== null && p.days >= 0 && p.days <= 7)
-      .sort((a,b)=>a.days-b.days);
+  const rows = profiles
+    .map(p=>{
+      const expiry = p.plan_expires_at || p.expiry_date || null;
+      return {...p, expiry, days:daysLeft(expiry)};
+    })
+    .filter(p=>p.days !== null && p.days >= 0 && p.days <= 7)
+    .sort((a,b)=>a.days-b.days);
 
   document.getElementById("expiringSoon").innerHTML =
     rows.length
       ? `
-        <table class="table">
-          <thead>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Plan</th>
+            <th>Days Left</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(p=>`
             <tr>
-              <th>Name</th>
-              <th>Plan</th>
-              <th>Days Left</th>
+              <td>${p.stage_name || "Verified"}</td>
+              <td>${p.plan || "featured"}</td>
+              <td><span class="pill">${p.days}</span></td>
             </tr>
-          </thead>
-          <tbody>
-            ${rows.map(p=>`
-              <tr>
-                <td>${p.stage_name || "Verified"}</td>
-                <td>${p.plan || "featured"}</td>
-                <td><span class="pill">${p.days}</span></td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
+          `).join("")}
+        </tbody>
+      </table>
       `
       : `<div class="error">No profiles expiring in 7 days.</div>`;
 }
 
+function renderRenewalQueue(profiles){
+  const rows = profiles
+    .map(p=>{
+      const expiry = p.plan_expires_at || p.expiry_date || null;
+      return {...p, expiry, days:daysLeft(expiry)};
+    })
+    .filter(p=>p.days !== null && p.days >= 0 && p.days <= 3)
+    .sort((a,b)=>a.days-b.days);
+
+  document.getElementById("renewalQueue").innerHTML =
+    rows.length
+      ? rows.map(p=>`
+        <div class="row">
+          <strong>${p.stage_name || "Verified"}</strong>
+          <span class="pill">${p.days} days</span>
+        </div>
+      `).join("")
+      : `<div class="error">No urgent renewals.</div>`;
+}
+
+function renderTopEarningPlans(profiles){
+  const plans = {};
+
+  profiles
+    .filter(p=>String(p.payment_status || "").toLowerCase() === "paid")
+    .forEach(p=>{
+      const plan = String(p.plan || "unknown").toLowerCase();
+      if(!plans[plan]){
+        plans[plan] = {count:0,revenue:0};
+      }
+      plans[plan].count += 1;
+      plans[plan].revenue += planAmount(plan);
+    });
+
+  const rows = Object.entries(plans)
+    .sort((a,b)=>b[1].revenue-a[1].revenue);
+
+  document.getElementById("topEarningPlans").innerHTML =
+    rows.length
+      ? rows.map(([plan,item])=>`
+        <div class="row">
+          <strong>${plan.toUpperCase()} · ${item.count}</strong>
+          <span class="pill">${money(item.revenue)}</span>
+        </div>
+      `).join("")
+      : `<div class="error">No earning plans yet.</div>`;
+}
+
 async function loadAnalyticsSummary(){
   try{
-    const { data,error } =
-      await sb
-        .from("profile_analytics_summary")
-        .select("*");
+    const { data,error } = await sb
+      .from("profile_analytics_summary")
+      .select("*");
 
     if(error) throw error;
 
@@ -420,32 +443,36 @@ async function loadAnalyticsSummary(){
       acc.whatsapp += Number(row.whatsapp_clicks || 0);
       acc.calls += Number(row.call_clicks || 0);
       return acc;
-    },{
-      views:0,
-      whatsapp:0,
-      calls:0
-    });
+    },{views:0,whatsapp:0,calls:0});
 
-    setText(
-      "totalViews",
-      totals.views.toLocaleString()
-    );
-
-    setText(
-      "whatsappClicks",
-      totals.whatsapp.toLocaleString()
-    );
-
-    setText(
-      "callClicks",
-      totals.calls.toLocaleString()
-    );
+    setText("totalViews",totals.views.toLocaleString());
+    setText("whatsappClicks",totals.whatsapp.toLocaleString());
+    setText("callClicks",totals.calls.toLocaleString());
 
   }catch(error){
-    console.log(
-      "Analytics summary unavailable:",
-      error.message
-    );
+    console.log("Analytics summary unavailable:", error.message);
+  }
+}
+
+async function loadRevenueCards(){
+  try{
+    const { data,error } = await sb
+      .from("revenue_command_center")
+      .select("*")
+      .single();
+
+    if(error){
+      console.log("Revenue view error:", error.message);
+      return;
+    }
+
+    setText("todayRevenue",money(data.today_revenue || 0));
+    setText("weeklyRevenue",money(data.weekly_revenue || 0));
+    setText("monthlyRevenue",money(data.monthly_revenue || 0));
+    setText("realRevenue",money(data.total_revenue || 0));
+
+  }catch(error){
+    console.log("Revenue cards failed:", error.message);
   }
 }
 
@@ -455,15 +482,18 @@ async function loadDashboard(){
   setText("expiredProfiles","...");
   setText("paidProfiles","...");
   setText("estimatedRevenue","...");
+  setText("todayRevenue","KES 0");
+  setText("weeklyRevenue","KES 0");
+  setText("monthlyRevenue","KES 0");
+  setText("realRevenue","KES 0");
   setText("whatsappClicks","0");
   setText("callClicks","0");
   setText("totalViews","0");
 
-  const { data,error } =
-    await sb
-      .from("profiles")
-      .select("*")
-      .order("created_at",{ascending:false});
+  const { data,error } = await sb
+    .from("profiles")
+    .select("*")
+    .order("created_at",{ascending:false});
 
   if(error){
     document.body.innerHTML =
@@ -475,36 +505,26 @@ async function loadDashboard(){
 
   const total = profiles.length;
 
-  const active =
-    profiles.filter(p=>
-      p.approved === true &&
-      p.is_expired !== true
-    ).length;
+  const active = profiles.filter(p=>
+    p.approved === true &&
+    p.is_expired !== true
+  ).length;
 
-  const expired =
-    profiles.filter(p=>
-      p.is_expired === true ||
-      String(p.payment_status || "").toLowerCase() === "expired"
-    ).length;
+  const expired = profiles.filter(p=>
+    p.is_expired === true ||
+    String(p.payment_status || "").toLowerCase() === "expired"
+  ).length;
 
-  const paid =
-    profiles.filter(p=>
-      String(p.payment_status || "").toLowerCase() === "paid"
-    ).length;
+  const paid = profiles.filter(p=>
+    String(p.payment_status || "").toLowerCase() === "paid"
+  ).length;
 
-  const estimatedRevenue =
-    profiles
-      .filter(p=>
-        String(p.payment_status || "").toLowerCase() === "paid"
-      )
-      .reduce((sum,p)=>
-        sum + planAmount(p.plan),
-      0);
+  const estimatedRevenue = profiles
+    .filter(p=>String(p.payment_status || "").toLowerCase() === "paid")
+    .reduce((sum,p)=>sum + planAmount(p.plan),0);
 
-  const fallbackViews =
-    profiles.reduce((sum,p)=>
-      sum + Number(p.views_count || p.views || 0),
-    0);
+  const fallbackViews = profiles
+    .reduce((sum,p)=>sum + Number(p.views_count || p.views || 0),0);
 
   setText("totalProfiles",total.toLocaleString());
   setText("activeProfiles",active.toLocaleString());
@@ -517,8 +537,11 @@ async function loadDashboard(){
   renderRevenueBreakdown(profiles);
   renderTopProfiles(profiles);
   renderExpiringSoon(profiles);
+  renderRenewalQueue(profiles);
+  renderTopEarningPlans(profiles);
 
   await loadAnalyticsSummary();
+  await loadRevenueCards();
 }
 
 loadDashboard();
