@@ -151,106 +151,7 @@ textarea{grid-column:1/-1;min-height:120px}
   <h1>Nairobi Sweets Vault</h1>
   <div class="header-actions">
     <a class="header-link" href="/vault-analytics.html">📊 Analytics</a>
-    <button class="refresh" onclick="
-/* =========================
-AUDIT LOGS
-========================= */
-let ALL_AUDIT_LOGS = [];
-
-async function loadAuditLogs(){
-  const box = document.getElementById("auditList");
-  if(!box) return;
-
-  const token = typeof adminToken === "function" ? adminToken() : (
-    localStorage.getItem("vault_token") ||
-    sessionStorage.getItem("vault_token") ||
-    ""
-  );
-
-  if(!token){
-    box.innerHTML = `<div class="empty">Audit logs require admin login token.</div>`;
-    return;
-  }
-
-  box.innerHTML = `<div class="loading">Loading audit logs...</div>`;
-
-  try{
-    const res = await fetch("/.netlify/functions/admin-audit-list",{
-      method:"GET",
-      headers:{
-        "Content-Type":"application/json",
-        Authorization:`Bearer ${token}`
-      }
-    });
-
-    const data = await res.json();
-
-    if(!data.ok){
-      box.innerHTML = `<div class="empty">${data.message || "Could not load audit logs."}</div>`;
-      return;
-    }
-
-    ALL_AUDIT_LOGS = data.logs || [];
-    renderAuditLogs();
-
-  }catch(error){
-    box.innerHTML = `<div class="empty">${error.message}</div>`;
-  }
-}
-
-function renderAuditLogs(){
-  const box = document.getElementById("auditList");
-  if(!box) return;
-
-  const search = String(document.getElementById("auditSearch")?.value || "").toLowerCase().trim();
-  const actionFilter = String(document.getElementById("auditActionFilter")?.value || "").trim();
-
-  let logs = [...ALL_AUDIT_LOGS];
-
-  if(actionFilter){
-    logs = logs.filter(log => String(log.action || "") === actionFilter);
-  }
-
-  if(search){
-    logs = logs.filter(log => `
-      ${log.action || ""}
-      ${log.admin_name || ""}
-      ${log.profile_id || ""}
-      ${log.profile_name || ""}
-      ${log.details || ""}
-      ${log.ip_address || ""}
-    `.toLowerCase().includes(search));
-  }
-
-  if(!logs.length){
-    box.innerHTML = `<div class="empty">No audit logs found.</div>`;
-    return;
-  }
-
-  box.innerHTML = logs.map(log => `
-    <article class="card">
-      <div class="body">
-        <div class="name">${log.action || "audit_action"}</div>
-
-        <div class="meta">
-          👤 Admin: ${log.admin_name || "Unknown"}<br>
-          🧾 Profile: ${log.profile_name || log.profile_id || "N/A"}<br>
-          📝 Details: ${log.details || "No details"}<br>
-          🌍 IP: ${log.ip_address || "N/A"}<br>
-          🕒 Time: ${log.created_at ? new Date(log.created_at).toLocaleString() : "N/A"}
-        </div>
-
-        <div class="tags">
-          <span>${log.action || "ACTION"}</span>
-          <span>${log.created_at ? new Date(log.created_at).toLocaleDateString() : "DATE"}</span>
-        </div>
-      </div>
-    </article>
-  `).join("");
-}
-
-loadProfiles();
-loadAuditLogs();loadDashboardStats();">Refresh</button>
+    <button class="refresh" onclick="loadProfiles();loadDashboardStats();">Refresh</button>
     <button class="refresh" onclick="runAutoRenewNow()" style="background:#22c55e;color:#000">Auto-Renew Now</button>
     <button class="refresh" onclick="logoutVault()" style="background:#ef4444;color:white">Logout</button>
   </div>
@@ -380,38 +281,6 @@ loadAuditLogs();loadDashboardStats();">Refresh</button>
 </section>
 
 
-<section class="panel" id="auditPanel">
-  <h2>🧾 Audit Logs</h2>
-
-  <div class="rank-help">
-    This shows recent admin actions: logins, profile edits, approvals, renewals, staff changes, payments, and deletes.
-  </div>
-
-  <div class="grid">
-    <input id="auditSearch" placeholder="Search logs by action, admin, profile, details..." oninput="renderAuditLogs()">
-
-    <select id="auditActionFilter" onchange="renderAuditLogs()">
-      <option value="">All Actions</option>
-      <option value="admin_login">Admin Login</option>
-      <option value="admin_user_created">Staff Created</option>
-      <option value="admin_user_updated">Staff Updated</option>
-      <option value="admin_user_deleted">Staff Deleted</option>
-      <option value="approve_profile">Profile Approved</option>
-      <option value="delete_profile">Profile Deleted</option>
-      <option value="edit_profile">Profile Edited</option>
-      <option value="mpesa_payment_received">M-Pesa Payment</option>
-      <option value="auto_renew_stk_sent">Auto Renew</option>
-      <option value="failed_payment_retry_sent">Failed Payment Retry</option>
-    </select>
-
-    <button class="refresh" onclick="loadAuditLogs()">Refresh Logs</button>
-  </div>
-
-  <div class="cards" id="auditList" style="margin-top:22px"></div>
-</section>
-
-
-
 </div>
 
 <div class="edit-modal" id="editModal">
@@ -427,6 +296,14 @@ loadAuditLogs();loadDashboardStats();">Refresh</button>
       <input id="edit_location" placeholder="Location">
       <input id="edit_age" placeholder="Age">
       <input id="edit_photo_url" placeholder="Photo URL">
+
+      <div class="filebox">
+        <label>Change Profile Picture</label>
+        <input type="file" id="editPhotoUpload" accept="image/*">
+        <div class="small">Uploads to profile-images bucket</div>
+      </div>
+
+      <div class="preview" id="editPreview"></div>
       <input id="edit_video_url" placeholder="Video URL">
       <input id="edit_slug" placeholder="SEO slug">
       <input id="edit_availability" placeholder="Availability">
@@ -822,6 +699,22 @@ function previewFiles(){
 
 document.getElementById("photoUpload").addEventListener("change",previewFiles);
 document.getElementById("reelUpload").addEventListener("change",previewFiles);
+
+document.getElementById("editPhotoUpload").addEventListener("change",()=>{
+  const box = document.getElementById("editPreview");
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  const file = document.getElementById("editPhotoUpload").files[0];
+
+  if(!file) return;
+
+  const img = document.createElement("img");
+  img.src = URL.createObjectURL(file);
+  box.appendChild(img);
+});
+
 document.getElementById("plan").addEventListener("change",()=>syncRanking(""));
 document.getElementById("verified").addEventListener("change",()=>syncRanking(""));
 document.getElementById("featured").addEventListener("change",()=>syncRanking(""));
@@ -1049,6 +942,7 @@ async function loadProfiles(){
           </div>
 
           <button class="edit-btn" onclick="openEditModal('${p.id}')">✏ Edit Profile</button>
+          <button class="edit-btn" onclick="openEditModal('${p.id}')" style="background:linear-gradient(145deg,#06b6d4,#22d3ee)">📷 Change Picture</button>
           <button class="renew-btn" onclick="openRenewModal('${p.id}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}')">💰 Renew / Pay Now</button>
           <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.plan_expires_at || p.expiry_date || "")}','${p.id}','${escapeAttr(p.slug || "")}')">📲 Send Renewal Reminder</button>
         </div>
@@ -1059,6 +953,12 @@ async function loadProfiles(){
 
 async function openEditModal(id){
   editingProfileId = id;
+
+  const editPhotoInput = document.getElementById("editPhotoUpload");
+  const editPreview = document.getElementById("editPreview");
+
+  if(editPhotoInput) editPhotoInput.value = "";
+  if(editPreview) editPreview.innerHTML = "";
 
   const { data,error } = await sb.from("profiles").select("*").eq("id",id).single();
 
@@ -1106,6 +1006,20 @@ function closeEditModal(){
 }
 
 async function saveProfileEdit(){
+  let newPhotoUrl = valueOf("edit_photo_url");
+
+  const newPhotoFile = document.getElementById("editPhotoUpload")?.files?.[0];
+
+  if(newPhotoFile){
+    try{
+      newPhotoUrl = await uploadFile("profile-images", newPhotoFile);
+      document.getElementById("edit_photo_url").value = newPhotoUrl;
+    }catch(error){
+      alert("Photo upload failed: " + error.message);
+      return;
+    }
+  }
+
   const phoneClean = cleanPhone(valueOf("edit_phone"));
   const finalSlug = valueOf("edit_slug") || makeSlug(valueOf("edit_stage_name") + "-" + valueOf("edit_location"));
   const planValue = valueOf("edit_plan") || "featured";
@@ -1122,8 +1036,8 @@ async function saveProfileEdit(){
     whatsapp: phoneClean,
     location: valueOf("edit_location"),
     age: valueOf("edit_age"),
-    photo_url: valueOf("edit_photo_url"),
-    image_url: valueOf("edit_photo_url"),
+    photo_url: newPhotoUrl,
+    image_url: newPhotoUrl,
     video_url: valueOf("edit_video_url"),
     reel_url: valueOf("edit_video_url"),
     short_url: valueOf("edit_video_url"),
