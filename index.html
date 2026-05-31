@@ -257,17 +257,18 @@ SIGNATURE PROFILES BANNER
 
 .signature-row::-webkit-scrollbar{display:none}
 
+
 .signature-card{
   position:relative;
-  min-width:360px;
-  width:360px;
-  height:230px;
-  border-radius:26px;
+  min-width:600px;
+  width:600px;
+  height:320px;
+  border-radius:28px;
   overflow:hidden;
-  background:#020617;
-  border:1px solid rgba(255,213,74,.12);
-  flex-shrink:0;
   cursor:pointer;
+  background:#000;
+  border:1px solid rgba(255,213,74,.15);
+  flex-shrink:0;
   box-shadow:0 18px 50px rgba(0,0,0,.5);
 }
 
@@ -278,56 +279,17 @@ SIGNATURE PROFILES BANNER
   display:block;
 }
 
-.signature-overlay{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  padding:16px;
-  background:linear-gradient(to top,rgba(0,0,0,.96),rgba(0,0,0,.22),transparent);
-}
-
-.signature-tag{
-  display:inline-block;
-  padding:7px 12px;
-  border-radius:999px;
-  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
-  color:#000;
-  font-size:11px;
-  font-weight:900;
-  margin-bottom:8px;
-}
-
-.signature-name{
-  font-size:19px;
-  font-weight:900;
-  margin-bottom:5px;
-}
-
-.signature-location{
-  color:#e5e5e5;
-  font-size:12px;
-  margin-bottom:10px;
-}
-
-.signature-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-
 .card-image.poster-image{
   aspect-ratio:16/9;
   object-fit:contain;
   background:#020617;
 }
 
-
 @media(max-width:650px){
   .signature-card{
     min-width:92vw;
     width:92vw;
-    height:230px;
+    height:52vw;
   }
 }
 
@@ -335,7 +297,7 @@ SIGNATURE PROFILES BANNER
   .signature-card{
     min-width:86vw;
     width:86vw;
-    height:54vw;
+    height:52vw;
   }
 }
 
@@ -1428,48 +1390,20 @@ function renderSignatureProfiles(list){
     return;
   }
 
-  container.innerHTML = signatures.map(profile=>{
-    const phone = safePhone(profile.phone || profile.whatsapp);
-
-    return `
-      <div class="signature-card" onclick="openProfileCard('${profile.id}')">
-        <img
-          src="${getImage(profile)}"
-          alt="${getName(profile)}"
-          loading="lazy"
-          onload="markPosterImage(this)"
-          onerror="this.src='/assets/logo/logo-badge.png'"
-        >
-
-        <div class="signature-overlay">
-          <div class="signature-tag">👑 SIGNATURE</div>
-          <div class="signature-name">${getName(profile)}</div>
-          <div class="signature-location">📍 ${getLocation(profile)}</div>
-
-          <div class="signature-actions">
-            ${
-              phone
-              ? `
-                <a class="call-btn" href="tel:${phone}" onclick="return handleTrackedLink(event,'call_clicks','${profile.id}','tel:${phone}',false)">☎ CALL</a>
-
-                <a
-                  class="wa-btn"
-                  href="https://wa.me/${phone}?text=${whatsappMessage(profile)}"
-                  target="_blank"
-                  rel="noopener"
-                  onclick="return handleTrackedLink(event,'whatsapp_clicks','${profile.id}','https://wa.me/${phone}?text=${whatsappMessage(profile)}',true)"
-                >
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
-                  WHATSAPP
-                </a>
-              `
-              : `<button class="disabled-contact">CONTACT HIDDEN</button>`
-            }
-          </div>
-        </div>
-      </div>
-    `;
-  }).join("");
+  container.innerHTML = signatures.map(profile=>`
+    <div
+      class="signature-card"
+      onclick="openProfileCard('${profile.id}')"
+      title="Open ${getName(profile)}"
+    >
+      <img
+        src="${getImage(profile)}"
+        alt="${getName(profile)}"
+        loading="lazy"
+        onerror="this.src='/assets/logo/logo-badge.png'"
+      >
+    </div>
+  `).join("");
 }
 
 function renderShorts(list){
