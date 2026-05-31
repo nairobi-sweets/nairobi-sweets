@@ -1,7 +1,18 @@
 {
   "name": "nairobi-sweets",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Nairobi Sweets backend functions",
+  "type": "commonjs",
+  "scripts": {
+    "build": "echo \"Static site, no build needed\"",
+    "start": "netlify dev"
+  },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.8"
+    "@supabase/supabase-js": "^2.54.0",
+    "axios": "^1.11.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
