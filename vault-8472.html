@@ -305,6 +305,14 @@ textarea{grid-column:1/-1;min-height:120px}
 
       <div class="preview" id="editPreview"></div>
       <input id="edit_video_url" placeholder="Video URL">
+
+      <div class="filebox">
+        <label>Change Reel / Video</label>
+        <input type="file" id="editReelUpload" accept="video/mp4,video/webm,video/quicktime">
+        <div class="small">Uploads to profile-videos bucket</div>
+      </div>
+
+      <div class="preview" id="editReelPreview"></div>
       <input id="edit_slug" placeholder="SEO slug">
       <input id="edit_availability" placeholder="Availability">
       <input id="edit_languages" placeholder="Languages">
@@ -700,6 +708,24 @@ function previewFiles(){
 document.getElementById("photoUpload").addEventListener("change",previewFiles);
 document.getElementById("reelUpload").addEventListener("change",previewFiles);
 
+
+document.getElementById("editReelUpload").addEventListener("change",()=>{
+  const box = document.getElementById("editReelPreview");
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  const file = document.getElementById("editReelUpload").files[0];
+
+  if(!file) return;
+
+  const video = document.createElement("video");
+  video.src = URL.createObjectURL(file);
+  video.controls = true;
+  video.muted = true;
+  box.appendChild(video);
+});
+
 document.getElementById("editPhotoUpload").addEventListener("change",()=>{
   const box = document.getElementById("editPreview");
   if(!box) return;
@@ -943,6 +969,7 @@ async function loadProfiles(){
 
           <button class="edit-btn" onclick="openEditModal('${p.id}')">✏ Edit Profile</button>
           <button class="edit-btn" onclick="openEditModal('${p.id}')" style="background:linear-gradient(145deg,#06b6d4,#22d3ee)">📷 Change Picture</button>
+          <button class="edit-btn" onclick="openEditModal('${p.id}')" style="background:linear-gradient(145deg,#a855f7,#ec4899);color:white">🎬 Change Reel</button>
           <button class="renew-btn" onclick="openRenewModal('${p.id}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}')">💰 Renew / Pay Now</button>
           <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.plan_expires_at || p.expiry_date || "")}','${p.id}','${escapeAttr(p.slug || "")}')">📲 Send Renewal Reminder</button>
         </div>
@@ -959,6 +986,12 @@ async function openEditModal(id){
 
   if(editPhotoInput) editPhotoInput.value = "";
   if(editPreview) editPreview.innerHTML = "";
+
+  const editReelInput = document.getElementById("editReelUpload");
+  const editReelPreview = document.getElementById("editReelPreview");
+
+  if(editReelInput) editReelInput.value = "";
+  if(editReelPreview) editReelPreview.innerHTML = "";
 
   const { data,error } = await sb.from("profiles").select("*").eq("id",id).single();
 
@@ -1020,6 +1053,20 @@ async function saveProfileEdit(){
     }
   }
 
+  let newVideoUrl = valueOf("edit_video_url");
+
+  const newReelFile = document.getElementById("editReelUpload")?.files?.[0];
+
+  if(newReelFile){
+    try{
+      newVideoUrl = await uploadFile("profile-videos", newReelFile);
+      document.getElementById("edit_video_url").value = newVideoUrl;
+    }catch(error){
+      alert("Reel upload failed: " + error.message);
+      return;
+    }
+  }
+
   const phoneClean = cleanPhone(valueOf("edit_phone"));
   const finalSlug = valueOf("edit_slug") || makeSlug(valueOf("edit_stage_name") + "-" + valueOf("edit_location"));
   const planValue = valueOf("edit_plan") || "featured";
@@ -1038,9 +1085,9 @@ async function saveProfileEdit(){
     age: valueOf("edit_age"),
     photo_url: newPhotoUrl,
     image_url: newPhotoUrl,
-    video_url: valueOf("edit_video_url"),
-    reel_url: valueOf("edit_video_url"),
-    short_url: valueOf("edit_video_url"),
+    video_url: newVideoUrl,
+    reel_url: newVideoUrl,
+    short_url: newVideoUrl,
     slug: finalSlug,
     availability: valueOf("edit_availability") || "Online Now",
     languages: valueOf("edit_languages"),
