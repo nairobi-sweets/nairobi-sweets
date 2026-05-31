@@ -87,6 +87,37 @@ textarea{grid-column:1/-1;min-height:120px}
 }
 
 
+.searchbar{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr auto;
+  gap:12px;
+  margin-bottom:22px;
+}
+.searchbar input,
+.searchbar select{
+  background:#08122f;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  padding:16px;
+  font-size:15px;
+}
+.search-count{
+  color:#ffd54a;
+  font-weight:900;
+  margin-bottom:16px;
+}
+.search-reset{
+  background:#ef4444;
+  color:#fff;
+  border-radius:16px;
+  padding:14px 18px;
+}
+@media(max-width:900px){
+  .searchbar{grid-template-columns:1fr}
+}
+
+
 .dashboard-stats{
   display:grid;
   grid-template-columns:repeat(5,1fr);
@@ -259,6 +290,39 @@ textarea{grid-column:1/-1;min-height:120px}
 
 <section class="panel">
 <h2>Profiles</h2>
+
+<div class="searchbar">
+  <input id="vaultSearch" placeholder="Search name, phone, location, plan, slug, services..." oninput="renderProfiles()">
+
+  <select id="vaultPlanFilter" onchange="renderProfiles()">
+    <option value="">All Plans</option>
+    <option value="featured">Featured</option>
+    <option value="vip">VIP</option>
+    <option value="vvip">VVIP</option>
+    <option value="signature">Signature</option>
+  </select>
+
+  <select id="vaultStatusFilter" onchange="renderProfiles()">
+    <option value="">All Payment</option>
+    <option value="paid">Paid</option>
+    <option value="unpaid">Unpaid</option>
+    <option value="pending">Pending</option>
+    <option value="expired">Expired</option>
+  </select>
+
+  <select id="vaultApprovalFilter" onchange="renderProfiles()">
+    <option value="">All Approval</option>
+    <option value="approved">Approved</option>
+    <option value="hidden">Hidden</option>
+    <option value="verified">Verified</option>
+    <option value="featured">Featured Only</option>
+    <option value="expired">Expired Only</option>
+  </select>
+
+  <button class="search-reset" onclick="resetVaultSearch()">Reset</button>
+</div>
+
+<div class="search-count" id="vaultSearchCount">Showing profiles...</div>
 <div class="cards" id="list"></div>
 </section>
 
@@ -499,6 +563,7 @@ const statusBox = document.getElementById("status");
 const previewBox = document.getElementById("preview");
 
 let editingProfileId = null;
+let ALL_PROFILES = [];
 
 function valueOf(id){
   const el = document.getElementById(id);
@@ -883,11 +948,6 @@ async function loadProfiles(){
     return;
   }
 
-  if(!data || !data.length){
-    list.innerHTML = `<div>No profiles yet.</div>`;
-    return;
-  }
-
   const { data:analyticsRows, error:analyticsError } = await sb
     .from("profile_analytics_summary")
     .select("*");
@@ -901,11 +961,111 @@ async function loadProfiles(){
     analyticsMap[String(row.profile_id)] = row;
   });
 
+  ALL_PROFILES = (data || []).map(profile => ({
+    ...profile,
+    _analytics: analyticsMap[String(profile.id)] || {}
+  }));
+
+  renderProfiles();
+}
+
+function resetVaultSearch(){
+  const ids = [
+    "vaultSearch",
+    "vaultPlanFilter",
+    "vaultStatusFilter",
+    "vaultApprovalFilter"
+  ];
+
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = "";
+  });
+
+  renderProfiles();
+}
+
+function profileSearchText(p){
+  const services = Array.isArray(p.services)
+    ? p.services.join(" ")
+    : String(p.services || "");
+
+  return `
+    ${p.stage_name || ""}
+    ${p.phone || ""}
+    ${p.whatsapp || ""}
+    ${p.location || ""}
+    ${p.plan || ""}
+    ${p.payment_status || ""}
+    ${p.slug || ""}
+    ${p.bio || ""}
+    ${p.about || ""}
+    ${p.availability || ""}
+    ${p.languages || ""}
+    ${p.nationality || ""}
+    ${p.orientation || ""}
+    ${services}
+  `.toLowerCase();
+}
+
+function renderProfiles(){
+  const search = String(document.getElementById("vaultSearch")?.value || "").toLowerCase().trim();
+  const planFilter = String(document.getElementById("vaultPlanFilter")?.value || "").toLowerCase();
+  const statusFilter = String(document.getElementById("vaultStatusFilter")?.value || "").toLowerCase();
+  const approvalFilter = String(document.getElementById("vaultApprovalFilter")?.value || "").toLowerCase();
+  const countBox = document.getElementById("vaultSearchCount");
+
+  let data = [...ALL_PROFILES];
+
+  if(search){
+    data = data.filter(p => profileSearchText(p).includes(search));
+  }
+
+  if(planFilter){
+    data = data.filter(p => String(p.plan || "").toLowerCase() === planFilter);
+  }
+
+  if(statusFilter){
+    data = data.filter(p => String(p.payment_status || "").toLowerCase() === statusFilter);
+  }
+
+  if(approvalFilter === "approved"){
+    data = data.filter(p => p.approved === true);
+  }
+
+  if(approvalFilter === "hidden"){
+    data = data.filter(p => p.approved !== true);
+  }
+
+  if(approvalFilter === "verified"){
+    data = data.filter(p => p.verified === true);
+  }
+
+  if(approvalFilter === "featured"){
+    data = data.filter(p => p.featured === true);
+  }
+
+  if(approvalFilter === "expired"){
+    data = data.filter(p =>
+      p.is_expired === true ||
+      String(p.payment_status || "").toLowerCase() === "expired"
+    );
+  }
+
+  if(countBox){
+    countBox.textContent = `Showing ${data.length.toLocaleString()} of ${ALL_PROFILES.length.toLocaleString()} profiles`;
+  }
+
+  if(!data.length){
+    list.innerHTML = `<div style="color:#ffd54a;font-weight:900">No profiles match your search.</div>`;
+    return;
+  }
+
   list.innerHTML = data.map(p=>{
     const video = videoOf(p);
     const services = Array.isArray(p.services) ? p.services : [];
     const exp = expiryInfo(p);
-    const stats = analyticsMap[String(p.id)] || {};
+    const stats = p._analytics || {};
     const statViews = Number(stats.views || 0);
     const statWhatsApp = Number(stats.whatsapp_clicks || 0);
     const statCalls = Number(stats.call_clicks || 0);
