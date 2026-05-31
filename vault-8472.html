@@ -151,231 +151,7 @@ textarea{grid-column:1/-1;min-height:120px}
   <h1>Nairobi Sweets Vault</h1>
   <div class="header-actions">
     <a class="header-link" href="/vault-analytics.html">📊 Analytics</a>
-    <button class="refresh" onclick="
-/* =========================
-STAFF MANAGEMENT
-========================= */
-function adminToken(){
-  return localStorage.getItem("vault_token") ||
-         sessionStorage.getItem("vault_token") ||
-         localStorage.getItem("admin_token") ||
-         sessionStorage.getItem("admin_token") ||
-         "";
-}
-
-async function adminFetch(url, options = {}){
-  const token = adminToken();
-
-  return fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      ...(options.headers || {})
-    }
-  });
-}
-
-function roleBadge(role){
-  const r = String(role || "staff").toLowerCase();
-  if(r === "owner") return "👑 Owner";
-  if(r === "manager") return "🛡️ Manager";
-  return "👤 Staff";
-}
-
-async function loadStaffUsers(){
-  const box = document.getElementById("staffList");
-  const status = document.getElementById("staffStatus");
-  const panel = document.getElementById("staffPanel");
-
-  if(!box || !panel) return;
-
-  const token = adminToken();
-
-  if(!token){
-    box.innerHTML = `
-      <div class="empty">
-        Staff tools require role login token. Login with the new admin login system first.
-      </div>
-    `;
-    return;
-  }
-
-  box.innerHTML = `<div class="loading">Loading staff...</div>`;
-
-  try{
-    const res = await adminFetch("/.netlify/functions/admin-list-users");
-    const data = await res.json();
-
-    if(!data.ok){
-      box.innerHTML = `<div class="empty">${data.message || "Could not load staff."}</div>`;
-
-      if(String(data.message || "").toLowerCase().includes("permission")){
-        panel.style.display = "none";
-      }
-
-      return;
-    }
-
-    box.innerHTML = (data.users || []).map(user => `
-      <article class="card">
-        <div class="body">
-          <div class="name">${user.name || "Admin"}</div>
-
-          <div class="meta">
-            📧 ${user.email || "No email"}<br>
-            🛡️ Role: ${roleBadge(user.role)}<br>
-            🚦 Active: ${user.is_active ? "Yes" : "No"}<br>
-            🕒 Created: ${user.created_at ? new Date(user.created_at).toLocaleString() : "N/A"}
-          </div>
-
-          <div class="tags">
-            <span>${roleBadge(user.role)}</span>
-            <span>${user.is_active ? "ACTIVE" : "DISABLED"}</span>
-          </div>
-
-          <div class="actions">
-            <button class="approve" onclick="setStaffRole('${user.id}','staff')">Staff</button>
-            <button class="unapprove" onclick="setStaffRole('${user.id}','manager')">Manager</button>
-            <button class="extend-btn" onclick="setStaffRole('${user.id}','owner')">Owner</button>
-
-            <button class="paid-btn" onclick="toggleStaff('${user.id}',${!user.is_active})">
-              ${user.is_active ? "Disable" : "Enable"}
-            </button>
-
-            <button class="delete" onclick="deleteStaffUser('${user.id}')">Delete</button>
-          </div>
-        </div>
-      </article>
-    `).join("") || `<div class="empty">No staff users found.</div>`;
-
-    if(status) status.textContent = "Staff loaded.";
-
-  }catch(error){
-    box.innerHTML = `<div class="empty">${error.message}</div>`;
-  }
-}
-
-async function createStaffUser(){
-  const status = document.getElementById("staffStatus");
-
-  const payload = {
-    name: valueOf("staff_name"),
-    email: valueOf("staff_email"),
-    password: document.getElementById("staff_password")?.value || "",
-    role: valueOf("staff_role") || "staff"
-  };
-
-  if(!payload.name || !payload.email || !payload.password){
-    if(status) status.textContent = "Name, email, and password are required.";
-    return;
-  }
-
-  if(payload.password.length < 8){
-    if(status) status.textContent = "Password must be at least 8 characters.";
-    return;
-  }
-
-  if(status) status.textContent = "Creating staff user...";
-
-  try{
-    const res = await adminFetch("/.netlify/functions/admin-create-user", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-
-    if(!data.ok){
-      if(status) status.textContent = data.message || "Could not create staff user.";
-      return;
-    }
-
-    if(status) status.textContent = "Staff user created.";
-
-    document.getElementById("staff_name").value = "";
-    document.getElementById("staff_email").value = "";
-    document.getElementById("staff_password").value = "";
-    document.getElementById("staff_role").value = "staff";
-
-    loadStaffUsers();
-
-  }catch(error){
-    if(status) status.textContent = error.message;
-  }
-}
-
-async function setStaffRole(id, role){
-  const ok = confirm(`Change this user role to ${role}?`);
-  if(!ok) return;
-
-  try{
-    const res = await adminFetch("/.netlify/functions/admin-update-user", {
-      method: "POST",
-      body: JSON.stringify({ id, role })
-    });
-
-    const data = await res.json();
-
-    if(!data.ok){
-      alert(data.message || "Role update failed.");
-      return;
-    }
-
-    loadStaffUsers();
-
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-async function toggleStaff(id, is_active){
-  try{
-    const res = await adminFetch("/.netlify/functions/admin-update-user", {
-      method: "POST",
-      body: JSON.stringify({ id, is_active })
-    });
-
-    const data = await res.json();
-
-    if(!data.ok){
-      alert(data.message || "Status update failed.");
-      return;
-    }
-
-    loadStaffUsers();
-
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-async function deleteStaffUser(id){
-  const ok = confirm("Delete this staff account?");
-  if(!ok) return;
-
-  try{
-    const res = await adminFetch("/.netlify/functions/admin-delete-user", {
-      method: "POST",
-      body: JSON.stringify({ id })
-    });
-
-    const data = await res.json();
-
-    if(!data.ok){
-      alert(data.message || "Delete failed.");
-      return;
-    }
-
-    loadStaffUsers();
-
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-loadProfiles();
-loadStaffUsers();loadDashboardStats();">Refresh</button>
+    <button class="refresh" onclick="loadProfiles();loadDashboardStats();">Refresh</button>
     <button class="refresh" onclick="runAutoRenewNow()" style="background:#22c55e;color:#000">Auto-Renew Now</button>
     <button class="refresh" onclick="logoutVault()" style="background:#ef4444;color:white">Logout</button>
   </div>
@@ -486,30 +262,22 @@ loadStaffUsers();loadDashboardStats();">Refresh</button>
 <div class="cards" id="list"></div>
 </section>
 
-
 <section class="panel" id="staffPanel">
-  <h2>👥 Staff Management</h2>
-
-  <div class="rank-help">
-    Owner can manage all staff. Manager can manage profiles and renewals. Staff can approve and view analytics only.
-  </div>
-
-  <div class="grid">
-    <input id="staff_name" placeholder="Staff name">
-    <input id="staff_email" placeholder="Staff email">
-    <input id="staff_password" type="password" placeholder="Password, minimum 8 characters">
-
-    <select id="staff_role">
-      <option value="staff">Staff</option>
-      <option value="manager">Manager</option>
-      <option value="owner">Owner</option>
-    </select>
-  </div>
-
-  <button class="add" onclick="createStaffUser()">Create Staff</button>
-  <div class="status" id="staffStatus"></div>
-
-  <div class="cards" id="staffList" style="margin-top:22px"></div>
+<h2>👥 Staff Management</h2>
+<div class="rank-help">Staff Management uses the new role login token. Owner can manage staff. Manager can manage profiles. Staff can approve/view only.</div>
+<div class="grid">
+  <input id="staff_name" placeholder="Staff name">
+  <input id="staff_email" placeholder="Staff email">
+  <input id="staff_password" type="password" placeholder="Password, minimum 8 characters">
+  <select id="staff_role">
+    <option value="staff">Staff</option>
+    <option value="manager">Manager</option>
+    <option value="owner">Owner</option>
+  </select>
+</div>
+<button class="add" onclick="createStaffUser()">Create Staff</button>
+<div class="status" id="staffStatus"></div>
+<div class="cards" id="staffList" style="margin-top:22px"></div>
 </section>
 
 
@@ -1533,7 +1301,155 @@ async function runAutoRenewNow(){
   }
 }
 
+
+/* =========================
+STAFF MANAGEMENT
+========================= */
+function adminToken(){
+  return localStorage.getItem("vault_token") ||
+         sessionStorage.getItem("vault_token") ||
+         localStorage.getItem("admin_token") ||
+         sessionStorage.getItem("admin_token") ||
+         "";
+}
+
+async function adminFetch(url, options = {}){
+  const token = adminToken();
+  return fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(options.headers || {})
+    }
+  });
+}
+
+function roleBadge(role){
+  const r = String(role || "staff").toLowerCase();
+  if(r === "owner") return "👑 Owner";
+  if(r === "manager") return "🛡️ Manager";
+  return "👤 Staff";
+}
+
+async function loadStaffUsers(){
+  const box = document.getElementById("staffList");
+  const status = document.getElementById("staffStatus");
+  if(!box) return;
+
+  const token = adminToken();
+  if(!token){
+    box.innerHTML = `<div class="empty">Staff tools require role login token. Login with the new admin login system first.</div>`;
+    return;
+  }
+
+  box.innerHTML = `<div class="loading">Loading staff...</div>`;
+  try{
+    const res = await adminFetch("/.netlify/functions/admin-list-users");
+    const data = await res.json();
+    if(!data.ok){
+      box.innerHTML = `<div class="empty">${data.message || "Could not load staff."}</div>`;
+      return;
+    }
+    const users = data.users || [];
+    if(!users.length){
+      box.innerHTML = `<div class="empty">No staff users found.</div>`;
+      return;
+    }
+    box.innerHTML = users.map(user => `
+      <article class="card">
+        <div class="body">
+          <div class="name">${user.name || "Admin"}</div>
+          <div class="meta">
+            📧 ${user.email || "No email"}<br>
+            🛡️ Role: ${roleBadge(user.role)}<br>
+            🚦 Active: ${user.is_active ? "Yes" : "No"}<br>
+            🕒 Created: ${user.created_at ? new Date(user.created_at).toLocaleString() : "N/A"}
+          </div>
+          <div class="tags">
+            <span>${roleBadge(user.role)}</span>
+            <span>${user.is_active ? "ACTIVE" : "DISABLED"}</span>
+          </div>
+          <div class="actions">
+            <button class="approve" onclick="setStaffRole('${user.id}','staff')">Staff</button>
+            <button class="unapprove" onclick="setStaffRole('${user.id}','manager')">Manager</button>
+            <button class="extend-btn" onclick="setStaffRole('${user.id}','owner')">Owner</button>
+            <button class="paid-btn" onclick="toggleStaff('${user.id}',${!user.is_active})">${user.is_active ? "Disable" : "Enable"}</button>
+            <button class="delete" onclick="deleteStaffUser('${user.id}')">Delete</button>
+          </div>
+        </div>
+      </article>
+    `).join("");
+    if(status) status.textContent = "Staff loaded.";
+  }catch(error){
+    box.innerHTML = `<div class="empty">${error.message}</div>`;
+  }
+}
+
+async function createStaffUser(){
+  const status = document.getElementById("staffStatus");
+  const payload = {
+    name: valueOf("staff_name"),
+    email: valueOf("staff_email"),
+    password: document.getElementById("staff_password")?.value || "",
+    role: valueOf("staff_role") || "staff"
+  };
+  if(!payload.name || !payload.email || !payload.password){
+    if(status) status.textContent = "Name, email, and password are required.";
+    return;
+  }
+  if(payload.password.length < 8){
+    if(status) status.textContent = "Password must be at least 8 characters.";
+    return;
+  }
+  if(status) status.textContent = "Creating staff user...";
+  try{
+    const res = await adminFetch("/.netlify/functions/admin-create-user", { method:"POST", body:JSON.stringify(payload) });
+    const data = await res.json();
+    if(!data.ok){ if(status) status.textContent = data.message || "Could not create staff user."; return; }
+    if(status) status.textContent = "Staff user created.";
+    document.getElementById("staff_name").value = "";
+    document.getElementById("staff_email").value = "";
+    document.getElementById("staff_password").value = "";
+    document.getElementById("staff_role").value = "staff";
+    loadStaffUsers();
+  }catch(error){ if(status) status.textContent = error.message; }
+}
+
+async function setStaffRole(id, role){
+  const ok = confirm(`Change this user role to ${role}?`);
+  if(!ok) return;
+  try{
+    const res = await adminFetch("/.netlify/functions/admin-update-user", { method:"POST", body:JSON.stringify({id,role}) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.message || "Role update failed."); return; }
+    loadStaffUsers();
+  }catch(error){ alert(error.message); }
+}
+
+async function toggleStaff(id, is_active){
+  try{
+    const res = await adminFetch("/.netlify/functions/admin-update-user", { method:"POST", body:JSON.stringify({id,is_active}) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.message || "Status update failed."); return; }
+    loadStaffUsers();
+  }catch(error){ alert(error.message); }
+}
+
+async function deleteStaffUser(id){
+  const ok = confirm("Delete this staff account?");
+  if(!ok) return;
+  try{
+    const res = await adminFetch("/.netlify/functions/admin-delete-user", { method:"POST", body:JSON.stringify({id}) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.message || "Delete failed."); return; }
+    loadStaffUsers();
+  }catch(error){ alert(error.message); }
+}
+
 loadProfiles();
+loadStaffUsers();
+
 loadDashboardStats();
 </script>
 
