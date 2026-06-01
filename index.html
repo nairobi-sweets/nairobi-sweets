@@ -255,6 +255,7 @@ SIGNATURE PROFILES BANNER
   scrollbar-width:none;
   scroll-snap-type:x mandatory;
   scroll-padding:22px;
+  scroll-behavior:smooth;
 }
 
 .signature-row::-webkit-scrollbar{display:none}
@@ -800,6 +801,49 @@ SIGNATURE PROFILES BANNER
   .profiles{grid-template-columns:1fr}
 }
 
+let signatureAutoSlideTimer = null;
+
+function startSignatureAutoSlide(){
+  const track = document.getElementById("signatureProfiles");
+  if(!track) return;
+
+  clearInterval(signatureAutoSlideTimer);
+
+  signatureAutoSlideTimer = setInterval(()=>{
+    const card = track.querySelector(".signature-card");
+    if(!card) return;
+
+    const computed = window.getComputedStyle(track);
+    const gap = parseFloat(computed.columnGap || computed.gap || 18) || 18;
+    const step = card.offsetWidth + gap;
+
+    const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 30;
+
+    if(atEnd){
+      track.scrollTo({ left:0, behavior:"smooth" });
+    }else{
+      track.scrollBy({ left:step, behavior:"smooth" });
+    }
+  }, 3500);
+}
+
+function pauseSignatureAutoSlide(){
+  clearInterval(signatureAutoSlideTimer);
+}
+
+function resumeSignatureAutoSlide(){
+  setTimeout(startSignatureAutoSlide, 800);
+}
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){
+    pauseSignatureAutoSlide();
+  }else{
+    resumeSignatureAutoSlide();
+  }
+});
+
+
 
 /* =========================
 AGE GATE
@@ -953,9 +997,10 @@ AGE GATE
 
 @media(max-width:650px){
   .signature-card{
-    min-width:92vw;
-    width:92vw;
-    height:230px;
+    min-width:100%;
+    width:100%;
+    height:auto;
+    aspect-ratio:16/9;
   }
 }
 
@@ -1411,35 +1456,8 @@ function renderSignatureProfiles(list){
       >
     </div>
   `).join("");
-}
 
-
-let signatureAutoSlide;
-
-function startSignatureAutoSlide(){
-  const track = document.querySelector(".signature-row");
-  if(!track) return;
-
-  clearInterval(signatureAutoSlide);
-
-  signatureAutoSlide = setInterval(()=>{
-    const card = track.querySelector(".signature-card");
-    if(!card) return;
-
-    const gap = 18;
-    const step = card.offsetWidth + gap;
-    const isAtEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 50;
-
-    if(isAtEnd){
-      track.scrollTo({ left:0, behavior:"smooth" });
-    }else{
-      track.scrollBy({ left:step, behavior:"smooth" });
-    }
-  },5000);
-}
-
-function stopSignatureAutoSlide(){
-  clearInterval(signatureAutoSlide);
+  setTimeout(startSignatureAutoSlide, 500);
 }
 
 function renderShorts(list){
@@ -1580,7 +1598,6 @@ function applyFilters(){
   const normalProfiles = list.filter(p => !isSignatureProfile(p));
 
   renderSignatureProfiles(signatureProfiles);
-  startSignatureAutoSlide();
   renderProfiles(normalProfiles);
 }
 
@@ -1665,7 +1682,6 @@ async function loadProfiles(){
 
   ALL_PROFILES = data || [];
   renderSignatureProfiles(ALL_PROFILES);
-  startSignatureAutoSlide();
   renderShorts(ALL_PROFILES);
   applyFilters();
 }
