@@ -53,6 +53,10 @@ textarea{grid-column:1/-1;min-height:120px}
 .save-edit{width:100%;background:#22c55e;color:#000;border-radius:16px;padding:16px;font-size:16px;margin-top:10px}
 .close-edit{width:100%;background:#ef4444;color:white;border-radius:16px;padding:14px;font-size:15px;margin-top:10px}
 .rank-help{grid-column:1/-1;background:rgba(255,213,74,.09);border:1px solid rgba(255,213,74,.18);border-radius:16px;padding:14px;color:#ffd54a;font-size:13px;font-weight:900;line-height:1.5}
+.signature-help{grid-column:1/-1;background:linear-gradient(135deg,rgba(255,213,74,.13),rgba(168,85,247,.13));border:1px solid rgba(255,213,74,.22);border-radius:18px;padding:16px;color:#ffd54a;font-size:13px;font-weight:900;line-height:1.6}
+.signature-chip{display:inline-block;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.hero-chip{display:inline-block;background:linear-gradient(145deg,#a855f7,#ec4899);color:#fff;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.signature-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#ffd54a,#a855f7);color:#000;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
 
 .renew-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#00e676,#00a152);color:#000;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
 .whatsapp-reminder-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#25D366,#128C7E);color:#fff;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
@@ -244,6 +248,14 @@ textarea{grid-column:1/-1;min-height:120px}
     <option value="signature">Signature</option>
   </select>
 
+  <label class="checkrow"><input type="checkbox" id="is_signature"> Signature Billboard</label>
+  <input id="signature_position" type="number" value="999" placeholder="Signature Position, 1 is first">
+  <input id="signature_banner_url" placeholder="Signature Banner Image URL, optional">
+  <label class="checkrow"><input type="checkbox" id="homepage_featured"> Homepage Hero Billboard</label>
+  <input id="homepage_featured_position" type="number" value="999" placeholder="Hero Position, 1 is first">
+  <input id="revenue_plan_price" type="number" value="1000" placeholder="Plan Price KES">
+  <div class="signature-help">Signature/VVIP appears in the homepage billboard slider. Use signature_position 1, 2, 3 to control order. Banner URL overrides normal photo.</div>
+
   <input id="likes_count" type="number" value="0" placeholder="Likes">
   <input id="views_count" type="number" value="0" placeholder="Views">
   <input id="plan_rank" type="number" value="2" placeholder="Plan rank">
@@ -393,6 +405,14 @@ textarea{grid-column:1/-1;min-height:120px}
         <option value="vvip">VVIP</option>
         <option value="signature">Signature</option>
       </select>
+
+      <label class="checkrow"><input type="checkbox" id="edit_is_signature"> Signature Billboard</label>
+      <input id="edit_signature_position" type="number" placeholder="Signature Position, 1 is first">
+      <input id="edit_signature_banner_url" placeholder="Signature Banner Image URL, optional">
+      <label class="checkrow"><input type="checkbox" id="edit_homepage_featured"> Homepage Hero Billboard</label>
+      <input id="edit_homepage_featured_position" type="number" placeholder="Hero Position, 1 is first">
+      <input id="edit_revenue_plan_price" type="number" placeholder="Plan Price KES">
+      <div class="signature-help">Billboard control: Signature/VVIP appears on homepage Signature slider. Use a poster URL in Signature Banner URL for the clean advert image.</div>
 
       <input id="edit_likes_count" type="number" placeholder="Likes">
       <input id="edit_views_count" type="number" placeholder="Views">
@@ -634,6 +654,15 @@ function planAmount(plan){
   return 1500;
 }
 
+function isSignaturePlan(plan){
+  const p = String(plan || "").toLowerCase();
+  return p.includes("signature") || p.includes("vvip");
+}
+
+function signatureBannerOf(profile){
+  return profile.signature_banner_url || imageOf(profile);
+}
+
 function addDaysISO(base,days){
   const start = base ? new Date(base) : new Date();
   const d = Number.isNaN(start.getTime()) ? new Date() : start;
@@ -701,6 +730,13 @@ function syncRanking(prefix=""){
       checkedOf(featuredId)
     );
   }
+
+  const signatureId = prefix ? "edit_is_signature" : "is_signature";
+  const priceId = prefix ? "edit_revenue_plan_price" : "revenue_plan_price";
+  const signatureEl = document.getElementById(signatureId);
+  const priceEl = document.getElementById(priceId);
+  if(signatureEl) signatureEl.checked = isSignaturePlan(plan);
+  if(priceEl) priceEl.value = planAmount(plan);
 }
 
 function cleanPhone(phone){
@@ -886,6 +922,12 @@ async function addProfile(){
       likes: numberOf("likes_count"),
       views: numberOf("views_count"),
       approved: true,
+      is_signature: checkedOf("is_signature") || isSignaturePlan(planValue),
+      signature_position: numberOrDefault("signature_position",999),
+      signature_banner_url: valueOf("signature_banner_url") || finalPhotoUrl,
+      homepage_featured: checkedOf("homepage_featured"),
+      homepage_featured_position: numberOrDefault("homepage_featured_position",999),
+      revenue_plan_price: numberOrDefault("revenue_plan_price",planAmount(planValue)),
       created_at: new Date().toISOString()
     };
 
@@ -910,7 +952,7 @@ function clearForm(){
   [
     "stage_name","phone","location","age","photo_url","video_url","slug",
     "availability","languages","nationality","orientation","height",
-    "incall_price","outcall_price","services","bio","about","last_active","plan_started_at","plan_expires_at"
+    "incall_price","outcall_price","services","bio","about","last_active","plan_started_at","plan_expires_at","signature_banner_url"
   ].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value = "";
@@ -921,10 +963,15 @@ function clearForm(){
   document.getElementById("plan_rank").value = 2;
   document.getElementById("boost_score").value = 100;
   document.getElementById("trending_score").value = 0;
+  document.getElementById("signature_position").value = 999;
+  document.getElementById("homepage_featured_position").value = 999;
+  document.getElementById("revenue_plan_price").value = 1000;
   document.getElementById("plan").value = "featured";
   document.getElementById("verified").checked = false;
   document.getElementById("featured").checked = false;
   document.getElementById("is_expired").checked = false;
+  document.getElementById("is_signature").checked = false;
+  document.getElementById("homepage_featured").checked = false;
   document.getElementById("payment_status").value = "unpaid";
   document.getElementById("photoUpload").value = "";
   document.getElementById("reelUpload").value = "";
@@ -938,6 +985,7 @@ async function loadProfiles(){
     .from("profiles")
     .select("*")
     .order("plan_rank",{ascending:false})
+    .order("signature_position",{ascending:true})
     .order("trending_score",{ascending:false})
     .order("boost_score",{ascending:false})
     .order("verified",{ascending:false})
@@ -1004,6 +1052,9 @@ function profileSearchText(p){
     ${p.languages || ""}
     ${p.nationality || ""}
     ${p.orientation || ""}
+    ${p.is_signature ? "signature billboard" : ""}
+    ${p.homepage_featured ? "hero billboard" : ""}
+    ${p.signature_banner_url || ""}
     ${services}
   `.toLowerCase();
 }
@@ -1088,6 +1139,10 @@ function renderProfiles(){
             📍 ${p.location || "Nairobi"}<br>
             📞 ${p.phone || p.whatsapp || "Hidden"}<br>
             💎 ${p.plan || "featured"}<br>
+            ${p.is_signature ? `<span class="signature-chip">👑 SIGNATURE BILLBOARD #${p.signature_position || 999}</span><br>` : ""}
+            ${p.homepage_featured ? `<span class="hero-chip">🔥 HERO BILLBOARD #${p.homepage_featured_position || 999}</span><br>` : ""}
+            🖼️ Banner: ${p.signature_banner_url ? "Yes" : "No"}<br>
+            💰 Price: KES ${(Number(p.revenue_plan_price || vaultPlanAmount(p.plan))).toLocaleString()}<br>
             ✅ Approved: ${p.approved ? "Yes" : "No"}<br>
             🛡️ Verified: ${p.verified ? "Yes" : "No"}<br>
             ⭐ Featured: ${p.featured ? "Yes" : "No"}<br>
@@ -1130,6 +1185,7 @@ function renderProfiles(){
           <button class="edit-btn" onclick="openEditModal('${p.id}')">✏ Edit Profile</button>
           <button class="edit-btn" onclick="openEditModal('${p.id}')" style="background:linear-gradient(145deg,#06b6d4,#22d3ee)">📷 Change Picture</button>
           <button class="edit-btn" onclick="openEditModal('${p.id}')" style="background:linear-gradient(145deg,#a855f7,#ec4899);color:white">🎬 Change Reel</button>
+          <button class="signature-btn" onclick="quickMakeSignature('${p.id}')">👑 Make Signature</button>
           <button class="renew-btn" onclick="openRenewModal('${p.id}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}')">💰 Renew / Pay Now</button>
           <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.plan_expires_at || p.expiry_date || "")}','${p.id}','${escapeAttr(p.slug || "")}')">📲 Send Renewal Reminder</button>
         </div>
@@ -1176,6 +1232,12 @@ async function openEditModal(id){
   document.getElementById("edit_outcall_price").value = data.outcall_price || "";
   document.getElementById("edit_services").value = servicesToText(data.services);
   document.getElementById("edit_plan").value = data.plan || "featured";
+  document.getElementById("edit_is_signature").checked = Boolean(data.is_signature) || isSignaturePlan(data.plan);
+  document.getElementById("edit_signature_position").value = data.signature_position ?? 999;
+  document.getElementById("edit_signature_banner_url").value = data.signature_banner_url || data.photo_url || data.image_url || "";
+  document.getElementById("edit_homepage_featured").checked = Boolean(data.homepage_featured);
+  document.getElementById("edit_homepage_featured_position").value = data.homepage_featured_position ?? 999;
+  document.getElementById("edit_revenue_plan_price").value = data.revenue_plan_price ?? planAmount(data.plan || "featured");
   document.getElementById("edit_likes_count").value = data.likes_count || data.likes || 0;
   document.getElementById("edit_views_count").value = data.views_count || data.views || 0;
   document.getElementById("edit_plan_rank").value = data.plan_rank ?? rankFromPlan(data.plan || "featured");
@@ -1258,6 +1320,12 @@ async function saveProfileEdit(){
     outcall_price: valueOf("edit_outcall_price"),
     services: parseServices(valueOf("edit_services")),
     plan: planValue,
+    is_signature: checkedOf("edit_is_signature") || isSignaturePlan(planValue),
+    signature_position: numberOrDefault("edit_signature_position",999),
+    signature_banner_url: valueOf("edit_signature_banner_url") || newPhotoUrl,
+    homepage_featured: checkedOf("edit_homepage_featured"),
+    homepage_featured_position: numberOrDefault("edit_homepage_featured_position",999),
+    revenue_plan_price: numberOrDefault("edit_revenue_plan_price",planAmount(planValue)),
     plan_rank: finalPlanRank,
     boost_score: finalBoostScore,
     trending_score: finalTrendingScore,
@@ -1448,6 +1516,38 @@ Reply here when ready.`
 }
 
 
+async function quickMakeSignature(id){
+  const current = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  const nextPosition = Number(current.signature_position || 999) === 999
+    ? Math.max(1, ...ALL_PROFILES.filter(p => p.is_signature).map(p => Number(p.signature_position || 0))) + 1
+    : Number(current.signature_position || 1);
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      plan:"signature",
+      is_signature:true,
+      signature_position:nextPosition,
+      signature_banner_url:current.signature_banner_url || current.photo_url || current.image_url || "",
+      plan_rank:4,
+      boost_score:600,
+      revenue_plan_price:3000,
+      approved:true,
+      is_expired:false,
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("make_signature",id,current.stage_name || "","Profile promoted to Signature Billboard");
+  loadProfiles();
+  loadDashboardStats();
+}
+
 async function approveProfile(id){
   const { error } = await sb.from("profiles").update({ approved:true }).eq("id",id);
   if(error) alert(error.message);
@@ -1490,7 +1590,7 @@ async function loadDashboardStats(){
   try{
     const { data,error } = await sb
       .from("profiles")
-      .select("approved,is_expired,payment_status,plan");
+      .select("approved,is_expired,payment_status,plan,is_signature,homepage_featured,revenue_plan_price");
 
     if(error) throw error;
 
@@ -1512,7 +1612,7 @@ async function loadDashboardStats(){
 
     const revenue = profiles
       .filter(p => String(p.payment_status || "").toLowerCase() === "paid")
-      .reduce((sum,p) => sum + vaultPlanAmount(p.plan),0);
+      .reduce((sum,p) => sum + Number(p.revenue_plan_price || vaultPlanAmount(p.plan)),0);
 
     setVaultStat("statTotal", total.toLocaleString());
     setVaultStat("statActive", active.toLocaleString());
