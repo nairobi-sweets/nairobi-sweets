@@ -253,22 +253,24 @@ SIGNATURE PROFILES BANNER
   overflow-x:auto;
   padding:0 22px 22px;
   scrollbar-width:none;
+  scroll-snap-type:x mandatory;
+  scroll-padding:22px;
 }
 
 .signature-row::-webkit-scrollbar{display:none}
 
-
 .signature-card{
   position:relative;
-  min-width:600px;
-  width:600px;
-  height:320px;
+  min-width:100%;
+  width:100%;
+  aspect-ratio:16/9;
   border-radius:28px;
   overflow:hidden;
   cursor:pointer;
   background:#000;
   border:1px solid rgba(255,213,74,.15);
   flex-shrink:0;
+  scroll-snap-align:center;
   box-shadow:0 18px 50px rgba(0,0,0,.5);
 }
 
@@ -286,18 +288,23 @@ SIGNATURE PROFILES BANNER
 }
 
 @media(max-width:650px){
+  .signature-row{
+    padding:0 12px 18px;
+    scroll-padding:12px;
+  }
+
   .signature-card{
-    min-width:92vw;
-    width:92vw;
-    height:52vw;
+    min-width:100%;
+    width:100%;
+    aspect-ratio:16/9;
+    border-radius:24px;
   }
 }
 
 @media(max-width:600px){
-  .signature-card{
-    min-width:86vw;
-    width:86vw;
-    height:52vw;
+  .signature-header h2{
+    font-size:30px;
+    line-height:1.05;
   }
 }
 
