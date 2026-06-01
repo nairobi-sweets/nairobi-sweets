@@ -216,6 +216,130 @@ textarea{grid-column:1/-1;min-height:120px}
   text-shadow:0 0 15px rgba(0,0,0,.95);
 }
 
+
+
+/* =========================
+REVENUE DASHBOARD UPGRADE
+========================= */
+.revenue-dashboard-grid{
+  grid-template-columns:repeat(6,1fr);
+}
+
+.revenue-gold{
+  border-color:rgba(255,213,74,.35);
+  box-shadow:0 0 30px rgba(255,213,74,.12),0 18px 50px rgba(0,0,0,.35);
+}
+
+.revenue-panels{
+  display:grid;
+  grid-template-columns:1.3fr 1fr 1fr;
+  gap:18px;
+  padding:22px 28px 0;
+  background:#000814;
+}
+
+.revenue-card{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:24px;
+  padding:22px;
+  min-height:260px;
+  box-shadow:0 18px 50px rgba(0,0,0,.35);
+}
+
+.revenue-card-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.revenue-card-head h2{
+  color:#ffd54a;
+  font-size:22px;
+  margin:0;
+  line-height:1.1;
+}
+
+.revenue-card-head span{
+  color:#aaa;
+  font-size:12px;
+  font-weight:900;
+  text-align:right;
+}
+
+.revenue-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.revenue-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:12px;
+  align-items:center;
+  background:rgba(0,0,0,.30);
+  border:1px solid rgba(255,213,74,.10);
+  border-radius:16px;
+  padding:12px;
+}
+
+.revenue-rank{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  font-size:13px;
+  font-weight:900;
+}
+
+.revenue-title{
+  color:#fff;
+  font-size:14px;
+  font-weight:900;
+  line-height:1.3;
+}
+
+.revenue-sub{
+  color:#aaa;
+  font-size:12px;
+  line-height:1.45;
+  margin-top:4px;
+}
+
+.revenue-amount{
+  color:#ffd54a;
+  font-size:14px;
+  font-weight:900;
+  text-align:right;
+  white-space:nowrap;
+}
+
+.revenue-empty{
+  padding:18px;
+  color:#ffd54a;
+  background:rgba(255,213,74,.08);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:16px;
+  font-weight:900;
+}
+
+@media(max-width:1200px){
+  .revenue-dashboard-grid{grid-template-columns:repeat(3,1fr)}
+  .revenue-panels{grid-template-columns:1fr}
+}
+
+@media(max-width:700px){
+  .revenue-dashboard-grid{grid-template-columns:1fr}
+  .revenue-panels{padding:18px;grid-template-columns:1fr}
+}
+
 @media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}.dashboard-stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid,.dashboard-stats{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.dashboard-stats{padding:18px}}
 </style>
@@ -237,13 +361,13 @@ textarea{grid-column:1/-1;min-height:120px}
   <h1>Nairobi Sweets Vault</h1>
   <div class="header-actions">
     <a class="header-link" href="/vault-analytics.html">📊 Analytics</a>
-    <button class="refresh" onclick="loadProfiles();loadDashboardStats();">Refresh</button>
+    <button class="refresh" onclick="loadProfiles();loadDashboardStats();loadRevenueDashboard();">Refresh</button>
     <button class="refresh" onclick="runAutoRenewNow()" style="background:#22c55e;color:#000">Auto-Renew Now</button>
     <button class="refresh" onclick="logoutVault()" style="background:#ef4444;color:white">Logout</button>
   </div>
 </header>
 
-<section class="dashboard-stats" id="dashboardStats">
+<section class="dashboard-stats revenue-dashboard-grid" id="dashboardStats">
   <div class="stat-card">
     <h3>Total Profiles</h3>
     <div id="statTotal">0</div>
@@ -264,9 +388,76 @@ textarea{grid-column:1/-1;min-height:120px}
     <div id="statExpired">0</div>
   </div>
 
-  <div class="stat-card">
-    <h3>Revenue Estimate</h3>
+  <div class="stat-card revenue-gold">
+    <h3>Total Revenue Estimate</h3>
     <div id="statRevenue">KES 0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Today's Revenue</h3>
+    <div id="statTodayRevenue">KES 0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Featured</h3>
+    <div id="statFeatured">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>VIP</h3>
+    <div id="statVip">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Signature</h3>
+    <div id="statSignature">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Hero Billboards</h3>
+    <div id="statHero">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Expiring Soon</h3>
+    <div id="statExpiringSoon">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Weekly Potential</h3>
+    <div id="statWeeklyPotential">KES 0</div>
+  </div>
+</section>
+
+<section class="revenue-panels" id="revenueInsights">
+  <div class="revenue-card">
+    <div class="revenue-card-head">
+      <h2>📈 Top Viewed Profiles</h2>
+      <span>Views, WhatsApp, Calls</span>
+    </div>
+    <div id="topProfilesList" class="revenue-list">
+      <div class="revenue-empty">Loading top profiles...</div>
+    </div>
+  </div>
+
+  <div class="revenue-card">
+    <div class="revenue-card-head">
+      <h2>⏰ Expiring This Week</h2>
+      <span>Renew before they disappear</span>
+    </div>
+    <div id="expiringProfilesList" class="revenue-list">
+      <div class="revenue-empty">Loading expiring profiles...</div>
+    </div>
+  </div>
+
+  <div class="revenue-card">
+    <div class="revenue-card-head">
+      <h2>💰 Plan Revenue</h2>
+      <span>Plan counts and weekly value</span>
+    </div>
+    <div id="planRevenueList" class="revenue-list">
+      <div class="revenue-empty">Loading plan revenue...</div>
+    </div>
   </div>
 </section>
 
@@ -1669,7 +1860,7 @@ async function loadDashboardStats(){
   try{
     const { data,error } = await sb
       .from("profiles")
-      .select("approved,is_expired,payment_status,plan,is_signature,homepage_featured,revenue_plan_price");
+      .select("id,stage_name,approved,is_expired,payment_status,plan,is_signature,homepage_featured,revenue_plan_price,plan_expires_at,expiry_date,created_at");
 
     if(error) throw error;
 
@@ -1680,27 +1871,230 @@ async function loadDashboardStats(){
       p.approved === true && p.is_expired !== true
     ).length;
 
-    const paid = profiles.filter(p =>
+    const paidProfiles = profiles.filter(p =>
       String(p.payment_status || "").toLowerCase() === "paid"
-    ).length;
+    );
+
+    const paid = paidProfiles.length;
 
     const expired = profiles.filter(p =>
       p.is_expired === true ||
       String(p.payment_status || "").toLowerCase() === "expired"
     ).length;
 
-    const revenue = profiles
-      .filter(p => String(p.payment_status || "").toLowerCase() === "paid")
+    const featured = profiles.filter(p =>
+      String(p.plan || "").toLowerCase().includes("featured")
+    ).length;
+
+    const vip = profiles.filter(p => {
+      const plan = String(p.plan || "").toLowerCase();
+      return plan.includes("vip") && !plan.includes("vvip") && !plan.includes("signature");
+    }).length;
+
+    const signature = profiles.filter(p =>
+      p.is_signature === true ||
+      String(p.plan || "").toLowerCase().includes("signature") ||
+      String(p.plan || "").toLowerCase().includes("vvip")
+    ).length;
+
+    const hero = profiles.filter(p => p.homepage_featured === true).length;
+
+    const expiringSoon = profiles.filter(p => {
+      const raw = p.plan_expires_at || p.expiry_date;
+      if(!raw) return false;
+      const d = new Date(raw);
+      if(Number.isNaN(d.getTime())) return false;
+      const days = Math.ceil((d.getTime() - Date.now()) / 86400000);
+      return days >= 0 && days <= 7;
+    }).length;
+
+    const revenue = paidProfiles
       .reduce((sum,p) => sum + Number(p.revenue_plan_price || vaultPlanAmount(p.plan)),0);
+
+    const weeklyPotential = profiles
+      .filter(p => p.approved === true && p.is_expired !== true)
+      .reduce((sum,p) => sum + Number(p.revenue_plan_price || vaultPlanAmount(p.plan)),0);
+
+    let todayRevenue = 0;
+
+    try{
+      const start = new Date();
+      start.setHours(0,0,0,0);
+
+      const { data:todayRows } = await sb
+        .from("revenue_events")
+        .select("amount,created_at")
+        .gte("created_at",start.toISOString());
+
+      todayRevenue = (todayRows || []).reduce((sum,row)=>sum + Number(row.amount || 0),0);
+    }catch(err){
+      todayRevenue = 0;
+    }
 
     setVaultStat("statTotal", total.toLocaleString());
     setVaultStat("statActive", active.toLocaleString());
     setVaultStat("statPaid", paid.toLocaleString());
     setVaultStat("statExpired", expired.toLocaleString());
     setVaultStat("statRevenue", "KES " + revenue.toLocaleString());
+    setVaultStat("statTodayRevenue", "KES " + todayRevenue.toLocaleString());
+    setVaultStat("statFeatured", featured.toLocaleString());
+    setVaultStat("statVip", vip.toLocaleString());
+    setVaultStat("statSignature", signature.toLocaleString());
+    setVaultStat("statHero", hero.toLocaleString());
+    setVaultStat("statExpiringSoon", expiringSoon.toLocaleString());
+    setVaultStat("statWeeklyPotential", "KES " + weeklyPotential.toLocaleString());
 
   }catch(error){
     console.log("Dashboard stats error:", error.message);
+  }
+}
+
+function profilePlanBucket(profile){
+  const plan = String(profile.plan || "").toLowerCase();
+  if(profile.homepage_featured === true) return "Hero Billboard";
+  if(profile.is_signature === true || plan.includes("signature") || plan.includes("vvip")) return "Signature";
+  if(plan.includes("vip")) return "VIP";
+  if(plan.includes("featured")) return "Featured";
+  return "Other";
+}
+
+function planLabelPrice(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("hero")) return 5000;
+  if(p.includes("signature")) return 3000;
+  if(p.includes("vip")) return 1500;
+  if(p.includes("featured")) return 1000;
+  return 0;
+}
+
+function renderRevenueRows(containerId, rows, emptyText){
+  const box = document.getElementById(containerId);
+  if(!box) return;
+
+  if(!rows.length){
+    box.innerHTML = `<div class="revenue-empty">${emptyText}</div>`;
+    return;
+  }
+
+  box.innerHTML = rows.join("");
+}
+
+async function loadRevenueDashboard(){
+  try{
+    const { data,error } = await sb
+      .from("profiles")
+      .select("id,stage_name,location,plan,approved,is_expired,payment_status,revenue_plan_price,homepage_featured,is_signature,total_views,total_whatsapp_clicks,total_call_clicks,views_count,views,plan_expires_at,expiry_date,phone,whatsapp");
+
+    if(error) throw error;
+
+    const profiles = data || [];
+
+    let analyticsMap = {};
+    try{
+      const { data:analyticsRows } = await sb
+        .from("profile_analytics_summary")
+        .select("*");
+
+      (analyticsRows || []).forEach(row=>{
+        analyticsMap[String(row.profile_id)] = row;
+      });
+    }catch(err){
+      analyticsMap = {};
+    }
+
+    const enriched = profiles.map(p => {
+      const stats = analyticsMap[String(p.id)] || {};
+      return {
+        ...p,
+        _views:Number(stats.views || p.total_views || p.views_count || p.views || 0),
+        _whatsapp:Number(stats.whatsapp_clicks || p.total_whatsapp_clicks || 0),
+        _calls:Number(stats.call_clicks || p.total_call_clicks || 0)
+      };
+    });
+
+    const topRows = enriched
+      .slice()
+      .sort((a,b)=>(b._views + b._whatsapp*5 + b._calls*4) - (a._views + a._whatsapp*5 + a._calls*4))
+      .slice(0,8)
+      .map((p,index)=>`
+        <div class="revenue-row">
+          <div class="revenue-rank">#${index + 1}</div>
+          <div>
+            <div class="revenue-title">${p.stage_name || "Verified"}</div>
+            <div class="revenue-sub">📍 ${p.location || "Nairobi"} · 👁 ${p._views} · 💬 ${p._whatsapp} · ☎ ${p._calls}</div>
+          </div>
+          <div class="revenue-amount">KES ${Number(p.revenue_plan_price || vaultPlanAmount(p.plan)).toLocaleString()}</div>
+        </div>
+      `);
+
+    const expiringRows = enriched
+      .filter(p=>{
+        const raw = p.plan_expires_at || p.expiry_date;
+        if(!raw) return false;
+        const d = new Date(raw);
+        if(Number.isNaN(d.getTime())) return false;
+        const days = Math.ceil((d.getTime() - Date.now()) / 86400000);
+        return days >= 0 && days <= 7;
+      })
+      .sort((a,b)=>new Date(a.plan_expires_at || a.expiry_date) - new Date(b.plan_expires_at || b.expiry_date))
+      .slice(0,8)
+      .map((p,index)=>{
+        const raw = p.plan_expires_at || p.expiry_date;
+        const days = Math.ceil((new Date(raw).getTime() - Date.now()) / 86400000);
+        return `
+          <div class="revenue-row">
+            <div class="revenue-rank">${days}d</div>
+            <div>
+              <div class="revenue-title">${p.stage_name || "Verified"}</div>
+              <div class="revenue-sub">📞 ${p.phone || p.whatsapp || "Hidden"} · expires ${new Date(raw).toLocaleDateString()}</div>
+            </div>
+            <div class="revenue-amount">KES ${Number(p.revenue_plan_price || vaultPlanAmount(p.plan)).toLocaleString()}</div>
+          </div>
+        `;
+      });
+
+    const buckets = {};
+
+    enriched.forEach(p=>{
+      const bucket = profilePlanBucket(p);
+      if(!buckets[bucket]){
+        buckets[bucket] = {count:0,paid:0,value:0};
+      }
+      const price = Number(p.revenue_plan_price || vaultPlanAmount(p.plan));
+      buckets[bucket].count += 1;
+      buckets[bucket].value += price;
+      if(String(p.payment_status || "").toLowerCase() === "paid"){
+        buckets[bucket].paid += 1;
+      }
+    });
+
+    const planOrder = ["Hero Billboard","Signature","VIP","Featured","Other"];
+    const planRows = planOrder
+      .filter(name=>buckets[name])
+      .map((name,index)=>{
+        const row = buckets[name];
+        return `
+          <div class="revenue-row">
+            <div class="revenue-rank">${index + 1}</div>
+            <div>
+              <div class="revenue-title">${name}</div>
+              <div class="revenue-sub">${row.count} total · ${row.paid} paid</div>
+            </div>
+            <div class="revenue-amount">KES ${row.value.toLocaleString()}</div>
+          </div>
+        `;
+      });
+
+    renderRevenueRows("topProfilesList",topRows,"No top performer data yet.");
+    renderRevenueRows("expiringProfilesList",expiringRows,"No profiles expiring within 7 days.");
+    renderRevenueRows("planRevenueList",planRows,"No plan revenue data yet.");
+
+  }catch(error){
+    console.log("Revenue dashboard error:", error.message);
+    ["topProfilesList","expiringProfilesList","planRevenueList"].forEach(id=>{
+      const box = document.getElementById(id);
+      if(box) box.innerHTML = `<div class="revenue-empty">Revenue dashboard error: ${error.message}</div>`;
+    });
   }
 }
 
@@ -1912,6 +2306,7 @@ loadProfiles();
 loadStaffUsers();
 
 loadDashboardStats();
+loadRevenueDashboard();
 </script>
 
 </body>
