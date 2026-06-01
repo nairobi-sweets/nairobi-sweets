@@ -165,6 +165,57 @@ textarea{grid-column:1/-1;min-height:120px}
 }
 
 
+
+.media-lock{
+  position:relative;
+  overflow:hidden;
+}
+
+.media-lock img,
+.media-lock video{
+  width:100%;
+  height:240px;
+  object-fit:cover;
+  background:#020617;
+  user-select:none;
+  -webkit-user-drag:none;
+  display:block;
+}
+
+.ns-watermark{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+  z-index:30;
+  color:#ffd54a;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:1px;
+  opacity:.78;
+  pointer-events:none;
+  text-shadow:0 0 10px rgba(0,0,0,.95);
+  background:rgba(0,0,0,.58);
+  border:1px solid rgba(255,213,74,.35);
+  padding:8px 12px;
+  border-radius:999px;
+  backdrop-filter:blur(6px);
+}
+
+.ns-watermark-center{
+  position:absolute;
+  top:50%;
+  left:50%;
+  z-index:29;
+  transform:translate(-50%,-50%) rotate(-25deg);
+  font-size:32px;
+  font-weight:900;
+  color:#ffd54a;
+  opacity:.18;
+  pointer-events:none;
+  white-space:nowrap;
+  text-shadow:0 0 15px rgba(0,0,0,.95);
+}
+
 @media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}.dashboard-stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid,.dashboard-stats{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.dashboard-stats{padding:18px}}
 </style>
@@ -1128,8 +1179,36 @@ function renderProfiles(){
       <article class="card">
         ${
           video
-          ? `<video src="${video}" muted loop controls poster="${imageOf(p)}"></video>`
-          : `<img src="${imageOf(p)}" onerror="this.src='/assets/logo/logo-badge.png'">`
+          ? `
+          <div class="media-lock">
+            <video
+              src="${video}"
+              muted
+              loop
+              controls
+              poster="${imageOf(p)}"
+              controlsList="nodownload"
+              disablePictureInPicture
+              oncontextmenu="return false"
+            ></video>
+
+            <div class="ns-watermark">© NAIROBI-SWEETS.COM</div>
+            <div class="ns-watermark-center">© NAIROBI-SWEETS.COM</div>
+          </div>
+          `
+          : `
+          <div class="media-lock">
+            <img
+              src="${imageOf(p)}"
+              draggable="false"
+              oncontextmenu="return false"
+              onerror="this.src='/assets/logo/logo-badge.png'"
+            >
+
+            <div class="ns-watermark">© NAIROBI-SWEETS.COM</div>
+            <div class="ns-watermark-center">© NAIROBI-SWEETS.COM</div>
+          </div>
+          `
         }
 
         <div class="body">
@@ -1798,6 +1877,36 @@ async function deleteStaffUser(id){
     loadStaffUsers();
   }catch(error){ alert(error.message); }
 }
+
+
+/* =========================
+MEDIA WATERMARK PROTECTION
+========================= */
+document.addEventListener("contextmenu",(e)=>{
+  const tag = e.target && e.target.tagName;
+  if(tag === "IMG" || tag === "VIDEO"){
+    e.preventDefault();
+  }
+});
+
+document.addEventListener("dragstart",(e)=>{
+  const tag = e.target && e.target.tagName;
+  if(tag === "IMG" || tag === "VIDEO"){
+    e.preventDefault();
+  }
+});
+
+document.addEventListener("keydown",(e)=>{
+  const key = String(e.key || "").toUpperCase();
+
+  if(
+    e.key === "F12" ||
+    (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(key)) ||
+    (e.ctrlKey && key === "U")
+  ){
+    e.preventDefault();
+  }
+});
 
 loadProfiles();
 loadStaffUsers();
