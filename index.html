@@ -210,6 +210,77 @@ a{text-decoration:none;color:inherit}
   margin-top:6px;
 }
 
+
+/* =========================
+HERO BILLBOARD
+========================= */
+.hero-billboard-wrap{
+  padding:0 18px 26px;
+}
+
+.hero-billboard-box{
+  background:linear-gradient(135deg,#1a0b24,#07145f,#000814);
+  border-radius:32px;
+  border:1px solid rgba(255,213,74,.2);
+  overflow:hidden;
+  box-shadow:
+    0 0 45px rgba(255,213,74,.12),
+    0 26px 90px rgba(0,0,0,.55);
+}
+
+.hero-billboard-header{
+  padding:22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+}
+
+.hero-billboard-header h2{
+  color:#ffd54a;
+  font-size:30px;
+  font-weight:900;
+}
+
+.hero-billboard-header span{
+  color:#e6d7ff;
+  font-size:13px;
+  font-weight:800;
+}
+
+.hero-billboard-card{
+  width:calc(100% - 44px);
+  margin:0 22px 22px;
+  aspect-ratio:21/9;
+  border-radius:28px;
+  overflow:hidden;
+  cursor:pointer;
+  background:#000;
+  border:1px solid rgba(255,213,74,.18);
+  box-shadow:0 22px 60px rgba(0,0,0,.55);
+}
+
+.hero-billboard-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+@media(max-width:650px){
+  .hero-billboard-header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .hero-billboard-card{
+    width:calc(100% - 24px);
+    margin:0 12px 18px;
+    aspect-ratio:16/9;
+    border-radius:24px;
+  }
+}
+
 /* =========================
 SIGNATURE PROFILES BANNER
 ========================= */
@@ -766,6 +837,7 @@ SIGNATURE PROFILES BANNER
   .filters,
   .stats-wrap,
   .signature-wrap,
+  .hero-billboard-wrap,
   .shorts-section,
   .profiles,
   .map-wrap,
@@ -1086,6 +1158,17 @@ AGE GATE
 </section>
 
 
+<section class="hero-billboard-wrap">
+  <div class="hero-billboard-box" id="heroBillboardBox" style="display:none;">
+    <div class="hero-billboard-header">
+      <h2>🔥 Hero Billboard</h2>
+      <span>Top homepage premium placement</span>
+    </div>
+
+    <div id="heroBillboard"></div>
+  </div>
+</section>
+
 <section class="signature-wrap">
   <div class="signature-box">
     <div class="signature-header">
@@ -1260,8 +1343,20 @@ function getBadge(profile){
 
 
 function isSignatureProfile(profile){
-  const plan = getPlan(profile);
-  return plan.includes("signature") || plan.includes("vvip");
+  return (
+    profile.is_signature === true ||
+    profile.is_signature === "true" ||
+    getPlan(profile).includes("signature") ||
+    getPlan(profile).includes("vvip")
+  );
+}
+
+function isHeroBillboard(profile){
+  return profile.homepage_featured === true || profile.homepage_featured === "true";
+}
+
+function getBannerImage(profile){
+  return profile.signature_banner_url || profile.banner_url || getImage(profile);
 }
 
 function markPosterImage(img){
@@ -1382,11 +1477,49 @@ function profileSearchText(profile){
 }
 
 
+
+function renderHeroBillboard(list){
+  const box = document.getElementById("heroBillboardBox");
+  const container = document.getElementById("heroBillboard");
+
+  if(!box || !container) return;
+
+  const hero = list
+    .filter(isHeroBillboard)
+    .sort((a,b)=>(Number(a.homepage_featured_position || 999) - Number(b.homepage_featured_position || 999)))[0];
+
+  if(!hero){
+    box.style.display = "none";
+    container.innerHTML = "";
+    return;
+  }
+
+  box.style.display = "block";
+
+  container.innerHTML = `
+    <div
+      class="hero-billboard-card"
+      onclick="openProfileCard('${hero.id}')"
+      title="Open ${getName(hero)}"
+    >
+      <img
+        src="${getBannerImage(hero)}"
+        alt="${getName(hero)}"
+        loading="lazy"
+        onerror="this.src='/assets/logo/logo-badge.png'"
+      >
+    </div>
+  `;
+}
+
 function renderSignatureProfiles(list){
   const container = document.getElementById("signatureProfiles");
   if(!container) return;
 
-  const signatures = list.filter(isSignatureProfile).slice(0,8);
+  const signatures = list
+    .filter(isSignatureProfile)
+    .sort((a,b)=>(Number(a.signature_position || 999) - Number(b.signature_position || 999)))
+    .slice(0,8);
 
   if(!signatures.length){
     container.innerHTML = `
@@ -1404,7 +1537,7 @@ function renderSignatureProfiles(list){
       title="Open ${getName(profile)}"
     >
       <img
-        src="${getImage(profile)}"
+        src="${getBannerImage(profile)}"
         alt="${getName(profile)}"
         loading="lazy"
         onerror="this.src='/assets/logo/logo-badge.png'"
@@ -1548,8 +1681,9 @@ function applyFilters(){
   }
 
   const signatureProfiles = list.filter(isSignatureProfile);
-  const normalProfiles = list.filter(p => !isSignatureProfile(p));
+  const normalProfiles = list.filter(p => !isSignatureProfile(p) && !isHeroBillboard(p));
 
+  renderHeroBillboard(list);
   renderSignatureProfiles(signatureProfiles);
   renderProfiles(normalProfiles);
 }
@@ -1634,6 +1768,7 @@ async function loadProfiles(){
   }
 
   ALL_PROFILES = data || [];
+  renderHeroBillboard(ALL_PROFILES);
   renderSignatureProfiles(ALL_PROFILES);
   renderShorts(ALL_PROFILES);
   applyFilters();
