@@ -1,45 +1,112 @@
+# ==========================================
+# NAIROBI SWEETS
+# Production Netlify Configuration
+# ==========================================
+
 [build]
-publish = "."
-functions = "netlify/functions"
+  publish = "."
+  functions = "netlify/functions"
 
-[functions]
-node_bundler = "esbuild"
-
-[[redirects]]
-from = "/profile/:id"
-to = "/profile.html?id=:id"
-status = 200
-
-[[redirects]]
-from = "/trending"
-to = "/trending.html"
-status = 200
-
-[[redirects]]
-from = "/vault"
-to = "/vault-8472.html"
-status = 200
+# ==========================================
+# SECURITY HEADERS
+# ==========================================
 
 [[headers]]
-for = "/*"
+  for = "/*"
 
-[headers.values]
-X-Frame-Options = "SAMEORIGIN"
-X-Content-Type-Options = "nosniff"
-Referrer-Policy = "strict-origin-when-cross-origin"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
-[[scheduled.functions]]
-name = "refresh-trending"
-cron = "*/15 * * * *"
+# ==========================================
+# CACHE STATIC ASSETS
+# ==========================================
 
-[[scheduled.functions]]
-name = "renewal-reminder-worker"
-cron = "0 9 * * *"
+[[headers]]
+  for = "/assets/*"
 
-[[scheduled.functions]]
-name = "auto-expire-profiles"
-cron = "0 0 * * *"
+  [headers.values]
+    Cache-Control = "public,max-age=31536000,immutable"
 
-[[scheduled.functions]]
-name = "auto-renew"
-cron = "0 */6 * * *"
+# ==========================================
+# SUPABASE + API FUNCTIONS
+# ==========================================
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# ==========================================
+# SITE ROUTES
+# ==========================================
+
+[[redirects]]
+  from = "/join"
+  to = "/join.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/user-dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/vault"
+  to = "/vault-8472.html"
+  status = 200
+
+[[redirects]]
+  from = "/payment-status"
+  to = "/payment-status.html"
+  status = 200
+
+[[redirects]]
+  from = "/shorts"
+  to = "/shorts.html"
+  status = 200
+
+[[redirects]]
+  from = "/reels"
+  to = "/reel.html"
+  status = 200
+
+# ==========================================
+# AUTO RENEW ENGINE
+# ==========================================
+
+[functions."auto-renew-check"]
+  schedule = "0 8 * * *"
+
+[functions."send-renewal-reminders"]
+  schedule = "0 9 * * *"
+
+# ==========================================
+# OPTIONAL DAILY ANALYTICS
+# ==========================================
+
+[functions."daily-analytics-rollup"]
+  schedule = "0 1 * * *"
+
+# ==========================================
+# OPTIONAL EXPIRY CLEANUP
+# ==========================================
+
+[functions."expire-old-profiles"]
+  schedule = "0 2 * * *"
+
+# ==========================================
+# SPA FALLBACK
+# ==========================================
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
