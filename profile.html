@@ -5,229 +5,226 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nairobi Sweets Profile</title>
 
-  <meta name="description" content="View verified Nairobi Sweets profile." />
-  <meta name="robots" content="index, follow" />
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Arial,Helvetica,sans-serif;
-      background:#000;
-      color:#fff;
+    body {
+      margin: 0;
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
     }
-    header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:22px 34px;
-      background:#030303;
-      border-bottom:1px solid rgba(255,216,75,.25);
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 25px;
+      background: #000;
+      border-bottom: 1px solid #2a2100;
     }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:18px;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #ffd84b;
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 0.85;
     }
-    .brand img{
-      width:95px;
-      height:95px;
-      border-radius:20px;
-      object-fit:cover;
+
+    .brand img {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
     }
-    .brand h1{
-      color:#ffd84b;
-      font-size:56px;
-      line-height:.9;
-      margin:0;
-      font-weight:900;
+
+    .home {
+      background: #07136b;
+      color: #ffd84b;
+      padding: 18px 32px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 900;
+      border: 1px solid #2b3bff;
     }
-    .home{
-      background:#07146b;
-      color:#ffd84b;
-      border:1px solid rgba(255,216,75,.45);
-      padding:18px 28px;
-      border-radius:25px;
-      font-weight:900;
-      text-decoration:none;
-      font-size:20px;
+
+    .wrap {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 20px;
     }
-    main{
-      min-height:75vh;
-      padding:40px;
-      background:radial-gradient(circle at top,#07104a 0,#000 48%);
+
+    .card {
+      background: linear-gradient(135deg, #05081f, #080b55);
+      border: 1px solid #1d2b9b;
+      border-radius: 35px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0,0,0,.6);
     }
-    .profile{
-      max-width:1150px;
-      margin:auto;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:35px;
-      align-items:start;
+
+    .hero {
+      width: 100%;
+      height: 560px;
+      object-fit: cover;
+      background: #111;
     }
-    .photo{
-      width:100%;
-      border-radius:30px;
-      overflow:hidden;
-      background:#111;
-      border:1px solid rgba(255,216,75,.3);
+
+    .content {
+      padding: 35px;
     }
-    .photo img,.photo video{
-      width:100%;
-      display:block;
-      max-height:720px;
-      object-fit:cover;
+
+    h1 {
+      color: #ffd84b;
+      font-size: 56px;
+      margin: 0 0 10px;
     }
-    .card{
-      background:rgba(3,8,38,.92);
-      border:1px solid rgba(255,216,75,.28);
-      border-radius:30px;
-      padding:30px;
-      box-shadow:0 20px 80px rgba(0,0,0,.45);
+
+    .meta {
+      color: #ddd;
+      font-size: 20px;
+      margin-bottom: 20px;
     }
-    h2{
-      font-size:48px;
-      color:#ffd84b;
-      margin:0 0 12px;
+
+    .badge {
+      display: inline-block;
+      background: #ffd84b;
+      color: #000;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-weight: 900;
+      margin-bottom: 20px;
     }
-    .badge{
-      display:inline-block;
-      background:#ffd84b;
-      color:#000;
-      padding:9px 16px;
-      border-radius:999px;
-      font-weight:900;
-      margin:8px 8px 12px 0;
+
+    .bio {
+      font-size: 20px;
+      line-height: 1.6;
+      color: #f1f1f1;
     }
-    .meta{
-      font-size:20px;
-      line-height:1.8;
-      color:#eee;
+
+    .actions {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 30px;
     }
-    .actions{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:14px;
-      margin-top:24px;
+
+    .btn {
+      padding: 18px 26px;
+      border-radius: 18px;
+      font-weight: 900;
+      text-decoration: none;
+      color: #000;
+      background: #ffd84b;
     }
-    .btn{
-      display:block;
-      text-align:center;
-      text-decoration:none;
-      padding:16px;
-      border-radius:18px;
-      font-weight:900;
-      font-size:18px;
+
+    .whatsapp {
+      background: #25d366;
+      color: #fff;
     }
-    .wa{background:#25d366;color:#001b0b}
-    .call{background:#ffd84b;color:#000}
-    .error{
-      min-height:55vh;
-      display:grid;
-      place-items:center;
-      color:#ffd84b;
-      text-align:center;
-      font-size:34px;
-      font-weight:900;
+
+    .call {
+      background: #ffd84b;
+      color: #000;
     }
-    .loading{
-      min-height:55vh;
-      display:grid;
-      place-items:center;
-      color:#ffd84b;
-      font-size:28px;
-      font-weight:900;
+
+    .error {
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffd84b;
+      font-size: 32px;
+      font-weight: 900;
+      text-align: center;
+      padding: 40px;
     }
-    footer{
-      display:flex;
-      justify-content:space-around;
-      padding:22px;
-      background:#000;
-      border-top:1px solid rgba(255,216,75,.2);
-      font-size:30px;
-    }
-    footer a{text-decoration:none;color:#ffd84b}
-    @media(max-width:800px){
-      header{padding:16px}
-      .brand img{width:70px;height:70px}
-      .brand h1{font-size:38px}
-      .profile{grid-template-columns:1fr}
-      main{padding:20px}
-      h2{font-size:36px}
+
+    @media (max-width: 700px) {
+      .brand {
+        font-size: 32px;
+      }
+
+      .brand img {
+        width: 65px;
+        height: 65px;
+      }
+
+      h1 {
+        font-size: 38px;
+      }
+
+      .hero {
+        height: 430px;
+      }
     }
   </style>
 </head>
+
 <body>
 
 <header>
   <div class="brand">
-    <img src="/assets/logo/logo-navbar.png" onerror="this.src='/logo.png'" alt="Nairobi Sweets">
-    <h1>Nairobi<br>Sweets</h1>
+    <img src="/logo.png" alt="Nairobi Sweets Logo">
+    <div>Nairobi<br>Sweets</div>
   </div>
+
   <a class="home" href="/">Home</a>
 </header>
 
 <main id="app">
-  <div class="loading">Loading profile...</div>
+  <div class="error">Loading profile...</div>
 </main>
-
-<footer>
-  <a href="/">🏠</a>
-  <a href="/trending">🔥</a>
-  <a href="/reels">🎬</a>
-  <a href="/join">➕</a>
-</footer>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const app = document.getElementById("app");
 
-function getSlug(){
+function getSlug() {
   const params = new URLSearchParams(window.location.search);
-  const qSlug = params.get("slug");
-  if(qSlug) return qSlug.trim();
+  const querySlug = params.get("slug");
 
-  const path = window.location.pathname.replace(/^\/+|\/+$/g,"");
-  const parts = path.split("/");
-  if(parts[0] === "profile" && parts[1]) return parts[1].trim();
+  if (querySlug) return querySlug.trim();
+
+  const parts = window.location.pathname.split("/").filter(Boolean);
+
+  if (parts[0] === "profile" && parts[1]) {
+    return decodeURIComponent(parts[1]).trim();
+  }
 
   return "";
 }
 
-function safe(v){
-  return v === null || v === undefined || v === "" ? "Not listed" : String(v);
+function cleanPhone(phone) {
+  if (!phone) return "";
+  let p = String(phone).replace(/\D/g, "");
+
+  if (p.startsWith("0")) p = "254" + p.slice(1);
+  if (p.startsWith("7")) p = "254" + p;
+  if (p.startsWith("1")) p = "254" + p;
+
+  return p;
 }
 
-function getMainImage(p){
-  if(p.image_url) return p.image_url;
-  if(Array.isArray(p.gallery) && p.gallery.length) return p.gallery[0];
-  if(p.photo_url) return p.photo_url;
-  if(p.profile_image) return p.profile_image;
+function getImage(p) {
+  if (p.image_url) return p.image_url;
+  if (p.photo_url) return p.photo_url;
+  if (p.main_image) return p.main_image;
+  if (p.gallery && Array.isArray(p.gallery) && p.gallery.length) return p.gallery[0];
+  if (p.images && Array.isArray(p.images) && p.images.length) return p.images[0];
   return "/logo.png";
 }
 
-function getVideo(p){
-  return p.reel_url || p.reel || p.short_video || p.video_url || "";
-}
-
-function normalizePhone(phone){
-  if(!phone) return "";
-  let x = String(phone).replace(/\D/g,"");
-  if(x.startsWith("0")) x = "254" + x.slice(1);
-  if(x.startsWith("7")) x = "254" + x;
-  return x;
-}
-
-async function loadProfile(){
+async function loadProfile() {
   const slug = getSlug();
 
-  if(!slug){
-    app.innerHTML = `<div class="error">Profile not found.</div>`;
+  if (!slug) {
+    app.innerHTML = `<div class="error">Profile slug missing.</div>`;
     return;
   }
 
@@ -238,64 +235,61 @@ async function loadProfile(){
     .eq("approved", true)
     .maybeSingle();
 
-  if(error){
+  if (error) {
     app.innerHTML = `<div class="error">${error.message}</div>`;
     return;
   }
 
-  if(!data){
+  if (!data) {
     app.innerHTML = `<div class="error">Profile not found.</div>`;
     return;
   }
 
-  const img = getMainImage(data);
-  const video = getVideo(data);
-  const phone = normalizePhone(data.phone);
-  const whatsapp = normalizePhone(data.whatsapp || data.phone);
-  const name = safe(data.stage_name || data.name);
-  const location = safe(data.location);
-  const plan = safe(data.plan || "Featured");
-  const age = safe(data.age);
-  const bodyType = safe(data.body_type);
-  const rate = safe(data.rate);
-  const meeting = safe(data.meeting_place);
-  const services = safe(data.services);
+  const p = data;
+  const name = p.stage_name || p.name || "Nairobi Sweet";
+  const location = p.location || "Nairobi";
+  const plan = p.plan || "Featured";
+  const bio = p.bio || p.description || p.services || "Verified Nairobi Sweets profile.";
+  const img = getImage(p);
 
-  document.title = `${name} | Nairobi Sweets`;
-  document.querySelector('meta[name="description"]').setAttribute(
-    "content",
-    `${name} in ${location}. View profile on Nairobi Sweets.`
+  const whatsapp = cleanPhone(p.whatsapp || p.phone);
+  const phone = cleanPhone(p.phone || p.whatsapp);
+
+  const whatsappText = encodeURIComponent(
+    `Hi ${name}, I found your profile on Nairobi Sweets: https://nairobi-sweets.com/profile.html?slug=${p.slug}`
   );
 
   app.innerHTML = `
-    <section class="profile">
-      <div class="photo">
-        ${
-          video
-          ? `<video src="${video}" controls playsinline poster="${img}"></video>`
-          : `<img src="${img}" alt="${name}" loading="eager">`
-        }
-      </div>
-
+    <section class="wrap">
       <div class="card">
-        <span class="badge">👑 ${plan}</span>
-        ${data.verified ? `<span class="badge">✅ Verified</span>` : ""}
-        ${data.online ? `<span class="badge">🟢 Online Now</span>` : ""}
+        <img class="hero" src="${img}" alt="${name}" onerror="this.src='/logo.png'">
 
-        <h2>${name}</h2>
+        <div class="content">
+          <div class="badge">👑 ${plan}</div>
 
-        <div class="meta">
-          📍 <b>Location:</b> ${location}<br>
-          🎂 <b>Age:</b> ${age}<br>
-          💎 <b>Body Type:</b> ${bodyType}<br>
-          💰 <b>Rate:</b> ${rate}<br>
-          🏠 <b>Meeting:</b> ${meeting}<br>
-          ✨ <b>Services:</b> ${services}
-        </div>
+          <h1>${name}</h1>
 
-        <div class="actions">
-          <a class="btn wa" href="https://wa.me/${whatsapp}?text=Hi%20${encodeURIComponent(name)}%2C%20I%20saw%20your%20profile%20on%20Nairobi%20Sweets:%20${encodeURIComponent(location.href)}" target="_blank">WhatsApp</a>
-          <a class="btn call" href="tel:${phone}">Call</a>
+          <div class="meta">
+            📍 ${location} · 🟢 Online Now
+          </div>
+
+          <div class="bio">${bio}</div>
+
+          <div class="actions">
+            ${
+              whatsapp
+              ? `<a class="btn whatsapp" href="https://wa.me/${whatsapp}?text=${whatsappText}" target="_blank">💬 WhatsApp</a>`
+              : ""
+            }
+
+            ${
+              phone
+              ? `<a class="btn call" href="tel:+${phone}">☎ Call</a>`
+              : ""
+            }
+
+            <a class="btn" href="/">🏠 Back Home</a>
+          </div>
         </div>
       </div>
     </section>
