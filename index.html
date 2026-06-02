@@ -801,50 +801,6 @@ SIGNATURE PROFILES BANNER
   .profiles{grid-template-columns:1fr}
 }
 
-let signatureAutoSlideTimer = null;
-
-function startSignatureAutoSlide(){
-  const track = document.getElementById("signatureProfiles");
-  if(!track) return;
-
-  clearInterval(signatureAutoSlideTimer);
-
-  signatureAutoSlideTimer = setInterval(()=>{
-    const card = track.querySelector(".signature-card");
-    if(!card) return;
-
-    const computed = window.getComputedStyle(track);
-    const gap = parseFloat(computed.columnGap || computed.gap || 18) || 18;
-    const step = card.offsetWidth + gap;
-
-    const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 30;
-
-    if(atEnd){
-      track.scrollTo({ left:0, behavior:"smooth" });
-    }else{
-      track.scrollBy({ left:step, behavior:"smooth" });
-    }
-  }, 3500);
-}
-
-function pauseSignatureAutoSlide(){
-  clearInterval(signatureAutoSlideTimer);
-}
-
-function resumeSignatureAutoSlide(){
-  setTimeout(startSignatureAutoSlide, 800);
-}
-
-document.addEventListener("visibilitychange",()=>{
-  if(document.hidden){
-    pauseSignatureAutoSlide();
-  }else{
-    resumeSignatureAutoSlide();
-  }
-});
-
-
-
 /* =========================
 AGE GATE
 ========================= */
@@ -1215,6 +1171,55 @@ AGE GATE
 </nav>
 
 <script>
+/* =========================
+SIGNATURE AUTO SLIDER
+========================= */
+let signatureAutoSlideTimer = null;
+
+function startSignatureAutoSlide(){
+  const track = document.getElementById("signatureProfiles");
+  if(!track) return;
+
+  clearInterval(signatureAutoSlideTimer);
+
+  signatureAutoSlideTimer = setInterval(()=>{
+    const card = track.querySelector(".signature-card");
+    if(!card) return;
+
+    const computed = window.getComputedStyle(track);
+    const gap = parseFloat(computed.columnGap || computed.gap || 18) || 18;
+    const step = card.offsetWidth + gap;
+
+    const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 30;
+
+    if(atEnd){
+      track.scrollTo({ left:0, behavior:"smooth" });
+    }else{
+      track.scrollBy({ left:step, behavior:"smooth" });
+    }
+  }, 3500);
+}
+
+function pauseSignatureAutoSlide(){
+  clearInterval(signatureAutoSlideTimer);
+}
+
+function resumeSignatureAutoSlide(){
+  setTimeout(startSignatureAutoSlide, 800);
+}
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){
+    pauseSignatureAutoSlide();
+  }else{
+    resumeSignatureAutoSlide();
+  }
+});
+
+
+
+
+
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
 const SITE_URL = "https://nairobi-sweets.com";
@@ -1411,8 +1416,17 @@ async function handleTrackedLink(event,eventType,profileId,url,newTab=false){
 }
 
 async function openProfileCard(profileId){
-  await trackEvent("profile_opens",profileId);
-  window.location.href = `/profile.html?id=${profileId}`;
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(profileId)) || {};
+  const profileName = getName(profile);
+
+  await trackEvent("profile_opens", profileId, profileName);
+
+  if(profile.slug){
+    window.location.href = `/profile.html?slug=${encodeURIComponent(profile.slug)}`;
+    return;
+  }
+
+  window.location.href = `/profile.html?id=${encodeURIComponent(profileId)}`;
 }
 
 function profileSearchText(profile){
@@ -1667,7 +1681,7 @@ async function loadProfiles(){
     .from("profiles")
     .select("*")
     .eq("approved",true)
-    .eq("is_expired",false)
+    .or("is_expired.eq.false,is_expired.is.null")
     .order("trending_score",{ascending:false})
     .order("plan_rank",{ascending:false})
     .order("boost_score",{ascending:false})
