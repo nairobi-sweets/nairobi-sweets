@@ -1,8 +1,3 @@
-# ==========================================
-# NAIROBI SWEETS
-# Production Netlify Configuration
-# ==========================================
-
 [build]
   publish = "."
   functions = "netlify/functions"
@@ -18,20 +13,19 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=*"
 
 # ==========================================
-# CACHE STATIC ASSETS
+# SITEMAP
 # ==========================================
 
-[[headers]]
-  for = "/assets/*"
-
-  [headers.values]
-    Cache-Control = "public,max-age=31536000,immutable"
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/sitemap"
+  status = 200
 
 # ==========================================
-# SUPABASE + API FUNCTIONS
+# API FUNCTIONS
 # ==========================================
 
 [[redirects]]
@@ -40,77 +34,73 @@
   status = 200
 
 # ==========================================
-# GOOGLE SEARCH CONSOLE VERIFICATION
+# M-PESA FUNCTIONS
 # ==========================================
 
 [[redirects]]
-  from = "/google57ecb1f92048de42.html"
-  to = "/google57ecb1f92048de42.html"
-  status = 200
-  force = true
-
-# ==========================================
-# SITE ROUTES
-# ==========================================
-
-[[redirects]]
-  from = "/join"
-  to = "/join.html"
+  from = "/mpesa-stk-push"
+  to = "/.netlify/functions/mpesa-stk-push"
   status = 200
 
 [[redirects]]
-  from = "/login"
-  to = "/login.html"
+  from = "/mpesa-callback"
+  to = "/.netlify/functions/mpesa-callback"
+  status = 200
+
+# ==========================================
+# ADMIN FUNCTIONS
+# ==========================================
+
+[[redirects]]
+  from = "/admin-login"
+  to = "/.netlify/functions/admin-login"
   status = 200
 
 [[redirects]]
-  from = "/dashboard"
-  to = "/user-dashboard.html"
+  from = "/admin-me"
+  to = "/.netlify/functions/admin-me"
   status = 200
 
 [[redirects]]
-  from = "/vault"
-  to = "/vault-8472.html"
+  from = "/admin-list-users"
+  to = "/.netlify/functions/admin-list-users"
   status = 200
 
 [[redirects]]
-  from = "/payment-status"
-  to = "/payment-status.html"
+  from = "/admin-create-user"
+  to = "/.netlify/functions/admin-create-user"
   status = 200
 
 [[redirects]]
-  from = "/shorts"
-  to = "/shorts.html"
+  from = "/admin-update-user"
+  to = "/.netlify/functions/admin-update-user"
   status = 200
 
 [[redirects]]
-  from = "/reels"
-  to = "/reel.html"
+  from = "/admin-delete-user"
+  to = "/.netlify/functions/admin-delete-user"
   status = 200
 
 # ==========================================
-# AUTO RENEW ENGINE
+# SEO FILES
 # ==========================================
 
-[functions."auto-renew-check"]
-  schedule = "0 8 * * *"
-
-[functions."send-renewal-reminders"]
-  schedule = "0 9 * * *"
-
-# ==========================================
-# OPTIONAL DAILY ANALYTICS
-# ==========================================
-
-[functions."daily-analytics-rollup"]
-  schedule = "0 1 * * *"
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt"
+  status = 200
 
 # ==========================================
-# OPTIONAL EXPIRY CLEANUP
+# CRON JOBS
 # ==========================================
 
-[functions."expire-old-profiles"]
-  schedule = "0 2 * * *"
+[functions]
+
+  [functions."auto-expire"]
+    schedule = "@hourly"
+
+  [functions."auto-renew"]
+    schedule = "@hourly"
 
 # ==========================================
 # SPA FALLBACK
