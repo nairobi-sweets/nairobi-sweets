@@ -9,9 +9,9 @@ const supabase = createClient(
 
 exports.handler = async () => {
   try {
-    const { data, error } = await supabase
+    const { data: profiles, error } = await supabase
       .from("profiles")
-      .select("slug, updated_at")
+      .select("slug, updated_at, created_at")
       .eq("approved", true)
       .not("slug", "is", null);
 
@@ -36,10 +36,6 @@ exports.handler = async () => {
       "/seo/locations/rongai.html",
       "/seo/locations/syokimau.html",
       "/seo/locations/thika-road.html",
-      "/seo/locations/mombasa.html",
-      "/seo/locations/kisumu.html",
-      "/seo/locations/nakuru.html",
-      "/seo/locations/eldoret.html",
       "/seo/categories/featured.html",
       "/seo/categories/vip.html",
       "/seo/categories/signature.html"
@@ -51,14 +47,19 @@ exports.handler = async () => {
     <priority>0.8</priority>
   </url>`);
 
-    (data || []).forEach(profile => {
+    profiles.forEach(profile => {
       urls.push(`
   <url>
     <loc>${SITE_URL}/profile.html?slug=${encodeURIComponent(profile.slug)}</loc>
-    <lastmod>${new Date(profile.updated_at || Date.now()).toISOString()}</lastmod>
+    <lastmod>${new Date(profile.updated_at || profile.created_at || Date.now()).toISOString()}</lastmod>
     <priority>0.9</priority>
   </url>`);
     });
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join("\n")}
+</urlset>`;
 
     return {
       statusCode: 200,
@@ -66,11 +67,9 @@ exports.handler = async () => {
         "Content-Type": "application/xml; charset=utf-8",
         "Cache-Control": "public, max-age=300"
       },
-      body: `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.join("\n")}
-</urlset>`
+      body: xml
     };
+
   } catch (err) {
     return {
       statusCode: 500,
