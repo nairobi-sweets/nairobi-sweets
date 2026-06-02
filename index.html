@@ -449,6 +449,35 @@ SIGNATURE PROFILES BANNER
   flex-wrap:wrap;
 }
 
+.ranking-score{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  background:rgba(255,213,74,.12);
+  border:1px solid rgba(255,213,74,.18);
+  color:#ffd54a;
+  border-radius:999px;
+  padding:5px 8px;
+  font-weight:900;
+}
+
+.view-profile-btn{
+  grid-column:1/-1;
+  min-height:36px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-size:10px;
+  font-weight:900;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.25),0 8px 22px rgba(255,180,0,.18);
+}
+
+
 .featured-badge{
   position:absolute;
   top:14px;
@@ -1271,6 +1300,10 @@ function getImage(profile){
   );
 }
 
+function getSignatureImage(profile){
+  return profile.signature_banner_url || getImage(profile);
+}
+
 function getVideo(profile){
   return profile.video_url || profile.short_url || profile.reel_url || "";
 }
@@ -1311,7 +1344,38 @@ function getBadge(profile){
 
 function isSignatureProfile(profile){
   const plan = getPlan(profile);
-  return plan.includes("signature") || plan.includes("vvip");
+  return Boolean(profile.is_signature) || plan.includes("signature") || plan.includes("vvip");
+}
+
+function getProfileUrl(profile){
+  const slug = profile.slug || profile.id;
+  return `/profile.html?slug=${encodeURIComponent(slug)}`;
+}
+
+function rankingScore(profile){
+  return (
+    (Number(profile.boost || profile.boost_score || 0) * 1000) +
+    (Number(profile.views || profile.views_count || 0) * 1) +
+    (Number(profile.whatsapp_clicks || 0) * 10) +
+    (Number(profile.call_clicks || 0) * 20) +
+    (Number(profile.favorites || profile.likes || profile.likes_count || 0) * 15) +
+    (Number(profile.trending_score || 0) * 1) +
+    (Number(profile.plan_rank || 0) * 100)
+  );
+}
+
+function sortByMarketplaceRank(list){
+  return [...list].sort((a,b)=>{
+    const heroA = a.homepage_featured ? 1 : 0;
+    const heroB = b.homepage_featured ? 1 : 0;
+    if(heroA !== heroB) return heroB - heroA;
+
+    const sigA = isSignatureProfile(a) ? 1 : 0;
+    const sigB = isSignatureProfile(b) ? 1 : 0;
+    if(sigA !== sigB) return sigB - sigA;
+
+    return rankingScore(b) - rankingScore(a);
+  });
 }
 
 function markPosterImage(img){
@@ -1323,11 +1387,11 @@ function markPosterImage(img){
 }
 
 function getLikes(profile){
-  return Number(profile.likes_count || profile.likes || 0);
+  return Number(profile.favorites || profile.likes_count || profile.likes || 0);
 }
 
 function getViews(profile){
-  return Number(profile.views_count || profile.views || 0);
+  return Number(profile.views || profile.views_count || 0);
 }
 
 function compact(text,max=115){
@@ -1421,12 +1485,7 @@ async function openProfileCard(profileId){
 
   await trackEvent("profile_opens", profileId, profileName);
 
-  if(profile.slug){
-    window.location.href = `/profile.html?slug=${encodeURIComponent(profile.slug)}`;
-    return;
-  }
-
-  window.location.href = `/profile.html?id=${encodeURIComponent(profileId)}`;
+  window.location.href = getProfileUrl(profile);
 }
 
 function profileSearchText(profile){
@@ -1445,7 +1504,10 @@ function renderSignatureProfiles(list){
   const container = document.getElementById("signatureProfiles");
   if(!container) return;
 
-  const signatures = list.filter(isSignatureProfile).slice(0,8);
+  const signatures = list
+    .filter(isSignatureProfile)
+    .sort((a,b)=>(Number(a.signature_position || 999) - Number(b.signature_position || 999)))
+    .slice(0,8);
 
   if(!signatures.length){
     container.innerHTML = `
@@ -1463,7 +1525,7 @@ function renderSignatureProfiles(list){
       title="Open ${getName(profile)}"
     >
       <img
-        src="${getImage(profile)}"
+        src="${getSignatureImage(profile)}"
         alt="${getName(profile)}"
         loading="lazy"
         onerror="this.src='/assets/logo/logo-badge.png'"
@@ -1560,9 +1622,11 @@ function renderProfiles(data){
           <div class="bio">${compact(getBio(profile))}</div>
 
           <div class="engagement">
-            ❤️ ${getLikes(profile)}
-            •
-            👁️ ${getViews(profile)}
+            <span class="ranking-score">🔥 ${rankingScore(profile).toLocaleString()}</span>
+            <span>❤️ ${getLikes(profile)}</span>
+            <span>👁 ${getViews(profile)}</span>
+            <span>💬 ${Number(profile.whatsapp_clicks || 0)}</span>
+            <span>☎ ${Number(profile.call_clicks || 0)}</span>
           </div>
 
           <div class="action-row">
@@ -1584,6 +1648,13 @@ function renderProfiles(data){
               `
               : `<button class="disabled-contact">CONTACT HIDDEN</button>`
             }
+            <a
+              class="view-profile-btn"
+              href="${getProfileUrl(profile)}"
+              onclick="event.stopPropagation(); trackEvent('profile_opens','${profile.id}','${getName(profile)}')"
+            >
+              👤 VIEW PROFILE
+            </a>
           </div>
         </div>
       </article>
@@ -1607,6 +1678,8 @@ function applyFilters(){
   if(q){
     list = list.filter(p=>profileSearchText(p).includes(q));
   }
+
+  list = sortByMarketplaceRank(list);
 
   const signatureProfiles = list.filter(isSignatureProfile);
   const normalProfiles = list.filter(p => !isSignatureProfile(p));
@@ -1694,7 +1767,7 @@ async function loadProfiles(){
     return;
   }
 
-  ALL_PROFILES = data || [];
+  ALL_PROFILES = sortByMarketplaceRank(data || []);
   renderSignatureProfiles(ALL_PROFILES);
   renderShorts(ALL_PROFILES);
   applyFilters();
