@@ -2,9 +2,9 @@
   publish = "."
   functions = "netlify/functions"
 
-# ==========================================
+# =========================
 # SECURITY HEADERS
-# ==========================================
+# =========================
 
 [[headers]]
   for = "/*"
@@ -13,99 +13,116 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=*"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
 
-# ==========================================
-# SITEMAP
-# ==========================================
+# =========================
+# DYNAMIC SITEMAP
+# =========================
 
 [[redirects]]
   from = "/sitemap.xml"
   to = "/.netlify/functions/sitemap"
   status = 200
 
-# ==========================================
-# API FUNCTIONS
-# ==========================================
+# =========================
+# NETLIFY FUNCTIONS
+# =========================
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-# ==========================================
-# M-PESA FUNCTIONS
-# ==========================================
-
-[[redirects]]
-  from = "/mpesa-stk-push"
+  from = "/api/mpesa-stk-push"
   to = "/.netlify/functions/mpesa-stk-push"
   status = 200
 
 [[redirects]]
-  from = "/mpesa-callback"
+  from = "/api/mpesa-callback"
   to = "/.netlify/functions/mpesa-callback"
   status = 200
 
-# ==========================================
-# ADMIN FUNCTIONS
-# ==========================================
-
 [[redirects]]
-  from = "/admin-login"
+  from = "/api/admin-login"
   to = "/.netlify/functions/admin-login"
   status = 200
 
 [[redirects]]
-  from = "/admin-me"
+  from = "/api/admin-me"
   to = "/.netlify/functions/admin-me"
   status = 200
 
 [[redirects]]
-  from = "/admin-list-users"
+  from = "/api/admin-list-users"
   to = "/.netlify/functions/admin-list-users"
   status = 200
 
 [[redirects]]
-  from = "/admin-create-user"
+  from = "/api/admin-create-user"
   to = "/.netlify/functions/admin-create-user"
   status = 200
 
 [[redirects]]
-  from = "/admin-update-user"
+  from = "/api/admin-update-user"
   to = "/.netlify/functions/admin-update-user"
   status = 200
 
 [[redirects]]
-  from = "/admin-delete-user"
+  from = "/api/admin-delete-user"
   to = "/.netlify/functions/admin-delete-user"
   status = 200
 
-# ==========================================
-# SEO FILES
-# ==========================================
+# =========================
+# AUTO RENEW CRON
+# =========================
+
+[functions."auto-renew"]
+  schedule = "@hourly"
+
+# =========================
+# SEO URLS
+# =========================
 
 [[redirects]]
-  from = "/robots.txt"
-  to = "/robots.txt"
+  from = "/profile/:slug"
+  to = "/profile.html?slug=:slug"
   status = 200
 
-# ==========================================
-# CRON JOBS
-# ==========================================
+[[redirects]]
+  from = "/escort/:slug"
+  to = "/profile.html?slug=:slug"
+  status = 200
 
-[functions]
+# =========================
+# SHORTS
+# =========================
 
-  [functions."auto-expire"]
-    schedule = "@hourly"
+[[redirects]]
+  from = "/shorts"
+  to = "/shorts.html"
+  status = 200
 
-  [functions."auto-renew"]
-    schedule = "@hourly"
+[[redirects]]
+  from = "/trending"
+  to = "/trending.html"
+  status = 200
 
-# ==========================================
+[[redirects]]
+  from = "/reels"
+  to = "/reel.html"
+  status = 200
+
+# =========================
+# FORCE HTTPS
+# =========================
+
+[[redirects]]
+  from = "http://nairobi-sweets.com/*"
+  to = "https://nairobi-sweets.com/:splat"
+  status = 301
+  force = true
+
+# =========================
 # SPA FALLBACK
-# MUST STAY LAST
-# ==========================================
+# KEEP LAST
+# =========================
 
 [[redirects]]
   from = "/*"
