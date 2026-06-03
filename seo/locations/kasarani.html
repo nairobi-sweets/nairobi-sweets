@@ -3,18 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Kasarani Profiles | Nairobi Sweets</title>
 <meta name="description" content="Browse active Kasarani profiles on Nairobi Sweets. Discover VIP, Featured and Signature profiles across Kasarani, Garden City, Thika Road, Mwiki, Roysambu, Mirema and nearby Nairobi areas.">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://nairobi-sweets.com/seo/locations/kasarani.html">
-
 <meta property="og:title" content="Kasarani Profiles | Nairobi Sweets">
 <meta property="og:description" content="Browse active Kasarani profiles, VIP listings and Signature profiles on Nairobi Sweets.">
 <meta property="og:url" content="https://nairobi-sweets.com/seo/locations/kasarani.html">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
-
 <link rel="icon" href="/assets/logo/logo-badge.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -142,14 +139,6 @@ function safePhone(phone){
   return p;
 }
 
-function makeSlug(value){
-  return String(value || "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g,"-")
-    .replace(/^-+|-+$/g,"");
-}
-
 function getName(p){return p.stage_name || p.name || p.full_name || "Verified Profile"}
 function getLocation(p){return p.location || p.town || p.area || "Kasarani"}
 function getBio(p){return p.bio || p.description || p.about || "Active Kasarani profile."}
@@ -170,16 +159,7 @@ function getImage(p){
 }
 
 function getProfileUrl(p){
-  const slug = makeSlug(
-    p.slug ||
-    p.username ||
-    p.stage_name ||
-    p.name ||
-    p.full_name ||
-    p.id
-  );
-
-  return "/profile.html?slug=" + encodeURIComponent(slug);
+  return "/profile.html?id=" + encodeURIComponent(p.id);
 }
 
 function badge(p){
