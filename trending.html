@@ -3,9 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>Nairobi Sweets | Trending Profiles</title>
 <meta name="description" content="Trending Nairobi Sweets profiles ranked by views, WhatsApp clicks, calls, shares and video plays.">
+
 <link rel="icon" href="/assets/logo/logo-badge.png">
+
+<!-- PWA APP SUPPORT -->
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffd84b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
+<link rel="apple-touch-icon" href="/assets/logo/logo-badge.png">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -88,6 +99,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const grid = document.getElementById("grid");
+
 let rows = [];
 let sortKey = "trending_score";
 
@@ -107,17 +119,27 @@ function planOf(p){
   return String(p.plan || "featured").toUpperCase();
 }
 
-function n(v){return Number(v || 0)}
+function n(v){
+  return Number(v || 0);
+}
 
 function rankLabel(i){
-  if(i===0) return "👑 #1";
-  if(i===1) return "🥈 #2";
-  if(i===2) return "🥉 #3";
-  return `#${i+1}`;
+  if(i === 0) return "👑 #1";
+  if(i === 1) return "🥈 #2";
+  if(i === 2) return "🥉 #3";
+  return `#${i + 1}`;
+}
+
+function profileLink(p){
+  if(p.slug){
+    return `/profile.html?slug=${encodeURIComponent(p.slug)}`;
+  }
+
+  return `/profile.html?slug=${encodeURIComponent(p.id)}`;
 }
 
 function render(){
-  const sorted = [...rows].sort((a,b)=>n(b[sortKey])-n(a[sortKey]));
+  const sorted = [...rows].sort((a,b)=>n(b[sortKey]) - n(a[sortKey]));
 
   if(!sorted.length){
     grid.innerHTML = `<div class="empty">No trending data yet.</div>`;
@@ -125,13 +147,20 @@ function render(){
   }
 
   grid.innerHTML = sorted.map((p,i)=>`
-    <article class="card" onclick="location.href='/profile.html?id=${p.id}'">
+    <article class="card" onclick="location.href='${profileLink(p)}'">
       <div class="rank">${rankLabel(i)} TRENDING</div>
       <div class="badge">${planOf(p)}</div>
-      <img src="${img(p)}" onerror="this.src='/assets/logo/logo-badge.png'" alt="${nameOf(p)}">
+
+      <img
+        src="${img(p)}"
+        onerror="this.src='/assets/logo/logo-badge.png'"
+        alt="${nameOf(p)}"
+        loading="lazy"
+      >
 
       <div class="body">
         <div class="name">${nameOf(p)}</div>
+
         <div class="meta">
           📍 ${locOf(p)}<br>
           🔥 Score: ${n(p.trending_score)}
@@ -167,7 +196,7 @@ async function loadTrending(){
       )
     `)
     .eq("approved",true)
-    .eq("is_expired",false)
+    .or("is_expired.eq.false,is_expired.is.null")
     .order("trending_score",{ascending:false})
     .limit(60);
 
@@ -183,11 +212,11 @@ async function loadTrending(){
 
     return {
       ...p,
-      views: a?.views || 0,
-      whatsapp_clicks: a?.whatsapp_clicks || 0,
-      call_clicks: a?.call_clicks || 0,
-      share_clicks: a?.share_clicks || 0,
-      video_plays: a?.video_plays || 0,
+      views: a?.views || p.views || 0,
+      whatsapp_clicks: a?.whatsapp_clicks || p.whatsapp_clicks || 0,
+      call_clicks: a?.call_clicks || p.call_clicks || 0,
+      share_clicks: a?.share_clicks || p.share_clicks || p.profile_shares || 0,
+      video_plays: a?.video_plays || p.video_plays || 0,
       last_event_at: a?.last_event_at || null
     };
   });
@@ -205,6 +234,16 @@ document.querySelectorAll(".tabs button").forEach(btn=>{
 });
 
 loadTrending();
+
+/* PWA SERVICE WORKER */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(() => console.log("Nairobi Sweets PWA ready"))
+      .catch(err => console.error("PWA error:", err));
+  });
+}
 </script>
 
 </body>
