@@ -506,7 +506,7 @@ function mainImage(p){
 }
 function galleryImages(p){const arr=safeArray(p.gallery_images||p.gallery||p.images||p.image_urls);return [...new Set([mainImage(p),...arr].filter(Boolean))]}
 function reelUrl(p){return p.reel_url||p.reel||p.short_video||p.video_url||p.short_url||""}
-function profileUrl(p){return `https://nairobi-sweets.com/profile.html?slug=${encodeURIComponent(profileSlug(p)||getSlug())}`}
+function profileUrl(p){return `https://nairobi-sweets.com/profile.html?id=${encodeURIComponent(p.id || getIdParam() || "")}`}
 function planText(p){return String(p.plan||"Featured").trim()}
 function isSignature(p){const plan=planText(p).toLowerCase();return plan.includes("signature")||plan.includes("vvip")||p.is_signature===true||p.signature===true}
 function isVip(p){const plan=planText(p).toLowerCase();return plan.includes("vip")&&!isSignature(p)}
@@ -561,8 +561,8 @@ function updateSEO(p){
   document.getElementById("schema-json").textContent=JSON.stringify({"@context":"https://schema.org","@type":"ProfilePage",name,description:desc,url,image:img});
 }
 function miniCard(p){
-  const slug=encodeURIComponent(profileSlug(p));
-  return `<a class="mini-card" href="/profile.html?slug=${slug}">
+  const id=encodeURIComponent(p.id || "");
+  return `<a class="mini-card" href="/profile.html?id=${id}">
     <div class="mini-media"><img src="${escapeHTML(mainImage(p))}" loading="lazy" alt="${escapeHTML(displayName(p))}" onerror="this.src='/assets/logo/logo-badge.png'"><span class="mini-score">🔥 ${score(p)}</span></div>
     <div class="mini-body"><div class="mini-name">${escapeHTML(displayName(p))}</div><div class="mini-meta">📍 ${escapeHTML(p.location||'Nairobi')}</div><div class="mini-plan">${escapeHTML(planText(p))}</div></div>
   </a>`;
@@ -586,7 +586,7 @@ function previousNext(){
   const sorted=[...relatedProfiles].sort((a,b)=>Number(a.id||0)-Number(b.id||0)); if(!sorted.length)return"";
   const prev=sorted.filter(p=>Number(p.id)<Number(currentProfile.id)).pop()||sorted[sorted.length-1];
   const next=sorted.find(p=>Number(p.id)>Number(currentProfile.id))||sorted[0];
-  return `<div class="profile-nav">${prev?`<a class="btn back" href="/profile.html?slug=${encodeURIComponent(profileSlug(prev))}">← Previous</a>`:""}${next?`<a class="btn back" href="/profile.html?slug=${encodeURIComponent(profileSlug(next))}">Next →</a>`:""}</div>`;
+  return `<div class="profile-nav">${prev?`<a class="btn back" href="/profile.html?id=${encodeURIComponent(prev.id)}">← Previous</a>`:""}${next?`<a class="btn back" href="/profile.html?id=${encodeURIComponent(next.id)}">Next →</a>`:""}</div>`;
 }
 function stickyButtons(p){
   const wa=cleanPhone(p.whatsapp||p.phone), phone=cleanPhone(p.phone||p.whatsapp);
@@ -623,7 +623,7 @@ function renderProfile(p){
 }
 async function loadRelated(current){
   const {data,error}=await sb
-    .from("active_profiles_view")
+    .from("profiles")
     .select("*")
     .neq("id",current.id)
     .limit(80);
@@ -635,7 +635,7 @@ async function findProfileById(id){
   if(!id) return null;
 
   const {data,error}=await sb
-    .from("active_profiles_view")
+    .from("profiles")
     .select("*")
     .eq("id",id)
     .maybeSingle();
@@ -654,7 +654,7 @@ async function findProfileBySlug(slug){
   const wanted=makeSlug(slug);
 
   const {data,error}=await sb
-    .from("active_profiles_view")
+    .from("profiles")
     .select("*")
     .limit(1000);
 
@@ -682,7 +682,7 @@ async function loadProfile(){
   const idParam=getIdParam();
 
   if(!slug && !idParam){
-    app.innerHTML=`<div class="error">Profile slug missing.</div>`;
+    app.innerHTML=`<div class="error">Profile identifier missing.</div>`;
     return;
   }
 
