@@ -1,67 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>signature Listings | Nairobi Sweets</title>
-<meta name="description" content="Browse signature listings on Nairobi Sweets." />
-<link rel="canonical" href="https://nairobi-sweets.com/seo/categories/signature.html" />
-<meta name="robots" content="index,follow" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Signature Profiles | Nairobi Sweets</title>
+<meta name="description" content="Browse active Signature profiles on Nairobi Sweets. Discover premium Signature and VVIP listings across Nairobi, Kilimani, Westlands, Kasarani, Ruaka, Ruiru and nearby areas.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://nairobi-sweets.com/seo/categories/signature.html">
+
+<meta property="og:title" content="Signature Profiles | Nairobi Sweets">
+<meta property="og:description" content="Browse active Signature and VVIP profiles on Nairobi Sweets.">
+<meta property="og:url" content="https://nairobi-sweets.com/seo/categories/signature.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0b1224;color:#f8fafc}
-.wrap{max-width:1100px;margin:0 auto;padding:24px}
-.card{background:#111a31;border:1px solid rgba(255,255,255,.08);border-radius:24px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25)}
-.hero{display:grid;grid-template-columns:1.1fr 1fr}
-.hero img{width:100%;height:100%;object-fit:cover;display:block;min-height:420px}
-.content{padding:28px}
-.badge{display:inline-block;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:bold;margin:0 8px 8px 0;background:#facc15;color:#111827}
-.badge.featured{background:#ec4899;color:white}
-.badge.vvip{background:#fde047;color:#111827}
-.badge.online{background:#22c55e;color:white}
-.muted{color:#aeb7c8}
-.btn{display:inline-block;padding:12px 18px;border-radius:16px;text-decoration:none;font-weight:bold;margin-right:10px}
-.wa{background:#22c55e;color:white}
-.call{background:#ec4899;color:white}
-.section{margin-top:28px}
-.links a{color:#fde047;text-decoration:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.mini{background:#111a31;border:1px solid rgba(255,255,255,.08);padding:18px;border-radius:18px}
-@media (max-width: 800px){ .hero{grid-template-columns:1fr} .hero img{min-height:320px} }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:radial-gradient(circle at top,#4a3000,#000 52%);color:white;font-family:Arial,Helvetica,sans-serif}
+a{text-decoration:none;color:inherit}
+.header{padding:18px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.95);border-bottom:1px solid rgba(255,213,74,.18);position:sticky;top:0;z-index:99}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:58px;height:58px;border-radius:18px;object-fit:cover}
+.brand strong{color:#ffd54a;font-size:24px}
+.join-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;padding:12px 18px;border-radius:999px;font-weight:900}
+.hero{padding:58px 18px 36px;text-align:center}
+.hero h1{color:#ffd54a;font-size:clamp(42px,9vw,82px);line-height:.95;margin-bottom:18px;font-weight:900}
+.hero p{max-width:920px;margin:auto;color:#eee;line-height:1.8;font-size:17px}
+.links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+.links a{background:#4a3000;border:1px solid rgba(255,213,74,.24);padding:12px 16px;border-radius:999px;font-weight:900;font-size:13px}
+.section-title{padding:20px 18px 10px;color:#ffd54a;font-size:30px;font-weight:900}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:22px;padding:18px 18px 50px}
+.card{background:linear-gradient(180deg,#4a3000,#150b00);border:1px solid rgba(255,213,74,.26);border-radius:26px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.card img{width:100%;aspect-ratio:4/4.5;object-fit:cover;background:#020617;display:block}
+.body{padding:15px}
+.badge{display:inline-block;background:linear-gradient(135deg,#ffd54a,#ff9f1c);color:#000;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:900;margin-bottom:10px}
+.name{font-size:16px;font-weight:900;margin-bottom:8px}
+.meta{font-size:12px;color:#f2f2f2;margin-bottom:8px}
+.bio{font-size:11px;color:#e7e7e7;line-height:1.6;margin-bottom:12px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions a{padding:10px;border-radius:14px;text-align:center;font-size:11px;font-weight:900}
+.call{background:#111827;color:white}
+.wa{background:#075e2d;color:white}
+.view{grid-column:1/-1;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.content{padding:20px 18px 45px;max-width:1050px;margin:auto;color:#eee;line-height:1.8}
+.content h2,.content h3{color:#ffd54a;margin:24px 0 10px}
+.content p{margin-bottom:14px}
+.footer{padding:35px 18px;text-align:center;background:#050505;color:#aaa}
+.loading,.empty{grid-column:1/-1;text-align:center;color:#ffd54a;font-weight:900;padding:45px}
+@media(min-width:1100px){.hero,.grid,.section-title{padding-left:90px;padding-right:90px}}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:850px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="card content">
-    <h1>signature Listings</h1>
-    <p class="muted">Browse signature listings on Nairobi Sweets.</p>
-  </div>
-  <div class="section grid">
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Westlands • signature</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Westlands • signature</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+<header class="header">
+  <a href="/" class="brand">
+    <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets">
+    <strong>Nairobi Sweets</strong>
+  </a>
+  <a class="join-btn" href="/join.html">Join</a>
+</header>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Westlands • signature</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-</div>
-  <div class="section links">
-    <a href="https://nairobi-sweets.com/">Home</a> |
-    <a href="https://nairobi-sweets.com/booking.html">Booking</a> |
-    <a href="https://nairobi-sweets.com/featured.html">Featured</a>
+<section class="hero">
+  <h1>Signature Profiles</h1>
+  <p>
+    Browse active Signature and VVIP profiles on Nairobi Sweets.
+    This premium category highlights top-tier listings with elevated visibility.
+  </p>
+
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="/seo/">SEO Hub</a>
+    <a href="/trending.html">Trending</a>
+    <a href="/reel.html">Reels</a>
+    <a href="/seo/categories/vip.html">VIP</a>
+    <a href="/seo/categories/featured.html">Featured</a>
+    <a href="/seo/locations/nairobi.html">Nairobi</a>
+    <a href="/seo/locations/kilimani.html">Kilimani</a>
+    <a href="/seo/locations/westlands.html">Westlands</a>
   </div>
-</div>
+</section>
+
+<h2 class="section-title">Active Signature Profiles</h2>
+
+<section class="grid" id="profiles">
+  <div class="loading">Loading Signature profiles...</div>
+</section>
+
+<section class="content">
+  <h2>About Signature Profiles</h2>
+  <p>
+    Signature profiles are premium Nairobi Sweets listings designed for maximum visibility
+    across the platform. These profiles appear in top discovery sections and premium category pages.
+  </p>
+
+  <h2>Popular Signature Locations</h2>
+  <p>
+    Explore Signature and VVIP profiles across Nairobi, Kilimani, Westlands, Kasarani,
+    Ruaka, Ruiru and other nearby areas.
+  </p>
+
+  <h2>Frequently Asked Questions</h2>
+
+  <h3>How do I browse Signature profiles?</h3>
+  <p>Use this page to view active Signature profiles, then open a full profile for more details.</p>
+
+  <h3>Are Signature profiles updated?</h3>
+  <p>Yes. Signature profiles are loaded from the Nairobi Sweets database.</p>
+
+  <h3>Can I browse VIP profiles too?</h3>
+  <p>Yes. Use the VIP link above to browse VIP listings separately.</p>
+</section>
+
+<footer class="footer">
+  © 2026 Nairobi Sweets · <a href="/">Home</a> · <a href="/join.html">Join</a>
+</footer>
+
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SITE_URL = "https://nairobi-sweets.com";
+const container = document.getElementById("profiles");
+
+function clean(value,fallback=""){
+  return String(value || fallback).replace(/[<>]/g,"");
+}
+
+function safePhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
+}
+
+function getName(p){return p.stage_name || p.name || p.full_name || "Verified Profile"}
+function getLocation(p){return p.location || p.town || p.area || "Nairobi"}
+function getBio(p){return p.bio || p.description || p.about || "Active Signature profile."}
+function getPlan(p){return String(p.plan || p.plan_name || p.package || p.tier || "Signature")}
+
+function getImage(p){
+  return (
+    p.profile_image_url ||
+    p.cover_image_url ||
+    p.image_url ||
+    p.photo_url ||
+    p.image2_url ||
+    p.image3_url ||
+    p.image_url_2 ||
+    p.image_url_3 ||
+    p.avatar_url ||
+    p.image_path ||
+    "/assets/logo/logo-badge.png"
+  );
+}
+
+function getProfileUrl(p){
+  return "/profile.html?id=" + encodeURIComponent(p.id);
+}
+
+function isSignature(p){
+  const plan = getPlan(p).toLowerCase();
+
+  return (
+    plan.includes("signature") ||
+    plan.includes("vvip") ||
+    p.is_signature === true ||
+    p.signature === true ||
+    p.is_vvip === true ||
+    p.vvip === true ||
+    p.package === "Signature" ||
+    p.tier === "Signature" ||
+    p.plan === "Signature"
+  );
+}
+
+function badge(p){
+  const plan = getPlan(p).toLowerCase();
+  if(plan.includes("vvip") || p.is_vvip || p.vvip) return "👑 VVIP";
+  return "👑 Signature";
+}
+
+function shortBio(text){
+  text = String(text || "");
+  return text.length > 115 ? text.slice(0,115).trim() + "..." : text;
+}
+
+function waMessage(p){
+  return encodeURIComponent("Hi " + getName(p) + ", I found your Signature profile on Nairobi Sweets: " + SITE_URL);
+}
+
+async function loadProfiles(){
+  container.innerHTML = `<div class="loading">Loading Signature profiles...</div>`;
+
+  const {data,error} = await sb
+    .from("profiles")
+    .select("*")
+    .order("created_at",{ascending:false})
+    .limit(150);
+
+  if(error){
+    container.innerHTML = `<div class="empty">Unable to load profiles: ${clean(error.message)}</div>`;
+    return;
+  }
+
+  const activeProfiles = (data || []).filter(p =>
+    (
+      p.approved === true ||
+      p.is_approved === true ||
+      p.status === "approved" ||
+      p.status === "active"
+    ) && isSignature(p)
+  );
+
+  if(!activeProfiles.length){
+    container.innerHTML = `<div class="empty">No Signature profiles found yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = activeProfiles.slice(0,40).map(p=>{
+    const phone = safePhone(p.phone || p.whatsapp || p.whatsapp_number);
+
+    return `
+      <article class="card">
+        <img
+          src="${getImage(p)}"
+          alt="${clean(getName(p))} Signature profile"
+          loading="lazy"
+          onerror="this.src='/assets/logo/logo-badge.png'"
+        >
+
+        <div class="body">
+          <span class="badge">${badge(p)}</span>
+          <div class="name">${clean(getName(p))}</div>
+          <div class="meta">📍 ${clean(getLocation(p))}</div>
+          <div class="bio">${clean(shortBio(getBio(p)))}</div>
+
+          <div class="actions">
+            ${
+              phone
+              ? `
+                <a class="call" href="tel:${phone}">☎ Call</a>
+                <a class="wa" href="https://wa.me/${phone}?text=${waMessage(p)}" target="_blank" rel="noopener">WhatsApp</a>
+              `
+              : ""
+            }
+
+            <a class="view" href="${getProfileUrl(p)}">View Profile</a>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+loadProfiles();
+</script>
+
 </body>
 </html>
