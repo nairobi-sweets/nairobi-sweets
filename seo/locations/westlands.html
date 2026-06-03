@@ -1,218 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Westlands Premium Nairobi Profiles | Nairobi Sweets</title>
-  <meta name="description" content="Browse premium Nairobi Sweets profiles in Westlands with verified photos, WhatsApp access, direct calls, and VIP listings.">
-  <meta name="keywords" content="Westlands escorts, Nairobi profiles, Nairobi sweets Westlands, VIP Nairobi listings">
-  <link rel="canonical" href="https://nairobi-sweets.com/seo/locations/westlands.html">
+<title>Westlands Profiles | Nairobi Sweets</title>
+<meta name="description" content="Browse active Westlands profiles on Nairobi Sweets. Discover VIP, Featured and Signature profiles across Westlands, Parklands, Waiyaki Way and nearby Nairobi areas.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://nairobi-sweets.com/seo/locations/westlands.html">
 
-  <meta property="og:title" content="Westlands Premium Nairobi Profiles">
-  <meta property="og:description" content="Verified Westlands premium listings on Nairobi Sweets.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://nairobi-sweets.com/seo/locations/westlands.html">
-  <meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+<meta property="og:title" content="Westlands Profiles | Nairobi Sweets">
+<meta property="og:description" content="Browse active Westlands profiles, VIP listings and Signature profiles on Nairobi Sweets.">
+<meta property="og:url" content="https://nairobi-sweets.com/seo/locations/westlands.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
 
-  <script type="application/ld+json">
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:radial-gradient(circle at top,#0c1148,#000 48%);color:white;font-family:Arial,Helvetica,sans-serif}
+a{text-decoration:none;color:inherit}
+.header{padding:18px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.95);border-bottom:1px solid rgba(255,213,74,.12);position:sticky;top:0;z-index:99}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:58px;height:58px;border-radius:18px;object-fit:cover}
+.brand strong{color:#ffd54a;font-size:24px}
+.join-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;padding:12px 18px;border-radius:999px;font-weight:900}
+.hero{padding:54px 18px 34px;text-align:center}
+.hero h1{color:#ffd54a;font-size:clamp(42px,9vw,76px);line-height:.95;margin-bottom:18px;font-weight:900}
+.hero p{max-width:900px;margin:auto;color:#ddd;line-height:1.8;font-size:17px}
+.links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+.links a{background:#07145f;border:1px solid rgba(255,213,74,.18);padding:12px 16px;border-radius:999px;font-weight:900;font-size:13px}
+.section-title{padding:20px 18px 10px;color:#ffd54a;font-size:30px;font-weight:900}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:22px;padding:18px 18px 50px}
+.card{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:26px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.card img{width:100%;aspect-ratio:4/4.5;object-fit:cover;background:#020617;display:block}
+.body{padding:15px}
+.badge{display:inline-block;background:#ffd54a;color:#000;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:900;margin-bottom:10px}
+.name{font-size:16px;font-weight:900;margin-bottom:8px}
+.meta{font-size:12px;color:#d6d6d6;margin-bottom:8px}
+.bio{font-size:11px;color:#cfcfcf;line-height:1.6;margin-bottom:12px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions a{padding:10px;border-radius:14px;text-align:center;font-size:11px;font-weight:900}
+.call{background:#111827;color:white}
+.wa{background:#075e2d;color:white}
+.view{grid-column:1/-1;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.content{padding:20px 18px 45px;max-width:1050px;margin:auto;color:#ddd;line-height:1.8}
+.content h2,.content h3{color:#ffd54a;margin:24px 0 10px}
+.content p{margin-bottom:14px}
+.footer{padding:35px 18px;text-align:center;background:#050505;color:#aaa}
+.loading,.empty{grid-column:1/-1;text-align:center;color:#ffd54a;font-weight:900;padding:45px}
+@media(min-width:1100px){.hero,.grid,.section-title{padding-left:90px;padding-right:90px}}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:850px){.grid{grid-template-columns:1fr}}
+</style>
+
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"CollectionPage",
+ "name":"Westlands Profiles | Nairobi Sweets",
+ "url":"https://nairobi-sweets.com/seo/locations/westlands.html",
+ "description":"Browse active Westlands profiles on Nairobi Sweets."
+}
+</script>
+
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"FAQPage",
+ "mainEntity":[
   {
-    "@context":"https://schema.org",
-    "@type":"CollectionPage",
-    "name":"Westlands Premium Nairobi Profiles",
-    "url":"https://nairobi-sweets.com/seo/locations/westlands.html",
-    "description":"Premium Westlands listings on Nairobi Sweets"
+   "@type":"Question",
+   "name":"How do I browse Westlands profiles?",
+   "acceptedAnswer":{"@type":"Answer","text":"Use this page to view active Westlands profiles, then open a full profile for more details."}
+  },
+  {
+   "@type":"Question",
+   "name":"Are Westlands profiles updated?",
+   "acceptedAnswer":{"@type":"Answer","text":"Yes. Active profiles are loaded from the Nairobi Sweets database."}
+  },
+  {
+   "@type":"Question",
+   "name":"Can I browse nearby areas?",
+   "acceptedAnswer":{"@type":"Answer","text":"Yes. Nairobi Sweets also has pages for Nairobi, Kilimani, Ruaka, Kasarani, Ruiru and more nearby areas."}
   }
-  </script>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #020617;
-      color: white;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: auto;
-      padding: 40px 20px;
-    }
-
-    .hero {
-      background: linear-gradient(135deg,#0f172a,#1e293b);
-      padding: 40px;
-      border-radius: 24px;
-      margin-bottom: 40px;
-      box-shadow: 0 0 25px rgba(255,215,0,0.08);
-    }
-
-    h1 {
-      font-size: 48px;
-      color: #facc15;
-      margin-bottom: 15px;
-    }
-
-    .hero p {
-      color: #e2e8f0;
-      font-size: 18px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-      gap: 24px;
-    }
-
-    .card {
-      background: #0f172a;
-      border: 1px solid rgba(255,215,0,0.12);
-      border-radius: 22px;
-      overflow: hidden;
-      transition: 0.3s;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 35px rgba(255,215,0,0.12);
-    }
-
-    .card img {
-      width: 100%;
-      height: 320px;
-      object-fit: cover;
-      background: #111827;
-    }
-
-    .card-body {
-      padding: 18px;
-    }
-
-    .card h2 {
-      font-size: 28px;
-      margin: 0 0 10px;
-      color: white;
-    }
-
-    .meta {
-      color: #cbd5e1;
-      margin-bottom: 8px;
-      font-size: 15px;
-    }
-
-    .bio {
-      color: #e2e8f0;
-      line-height: 1.5;
-      min-height: 72px;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .btn {
-      flex: 1;
-      text-align: center;
-      padding: 12px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .wa {
-      background: #22c55e;
-      color: black;
-    }
-
-    .call {
-      background: #facc15;
-      color: black;
-    }
-
-    footer {
-      margin-top: 50px;
-      text-align: center;
-      color: #94a3b8;
-    }
-
-    footer a {
-      color: #facc15;
-      text-decoration: none;
-      margin: 0 8px;
-    }
-
-    .empty {
-      font-size: 18px;
-      color: #cbd5e1;
-      text-align: center;
-      padding: 40px 0;
-    }
-  </style>
+ ]
+}
+</script>
 </head>
+
 <body>
 
-<div class="container">
+<header class="header">
+  <a href="/" class="brand">
+    <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets">
+    <strong>Nairobi Sweets</strong>
+  </a>
+  <a class="join-btn" href="/join.html">Join</a>
+</header>
 
-  <section class="hero">
-    <h1>Premium Profiles in Westlands</h1>
-    <p>Browse verified premium Nairobi Sweets listings in Westlands with real photos, VIP upgrades, direct WhatsApp, and private booking.</p>
-  </section>
+<section class="hero">
+  <h1>Westlands Profiles</h1>
+  <p>
+    Browse active profiles across Westlands and nearby Nairobi areas including Parklands,
+    Waiyaki Way, Nairobi West, Kangemi, Lavington and Kileleshwa.
+  </p>
 
-  <section class="grid" id="profilesGrid"></section>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="/profile.html">Profiles</a>
+    <a href="/trending.html">Trending</a>
+    <a href="/reel.html">Reels</a>
+    <a href="/seo/locations/nairobi.html">Nairobi</a>
+    <a href="/seo/locations/kilimani.html">Kilimani</a>
+    <a href="/seo/locations/ruaka.html">Ruaka</a>
+    <a href="/seo/locations/kasarani-garden-city.html">Kasarani</a>
+  </div>
+</section>
 
-  <footer>
-    <p>
-      <a href="/">Home</a> |
-      <a href="/join.html">Join</a> |
-      <a href="/seo/locations/kilimani.html">Kilimani</a>
-    </p>
-  </footer>
+<h2 class="section-title">Featured Westlands Profiles</h2>
 
-</div>
+<section class="grid" id="profiles">
+  <div class="loading">Loading Westlands profiles...</div>
+</section>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<section class="content">
+  <h2>About Westlands Profiles</h2>
+  <p>
+    Westlands is one of Nairobi's busiest lifestyle, business and entertainment districts.
+    This page helps visitors discover active profiles listed around Westlands and nearby areas.
+  </p>
+
+  <h2>Nearby Areas</h2>
+  <p>
+    Explore Westlands, Parklands, Waiyaki Way, Kangemi, Nairobi West, Lavington,
+    Kileleshwa and other Nairobi locations through Nairobi Sweets location pages.
+  </p>
+
+  <h2>Frequently Asked Questions</h2>
+
+  <h3>How do I browse Westlands profiles?</h3>
+  <p>Use this page to view active Westlands profiles, then open a full profile for more details.</p>
+
+  <h3>Are profiles updated?</h3>
+  <p>Yes. Active profiles are loaded from the Nairobi Sweets database.</p>
+
+  <h3>Can I browse other locations?</h3>
+  <p>Yes. Use the links above to explore Nairobi, Kilimani, Ruaka, Kasarani and nearby areas.</p>
+</section>
+
+<footer class="footer">
+  © 2026 Nairobi Sweets · <a href="/">Home</a> · <a href="/join.html">Join</a>
+</footer>
+
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SITE_URL = "https://nairobi-sweets.com";
+const container = document.getElementById("profiles");
 
-async function loadProfiles() {
-  const { data, error } = await sb
-    .from("profiles")
+function clean(value,fallback=""){
+  return String(value || fallback).replace(/[<>]/g,"");
+}
+
+function safePhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
+}
+
+function getName(p){return p.stage_name || p.name || p.full_name || "Verified Profile"}
+function getLocation(p){return p.location || p.town || p.area || "Westlands"}
+function getBio(p){return p.bio || p.description || p.about || "Active Westlands profile."}
+function getPlan(p){return String(p.plan || p.plan_name || p.package || p.tier || "Featured")}
+
+function getImage(p){
+  return (
+    p.photo_url ||
+    p.image_url ||
+    p.profile_photo ||
+    p.main_photo ||
+    p.photo ||
+    p.image ||
+    "/assets/logo/logo-badge.png"
+  );
+}
+
+function getProfileUrl(p){
+  return "/profile.html?slug=" + encodeURIComponent(p.slug || p.id);
+}
+
+function badge(p){
+  const plan = getPlan(p).toLowerCase();
+  if(p.verified) return "🛡️ Verified";
+  if(plan.includes("signature")) return "👑 Signature";
+  if(plan.includes("vvip")) return "👑 VVIP";
+  if(plan.includes("vip")) return "✨ VIP";
+  if(plan.includes("featured")) return "🔥 Featured";
+  return "🔥 Featured";
+}
+
+function shortBio(text){
+  text = String(text || "");
+  return text.length > 115 ? text.slice(0,115).trim() + "..." : text;
+}
+
+function waMessage(p){
+  return encodeURIComponent("Hi " + getName(p) + ", I found your profile on Nairobi Sweets: " + SITE_URL);
+}
+
+async function loadProfiles(){
+  container.innerHTML = `<div class="loading">Loading Westlands profiles...</div>`;
+
+  const {data,error} = await sb
+    .from("active_profiles_view")
     .select("*")
-    .eq("approved", true)
-    .or("location.ilike.%westlands%,location.ilike.%parklands%,location.ilike.%waiyaki%,location.ilike.%kangemi%,location.ilike.%westy%")
-    .order("created_at", { ascending: false });
+    .or("location.ilike.%Westlands%,location.ilike.%Westands%,location.ilike.%Westy%,location.ilike.%Parklands%,location.ilike.%Waiyaki%,location.ilike.%Kangemi%,location.ilike.%Nairobi West%,location.ilike.%Lavington%,location.ilike.%Kileleshwa%")
+    .order("created_at",{ascending:false})
+    .limit(40);
 
-  const grid = document.getElementById("profilesGrid");
-
-  if (error || !data || !data.length) {
-    grid.innerHTML = '<div class="empty">No profiles available yet.</div>';
+  if(error){
+    container.innerHTML = `<div class="empty">Unable to load profiles: ${clean(error.message)}</div>`;
     return;
   }
 
-  grid.innerHTML = data.map(profile => {
-    const whatsapp = (profile.whatsapp_number || profile.phone || "").replace(/\+/g, "").replace(/\s/g, "");
-    const phone = profile.phone || profile.whatsapp_number || "";
-    const photo = profile.photo_url || "/assets/logo/logo-badge.png";
-    const bio = profile.bio ? profile.bio.substring(0, 140) : "";
-    const packageType = profile.package || "Featured";
+  if(!data || !data.length){
+    container.innerHTML = `<div class="empty">No Westlands profiles found yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = data.map(p=>{
+    const phone = safePhone(p.phone || p.whatsapp || p.whatsapp_number);
 
     return `
       <article class="card">
-        <img src="${photo}" alt="${profile.stage_name}">
-        <div class="card-body">
-          <h2>${profile.stage_name || "Premium Profile"}</h2>
-          <div class="meta">${profile.location || "Westlands"}</div>
-          <div class="meta">${packageType}</div>
-          <p class="bio">${bio}</p>
+        <img
+          src="${getImage(p)}"
+          alt="${clean(getName(p))} Westlands profile"
+          loading="lazy"
+          onerror="this.src='/assets/logo/logo-badge.png'"
+        >
 
-          <div class="buttons">
-            <a class="btn wa" href="https://wa.me/${whatsapp}" target="_blank">WhatsApp</a>
-            <a class="btn call" href="tel:${phone}">Call</a>
+        <div class="body">
+          <span class="badge">${badge(p)}</span>
+          <div class="name">${clean(getName(p))}</div>
+          <div class="meta">📍 ${clean(getLocation(p))}</div>
+          <div class="bio">${clean(shortBio(getBio(p)))}</div>
+
+          <div class="actions">
+            ${
+              phone
+              ? `
+                <a class="call" href="tel:${phone}">☎ Call</a>
+                <a class="wa" href="https://wa.me/${phone}?text=${waMessage(p)}" target="_blank" rel="noopener">WhatsApp</a>
+              `
+              : ""
+            }
+
+            <a class="view" href="${getProfileUrl(p)}">View Profile</a>
           </div>
         </div>
       </article>
