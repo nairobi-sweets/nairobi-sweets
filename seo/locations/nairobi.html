@@ -142,14 +142,6 @@ function safePhone(phone){
   return p;
 }
 
-function makeSlug(value){
-  return String(value || "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g,"-")
-    .replace(/^-+|-+$/g,"");
-}
-
 function getName(p){return p.stage_name || p.name || p.full_name || "Verified Profile"}
 function getLocation(p){return p.location || p.town || p.area || "Nairobi"}
 function getBio(p){return p.bio || p.description || p.about || "Active Nairobi profile."}
@@ -159,36 +151,29 @@ function getImage(p){
   return (
     p.profile_image_url ||
     p.cover_image_url ||
-    p.photo_url ||
     p.image_url ||
-    p.profile_photo ||
-    p.main_photo ||
-    p.photo ||
-    p.image ||
+    p.photo_url ||
+    p.image2_url ||
+    p.image3_url ||
+    p.image_url_2 ||
+    p.image_url_3 ||
+    p.avatar_url ||
+    p.image_path ||
     "/assets/logo/logo-badge.png"
   );
 }
 
 function getProfileUrl(p){
-  const slug = makeSlug(
-    p.slug ||
-    p.username ||
-    p.stage_name ||
-    p.name ||
-    p.full_name ||
-    p.id
-  );
-
-  return "/profile.html?slug=" + encodeURIComponent(slug);
+  return "/profile.html?id=" + encodeURIComponent(p.id);
 }
 
 function badge(p){
   const plan = getPlan(p).toLowerCase();
-  if(p.verified) return "🛡️ Verified";
+  if(p.verified || p.is_verified) return "🛡️ Verified";
   if(plan.includes("signature")) return "👑 Signature";
-  if(plan.includes("vvip")) return "👑 VVIP";
-  if(plan.includes("vip")) return "✨ VIP";
-  if(plan.includes("featured")) return "🔥 Featured";
+  if(plan.includes("vvip") || p.is_vvip) return "👑 VVIP";
+  if(plan.includes("vip") || p.is_vip) return "✨ VIP";
+  if(plan.includes("featured") || p.is_featured) return "🔥 Featured";
   return "🔥 Featured";
 }
 
@@ -205,7 +190,7 @@ async function loadProfiles(){
   container.innerHTML = `<div class="loading">Loading Nairobi profiles...</div>`;
 
   const {data,error} = await sb
-    .from("active_profiles_view")
+    .from("profiles")
     .select("*")
     .or("location.ilike.%Nairobi%,location.ilike.%Kilimani%,location.ilike.%Westlands%,location.ilike.%South B%,location.ilike.%South-B%,location.ilike.%Ruaka%,location.ilike.%Ruiru%,location.ilike.%Ngara%,location.ilike.%Thome%,location.ilike.%Athi River%,location.ilike.%Athi-River%,location.ilike.%Kasarani%,location.ilike.%CBD%,location.ilike.%Latema%")
     .order("created_at",{ascending:false})
@@ -216,12 +201,19 @@ async function loadProfiles(){
     return;
   }
 
-  if(!data || !data.length){
+  const activeProfiles = (data || []).filter(p =>
+    p.approved === true ||
+    p.is_approved === true ||
+    p.status === "approved" ||
+    p.status === "active"
+  );
+
+  if(!activeProfiles.length){
     container.innerHTML = `<div class="empty">No Nairobi profiles found yet.</div>`;
     return;
   }
 
-  container.innerHTML = data.map(p=>{
+  container.innerHTML = activeProfiles.map(p=>{
     const phone = safePhone(p.phone || p.whatsapp || p.whatsapp_number);
 
     return `
