@@ -142,6 +142,14 @@ function safePhone(phone){
   return p;
 }
 
+function makeSlug(value){
+  return String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
+}
+
 function getName(p){return p.stage_name || p.name || p.full_name || "Verified Profile"}
 function getLocation(p){return p.location || p.town || p.area || "Kasarani"}
 function getBio(p){return p.bio || p.description || p.about || "Active Kasarani profile."}
@@ -162,7 +170,16 @@ function getImage(p){
 }
 
 function getProfileUrl(p){
-  return "/profile.html?slug=" + encodeURIComponent(p.slug || p.id);
+  const slug = makeSlug(
+    p.slug ||
+    p.username ||
+    p.stage_name ||
+    p.name ||
+    p.full_name ||
+    p.id
+  );
+
+  return "/profile.html?slug=" + encodeURIComponent(slug);
 }
 
 function badge(p){
