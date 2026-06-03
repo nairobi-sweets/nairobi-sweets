@@ -1,11 +1,12 @@
 {
   "name": "Nairobi Sweets",
   "short_name": "Nairobi Sweets",
-  "start_url": "/index.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0b0f2c",
+  "background_color": "#050733",
   "theme_color": "#ffd84b",
+  "description": "Luxury Nairobi profile directory",
   "icons": [
     {
       "src": "/assets/logo/logo-badge.png",
