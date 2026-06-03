@@ -1868,26 +1868,24 @@ window.addEventListener("beforeinstallprompt", (event) => {
   }
 });
 
-document.addEventListener("click", async (event) => {
-  if(event.target.id !== "installAppBtn") return;
+const installAppBtn = document.getElementById("installAppBtn");
 
-  if(!deferredInstallPrompt){
-    alert("Use your browser menu and tap Add to Home Screen.");
-    return;
-  }
+if(installAppBtn){
+  installAppBtn.addEventListener("click", async () => {
+    if(!deferredInstallPrompt){
+      alert("Use your browser menu and tap Install App or Add to Home Screen.");
+      return;
+    }
 
-  deferredInstallPrompt.prompt();
+    deferredInstallPrompt.prompt();
 
-  const choice = await deferredInstallPrompt.userChoice;
-  console.log("Nairobi Sweets install choice:", choice.outcome);
+    const choice = await deferredInstallPrompt.userChoice;
+    console.log("Nairobi Sweets install choice:", choice.outcome);
 
-  deferredInstallPrompt = null;
-
-  const installBtn = document.getElementById("installAppBtn");
-  if(installBtn){
-    installBtn.style.display = "none";
-  }
-});
+    deferredInstallPrompt = null;
+    installAppBtn.style.display = "none";
+  });
+}
 
 window.addEventListener("appinstalled", () => {
   console.log("Nairobi Sweets installed");
