@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- PWA APP INSTALL SUPPORT -->
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffd84b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
+<link rel="apple-touch-icon" href="/assets/logo/logo-badge.png">
+
+
 <title>Nairobi Sweets | Verified Nairobi Profiles</title>
 <meta name="description" content="Luxury Nairobi profiles, VIP listings, WhatsApp access, shorts, reels, map and Sweet AI discovery.">
 
@@ -1822,6 +1832,21 @@ function leaveSite(){
 document.addEventListener("DOMContentLoaded", showAgeGate);
 
 loadProfiles();
+</script>
+
+
+<script>
+/* =========================
+PWA SERVICE WORKER
+========================= */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(() => console.log("Nairobi Sweets PWA ready"))
+      .catch(error => console.error("Nairobi Sweets PWA error:", error));
+  });
+}
 </script>
 
 </body>
