@@ -3,12 +3,15 @@ const CACHE_NAME = "nairobi-sweets-v1";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
-  "/join.html",
-  "/login.html",
   "/profile.html",
+  "/login.html",
+  "/join.html",
+  "/public-signup-payment-page.html",
   "/trending.html",
-  "/assets/logo/logo-navbar.png",
-  "/assets/logo/logo-badge.png"
+  "/reel.html",
+  "/shorts.html",
+  "/assets/logo/logo-badge.png",
+  "/assets/logo/logo-navbar.png"
 ];
 
 self.addEventListener("install", event => {
@@ -21,7 +24,9 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.map(key => key !== CACHE_NAME ? caches.delete(key) : null))
+      Promise.all(
+        keys.map(key => key !== CACHE_NAME ? caches.delete(key) : null)
+      )
     )
   );
   self.clients.claim();
