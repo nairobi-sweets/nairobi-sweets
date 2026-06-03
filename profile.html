@@ -4,389 +4,369 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Nairobi Sweets Profile</title>
-  <meta name="description" content="Verified Nairobi Sweets profile." />
+  <meta name="description" content="Verified Nairobi Sweets profile with WhatsApp and direct call contact." />
   <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="theme-color" content="#050733" />
+
   <meta property="og:title" content="Nairobi Sweets Profile" />
   <meta property="og:description" content="Verified Nairobi Sweets profile." />
   <meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png" />
   <meta property="og:url" content="https://nairobi-sweets.com/profile.html" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="canonical" href="https://nairobi-sweets.com/profile.html" />
   <link rel="icon" href="/assets/logo/logo-badge.png" />
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
       --gold:#ffd84b;
       --gold2:#ffb700;
-      --navy:#05075a;
-      --deep:#01020e;
-      --glass:rgba(255,255,255,.08);
+      --navy:#060852;
+      --navy2:#080b70;
+      --black:#000;
+      --glass:rgba(255,255,255,.075);
       --line:rgba(255,216,75,.22);
       --green:#25d366;
       --pink:#ff2d75;
       --purple:#7c3aed;
     }
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
+    html{scroll-behavior:smooth;background:#000}
     body{
       margin:0;
-      background:radial-gradient(circle at top,#07105a 0%,#020315 42%,#000 76%);
+      background:radial-gradient(circle at top,#07105a 0%,#010212 48%,#000 100%);
       color:#fff;
       font-family:Arial,Helvetica,sans-serif;
-      padding-bottom:96px;
+      padding-bottom:84px;
       overflow-x:hidden;
     }
     a{text-decoration:none;color:inherit}
-    button{font-family:inherit}
-    header{
+    img,video{max-width:100%;display:block}
+    button{font:inherit}
+
+    .site-header{
       position:sticky;
       top:0;
-      z-index:80;
+      z-index:1000;
+      height:92px;
       background:rgba(0,0,0,.94);
       backdrop-filter:blur(14px);
-      border-bottom:1px solid rgba(255,216,75,.2);
+      border-bottom:1px solid rgba(255,216,75,.18);
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:18px;
-      padding:14px 26px;
+      padding:12px 28px;
     }
     .brand{
       display:flex;
       align-items:center;
-      gap:16px;
+      gap:12px;
       color:var(--gold);
-      font-size:28px;
-      font-weight:1000;
+      font-size:34px;
+      font-weight:950;
       line-height:.82;
-      letter-spacing:-2px;
-      text-shadow:0 0 22px rgba(255,216,75,.16);
+      letter-spacing:-1.4px;
+      text-shadow:0 0 18px rgba(255,216,75,.14);
     }
     .brand img{
-      width:68px;
-      height:68px;
+      width:64px;
+      height:64px;
       object-fit:cover;
-      border-radius:24px;
-      box-shadow:0 0 28px rgba(255,120,0,.35);
+      border-radius:18px;
+      box-shadow:0 0 22px rgba(255,126,0,.32);
     }
     .home-btn{
       background:#07106a;
       color:var(--gold);
-      border:1px solid rgba(255,216,75,.36);
-      padding:14px 26px;
-      border-radius:24px;
-      font-weight:1000;
-      font-size:14px;
+      border:1px solid rgba(255,216,75,.34);
+      padding:13px 25px;
+      border-radius:20px;
+      font-size:18px;
+      font-weight:950;
       box-shadow:inset 0 0 18px rgba(255,255,255,.07);
     }
-    .wrap{max-width:1280px;margin:0 auto 36px;padding:0 22px}
-    .card{
-      background:linear-gradient(145deg,#02031d,#06075e 58%,#08095d);
+
+    .page{
+      max-width:1160px;
+      margin:0 auto;
+      padding:22px 16px 96px;
+    }
+    .profile-card{
+      background:linear-gradient(145deg,#02031d,#06075e 62%,#05063d);
       border:1px solid var(--line);
-      border-radius:34px;
+      border-radius:28px;
       overflow:hidden;
-      box-shadow:0 0 48px rgba(0,0,0,.75);
-      margin-top:28px;
+      box-shadow:0 0 42px rgba(0,0,0,.72);
     }
-    .signature-banner{
-      display:none;
-      background:linear-gradient(90deg,#fff2a1,#ffd84b,#ff9f1c,#ffd84b);
-      color:#000;
-      padding:12px 24px;
-      font-weight:1000;
-      letter-spacing:.6px;
-      text-align:center;
-      border-bottom:1px solid rgba(0,0,0,.2);
-    }
-    .signature-banner.show{display:block}
+
     .hero{
       position:relative;
-      min-height:520px;
-      background:#020315;
+      background:#01020e;
       overflow:hidden;
     }
-    .hero-slider{
-      display:flex;
-      overflow-x:auto;
-      scroll-snap-type:x mandatory;
-      scroll-behavior:smooth;
-      gap:0;
-      height:520px;
-      scrollbar-width:none;
-    }
-    .hero-slider::-webkit-scrollbar{display:none}
-    .slide{
-      position:relative;
-      flex:0 0 100%;
-      scroll-snap-align:start;
-      min-height:520px;
-    }
-    .slide img{
+    .hero-img{
       width:100%;
-      height:100%;
+      height:470px;
       object-fit:cover;
-      display:block;
+      object-position:center top;
+      background:#020315;
       user-select:none;
       -webkit-user-drag:none;
     }
-    .slide::after{
+    .hero::after{
       content:"";
       position:absolute;
-      inset:0;
-      background:linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,.05) 52%,rgba(0,0,0,.2));
+      inset:auto 0 0 0;
+      height:46%;
+      background:linear-gradient(to top,rgba(0,0,0,.82),transparent);
       pointer-events:none;
     }
-    .watermark{
+    .hero-row{
       position:absolute;
-      right:22px;
-      bottom:22px;
+      left:18px;
+      right:18px;
+      bottom:18px;
       z-index:3;
       display:flex;
-      align-items:center;
+      justify-content:space-between;
+      align-items:flex-end;
       gap:10px;
-      background:rgba(0,0,0,.58);
-      border:1px solid rgba(255,216,75,.3);
+    }
+    .score-row{display:flex;gap:8px;flex-wrap:wrap}
+    .hero-pill,.watermark{
+      background:rgba(0,0,0,.68);
+      border:1px solid rgba(255,216,75,.28);
       color:var(--gold);
-      padding:10px 16px;
       border-radius:999px;
-      font-weight:1000;
-      font-size:14px;
-      letter-spacing:.6px;
+      font-weight:900;
+      font-size:13px;
+      padding:9px 12px;
+      white-space:nowrap;
       backdrop-filter:blur(8px);
     }
-    .watermark img{width:28px;height:28px;border-radius:50%}
-    .hero-score{
-      position:absolute;
-      left:22px;
-      bottom:22px;
-      z-index:4;
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .score-badge{
-      background:rgba(0,0,0,.7);
-      border:1px solid rgba(255,216,75,.35);
-      color:var(--gold);
-      padding:12px 18px;
+    .watermark{display:flex;align-items:center;gap:7px;letter-spacing:.35px}
+    .watermark img{width:22px;height:22px;border-radius:50%}
+
+    .content{padding:28px 30px 34px}
+    .badges,.stats,.chips,.actions{display:flex;flex-wrap:wrap;gap:10px}
+    .badge,.stat,.chip{
       border-radius:999px;
-      font-weight:1000;
-    }
-    .dots{
-      position:absolute;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:20px;
-      z-index:5;
-      display:flex;
-      gap:8px;
-    }
-    .dot{
-      width:10px;height:10px;border-radius:50%;
-      border:1px solid rgba(255,216,75,.8);
-      background:rgba(255,255,255,.25);
-    }
-    .dot.active{background:var(--gold)}
-    .content{padding:42px 44px 52px}
-    .badges,.chips,.actions,.stats-strip,.related-grid,.nav-row{display:flex;flex-wrap:wrap;gap:14px}
-    .badge,.chip,.stat{
-      border-radius:999px;
-      font-weight:1000;
-      padding:13px 20px;
+      font-weight:900;
+      padding:9px 14px;
+      font-size:14px;
       border:1px solid rgba(255,216,75,.28);
     }
-    .signature{background:linear-gradient(135deg,#ffd84b,#ff9f1c);color:#000}
-    .vip{background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff}
-    .verified{background:linear-gradient(135deg,#22c55e,#15803d);color:#fff}
-    .featured,.chip,.stat{background:rgba(255,216,75,.11);color:var(--gold)}
+    .badge.signature{background:linear-gradient(135deg,#ffd84b,#ff9f1c);color:#000}
+    .badge.vip{background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff}
+    .badge.verified{background:linear-gradient(135deg,#22c55e,#15803d);color:#fff}
+    .badge.featured,.stat,.chip{background:rgba(255,216,75,.1);color:var(--gold)}
+
+    .signature-banner{
+      display:none;
+      margin:0 0 16px;
+      padding:12px 18px;
+      border-radius:18px;
+      background:linear-gradient(90deg,#ffd84b,#ff9f1c,#ffd84b);
+      color:#000;
+      font-weight:950;
+      font-size:15px;
+      text-align:center;
+    }
+    .signature-banner.show{display:block}
+
     h1{
       color:var(--gold);
-      font-size:46px;
-      line-height:.9;
-      margin:24px 0 18px;
+      font-size:42px;
+      line-height:.96;
+      margin:18px 0 12px;
       text-transform:uppercase;
-      letter-spacing:-2px;
+      letter-spacing:-1.2px;
     }
-    h2{color:var(--gold);font-size:30px;margin:42px 0 18px;letter-spacing:-1px}
-    .meta,.bio{font-size:15px;line-height:1.65;color:#f5f5f5}
-    .bio{max-width:980px;margin:26px 0}
-    .stats-strip{margin:26px 0}
-    .stat{font-size:15px;background:rgba(255,255,255,.08)}
-    .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:24px}
-    .info-box{
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.12);
-      padding:22px;
-      border-radius:22px;
-      font-weight:1000;
-      font-size:16px;
+    h2{
+      color:var(--gold);
+      font-size:28px;
+      line-height:1.08;
+      margin:30px 0 14px;
+      letter-spacing:-.6px;
     }
-    .chip{font-size:15px;background:rgba(255,216,75,.12)}
-    .gallery{
+    .meta,.bio{
+      color:#f6f6f6;
+      font-size:17px;
+      line-height:1.55;
+    }
+    .bio{margin:20px 0 4px;max-width:880px}
+    .stats{margin:18px 0}.stat{font-size:14px;background:rgba(255,255,255,.07)}
+
+    .info-grid{
       display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-      gap:14px;
-      margin-top:14px;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin:20px 0;
     }
-    .gallery .watermarked-img{position:relative;overflow:hidden;border-radius:20px;border:1px solid rgba(255,216,75,.18)}
-    .gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
-    .gallery .mini-mark{
-      position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.6);color:#fff;padding:6px 9px;border-radius:8px;font-size:11px;font-weight:900;
+    .info-box{
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.12);
+      padding:14px 16px;
+      border-radius:16px;
+      font-size:15px;
+      font-weight:850;
     }
-    .reel-box{margin-top:24px;background:#000;border:1px solid var(--line);border-radius:24px;overflow:hidden;max-width:760px}
-    .reel-box video{width:100%;max-height:560px;display:block;background:#000;object-fit:cover}
+    .chip{font-size:14px;background:rgba(255,216,75,.1)}
+
+    .reel-box{
+      max-width:360px;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#000;
+      margin-top:10px;
+    }
+    .reel-box video{width:100%;aspect-ratio:9/16;object-fit:cover;background:#000}
+
+    .gallery-row{
+      display:flex;
+      overflow-x:auto;
+      gap:12px;
+      padding:2px 0 12px;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+    }
+    .gallery-row::-webkit-scrollbar,.mini-row::-webkit-scrollbar{height:6px}
+    .gallery-row::-webkit-scrollbar-thumb,.mini-row::-webkit-scrollbar-thumb{background:rgba(255,216,75,.35);border-radius:99px}
+    .gallery-item{
+      flex:0 0 190px;
+      height:250px;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#111;
+      position:relative;
+      scroll-snap-align:start;
+    }
+    .gallery-item img{width:100%;height:100%;object-fit:cover}
+    .gallery-item span{
+      position:absolute;right:8px;bottom:8px;
+      background:rgba(0,0,0,.62);color:var(--gold);
+      border-radius:999px;padding:5px 7px;font-size:10px;font-weight:900;
+    }
+
+    .actions{margin-top:24px}
     .btn{
       border:none;
       cursor:pointer;
-      min-width:190px;
-      padding:19px 28px;
-      border-radius:22px;
-      font-weight:1000;
+      min-width:150px;
+      padding:14px 18px;
+      border-radius:18px;
       font-size:16px;
-      text-align:center;
+      font-weight:950;
       display:inline-flex;
+      align-items:center;
       justify-content:center;
-      align-items:center;
-      gap:10px;
+      gap:8px;
+      text-align:center;
     }
-    .wa{background:var(--green);color:#fff}
-    .call{background:var(--gold);color:#000}
-    .fav{background:var(--pink);color:#fff}
-    .share{background:var(--purple);color:#fff}
-    .back{background:#07106a;color:var(--gold);border:1px solid rgba(255,216,75,.35)}
-    .actions{margin-top:36px}
-    .nav-row{margin-top:34px}
-    .related-section{margin-top:34px}
-    .related-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:22px;
-    }
-    .related-card{
-      background:linear-gradient(180deg,#11136e,#070943);
-      border:1px solid rgba(255,216,75,.28);
-      border-radius:24px;
-      overflow:hidden;
-      min-height:330px;
-      transition:.2s transform;
-    }
-    .related-card:hover{transform:translateY(-4px)}
-    .related-card img{width:100%;height:210px;object-fit:cover;background:#111;display:block}
-    .related-body{padding:18px;color:#fff}
-    .related-name{font-size:18px;font-weight:1000;color:var(--gold);margin-bottom:8px}
-    .related-meta{font-size:14px;line-height:1.45;color:#eee}
-    .related-plan{margin-top:12px;background:var(--gold);color:#fff;padding:9px 14px;border-radius:999px;font-weight:1000;font-size:15px;text-transform:capitalize}
-    .empty-note{color:#ddd;font-size:15px;background:rgba(255,255,255,.06);padding:18px;border-radius:18px;border:1px solid rgba(255,255,255,.1)}
-    .error{min-height:60vh;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:30px;font-weight:1000;text-align:center;padding:30px}
-    .bottom-nav{
-      position:fixed;
-      bottom:0;
-      left:0;
-      right:0;
-      z-index:90;
-      height:78px;
-      background:rgba(0,0,0,.94);
-      border-top:1px solid rgba(255,216,75,.15);
+    .wa{background:var(--green);color:#fff}.call{background:var(--gold);color:#000}.fav{background:var(--pink);color:#fff}.share{background:var(--purple);color:#fff}.back{background:#07106a;color:var(--gold);border:1px solid rgba(255,216,75,.32)}
+
+    .profile-nav{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0 10px}
+    .feed-section{margin-top:34px;border-top:1px solid rgba(255,216,75,.16);padding-top:22px}
+    .feed-block{margin:0 0 30px}
+    .mini-row{
       display:flex;
-      align-items:center;
-      justify-content:space-around;
-      backdrop-filter:blur(10px);
+      overflow-x:auto;
+      gap:14px;
+      padding:2px 2px 12px;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
     }
-    .bottom-nav a{color:var(--gold);font-size:24px}
+    .mini-card{
+      flex:0 0 185px;
+      background:linear-gradient(180deg,#11136e,#070943);
+      border:1px solid rgba(255,216,75,.24);
+      border-radius:18px;
+      overflow:hidden;
+      scroll-snap-align:start;
+      box-shadow:0 0 20px rgba(0,0,0,.32);
+    }
+    .mini-media{height:145px;position:relative;background:#111;overflow:hidden}
+    .mini-media img{width:100%;height:100%;object-fit:cover}
+    .mini-score{
+      position:absolute;left:8px;bottom:8px;
+      background:rgba(0,0,0,.7);
+      color:var(--gold);
+      border-radius:999px;
+      padding:6px 9px;
+      font-size:12px;
+      font-weight:950;
+    }
+    .mini-body{padding:12px}
+    .mini-name{color:var(--gold);font-size:17px;font-weight:950;line-height:1.15;margin-bottom:7px}
+    .mini-meta{font-size:13px;line-height:1.35;color:#f3f3f3;min-height:34px}
+    .mini-plan{margin-top:10px;background:var(--gold);color:#07105a;border-radius:999px;padding:7px 10px;text-align:center;font-size:12px;font-weight:950;text-transform:uppercase}
+
     .sticky-contact{
       position:fixed;
-      left:12px;
-      right:12px;
-      bottom:86px;
-      z-index:89;
+      left:0;right:0;bottom:64px;
+      z-index:9999;
       display:none;
-      gap:10px;
-      pointer-events:none;
+      gap:8px;
+      padding:8px 10px;
+      background:rgba(0,0,0,.5);
+      backdrop-filter:blur(10px);
+      border-top:1px solid rgba(255,216,75,.12);
     }
-    .sticky-contact a{pointer-events:auto;flex:1;justify-content:center;min-width:0;padding:16px 10px;border-radius:18px;font-size:17px}
+    .sticky-contact.show{display:flex}
+    .sticky-contact a{flex:1;min-width:0;min-height:54px;border-radius:16px;font-size:16px;padding:12px 10px}
 
-    @media(max-width:980px){
-      .related-grid{grid-template-columns:repeat(2,1fr)}
-      h1{font-size:38px}
-      .brand{font-size:30px}.brand img{width:74px;height:74px}
+    .bottom-nav{
+      position:fixed;left:0;right:0;bottom:0;z-index:9998;
+      height:64px;background:rgba(0,0,0,.96);
+      border-top:1px solid rgba(255,216,75,.15);
+      display:flex;justify-content:space-around;align-items:center;
+      backdrop-filter:blur(10px);
     }
-    @media(max-width:760px){
-      body{padding-bottom:164px}
-      header{padding:14px 18px}
-      .brand{font-size:28px;letter-spacing:-1px}.brand img{width:64px;height:64px;border-radius:18px}
-      .home-btn{padding:14px 21px;font-size:15px;border-radius:20px}
-      .wrap{padding:0;margin:0 auto 18px}
-      .card{border-radius:0;margin-top:0;border-left:none;border-right:none}
-      .hero,.hero-slider,.slide{min-height:430px;height:430px}
-      .hero-score{left:14px;bottom:16px}.score-badge{font-size:13px;padding:9px 12px}
-      .watermark{right:12px;bottom:16px;font-size:10px;padding:7px 10px}.watermark img{width:20px;height:20px}
-      .content{padding:28px 22px 36px}
-      h1{font-size:34px;letter-spacing:-1px}
-      h2{font-size:28px;margin:34px 0 16px}
-      .meta,.bio{font-size:20px}
-      .stat{font-size:14px;padding:12px 15px}
-      .info-grid{grid-template-columns:1fr}
-      .info-box{font-size:15px;padding:20px}
-      .btn{width:100%;min-width:0}
-      .related-grid{grid-template-columns:1fr 1fr;gap:12px;padding-bottom:8px}
-      .related-card{min-height:250px;border-radius:18px}
-      .related-card img{height:150px}
-      .related-body{padding:12px}.related-name{font-size:18px}.related-meta{font-size:14px}.related-plan{font-size:12px}
-      .sticky-contact{display:flex}
-    }
+    .bottom-nav a{font-size:26px;color:var(--gold);opacity:.95}
 
-    /* ===== INDEX-MATCH COMPACT TYPOGRAPHY PATCH ===== */
-    .brand{font-size:34px !important;letter-spacing:-1px !important}
-    .brand img{width:68px !important;height:68px !important;border-radius:18px !important}
-    .home-btn{font-size:17px !important;padding:14px 24px !important;border-radius:20px !important}
-    h1{font-size:42px !important;line-height:1.02 !important;letter-spacing:-1px !important;margin:18px 0 12px !important}
-    h2{font-size:28px !important;line-height:1.1 !important;margin:32px 0 14px !important;letter-spacing:-.4px !important}
-    .meta,.bio{font-size:17px !important;line-height:1.55 !important}
-    .badge,.chip,.stat{font-size:14px !important;padding:10px 14px !important}
-    .info-box{font-size:15px !important;padding:16px !important;border-radius:18px !important}
-    .btn{font-size:16px !important;padding:15px 20px !important;border-radius:18px !important;min-width:145px !important}
-    .score-badge{font-size:14px !important;padding:9px 13px !important}
-    .related-section{margin-top:28px !important}
-    .related-section h2{font-size:26px !important}
-    .related-grid{display:flex !important;overflow-x:auto !important;gap:14px !important;padding:2px 2px 16px !important;scroll-snap-type:x mandatory !important;grid-template-columns:none !important}
-    .related-grid::-webkit-scrollbar{height:7px}
-    .related-grid::-webkit-scrollbar-thumb{background:rgba(255,216,75,.35);border-radius:999px}
-    .related-card{flex:0 0 178px !important;min-height:248px !important;border-radius:18px !important;scroll-snap-align:start !important}
-    .related-card img{height:150px !important}
-    .related-body{padding:11px !important}
-    .related-name{font-size:16px !important;margin-bottom:5px !important}
-    .related-meta{font-size:13px !important}
-    .related-plan{font-size:12px !important;padding:7px 10px !important}
-    .sticky-contact{bottom:66px !important;background:rgba(0,0,0,.52) !important;backdrop-filter:blur(10px) !important}
-    .sticky-contact a{font-size:16px !important;min-height:56px !important;padding:14px 10px !important}
-    .bottom-nav{height:62px !important}
-    .bottom-nav a{font-size:24px !important}
-    @media(max-width:760px){
-      header{padding:12px 16px !important}
-      .brand{font-size:28px !important}
-      .brand img{width:58px !important;height:58px !important}
-      .home-btn{font-size:15px !important;padding:12px 20px !important}
-      .content{padding:22px 18px 34px !important}
-      h1{font-size:34px !important}
-      h2{font-size:26px !important}
-      .meta,.bio{font-size:16px !important}
-      .stat{font-size:13px !important}
-      .info-box{font-size:15px !important;padding:15px !important}
-      .badge,.chip{font-size:13px !important;padding:9px 12px !important}
-      .related-section h2{font-size:24px !important}
-      .related-card{flex-basis:165px !important}
-      .related-card img{height:140px !important}
-      .btn{font-size:15px !important}
-    }
+    .error{min-height:58vh;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:24px;font-weight:950;text-align:center;padding:30px}
 
-  </style>
+    @media(max-width:860px){
+      .page{padding:0 0 88px}.profile-card{border-radius:0;border-left:0;border-right:0}
+      .site-header{height:82px;padding:10px 16px}.brand{font-size:28px;letter-spacing:-.8px}.brand img{width:58px;height:58px;border-radius:16px}.home-btn{font-size:15px;padding:12px 20px;border-radius:18px}
+      .hero-img{height:355px;object-position:center top}.hero-row{left:10px;right:10px;bottom:10px}.watermark{font-size:10px;padding:7px 9px}.watermark img{width:18px;height:18px}.hero-pill{font-size:12px;padding:7px 9px}
+      .content{padding:22px 20px 30px}h1{font-size:34px;letter-spacing:-.8px}h2{font-size:25px}.meta,.bio{font-size:16px}.badge,.stat,.chip{font-size:13px;padding:8px 12px}
+      .info-grid{grid-template-columns:1fr 1fr}.info-box{font-size:14px;padding:13px 14px}.actions .btn{flex:1 1 calc(50% - 8px);min-width:0}.actions .back{flex-basis:100%}.profile-nav .btn{width:100%}
+      .mini-card{flex-basis:165px}.mini-media{height:132px}.mini-name{font-size:16px}.mini-meta{font-size:12px}.gallery-item{flex-basis:165px;height:220px}
+    }
+    @media(max-width:430px){
+      body{padding-bottom:128px}.site-header{height:78px}.brand{font-size:26px}.brand img{width:54px;height:54px}.home-btn{font-size:14px;padding:11px 18px}
+      .hero-img{height:330px}.content{padding:20px 18px 28px}h1{font-size:31px}h2{font-size:23px}.info-grid{grid-template-columns:1fr}.actions{display:none}.sticky-contact.show{display:flex}
+      .mini-card{flex-basis:156px}.mini-media{height:126px}.feed-section{padding-bottom:30px}
+    }
+  
+/* ===== FINAL MOBILE COMPACT PATCH ===== */
+.actions.compact-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.actions.compact-actions .back{grid-column:1 / -1}
+.actions.compact-actions .btn,.profile-nav .btn{height:46px;min-height:46px;padding:0 12px;border-radius:16px;font-size:14px;margin:0}
+.profile-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.sticky-contact{position:fixed;left:0;right:0;bottom:64px;z-index:9999;display:none;grid-template-columns:1fr 1fr;gap:10px;padding:8px 12px;background:rgba(0,0,0,.38);backdrop-filter:blur(10px)}
+.sticky-contact.show{display:grid}
+.sticky-contact .btn{height:52px;min-height:52px;border-radius:17px;font-size:15px;padding:0 10px}
+.bottom-nav{height:64px}
+body{padding-bottom:128px}
+.feed-block h2{font-size:23px;line-height:1.12;margin:24px 0 14px}
+.mini-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;overflow:visible;padding:0}
+.mini-card{min-width:0;width:100%;border-radius:16px}
+.mini-media{height:155px}
+.mini-name{font-size:16px}.mini-meta{font-size:13px}.mini-plan{font-size:11px;padding:6px 8px}
+@media(min-width:760px){.mini-row{grid-template-columns:repeat(4,1fr)}.mini-media{height:180px}.feed-block h2{font-size:26px}.sticky-contact{left:50%;transform:translateX(-50%);max-width:760px}}
+</style>
 
   <script type="application/ld+json" id="schema-json">{}</script>
 </head>
 <body oncontextmenu="return false">
-
-<header>
+<header class="site-header">
   <a href="/" class="brand" aria-label="Nairobi Sweets Home">
     <img src="/assets/logo/logo-badge.png" onerror="this.src='/logo.png'" alt="Nairobi Sweets">
     <div>Nairobi<br>Sweets</div>
@@ -395,8 +375,7 @@
 </header>
 
 <main id="app"><div class="error">Loading profile...</div></main>
-
-<div class="sticky-contact" id="stickyContact"></div>
+<div id="stickyContact" class="sticky-contact"></div>
 
 <nav class="bottom-nav">
   <a href="/" aria-label="Home">🏠</a>
@@ -413,7 +392,6 @@ const app = document.getElementById("app");
 const stickyContact = document.getElementById("stickyContact");
 let currentProfile = null;
 let relatedProfiles = [];
-let slideIndex = 0;
 
 function getSlug(){
   const q = new URLSearchParams(location.search).get("slug");
@@ -421,311 +399,148 @@ function getSlug(){
   const parts = location.pathname.split("/").filter(Boolean);
   return parts[0] === "profile" && parts[1] ? decodeURIComponent(parts[1]).trim() : "";
 }
-
-function escapeHTML(v){
-  return String(v ?? "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-
-function cleanPhone(phone){
-  if(!phone) return "";
-  let p = String(phone).replace(/\D/g,"");
-  if(p.startsWith("0")) p = "254" + p.slice(1);
-  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
-  return p;
-}
-
-function normalizeText(value){
-  return String(value || "").trim().replace(/\s+/g," ");
-}
-
+function escapeHTML(v){return String(v ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function cleanPhone(phone){if(!phone)return"";let p=String(phone).replace(/\D/g,"");if(p.startsWith("0"))p="254"+p.slice(1);if(p.startsWith("7")||p.startsWith("1"))p="254"+p;return p}
+function badValue(v){const s=String(v??"").trim().toLowerCase();return !s||s==="0"||s==="[]"||s==="null"||s==="undefined"||s==="nan"}
 function safeArray(value){
-  if(!value) return [];
-  if(Array.isArray(value)){
-    return value.map(x => normalizeText(x)).filter(x => x && x !== "0" && x !== "[]" && x !== "null" && x !== "undefined");
-  }
-  const s = String(value).trim();
-  if(!s || s === "[]" || s === "null" || s === "undefined") return [];
-  try{
-    const parsed = JSON.parse(s);
-    if(Array.isArray(parsed)) return safeArray(parsed);
-  }catch(e){}
-  return s
-    .replace(/^\[|\]$/g,"")
-    .replaceAll('"',"")
-    .split(/[,;\n]/)
-    .map(x => normalizeText(x))
-    .filter(x => x && x !== "0" && x !== "[]" && x !== "null" && x !== "undefined");
+  if(value == null) return [];
+  let out=[];
+  if(Array.isArray(value)) out=value;
+  else if(typeof value === "string"){
+    const raw=value.trim(); if(!raw||raw==="[]") return [];
+    try{const parsed=JSON.parse(raw); out=Array.isArray(parsed)?parsed:[parsed]}catch(e){out=raw.split(/[,;\n]/)}
+  }else out=[value];
+  return out.flatMap(x=>Array.isArray(x)?x:[x]).map(x=>String(x??"").trim().replace(/^\[+|\]+$/g,"").replace(/^['"]+|['"]+$/g,"").trim()).filter(x=>!badValue(x)).filter((x,i,a)=>a.indexOf(x)===i);
 }
-
-function mainImage(p){
-  return p.signature_banner_url || p.banner_url || p.image_url || p.photo_url || p.main_image || "/assets/logo/logo-badge.png";
+function mainImage(p){return p.signature_banner_url||p.banner_url||p.image_url||p.photo_url||p.main_image||"/assets/logo/logo-badge.png"}
+function galleryImages(p){const arr=safeArray(p.gallery_images||p.gallery||p.images||p.image_urls);return [...new Set([mainImage(p),...arr].filter(Boolean))]}
+function reelUrl(p){return p.reel_url||p.reel||p.short_video||p.video_url||p.short_url||""}
+function profileUrl(p){return `https://nairobi-sweets.com/profile.html?slug=${encodeURIComponent(p.slug||getSlug())}`}
+function planText(p){return String(p.plan||"Featured").trim()}
+function isSignature(p){const plan=planText(p).toLowerCase();return plan.includes("signature")||plan.includes("vvip")||p.is_signature===true||p.signature===true}
+function isVip(p){const plan=planText(p).toLowerCase();return plan.includes("vip")&&!isSignature(p)}
+function niceTitle(v){return String(v||'').replace(/[-_]+/g,' ').replace(/\s+/g,' ').trim().replace(/\b\w/g,c=>c.toUpperCase())}
+function displayName(p){
+  const raw=String(p.stage_name||p.name||'Nairobi Sweet').trim();
+  const lower=raw.toLowerCase().replace(/\s+/g,'');
+  if(lower==='pretiezari'||lower==='prettiezari'||lower==='pretie-zari') return 'Pretie Zari';
+  return niceTitle(raw);
 }
-
-function galleryImages(p){
-  const arr = safeArray(p.gallery_images || p.gallery || p.images || p.image_urls);
-  return [...new Set([mainImage(p), ...arr].filter(Boolean))];
+function locationParts(p){
+  return safeArray(p.coverage_areas||p.coverage||p.areas||p.location).concat(safeArray(p.location));
 }
-
-function profileUrl(p){
-  return `https://nairobi-sweets.com/profile.html?slug=${encodeURIComponent(p.slug || getSlug())}`;
+function primaryLocation(p){
+  const arr=locationParts(p);
+  return arr[0] || 'Nairobi';
 }
-
-function isSignature(p){
-  const plan = String(p.plan || "").toLowerCase();
-  return plan.includes("signature") || plan.includes("vvip") || p.is_signature === true || p.signature === true;
+function sameLocation(a,b){
+  const aa=locationParts(a).map(x=>x.toLowerCase());
+  const bb=locationParts(b).map(x=>x.toLowerCase());
+  return aa.some(x=>bb.some(y=>x===y || x.includes(y) || y.includes(x)));
 }
-
-function isVip(p){
-  const plan = String(p.plan || "").toLowerCase();
-  return plan.includes("vip") || plan.includes("vvip");
-}
-
-function badges(p){
-  let out = "";
-  if(isSignature(p)) out += `<span class="badge signature">👑 Signature</span>`;
-  else if(isVip(p)) out += `<span class="badge vip">⭐ VIP</span>`;
-  else out += `<span class="badge featured">🔥 Featured</span>`;
-  if(p.verified === true || p.verified === "true") out += `<span class="badge verified">✅ Verified</span>`;
-  return out;
-}
-
-function trendingScore(p){
-  return (
-    Number(p.boost || 0) * 1000 +
-    Number(p.views || 0) +
-    Number(p.whatsapp_clicks || 0) * 10 +
-    Number(p.call_clicks || 0) * 10 +
-    Number(p.favorites || 0) * 15 +
-    Number(p.profile_shares || 0) * 6
-  );
-}
+function score(p){return Math.round(Number(p.boost||0)*1000+Number(p.views||0)+Number(p.whatsapp_clicks||0)*10+Number(p.call_clicks||0)*15+Number(p.favorites||0)*12+Number(p.profile_shares||0)*7)}
+function badgeHTML(p){let html=""; if(isSignature(p)) html+=`<span class="badge signature">👑 Signature</span>`; else if(isVip(p)) html+=`<span class="badge vip">⭐ VIP</span>`; else html+=`<span class="badge featured">🔥 Featured</span>`; if(p.verified===true||p.verified==="true") html+=`<span class="badge verified">✅ Verified</span>`; return html}
+function renderServices(raw){let services=safeArray(raw); if(!services.length) services=["Professional Massage"]; return services.map(s=>`<span class="chip">✓ ${escapeHTML(s)}</span>`).join("")}
 
 async function incrementColumn(column){
   if(!currentProfile?.id) return;
-  const value = Number(currentProfile[column] || 0) + 1;
-  currentProfile[column] = value;
+  const next=Number(currentProfile[column]||0)+1; currentProfile[column]=next;
   try{
-    await sb.from("profiles").update({[column]: value}).eq("id", currentProfile.id);
-    const el = document.getElementById(column);
-    if(el) el.textContent = value;
-    const scoreEl = document.getElementById("trending_score");
-    if(scoreEl) scoreEl.textContent = trendingScore(currentProfile);
-  }catch(e){console.log("Counter skipped", e.message)}
+    await sb.from("profiles").update({[column]:next}).eq("id",currentProfile.id);
+    const el=document.getElementById(column); if(el) el.textContent=next;
+    const hv=document.getElementById("hero_views"); if(column==="views"&&hv) hv.textContent=next;
+    const hs=document.getElementById("hero_score"); if(hs) hs.textContent=score(currentProfile);
+  }catch(e){console.warn("Counter skipped",e.message)}
 }
-
 async function logEvent(type){
   if(!currentProfile?.id) return;
-  try{ await sb.from("profile_analytics").insert({profile_id:currentProfile.id,event_type:type}); }catch(e){}
-  try{ await sb.from("profile_events").insert({profile_id:currentProfile.id,event_type:type}); }catch(e){}
+  try{await sb.from("profile_analytics").insert({profile_id:currentProfile.id,event_type:type})}catch(e){}
+  try{await sb.from("profile_events").insert({profile_id:currentProfile.id,event_type:type})}catch(e){}
 }
-
 function updateSEO(p){
-  const name = p.stage_name || p.name || "Nairobi Sweets Profile";
-  const loc = p.location || "Nairobi";
-  const img = mainImage(p);
-  const url = profileUrl(p);
-  const desc = `${name} in ${loc}. Verified Nairobi Sweets profile.`;
-  document.title = `${name} | Nairobi Sweets`;
-  document.querySelector('meta[name="description"]')?.setAttribute("content", desc);
-  document.querySelector('meta[property="og:title"]')?.setAttribute("content", `${name} | Nairobi Sweets`);
-  document.querySelector('meta[property="og:description"]')?.setAttribute("content", desc);
-  document.querySelector('meta[property="og:image"]')?.setAttribute("content", img);
-  document.querySelector('meta[property="og:url"]')?.setAttribute("content", url);
-  document.getElementById("schema-json").textContent = JSON.stringify({
-    "@context":"https://schema.org",
-    "@type":"LocalBusiness",
-    "name":name,
-    "url":url,
-    "image":img,
-    "description":desc,
-    "address":{"@type":"PostalAddress","addressLocality":loc,"addressCountry":"KE"}
-  });
+  const name=displayName(p), loc=p.location||"Nairobi", img=mainImage(p), url=profileUrl(p);
+  const desc=`${name} in ${loc}. Verified Nairobi Sweets profile with WhatsApp and direct call contact.`;
+  document.title=`${name} | Nairobi Sweets`;
+  document.querySelector('meta[name="description"]')?.setAttribute("content",desc);
+  document.querySelector('meta[property="og:title"]')?.setAttribute("content",`${name} | Nairobi Sweets`);
+  document.querySelector('meta[property="og:description"]')?.setAttribute("content",desc);
+  document.querySelector('meta[property="og:image"]')?.setAttribute("content",img);
+  document.querySelector('meta[property="og:url"]')?.setAttribute("content",url);
+  document.querySelector('link[rel="canonical"]')?.setAttribute("href",url);
+  document.getElementById("schema-json").textContent=JSON.stringify({"@context":"https://schema.org","@type":"ProfilePage",name,description:desc,url,image:img});
 }
-
-function relatedCard(p){
-  return `
-    <a class="related-card" href="/profile.html?slug=${encodeURIComponent(p.slug || '')}">
-      <img src="${escapeHTML(mainImage(p))}" alt="${escapeHTML(p.stage_name || 'Profile')}" loading="lazy" onerror="this.src='/assets/logo/logo-badge.png'">
-      <div class="related-body">
-        <div class="related-name">${escapeHTML(p.stage_name || 'Profile')}</div>
-        <div class="related-meta">📍 ${escapeHTML(p.location || 'Nairobi')}</div>
-        <div class="related-plan">${escapeHTML(p.plan || 'Featured')}</div>
-      </div>
-    </a>`;
+function miniCard(p){
+  const slug=encodeURIComponent(p.slug||"");
+  return `<a class="mini-card" href="/profile.html?slug=${slug}">
+    <div class="mini-media"><img src="${escapeHTML(mainImage(p))}" loading="lazy" alt="${escapeHTML(displayName(p))}" onerror="this.src='/assets/logo/logo-badge.png'"><span class="mini-score">🔥 ${score(p)}</span></div>
+    <div class="mini-body"><div class="mini-name">${escapeHTML(displayName(p))}</div><div class="mini-meta">📍 ${escapeHTML(p.location||'Nairobi')}</div><div class="mini-plan">${escapeHTML(planText(p))}</div></div>
+  </a>`;
 }
+function section(title,emoji,items){if(!items.length)return"";return `<div class="feed-block"><h2>${emoji} ${escapeHTML(title)}</h2><div class="mini-row">${items.map(miniCard).join("")}</div></div>`}
+function buildFeeds(){
+  const sorted=[...relatedProfiles].sort((a,b)=>score(b)-score(a));
+  const locTitle=primaryLocation(currentProfile);
+  const sameLoc=sorted.filter(p=>sameLocation(currentProfile,p));
 
-function pickRelated(filterFn, limit=8){
-  return relatedProfiles.filter(filterFn).sort((a,b)=>trendingScore(b)-trendingScore(a)).slice(0,limit);
+  // Growth mode: only recommend profiles from the SAME location/coverage area.
+  const signature=sameLoc.filter(isSignature).slice(0,12);
+  const vip=sameLoc.filter(isVip).slice(0,12);
+
+  return `<section class="feed-section">
+    ${section(`More Signature Profiles in ${locTitle}`,"👑",signature)}
+    ${section(`More VIP Profiles in ${locTitle}`,"💎",vip)}
+  </section>`;
 }
-
-function renderRelated(){
-  if(!relatedProfiles.length) return "";
-  const currentLoc = String(currentProfile.location || "").toLowerCase();
-  const currentPlan = String(currentProfile.plan || "").toLowerCase();
-  const all = pickRelated(()=>true,8);
-  const sameLocation = pickRelated(p => String(p.location || "").toLowerCase().includes(currentLoc.split(",")[0]) && currentLoc, 8);
-  const samePlan = pickRelated(p => String(p.plan || "").toLowerCase() === currentPlan && currentPlan, 8);
-  const vipProfiles = pickRelated(p => isVip(p), 8);
-  const signatureProfiles = pickRelated(p => isSignature(p), 8);
-
-  return `
-    ${all.length ? `<section class="related-section"><h2>🔥 More Profiles You May Like</h2><div class="related-grid">${all.map(relatedCard).join("")}</div></section>` : ""}
-    ${sameLocation.length ? `<section class="related-section"><h2>📍 More in ${escapeHTML(currentProfile.location || 'Nairobi')}</h2><div class="related-grid">${sameLocation.map(relatedCard).join("")}</div></section>` : ""}
-    ${samePlan.length ? `<section class="related-section"><h2>💎 More ${escapeHTML(currentProfile.plan || 'Featured')} Profiles</h2><div class="related-grid">${samePlan.map(relatedCard).join("")}</div></section>` : ""}
-    ${signatureProfiles.length ? `<section class="related-section"><h2>👑 More Signature Profiles</h2><div class="related-grid">${signatureProfiles.map(relatedCard).join("")}</div></section>` : ""}
-    ${vipProfiles.length ? `<section class="related-section"><h2>💎 More VIP Profiles</h2><div class="related-grid">${vipProfiles.map(relatedCard).join("")}</div></section>` : ""}
-  `;
-}
-
 function previousNext(){
-  const sorted = relatedProfiles.sort((a,b)=>Number(a.id||0)-Number(b.id||0));
-  if(!sorted.length) return "";
-  const prev = sorted.find(p => Number(p.id) < Number(currentProfile.id)) || sorted[sorted.length-1];
-  const next = sorted.find(p => Number(p.id) > Number(currentProfile.id)) || sorted[0];
-  return `
-    <div class="nav-row">
-      ${prev ? `<a class="btn back" href="/profile.html?slug=${encodeURIComponent(prev.slug)}">← Previous Profile</a>` : ""}
-      ${next ? `<a class="btn back" href="/profile.html?slug=${encodeURIComponent(next.slug)}">Next Profile →</a>` : ""}
-    </div>`;
+  const sorted=[...relatedProfiles].sort((a,b)=>Number(a.id||0)-Number(b.id||0)); if(!sorted.length)return"";
+  const prev=sorted.filter(p=>Number(p.id)<Number(currentProfile.id)).pop()||sorted[sorted.length-1];
+  const next=sorted.find(p=>Number(p.id)>Number(currentProfile.id))||sorted[0];
+  return `<div class="profile-nav">${prev?`<a class="btn back" href="/profile.html?slug=${encodeURIComponent(prev.slug)}">← Previous</a>`:""}${next?`<a class="btn back" href="/profile.html?slug=${encodeURIComponent(next.slug)}">Next →</a>`:""}</div>`;
 }
-
-function renderHero(gallery, p){
-  return `
-    <div class="hero">
-      <div class="hero-slider" id="heroSlider" onscroll="syncDots()">
-        ${gallery.map((img,i)=>`
-          <div class="slide">
-            <img src="${escapeHTML(img)}" alt="${escapeHTML(p.stage_name || 'Profile image')}" ${i>0?'loading="lazy"':''} onerror="this.src='/assets/logo/logo-badge.png'">
-            <div class="watermark"><img src="/assets/logo/logo-badge.png" onerror="this.style.display='none'">NAIROBI-SWEETS.COM</div>
-          </div>
-        `).join("")}
-      </div>
-      <div class="hero-score">
-        <span class="score-badge">🔥 Score <span id="trending_score">${trendingScore(p)}</span></span>
-        <span class="score-badge">👁 <span id="hero_views">${Number(p.views||0)}</span> Views</span>
-      </div>
-      <div class="dots">${gallery.map((_,i)=>`<button class="dot ${i===0?'active':''}" onclick="goSlide(${i})" aria-label="Slide ${i+1}"></button>`).join("")}</div>
-    </div>`;
+function stickyButtons(p){
+  const wa=cleanPhone(p.whatsapp||p.phone), phone=cleanPhone(p.phone||p.whatsapp);
+  const waText=encodeURIComponent(`Hi ${displayName(p)||'there'}, I found your profile on Nairobi Sweets: ${profileUrl(p)}`);
+  stickyContact.innerHTML=`${wa?`<a class="btn wa" href="https://wa.me/${wa}?text=${waText}" target="_blank" onclick="incrementColumn('whatsapp_clicks');logEvent('whatsapp')">💬 WhatsApp</a>`:""}${phone?`<a class="btn call" href="tel:+${phone}" onclick="incrementColumn('call_clicks');logEvent('call')">☎ Call</a>`:""}`;
+  stickyContact.classList.toggle("show",!!(wa||phone));
 }
-
-function renderProfile(p){
-  currentProfile = p;
-  updateSEO(p);
-  const name = escapeHTML(p.stage_name || p.name || "Nairobi Sweet");
-  const locationName = escapeHTML(p.location || "Nairobi");
-  const plan = escapeHTML(p.plan || "Featured");
-  const bio = escapeHTML(p.bio || p.description || p.about || `Verified Nairobi Sweets profile in ${p.location || 'Nairobi'}.`);
-  const services = safeArray(p.services);
-  const coverage = safeArray(p.coverage_areas || p.coverage || p.areas || p.location);
-  const gallery = galleryImages(p);
-  const reel = p.reel_url || p.reel || p.short_video || p.video_url || "";
-  const whatsapp = cleanPhone(p.whatsapp || p.phone);
-  const phone = cleanPhone(p.phone || p.whatsapp);
-  const waText = encodeURIComponent(`Hi ${p.stage_name || 'there'}, I found your profile on Nairobi Sweets: ${profileUrl(p)}`);
-
-  stickyContact.innerHTML = `
-    ${whatsapp ? `<a class="btn wa" href="https://wa.me/${whatsapp}?text=${waText}" target="_blank" onclick="incrementColumn('whatsapp_clicks');logEvent('whatsapp')">💬 WhatsApp</a>` : ""}
-    ${phone ? `<a class="btn call" href="tel:+${phone}" onclick="incrementColumn('call_clicks');logEvent('call')">☎ Call</a>` : ""}
-  `;
-
-  app.innerHTML = `
-    <section class="wrap">
-      <article class="card">
-        <div class="signature-banner ${isSignature(p)?'show':''}">👑 NAIROBI SWEETS SIGNATURE PROFILE</div>
-        ${renderHero(gallery,p)}
-        <div class="content">
-          <div class="badges">${badges(p)}</div>
-          <h1>${name}</h1>
-          <div class="meta">📍 ${locationName} · ${p.online === true || p.online === 'true' ? '🟢 Online Now' : '⚪ Offline'}<br>💎 Plan: ${plan}</div>
-
-          <div class="stats-strip">
-            <span class="stat">👁 <span id="views">${Number(p.views || 0)}</span> Views</span>
-            <span class="stat">💬 <span id="whatsapp_clicks">${Number(p.whatsapp_clicks || 0)}</span> WhatsApp</span>
-            <span class="stat">☎ <span id="call_clicks">${Number(p.call_clicks || 0)}</span> Calls</span>
-            <span class="stat">❤️ <span id="favorites">${Number(p.favorites || 0)}</span> Favorites</span>
-            <span class="stat">🔗 <span id="profile_shares">${Number(p.profile_shares || 0)}</span> Shares</span>
-          </div>
-
-          <div class="info-grid">
-            <div class="info-box">🎂 Age: ${escapeHTML(p.age || 'N/A')}</div>
-            <div class="info-box">💃 Body: ${escapeHTML(p.body_type || 'N/A')}</div>
-            <div class="info-box">🏨 Meeting: ${escapeHTML(p.meeting_place || 'Ask')}</div>
-            <div class="info-box">💰 Rate: ${escapeHTML(p.rate || 'Ask')}</div>
-          </div>
-
-          <p class="bio">${bio}</p>
-
-          <h2>Services</h2>
-          <div class="chips">
-            ${(services.length ? services : ['Professional Massage']).map(s=>`<span class="chip">✓ ${escapeHTML(s)}</span>`).join("")}
-          </div>
-
-          ${coverage.length ? `<h2>Coverage Areas</h2><div class="chips">${coverage.map(a=>`<span class="chip">📍 ${escapeHTML(a)}</span>`).join("")}</div>` : ""}
-
-          ${reel ? `<h2>Reel</h2><div class="reel-box"><video controls playsinline preload="metadata" onplay="logEvent('video_play')"><source src="${escapeHTML(reel)}"></video></div>` : ""}
-
-          ${gallery.length > 1 ? `<h2>Gallery</h2><div class="gallery">${gallery.slice(1).map(img=>`<div class="watermarked-img"><img src="${escapeHTML(img)}" loading="lazy" onerror="this.parentElement.style.display='none'"><span class="mini-mark">© NAIROBI-SWEETS.COM</span></div>`).join("")}</div>` : ""}
-
-          <div class="actions">
-            ${whatsapp ? `<a class="btn wa" href="https://wa.me/${whatsapp}?text=${waText}" target="_blank" onclick="incrementColumn('whatsapp_clicks');logEvent('whatsapp')">💬 WhatsApp</a>` : ""}
-            ${phone ? `<a class="btn call" href="tel:+${phone}" onclick="incrementColumn('call_clicks');logEvent('call')">☎ Call</a>` : ""}
-            <button class="btn fav" onclick="incrementColumn('favorites');logEvent('favorite')">❤️ Favorite</button>
-            <button class="btn share" onclick="shareProfile()">🔗 Share</button>
-            <a class="btn back" href="/">🏠 Back Home</a>
-          </div>
-
-          ${previousNext()}
-          ${renderRelated()}
-        </div>
-      </article>
-    </section>`;
-}
-
-function goSlide(i){
-  const slider = document.getElementById('heroSlider');
-  if(!slider) return;
-  slider.scrollTo({left:slider.clientWidth*i,behavior:'smooth'});
-  slideIndex = i;
-  syncDots();
-}
-function syncDots(){
-  const slider = document.getElementById('heroSlider');
-  if(!slider) return;
-  const idx = Math.round(slider.scrollLeft / slider.clientWidth);
-  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
-}
-
 async function shareProfile(){
-  if(!currentProfile) return;
-  const url = profileUrl(currentProfile);
-  await incrementColumn("profile_shares");
-  await logEvent("share");
-  if(navigator.share){
-    try{ await navigator.share({title:document.title,url}); }catch(e){}
-  }else{
-    await navigator.clipboard.writeText(url);
-    alert("Profile link copied!");
-  }
+  const url=profileUrl(currentProfile); await incrementColumn("profile_shares"); await logEvent("share");
+  if(navigator.share){try{await navigator.share({title:document.title,url})}catch(e){}}else{await navigator.clipboard.writeText(url);alert("Profile link copied!")}
 }
-
+function renderProfile(p){
+  currentProfile=p; updateSEO(p); stickyButtons(p);
+  const name=escapeHTML(displayName(p)), loc=escapeHTML(p.location||"Nairobi"), plan=escapeHTML(planText(p));
+  const bio=escapeHTML(p.bio||p.description||p.about||`Verified Nairobi Sweets profile in ${p.location||'Nairobi'}.`);
+  const gallery=galleryImages(p), coverage=safeArray(p.coverage_areas||p.coverage||p.areas||p.location), reel=reelUrl(p);
+  const wa=cleanPhone(p.whatsapp||p.phone), phone=cleanPhone(p.phone||p.whatsapp), waText=encodeURIComponent(`Hi ${displayName(p)||'there'}, I found your profile on Nairobi Sweets: ${profileUrl(p)}`);
+  app.innerHTML=`<section class="page"><article class="profile-card">
+    <div class="hero"><img class="hero-img" src="${escapeHTML(gallery[0]||'/assets/logo/logo-badge.png')}" alt="${name}" onerror="this.src='/assets/logo/logo-badge.png'"><div class="hero-row"><div class="score-row"><span class="hero-pill">🔥 Score <span id="hero_score">${score(p)}</span></span><span class="hero-pill">👁 <span id="hero_views">${Number(p.views||0)}</span> Views</span></div><div class="watermark"><img src="/assets/logo/logo-badge.png" onerror="this.style.display='none'">NAIROBI-SWEETS.COM</div></div></div>
+    <div class="content">
+      <div class="signature-banner ${isSignature(p)?'show':''}">👑 NAIROBI SWEETS SIGNATURE PROFILE</div>
+      <div class="badges">${badgeHTML(p)}</div><h1>${name}</h1>
+      <div class="meta">📍 ${loc} · ${p.online===true||p.online==='true'?'🟢 Online Now':'⚪ Offline'}<br>💎 Plan: ${plan}</div>
+      <div class="stats"><span class="stat">👁 <span id="views">${Number(p.views||0)}</span> Views</span><span class="stat">💬 <span id="whatsapp_clicks">${Number(p.whatsapp_clicks||0)}</span> WhatsApp</span><span class="stat">☎ <span id="call_clicks">${Number(p.call_clicks||0)}</span> Calls</span><span class="stat">❤️ <span id="favorites">${Number(p.favorites||0)}</span> Favorites</span><span class="stat">🔗 <span id="profile_shares">${Number(p.profile_shares||0)}</span> Shares</span></div>
+      <div class="info-grid"><div class="info-box">🎂 Age: ${escapeHTML(p.age||'N/A')}</div><div class="info-box">💃 Body: ${escapeHTML(p.body_type||'N/A')}</div><div class="info-box">🏨 Meeting: ${escapeHTML(p.meeting_place||'Ask')}</div><div class="info-box">💰 Rate: ${escapeHTML(p.rate||'Ask')}</div></div>
+      <p class="bio">${bio}</p>
+      <h2>Services</h2><div class="chips">${renderServices(p.services)}</div>
+      ${coverage.length?`<h2>Coverage Areas</h2><div class="chips">${coverage.map(a=>`<span class="chip">📍 ${escapeHTML(a)}</span>`).join("")}</div>`:""}
+      ${reel?`<h2>Reel</h2><div class="reel-box"><video controls playsinline preload="metadata" poster="${escapeHTML(gallery[0]||'/assets/logo/logo-badge.png')}" onplay="logEvent('video_play')"><source src="${escapeHTML(reel)}"></video></div>`:""}
+      ${gallery.length>1?`<h2>Gallery</h2><div class="gallery-row">${gallery.slice(1).map(img=>`<div class="gallery-item"><img src="${escapeHTML(img)}" loading="lazy" alt="${name}" onerror="this.parentElement.style.display='none'"><span>© NAIROBI-SWEETS.COM</span></div>`).join("")}</div>`:""}
+      <div class="actions compact-actions"><button class="btn fav" onclick="incrementColumn('favorites');logEvent('favorite')">❤️ Favorite</button><button class="btn share" onclick="shareProfile()">🔗 Share</button><a class="btn back" href="/">🏠 Back Home</a></div>
+      ${previousNext()}${buildFeeds()}
+    </div></article></section>`;
+}
+async function loadRelated(current){
+  const {data,error}=await sb.from("profiles").select("*").eq("approved",true).neq("id",current.id).limit(80);
+  relatedProfiles=error?[]:(data||[]);
+}
 async function loadProfile(){
-  const slug = getSlug();
-  if(!slug){ app.innerHTML = `<div class="error">Profile slug missing.</div>`; return; }
-
-  const {data,error} = await sb.from("profiles").select("*").eq("slug",slug).eq("approved",true).maybeSingle();
-  if(error){ app.innerHTML = `<div class="error">${escapeHTML(error.message)}</div>`; return; }
-  if(!data){ app.innerHTML = `<div class="error">Profile not found.</div>`; return; }
-
-  const {data:rel} = await sb.from("profiles").select("*").eq("approved",true).neq("id",data.id).limit(60);
-  relatedProfiles = rel || [];
-  renderProfile(data);
-  await incrementColumn("views");
-  const hv = document.getElementById("hero_views"); if(hv) hv.textContent = Number(currentProfile.views || 0);
-  await logEvent("view");
+  const slug=getSlug(); if(!slug){app.innerHTML=`<div class="error">Profile slug missing.</div>`;return}
+  const {data,error}=await sb.from("profiles").select("*").eq("slug",slug).eq("approved",true).maybeSingle();
+  if(error){app.innerHTML=`<div class="error">${escapeHTML(error.message)}</div>`;return}
+  if(!data){app.innerHTML=`<div class="error">Profile not found.</div>`;return}
+  await loadRelated(data); renderProfile(data); await incrementColumn("views"); await logEvent("view");
 }
-
 loadProfile();
 </script>
 </body>
