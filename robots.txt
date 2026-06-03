@@ -1,4 +1,13 @@
 User-agent: *
+
 Allow: /
 
 Sitemap: https://nairobi-sweets.com/sitemap.xml
+
+Disallow: /vault-8472.html
+Disallow: /.netlify/
+Disallow: /netlify/
+Disallow: /api/
+Disallow: /admin/
+
+Crawl-delay: 1
