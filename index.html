@@ -4,20 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- PWA APP INSTALL SUPPORT -->
-<link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#ffd84b">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
-<link rel="apple-touch-icon" href="/assets/logo/logo-badge.png">
-
-
 <title>Nairobi Sweets | Verified Nairobi Profiles</title>
 <meta name="description" content="Luxury Nairobi profiles, VIP listings, WhatsApp access, shorts, reels, map and Sweet AI discovery.">
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
+
+<!-- PWA APP SUPPORT -->
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffd84b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
+<link rel="apple-touch-icon" href="/assets/pwa/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -167,6 +165,25 @@ a{text-decoration:none;color:inherit}
   padding:18px;
   font-size:15px;
   outline:none;
+}
+
+.install-app-btn{
+  width:100%;
+  margin-top:18px;
+  border:none;
+  border-radius:18px;
+  padding:18px;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 12px 30px rgba(255,180,0,.22);
+}
+
+.install-app-btn:hover{
+  filter:brightness(1.05);
+  transform:translateY(-1px);
 }
 
 .filters{
@@ -1104,6 +1121,10 @@ AGE GATE
       id="searchInput"
       placeholder="Search by name, bio, location..."
     >
+
+    <button id="installAppBtn" class="install-app-btn" style="display:none;">
+      📲 Install Nairobi Sweets App
+    </button>
   </div>
 </section>
 
@@ -1831,22 +1852,65 @@ function leaveSite(){
 
 document.addEventListener("DOMContentLoaded", showAgeGate);
 
-loadProfiles();
-</script>
 
+/* =========================
+PWA INSTALL BUTTON
+========================= */
+let deferredInstallPrompt = null;
 
-<script>
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+
+  const installBtn = document.getElementById("installAppBtn");
+  if(installBtn){
+    installBtn.style.display = "block";
+  }
+});
+
+document.addEventListener("click", async (event) => {
+  if(event.target.id !== "installAppBtn") return;
+
+  if(!deferredInstallPrompt){
+    alert("Use your browser menu and tap Add to Home Screen.");
+    return;
+  }
+
+  deferredInstallPrompt.prompt();
+
+  const choice = await deferredInstallPrompt.userChoice;
+  console.log("Nairobi Sweets install choice:", choice.outcome);
+
+  deferredInstallPrompt = null;
+
+  const installBtn = document.getElementById("installAppBtn");
+  if(installBtn){
+    installBtn.style.display = "none";
+  }
+});
+
+window.addEventListener("appinstalled", () => {
+  console.log("Nairobi Sweets installed");
+
+  const installBtn = document.getElementById("installAppBtn");
+  if(installBtn){
+    installBtn.style.display = "none";
+  }
+});
+
 /* =========================
 PWA SERVICE WORKER
 ========================= */
-if ("serviceWorker" in navigator) {
+if("serviceWorker" in navigator){
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/sw.js")
       .then(() => console.log("Nairobi Sweets PWA ready"))
-      .catch(error => console.error("Nairobi Sweets PWA error:", error));
+      .catch(err => console.error("PWA error:", err));
   });
 }
+
+loadProfiles();
 </script>
 
 </body>
