@@ -18,6 +18,14 @@
   <link rel="canonical" href="https://nairobi-sweets.com/profile.html" />
   <link rel="icon" href="/assets/logo/logo-badge.png" />
 
+  <!-- PWA APP SUPPORT -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ffd84b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
+  <link rel="apple-touch-icon" href="/assets/logo/logo-badge.png">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -361,6 +369,61 @@ body{padding-bottom:128px}
 .mini-media{height:155px}
 .mini-name{font-size:16px}.mini-meta{font-size:13px}.mini-plan{font-size:11px;padding:6px 8px}
 @media(min-width:760px){.mini-row{grid-template-columns:repeat(4,1fr)}.mini-media{height:180px}.feed-block h2{font-size:26px}.sticky-contact{left:50%;transform:translateX(-50%);max-width:760px}}
+
+
+/* ===== PREMIUM FLOATING CONTACT BAR PATCH ===== */
+/* Slim glass dock: less bulky, does not eat the whole screen */
+body{padding-bottom:98px !important;}
+.sticky-contact{
+  position:fixed !important;
+  left:50% !important;
+  right:auto !important;
+  bottom:72px !important;
+  transform:translateX(-50%) !important;
+  width:calc(100% - 28px) !important;
+  max-width:460px !important;
+  display:none !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:8px !important;
+  padding:7px !important;
+  background:rgba(5,7,20,.72) !important;
+  border:1px solid rgba(255,216,75,.18) !important;
+  border-radius:22px !important;
+  box-shadow:0 14px 35px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04) inset !important;
+  backdrop-filter:blur(16px) !important;
+  -webkit-backdrop-filter:blur(16px) !important;
+  z-index:9999 !important;
+}
+.sticky-contact.show{display:grid !important;}
+.sticky-contact .btn{
+  height:44px !important;
+  min-height:44px !important;
+  padding:0 10px !important;
+  border-radius:16px !important;
+  font-size:14px !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  letter-spacing:.1px !important;
+  box-shadow:0 8px 18px rgba(0,0,0,.32) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+}
+.sticky-contact .wa{
+  background:linear-gradient(180deg,#2be678,#16bd5a) !important;
+  color:#fff !important;
+}
+.sticky-contact .call{
+  background:linear-gradient(180deg,#ffe15b,#ffc928) !important;
+  color:#050505 !important;
+}
+.bottom-nav{height:60px !important;}
+.bottom-nav a{font-size:24px !important;}
+@media(max-width:430px){
+  body{padding-bottom:98px !important;}
+  .sticky-contact{bottom:68px !important;width:calc(100% - 24px) !important;}
+  .sticky-contact .btn{height:42px !important;min-height:42px !important;font-size:13px !important;border-radius:15px !important;}
+  .bottom-nav{height:58px !important;}
+  .bottom-nav a{font-size:23px !important;}
+}
 </style>
 
   <script type="application/ld+json" id="schema-json">{}</script>
@@ -542,6 +605,18 @@ async function loadProfile(){
   await loadRelated(data); renderProfile(data); await incrementColumn("views"); await logEvent("view");
 }
 loadProfile();
+</script>
+
+<!-- PWA SERVICE WORKER -->
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(() => console.log("Nairobi Sweets PWA Ready"))
+      .catch(err => console.error("PWA Error:", err));
+  });
+}
 </script>
 </body>
 </html>
