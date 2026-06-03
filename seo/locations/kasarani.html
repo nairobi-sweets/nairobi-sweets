@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Kasarani Profiles | Nairobi Sweets</title>
-<meta name="description" content="Browse active Kasarani profiles on Nairobi Sweets. Discover VIP, Featured and Signature profiles across Kasarani, Garden City, Thika Road, Mwiki and nearby Nairobi areas.">
+<meta name="description" content="Browse active Kasarani profiles on Nairobi Sweets. Discover VIP, Featured and Signature profiles across Kasarani, Garden City, Thika Road, Mwiki, Roysambu, Mirema and nearby Nairobi areas.">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://nairobi-sweets.com/seo/locations/kasarani.html">
 
@@ -55,40 +55,6 @@ a{text-decoration:none;color:inherit}
 @media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:850px){.grid{grid-template-columns:1fr}}
 </style>
-
-<script type="application/ld+json">
-{
- "@context":"https://schema.org",
- "@type":"CollectionPage",
- "name":"Kasarani Profiles | Nairobi Sweets",
- "url":"https://nairobi-sweets.com/seo/locations/kasarani.html",
- "description":"Browse active Kasarani profiles on Nairobi Sweets."
-}
-</script>
-
-<script type="application/ld+json">
-{
- "@context":"https://schema.org",
- "@type":"FAQPage",
- "mainEntity":[
-  {
-   "@type":"Question",
-   "name":"How do I browse Kasarani profiles?",
-   "acceptedAnswer":{"@type":"Answer","text":"Use this page to view active Kasarani profiles, then open a full profile for more details."}
-  },
-  {
-   "@type":"Question",
-   "name":"Are Kasarani profiles updated?",
-   "acceptedAnswer":{"@type":"Answer","text":"Yes. Active profiles are loaded from the Nairobi Sweets database."}
-  },
-  {
-   "@type":"Question",
-   "name":"Can I browse nearby areas?",
-   "acceptedAnswer":{"@type":"Answer","text":"Yes. Nairobi Sweets also has pages for Nairobi, Kilimani, Westlands, Ruaka, Ruiru and other nearby areas."}
-  }
- ]
-}
-</script>
 </head>
 
 <body>
@@ -183,6 +149,8 @@ function getPlan(p){return String(p.plan || p.plan_name || p.package || p.tier |
 
 function getImage(p){
   return (
+    p.profile_image_url ||
+    p.cover_image_url ||
     p.photo_url ||
     p.image_url ||
     p.profile_photo ||
