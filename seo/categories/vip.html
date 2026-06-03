@@ -1,382 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>vip Listings | Nairobi Sweets</title>
-<meta name="description" content="Browse vip listings on Nairobi Sweets." />
-<link rel="canonical" href="https://nairobi-sweets.com/seo/categories/vip.html" />
-<meta name="robots" content="index,follow" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>VIP Profiles | Nairobi Sweets</title>
+<meta name="description" content="Browse active VIP profiles on Nairobi Sweets. Discover premium VIP listings across Nairobi, Kilimani, Westlands, Kasarani, Ruaka, Ruiru and nearby areas.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://nairobi-sweets.com/seo/categories/vip.html">
+
+<meta property="og:title" content="VIP Profiles | Nairobi Sweets">
+<meta property="og:description" content="Browse active VIP profiles and premium listings on Nairobi Sweets.">
+<meta property="og:url" content="https://nairobi-sweets.com/seo/categories/vip.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0b1224;color:#f8fafc}
-.wrap{max-width:1100px;margin:0 auto;padding:24px}
-.card{background:#111a31;border:1px solid rgba(255,255,255,.08);border-radius:24px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25)}
-.hero{display:grid;grid-template-columns:1.1fr 1fr}
-.hero img{width:100%;height:100%;object-fit:cover;display:block;min-height:420px}
-.content{padding:28px}
-.badge{display:inline-block;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:bold;margin:0 8px 8px 0;background:#facc15;color:#111827}
-.badge.featured{background:#ec4899;color:white}
-.badge.vvip{background:#fde047;color:#111827}
-.badge.online{background:#22c55e;color:white}
-.muted{color:#aeb7c8}
-.btn{display:inline-block;padding:12px 18px;border-radius:16px;text-decoration:none;font-weight:bold;margin-right:10px}
-.wa{background:#22c55e;color:white}
-.call{background:#ec4899;color:white}
-.section{margin-top:28px}
-.links a{color:#fde047;text-decoration:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.mini{background:#111a31;border:1px solid rgba(255,255,255,.08);padding:18px;border-radius:18px}
-@media (max-width: 800px){ .hero{grid-template-columns:1fr} .hero img{min-height:320px} }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:radial-gradient(circle at top,#12004a,#000 50%);color:white;font-family:Arial,Helvetica,sans-serif}
+a{text-decoration:none;color:inherit}
+.header{padding:18px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.95);border-bottom:1px solid rgba(255,213,74,.12);position:sticky;top:0;z-index:99}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:58px;height:58px;border-radius:18px;object-fit:cover}
+.brand strong{color:#ffd54a;font-size:24px}
+.join-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;padding:12px 18px;border-radius:999px;font-weight:900}
+.hero{padding:58px 18px 36px;text-align:center}
+.hero h1{color:#ffd54a;font-size:clamp(42px,9vw,82px);line-height:.95;margin-bottom:18px;font-weight:900}
+.hero p{max-width:920px;margin:auto;color:#ddd;line-height:1.8;font-size:17px}
+.links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+.links a{background:#07145f;border:1px solid rgba(255,213,74,.18);padding:12px 16px;border-radius:999px;font-weight:900;font-size:13px}
+.section-title{padding:20px 18px 10px;color:#ffd54a;font-size:30px;font-weight:900}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:22px;padding:18px 18px 50px}
+.card{background:linear-gradient(180deg,#25006d,#080633);border:1px solid rgba(255,213,74,.16);border-radius:26px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.card img{width:100%;aspect-ratio:4/4.5;object-fit:cover;background:#020617;display:block}
+.body{padding:15px}
+.badge{display:inline-block;background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:900;margin-bottom:10px}
+.name{font-size:16px;font-weight:900;margin-bottom:8px}
+.meta{font-size:12px;color:#d6d6d6;margin-bottom:8px}
+.bio{font-size:11px;color:#cfcfcf;line-height:1.6;margin-bottom:12px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions a{padding:10px;border-radius:14px;text-align:center;font-size:11px;font-weight:900}
+.call{background:#111827;color:white}
+.wa{background:#075e2d;color:white}
+.view{grid-column:1/-1;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.content{padding:20px 18px 45px;max-width:1050px;margin:auto;color:#ddd;line-height:1.8}
+.content h2,.content h3{color:#ffd54a;margin:24px 0 10px}
+.content p{margin-bottom:14px}
+.footer{padding:35px 18px;text-align:center;background:#050505;color:#aaa}
+.loading,.empty{grid-column:1/-1;text-align:center;color:#ffd54a;font-weight:900;padding:45px}
+@media(min-width:1100px){.hero,.grid,.section-title{padding-left:90px;padding-right:90px}}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:850px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="card content">
-    <h1>vip Listings</h1>
-    <p class="muted">Browse vip listings on Nairobi Sweets.</p>
+
+<header class="header">
+  <a href="/" class="brand">
+    <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets">
+    <strong>Nairobi Sweets</strong>
+  </a>
+  <a class="join-btn" href="/join.html">Join</a>
+</header>
+
+<section class="hero">
+  <h1>VIP Profiles</h1>
+  <p>
+    Browse active VIP profiles on Nairobi Sweets. This page highlights premium VIP listings
+    from Nairobi and nearby high-demand locations.
+  </p>
+
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="/seo/">SEO Hub</a>
+    <a href="/trending.html">Trending</a>
+    <a href="/reel.html">Reels</a>
+    <a href="/seo/locations/nairobi.html">Nairobi</a>
+    <a href="/seo/locations/kilimani.html">Kilimani</a>
+    <a href="/seo/locations/westlands.html">Westlands</a>
+    <a href="/seo/categories/featured.html">Featured</a>
+    <a href="/seo/categories/signature.html">Signature</a>
   </div>
-  <div class="section grid">
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Westlands, Westlands road 31 • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+</section>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Westlands • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+<h2 class="section-title">Active VIP Profiles</h2>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Westlands • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+<section class="grid" id="profiles">
+  <div class="loading">Loading VIP profiles...</div>
+</section>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Westlands • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+<section class="content">
+  <h2>About VIP Profiles</h2>
+  <p>
+    VIP profiles receive premium visibility across Nairobi Sweets and are shown in dedicated
+    discovery sections for users browsing upgraded listings.
+  </p>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Kilimani , Galana-Road • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+  <h2>Popular VIP Locations</h2>
+  <p>
+    Explore VIP profiles in Nairobi, Kilimani, Westlands, Kasarani, Ruaka, Ruiru and other nearby areas.
+  </p>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Zimmerman , Base-Road • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+  <h2>Frequently Asked Questions</h2>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Ongata-Rongai , Fatima-Rongai • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+  <h3>How do I browse VIP profiles?</h3>
+  <p>Use this page to view active VIP profiles, then open a full profile for more details.</p>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Ongata-Rongai , Rongai-Town • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+  <h3>Are VIP profiles updated?</h3>
+  <p>Yes. VIP profiles are loaded from the Nairobi Sweets database.</p>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Ongata-Rongai , Rongai-Town • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+  <h3>Can I browse by location?</h3>
+  <p>Yes. Use the location links above to browse Nairobi, Kilimani, Westlands and other areas.</p>
+</section>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Kangundo-Road , Kayole-Junction • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+<footer class="footer">
+  © 2026 Nairobi Sweets · <a href="/">Home</a> · <a href="/join.html">Join</a>
+</footer>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Thika, Thika-Town , Runda-Thika • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Thika, Thika-Town , Runda-Thika • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SITE_URL = "https://nairobi-sweets.com";
+const container = document.getElementById("profiles");
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Roysambu , Lumumba drive • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+function clean(value,fallback=""){
+  return String(value || fallback).replace(/[<>]/g,"");
+}
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Roysambu , Lumumba-Drive • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+function safePhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
+}
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Donholm , Greenspan-Mall • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+function getName(p){return p.stage_name || p.name || p.full_name || "Verified Profile"}
+function getLocation(p){return p.location || p.town || p.area || "Nairobi"}
+function getBio(p){return p.bio || p.description || p.about || "Active VIP profile."}
+function getPlan(p){return String(p.plan || p.plan_name || p.package || p.tier || "VIP")}
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Donholm , Naivas-Eastgate • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+function getImage(p){
+  return (
+    p.profile_image_url ||
+    p.cover_image_url ||
+    p.image_url ||
+    p.photo_url ||
+    p.image2_url ||
+    p.image3_url ||
+    p.image_url_2 ||
+    p.image_url_3 ||
+    p.avatar_url ||
+    p.image_path ||
+    "/assets/logo/logo-badge.png"
+  );
+}
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Syokimau , Katani-Road • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+function getProfileUrl(p){
+  return "/profile.html?id=" + encodeURIComponent(p.id);
+}
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Kileleshwa , Kandara-Road • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+function isVip(p){
+  const plan = getPlan(p).toLowerCase();
+  return (
+    plan.includes("vip") ||
+    p.is_vip === true ||
+    p.vip === true ||
+    p.package === "VIP" ||
+    p.tier === "VIP"
+  ) && !plan.includes("signature");
+}
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Ruai , Kanisani-West-Square • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+function shortBio(text){
+  text = String(text || "");
+  return text.length > 115 ? text.slice(0,115).trim() + "..." : text;
+}
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Juja, Juja-Town , Gate-C-Juja • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+function badge(p){
+  const plan = getPlan(p).toLowerCase();
+  if(plan.includes("vvip") || p.is_vvip) return "👑 VVIP";
+  return "✨ VIP";
+}
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Mombasa, Mombasa-Town , Mombasa-Town • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+function waMessage(p){
+  return encodeURIComponent("Hi " + getName(p) + ", I found your VIP profile on Nairobi Sweets: " + SITE_URL);
+}
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Mombasa-Town , Mombasa-Town • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+async function loadProfiles(){
+  container.innerHTML = `<div class="loading">Loading VIP profiles...</div>`;
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Mombasa, Mombasa-Town , Mikindani • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+  const {data,error} = await sb
+    .from("profiles")
+    .select("*")
+    .order("created_at",{ascending:false})
+    .limit(100);
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Ruaka , Joyland • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+  if(error){
+    container.innerHTML = `<div class="empty">Unable to load profiles: ${clean(error.message)}</div>`;
+    return;
+  }
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Embakasi , Pipeline • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+  const activeProfiles = (data || []).filter(p =>
+    (
+      p.approved === true ||
+      p.is_approved === true ||
+      p.status === "approved" ||
+      p.status === "active"
+    ) && isVip(p)
+  );
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Kisumu-Town , Milimani-Kisumu • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+  if(!activeProfiles.length){
+    container.innerHTML = `<div class="empty">No VIP profiles found yet.</div>`;
+    return;
+  }
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Kisumu-Town , Milimani-Kisumu • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+  container.innerHTML = activeProfiles.slice(0,40).map(p=>{
+    const phone = safePhone(p.phone || p.whatsapp || p.whatsapp_number);
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Kisumu-Town , Milimani-Kisumu • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+    return `
+      <article class="card">
+        <img
+          src="${getImage(p)}"
+          alt="${clean(getName(p))} VIP profile"
+          loading="lazy"
+          onerror="this.src='/assets/logo/logo-badge.png'"
+        >
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Ngara , Stima-Plaza • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+        <div class="body">
+          <span class="badge">${badge(p)}</span>
+          <div class="name">${clean(getName(p))}</div>
+          <div class="meta">📍 ${clean(getLocation(p))}</div>
+          <div class="bio">${clean(shortBio(getBio(p)))}</div>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Ruaka , Joyland • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+          <div class="actions">
+            ${
+              phone
+              ? `
+                <a class="call" href="tel:${phone}">☎ Call</a>
+                <a class="wa" href="https://wa.me/${phone}?text=${waMessage(p)}" target="_blank" rel="noopener">WhatsApp</a>
+              `
+              : ""
+            }
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Roysambu , TRM-Drive • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+            <a class="view" href="${getProfileUrl(p)}">View Profile</a>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Ngara , Stima-Plaza • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
+loadProfiles();
+</script>
 
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Kikuyu , Kinoo • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Kikuyu , Kikuyu-Town • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Kiambu, Ruiru , Membley • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Ruiru , Kamakis • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Athi-River , Greatwall-Gardens • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Juja, Juja-Town , Juja-Square • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Juja, Kenyatta-Road , Kwa-Maua • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Kasarani , Seasons • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Kasarani , Equity-Kasarani • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Kasarani, Garden-City • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px"> • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px"> • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, South-B , Sadi-Road • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Kikuyu • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Ruiru , Kamakis • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-
-<div class="mini">
-  <img src="https://via.placeholder.com/1200x1500?text=Nairobi+Sweets" alt="Profile" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;margin-bottom:12px">
-  <h3 style="margin:0 0 8px 0">Profile</h3>
-  <div class="muted" style="margin-bottom:8px">Nairobi, Thome , Homeland • vip</div>
-  <a href="https://nairobi-sweets.com/seo/profiles/profile.html">View profile</a>
-</div>
-</div>
-  <div class="section links">
-    <a href="https://nairobi-sweets.com/">Home</a> |
-    <a href="https://nairobi-sweets.com/booking.html">Booking</a> |
-    <a href="https://nairobi-sweets.com/featured.html">Featured</a>
-  </div>
-</div>
 </body>
 </html>
