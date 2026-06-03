@@ -3,10 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
   <title>Login | Nairobi Sweets</title>
+
   <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
+
+  <!-- PWA APP SUPPORT -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ffd84b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
+  <link rel="apple-touch-icon" href="/assets/logo/logo-badge.png">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     body{
       min-height:100vh;
@@ -41,7 +53,10 @@
       border-radius:18px;
       transition:.18s ease;
     }
-    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+    .btn:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.05);
+    }
     .btn-gold{
       background:linear-gradient(135deg,#facc15,#f59e0b);
       color:#111827;
@@ -54,6 +69,7 @@
     }
   </style>
 </head>
+
 <body class="flex items-center justify-center px-4 py-10">
   <div class="glass rounded-[30px] w-full max-w-md p-6 md:p-8">
     <div class="text-center mb-6">
@@ -66,8 +82,11 @@
     <div class="space-y-3">
       <input id="email" type="email" placeholder="Email" class="input">
       <input id="password" type="password" placeholder="Password" class="input">
+
       <button id="loginBtn" class="btn btn-gold w-full py-3">Login</button>
+
       <a href="/join.html" class="btn btn-dark w-full py-3 block text-center">Create an account</a>
+
       <p id="msg" class="text-sm text-slate-300 text-center"></p>
     </div>
   </div>
@@ -75,13 +94,16 @@
   <script>
     const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ';
+
     const OWNER_EMAIL = 'nairobisweets05@gmail.com';
+
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function login(){
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
       const msg = document.getElementById('msg');
+
       msg.textContent = '';
 
       if(!email || !password){
@@ -89,12 +111,19 @@
         return;
       }
 
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      msg.textContent = 'Logging in...';
+
+      const { error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
 
       if(error){
         msg.textContent = error.message;
         return;
       }
+
+      msg.textContent = 'Login successful. Redirecting...';
 
       if(email.toLowerCase() === OWNER_EMAIL.toLowerCase()){
         window.location.href = '/vault-8472.html';
@@ -104,9 +133,20 @@
     }
 
     document.getElementById('loginBtn').addEventListener('click', login);
+
     document.getElementById('password').addEventListener('keydown', (e) => {
       if(e.key === 'Enter') login();
     });
+
+    /* PWA SERVICE WORKER */
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("/sw.js")
+          .then(() => console.log("Nairobi Sweets PWA ready"))
+          .catch(err => console.error("PWA error:", err));
+      });
+    }
   </script>
 </body>
 </html>
