@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Ruiru Profiles | Nairobi Sweets</title>
-<meta name="description" content="Browse active Ruiru profiles on Nairobi Sweets. Discover VIP, Featured and Signature profiles across Ruiru, Kamakis, Membley, Eastern Bypass, Kiambu Road, Tatu City and Kahawa.">
+<title>Ruaka Profiles | Nairobi Sweets</title>
+<meta name="description" content="Browse active Ruaka profiles on Nairobi Sweets. Discover VIP, Featured and Signature profiles across Ruaka, Ruaka Square, Ruaka Town, Two Rivers, Rosslyn, Banana and nearby areas.">
 <meta name="robots" content="index,follow">
-<link rel="canonical" href="https://nairobi-sweets.com/seo/locations/ruiru.html">
+<link rel="canonical" href="https://nairobi-sweets.com/seo/locations/ruaka.html">
 
-<meta property="og:title" content="Ruiru Profiles | Nairobi Sweets">
-<meta property="og:description" content="Browse active Ruiru profiles, VIP listings and Signature profiles on Nairobi Sweets.">
-<meta property="og:url" content="https://nairobi-sweets.com/seo/locations/ruiru.html">
+<meta property="og:title" content="Ruaka Profiles | Nairobi Sweets">
+<meta property="og:description" content="Browse active Ruaka profiles, VIP listings and Signature profiles on Nairobi Sweets.">
+<meta property="og:url" content="https://nairobi-sweets.com/seo/locations/ruaka.html">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
 
@@ -68,10 +68,10 @@ a{text-decoration:none;color:inherit}
 </header>
 
 <section class="hero">
-  <h1>Ruiru Profiles</h1>
+  <h1>Ruaka Profiles</h1>
   <p>
-    Browse active profiles across Ruiru and nearby areas including Kamakis,
-    Membley, Eastern Bypass, Kiambu Road, Tatu City and Kahawa.
+    Browse active profiles across Ruaka and nearby areas including Ruaka Square,
+    Ruaka Town, Two Rivers, Rosslyn, Banana and Runda.
   </p>
 
   <div class="links">
@@ -83,39 +83,39 @@ a{text-decoration:none;color:inherit}
     <a href="/seo/locations/kilimani.html">Kilimani</a>
     <a href="/seo/locations/westlands.html">Westlands</a>
     <a href="/seo/locations/kasarani.html">Kasarani</a>
-    <a href="/seo/locations/ruaka.html">Ruaka</a>
+    <a href="/seo/locations/ruiru.html">Ruiru</a>
   </div>
 </section>
 
-<h2 class="section-title">Featured Ruiru Profiles</h2>
+<h2 class="section-title">Featured Ruaka Profiles</h2>
 
 <section class="grid" id="profiles">
-  <div class="loading">Loading Ruiru profiles...</div>
+  <div class="loading">Loading Ruaka profiles...</div>
 </section>
 
 <section class="content">
-  <h2>About Ruiru Profiles</h2>
+  <h2>About Ruaka Profiles</h2>
   <p>
-    Ruiru is one of the most active towns near Nairobi, with strong growth around
-    Kamakis, Membley, Eastern Bypass, Tatu City and Kiambu Road.
+    Ruaka is one of the fastest-growing areas near Nairobi, with strong activity around
+    Ruaka Town, Two Rivers and nearby residential zones.
   </p>
 
   <h2>Nearby Areas</h2>
   <p>
-    Explore Ruiru, Kamakis, Membley, Eastern Bypass, Kiambu Road, Tatu City,
-    Kahawa and other nearby Nairobi locations through Nairobi Sweets location pages.
+    Explore Ruaka, Ruaka Square, Ruaka Town, Two Rivers, Rosslyn, Banana, Runda
+    and other Nairobi locations through Nairobi Sweets location pages.
   </p>
 
   <h2>Frequently Asked Questions</h2>
 
-  <h3>How do I browse Ruiru profiles?</h3>
-  <p>Use this page to view active Ruiru profiles, then open a full profile for more details.</p>
+  <h3>How do I browse Ruaka profiles?</h3>
+  <p>Use this page to view active Ruaka profiles, then open a full profile for more details.</p>
 
   <h3>Are profiles updated?</h3>
   <p>Yes. Active profiles are loaded from the Nairobi Sweets database.</p>
 
   <h3>Can I browse other locations?</h3>
-  <p>Yes. Use the links above to explore Nairobi, Kilimani, Westlands, Kasarani and Ruaka.</p>
+  <p>Yes. Use the links above to explore Nairobi, Kilimani, Westlands, Kasarani and Ruiru.</p>
 </section>
 
 <footer class="footer">
@@ -143,8 +143,8 @@ function safePhone(phone){
 }
 
 function getName(p){return p.stage_name || p.name || p.full_name || "Verified Profile"}
-function getLocation(p){return p.location || p.town || p.area || "Ruiru"}
-function getBio(p){return p.bio || p.description || p.about || "Active Ruiru profile."}
+function getLocation(p){return p.location || p.town || p.area || "Ruaka"}
+function getBio(p){return p.bio || p.description || p.about || "Active Ruaka profile."}
 function getPlan(p){return String(p.plan || p.plan_name || p.package || p.tier || "Featured")}
 
 function getImage(p){
@@ -187,12 +187,12 @@ function waMessage(p){
 }
 
 async function loadProfiles(){
-  container.innerHTML = `<div class="loading">Loading Ruiru profiles...</div>`;
+  container.innerHTML = `<div class="loading">Loading Ruaka profiles...</div>`;
 
   const {data,error} = await sb
     .from("profiles")
     .select("*")
-    .or("location.ilike.%Ruiru%,location.ilike.%Kamakis%,location.ilike.%Membley%,location.ilike.%Eastern Bypass%,location.ilike.%Eastern-Bypass%,location.ilike.%Kiambu Road%,location.ilike.%Kiambu-Road%,location.ilike.%Tatu City%,location.ilike.%Tatu-City%,location.ilike.%Kahawa%")
+    .or("location.ilike.%Ruaka%,location.ilike.%Ruaka Square%,location.ilike.%Ruaka-Square%,location.ilike.%Ruaka Town%,location.ilike.%Ruaka-Town%,location.ilike.%Two Rivers%,location.ilike.%Two-Rivers%,location.ilike.%Rosslyn%,location.ilike.%Banana%,location.ilike.%Runda%")
     .order("created_at",{ascending:false})
     .limit(40);
 
@@ -209,7 +209,7 @@ async function loadProfiles(){
   );
 
   if(!activeProfiles.length){
-    container.innerHTML = `<div class="empty">No Ruiru profiles found yet.</div>`;
+    container.innerHTML = `<div class="empty">No Ruaka profiles found yet.</div>`;
     return;
   }
 
@@ -220,7 +220,7 @@ async function loadProfiles(){
       <article class="card">
         <img
           src="${getImage(p)}"
-          alt="${clean(getName(p))} Ruiru profile"
+          alt="${clean(getName(p))} Ruaka profile"
           loading="lazy"
           onerror="this.src='/assets/logo/logo-badge.png'"
         >
