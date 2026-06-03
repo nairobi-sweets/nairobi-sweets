@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nairobi Profiles | Nairobi Sweets</title>
+
+<meta name="description"
+content="Browse Nairobi profiles on Nairobi Sweets. Discover Featured, VIP and Signature profiles across Nairobi.">
+
+<meta name="keywords"
+content="Nairobi profiles, Nairobi directory, Nairobi Sweets, Nairobi VIP profiles, Nairobi featured profiles">
+
+<meta name="robots" content="index,follow">
+
+<link rel="canonical"
+href="https://nairobi-sweets.com/nairobi.html">
+
+<meta property="og:title" content="Nairobi Profiles | Nairobi Sweets">
+<meta property="og:description" content="Browse Nairobi profiles on Nairobi Sweets.">
+<meta property="og:url" content="https://nairobi-sweets.com/nairobi.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#0b0f2c;
+color:#fff;
+}
+
+header{
+padding:20px;
+background:#081022;
+border-bottom:1px solid rgba(255,216,75,.2);
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.logo img{
+height:50px;
+}
+
+.logo h1{
+font-size:24px;
+color:#ffd84b;
+}
+
+.hero{
+padding:50px 20px;
+text-align:center;
+}
+
+.hero h2{
+font-size:36px;
+margin-bottom:15px;
+color:#ffd84b;
+}
+
+.hero p{
+max-width:800px;
+margin:auto;
+line-height:1.7;
+opacity:.9;
+}
+
+.stats{
+display:flex;
+justify-content:center;
+gap:20px;
+flex-wrap:wrap;
+margin-top:30px;
+}
+
+.stat{
+background:#121938;
+padding:15px 25px;
+border-radius:12px;
+}
+
+.section-title{
+text-align:center;
+font-size:30px;
+margin:40px 0 20px;
+color:#ffd84b;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+padding:20px;
+max-width:1400px;
+margin:auto;
+}
+
+.card{
+background:#121938;
+border-radius:18px;
+overflow:hidden;
+transition:.3s;
+border:1px solid rgba(255,216,75,.15);
+}
+
+.card:hover{
+transform:translateY(-4px);
+}
+
+.card img{
+width:100%;
+height:320px;
+object-fit:cover;
+}
+
+.card-content{
+padding:15px;
+}
+
+.card h3{
+font-size:18px;
+margin-bottom:8px;
+}
+
+.location{
+opacity:.8;
+font-size:14px;
+margin-bottom:10px;
+}
+
+.plan{
+display:inline-block;
+padding:4px 10px;
+background:#ffd84b;
+color:#000;
+border-radius:20px;
+font-size:12px;
+font-weight:bold;
+margin-bottom:12px;
+}
+
+.btn{
+display:block;
+text-align:center;
+padding:10px;
+background:#ffd84b;
+color:#000;
+text-decoration:none;
+font-weight:bold;
+border-radius:10px;
+}
+
+.loading{
+text-align:center;
+padding:60px;
+font-size:18px;
+}
+
+.faq{
+max-width:1000px;
+margin:auto;
+padding:50px 20px;
+}
+
+.faq h2{
+margin-bottom:20px;
+color:#ffd84b;
+}
+
+.faq-item{
+margin-bottom:25px;
+}
+
+.faq-item h3{
+margin-bottom:8px;
+}
+
+.locations{
+padding:50px 20px;
+text-align:center;
+}
+
+.location-links{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:12px;
+margin-top:20px;
+}
+
+.location-links a{
+background:#121938;
+padding:10px 18px;
+border-radius:999px;
+text-decoration:none;
+color:#fff;
+border:1px solid rgba(255,216,75,.2);
+}
+
+footer{
+padding:30px;
+text-align:center;
+background:#081022;
+margin-top:50px;
+}
+
+@media(max-width:1100px){
+.grid{
+grid-template-columns:repeat(2,1fr);
+}
+}
+
+@media(max-width:700px){
+.grid{
+grid-template-columns:1fr;
+}
+.hero h2{
+font-size:28px;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">
+<img src="/assets/logo/logo-navbar.png" alt="Nairobi Sweets">
+<h1>Nairobi Sweets</h1>
+</div>
+</header>
+
+<section class="hero">
+<h2>Nairobi Profiles</h2>
+
+<p>
+Explore approved profiles across Nairobi. Browse Featured, VIP and Signature profiles and discover the latest additions to Nairobi Sweets.
+</p>
+
+<div class="stats">
+<div class="stat">📍 Nairobi</div>
+<div class="stat">⭐ Featured Profiles</div>
+<div class="stat">👑 VIP & Signature</div>
+</div>
+</section>
+
+<h2 class="section-title">Profiles in Nairobi</h2>
+
+<div id="profiles" class="grid">
+<div class="loading">Loading Nairobi profiles...</div>
+</div>
+
+<section class="faq">
+
+<h2>Frequently Asked Questions</h2>
+
+<div class="faq-item">
+<h3>How do I find profiles in Nairobi?</h3>
+<p>
+Browse the approved profiles listed on this page and open any profile for more details.
+</p>
+</div>
+
+<div class="faq-item">
+<h3>How often are profiles updated?</h3>
+<p>
+Nairobi Sweets updates profiles regularly as new members join and existing profiles are renewed.
+</p>
+</div>
+
+<div class="faq-item">
+<h3>Can I browse other locations?</h3>
+<p>
+Yes. Use the location links below to explore additional areas.
+</p>
+</div>
+
+</section>
+
+<section class="locations">
+
+<h2>Browse More Locations</h2>
+
+<div class="location-links">
+<a href="/westlands.html">Westlands</a>
+<a href="/kilimani.html">Kilimani</a>
+<a href="/karen.html">Karen</a>
+<a href="/ruaka.html">Ruaka</a>
+<a href="/kiambu.html">Kiambu</a>
+<a href="/mombasa.html">Mombasa</a>
+<a href="/kisumu.html">Kisumu</a>
+<a href="/nakuru.html">Nakuru</a>
+<a href="/eldoret.html">Eldoret</a>
+</div>
+
+</section>
+
+<footer>
+© 2026 Nairobi Sweets. All Rights Reserved.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"https://dkjlvyynvgtijccitvvd.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+
+const sb =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+loadProfiles();
+
+async function loadProfiles(){
+
+const container =
+document.getElementById("profiles");
+
+const {data,error} = await sb
+.from("profiles")
+.select("*")
+.eq("approved",true)
+.ilike("location","%Nairobi%")
+.order("created_at",{ascending:false});
+
+if(error){
+
+container.innerHTML=
+"<div class='loading'>Unable to load profiles.</div>";
+
+return;
+}
+
+if(!data || data.length===0){
+
+container.innerHTML=
+"<div class='loading'>No Nairobi profiles found.</div>";
+
+return;
+}
+
+container.innerHTML =
+data.map(profile=>`
+
+<div class="card">
+
+<img
+loading="lazy"
+src="${profile.image_url || '/assets/logo/logo-badge.png'}"
+alt="${profile.stage_name} Nairobi Profile">
+
+<div class="card-content">
+
+<div class="plan">
+${profile.plan || 'Featured'}
+</div>
+
+<h3>${profile.stage_name || 'Profile'}</h3>
+
+<div class="location">
+📍 ${profile.location || 'Nairobi'}
+</div>
+
+<a
+class="btn"
+href="/profile.html?id=${profile.id}">
+View Profile
+</a>
+
+</div>
+
+</div>
+
+`).join("");
+
+}
+
+</script>
+
+</body>
+</html>
