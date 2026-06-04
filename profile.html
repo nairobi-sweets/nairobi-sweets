@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
 <title>Nairobi Sweets Profile</title>
-<meta name="description" content="Verified Nairobi Sweets profile with gallery, services, WhatsApp and direct call contact.">
+<meta name="description" content="Verified Nairobi Sweets profile with dynamic profile details, gallery, services, WhatsApp and direct call contact.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#050733">
 
@@ -14,6 +14,7 @@
 <meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
 <meta property="og:url" content="https://nairobi-sweets.com/profile.html">
 <meta property="og:type" content="profile">
+<meta property="og:site_name" content="Nairobi Sweets">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Nairobi Sweets Profile">
@@ -606,7 +607,19 @@ function reelUrl(p){
 }
 
 function profileUrl(p){
+  const rawSlug = String(p.slug || "").trim();
+  if(rawSlug){
+    return `${SITE_URL}/profile.html?slug=${encodeURIComponent(makeSlug(rawSlug))}`;
+  }
   return `${SITE_URL}/profile.html?id=${encodeURIComponent(p.id || "")}`;
+}
+
+function localProfileUrl(p){
+  const rawSlug = String(p.slug || "").trim();
+  if(rawSlug){
+    return `/profile.html?slug=${encodeURIComponent(makeSlug(rawSlug))}`;
+  }
+  return `/profile.html?id=${encodeURIComponent(p.id || "")}`;
 }
 
 function planText(p){
@@ -720,16 +733,19 @@ function updateSEO(p){
   const plan = planText(p);
   const img = absUrl(mainImage(p)) || ABS_FALLBACK_IMAGE;
   const url = profileUrl(p);
-  const desc = `${name} is a verified ${plan} profile located in ${loc}. View gallery photos, services offered, availability and direct contact options on Nairobi Sweets.`;
 
-  document.title = `${name} | ${plan} Profile in ${loc} | Nairobi Sweets`;
+  const title = `${name} | ${plan} Profile in ${loc} | Nairobi Sweets`;
+  const desc = `View ${name}'s ${plan} profile in ${loc}. See gallery photos, services, location, WhatsApp contact and direct call options on Nairobi Sweets.`;
+
+  document.title = title;
 
   setMeta('meta[name="description"]',desc);
-  setMeta('meta[property="og:title"]',`${name} | Nairobi Sweets`);
+  setMeta('meta[property="og:title"]',title);
   setMeta('meta[property="og:description"]',desc);
   setMeta('meta[property="og:image"]',img);
   setMeta('meta[property="og:url"]',url);
-  setMeta('meta[name="twitter:title"]',`${name} | Nairobi Sweets`);
+  setMeta('meta[property="og:type"]',"profile");
+  setMeta('meta[name="twitter:title"]',title);
   setMeta('meta[name="twitter:description"]',desc);
   setMeta('meta[name="twitter:image"]',img);
 
@@ -737,13 +753,18 @@ function updateSEO(p){
   if(canonical) canonical.setAttribute("href",url);
 
   const phone = cleanPhone(p.phone || p.whatsapp);
-  document.getElementById("schema-json").textContent = JSON.stringify({
+
+  const schema = {
     "@context":"https://schema.org",
     "@type":"ProfilePage",
-    "name":`${name} | Nairobi Sweets`,
+    "name":title,
     "description":desc,
     "url":url,
-    "primaryImageOfPage":{"@type":"ImageObject","url":img},
+    "image":img,
+    "primaryImageOfPage":{
+      "@type":"ImageObject",
+      "url":img
+    },
     "mainEntity":{
       "@type":"Person",
       "name":name,
@@ -761,14 +782,19 @@ function updateSEO(p){
       "@type":"Organization",
       "name":"Nairobi Sweets",
       "url":SITE_URL,
-      "logo":{"@type":"ImageObject","url":ABS_FALLBACK_IMAGE}
+      "logo":{
+        "@type":"ImageObject",
+        "url":ABS_FALLBACK_IMAGE
+      }
     }
-  },null,2);
+  };
+
+  document.getElementById("schema-json").textContent = JSON.stringify(schema,null,2);
 }
 
 function miniCard(p){
   return `
-    <a class="mini-card" href="/profile.html?id=${encodeURIComponent(p.id || "")}">
+    <a class="mini-card" href="${localProfileUrl(p)}">
       <div class="mini-media">
         <img src="${escapeHTML(mainImage(p))}" loading="lazy" alt="${escapeHTML(displayName(p))}" onerror="this.src='${FALLBACK_IMAGE}'">
         <span class="mini-score">🔥 ${score(p)}</span>
@@ -822,8 +848,8 @@ function previousNext(){
 
   return `
     <div class="profile-nav">
-      ${prev ? `<a class="btn back" href="/profile.html?id=${encodeURIComponent(prev.id)}">← Previous</a>` : ""}
-      ${next ? `<a class="btn back" href="/profile.html?id=${encodeURIComponent(next.id)}">Next →</a>` : ""}
+      ${prev ? `<a class="btn back" href="${localProfileUrl(prev)}">← Previous</a>` : ""}
+      ${next ? `<a class="btn back" href="${localProfileUrl(next)}">Next →</a>` : ""}
     </div>
   `;
 }
