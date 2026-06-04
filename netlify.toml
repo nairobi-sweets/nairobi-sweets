@@ -1,20 +1,19 @@
-
 [build]
   publish = "."
   functions = "netlify/functions"
 
-########################################
+#################################################
 # PROFILE SITEMAP
-########################################
+#################################################
 
 [[redirects]]
   from = "/profile-sitemap.xml"
   to = "/.netlify/functions/profile-sitemap"
   status = 200
 
-########################################
+#################################################
 # M-PESA FUNCTIONS
-########################################
+#################################################
 
 [[redirects]]
   from = "/api/mpesa-stk-push"
@@ -26,9 +25,9 @@
   to = "/.netlify/functions/mpesa-callback"
   status = 200
 
-########################################
+#################################################
 # ADMIN FUNCTIONS
-########################################
+#################################################
 
 [[redirects]]
   from = "/api/admin-login"
@@ -60,58 +59,100 @@
   to = "/.netlify/functions/admin-delete-user"
   status = 200
 
-########################################
-# PROFILE ROUTING
-########################################
+#################################################
+# AUTO RENEW / EXPIRE
+#################################################
 
 [[redirects]]
-  from = "/profile/*"
-  to = "/profile.html"
+  from = "/api/auto-renew"
+  to = "/.netlify/functions/auto-renew"
   status = 200
 
-########################################
+#################################################
 # SECURITY HEADERS
-########################################
+#################################################
 
 [[headers]]
   for = "/*"
 
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
-    X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
 
-########################################
-# PWA
-########################################
-
-[[headers]]
-  for = "/manifest.webmanifest"
-
-  [headers.values]
-    Content-Type = "application/manifest+json"
+#################################################
+# HTML CACHING
+#################################################
 
 [[headers]]
-  for = "/sw.js"
+  for = "*.html"
 
   [headers.values]
-    Cache-Control = "no-cache"
+    Cache-Control = "public,max-age=300"
 
-########################################
-# STATIC ASSETS CACHE
-########################################
+#################################################
+# JS CACHING
+#################################################
 
 [[headers]]
-  for = "/assets/*"
+  for = "*.js"
 
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "public,max-age=86400"
 
-########################################
-# SEO FILES
-########################################
+#################################################
+# CSS CACHING
+#################################################
+
+[[headers]]
+  for = "*.css"
+
+  [headers.values]
+    Cache-Control = "public,max-age=86400"
+
+#################################################
+# IMAGE CACHING
+#################################################
+
+[[headers]]
+  for = "*.png"
+
+  [headers.values]
+    Cache-Control = "public,max-age=31536000,immutable"
+
+[[headers]]
+  for = "*.jpg"
+
+  [headers.values]
+    Cache-Control = "public,max-age=31536000,immutable"
+
+[[headers]]
+  for = "*.jpeg"
+
+  [headers.values]
+    Cache-Control = "public,max-age=31536000,immutable"
+
+[[headers]]
+  for = "*.webp"
+
+  [headers.values]
+    Cache-Control = "public,max-age=31536000,immutable"
+
+#################################################
+# VIDEO CACHING
+#################################################
+
+[[headers]]
+  for = "*.mp4"
+
+  [headers.values]
+    Cache-Control = "public,max-age=31536000,immutable"
+
+#################################################
+# ROBOTS
+#################################################
 
 [[headers]]
   for = "/robots.txt"
@@ -119,28 +160,33 @@
   [headers.values]
     Content-Type = "text/plain"
 
+#################################################
+# SITEMAPS
+#################################################
+
 [[headers]]
   for = "/sitemap.xml"
 
   [headers.values]
     Content-Type = "application/xml"
 
-########################################
-# LOCATION SEO PAGES
-########################################
-
 [[headers]]
-  for = "/seo/*"
+  for = "/profile-sitemap.xml"
 
   [headers.values]
-    Cache-Control = "public, max-age=86400"
+    Content-Type = "application/xml"
 
-########################################
-# CUSTOM 404
-########################################
+[[headers]]
+  for = "/static-sitemap.xml"
+
+  [headers.values]
+    Content-Type = "application/xml"
+
+#################################################
+# SPA FALLBACK
+#################################################
 
 [[redirects]]
   from = "/*"
-  to = "/404.html"
-  status = 404
-
+  to = "/index.html"
+  status = 200
