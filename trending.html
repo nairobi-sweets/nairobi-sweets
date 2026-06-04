@@ -5,11 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>Nairobi Sweets | Trending Profiles</title>
-<meta name="description" content="Trending Nairobi Sweets profiles ranked by views, WhatsApp clicks, calls, shares and video plays.">
+<meta name="description" content="Trending Nairobi Sweets profiles ranked by views, WhatsApp clicks, calls, shares, likes and video plays.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://nairobi-sweets.com/trending.html">
+
+<meta property="og:title" content="Nairobi Sweets | Trending Profiles">
+<meta property="og:description" content="View trending Nairobi Sweets profiles ranked by live engagement.">
+<meta property="og:url" content="https://nairobi-sweets.com/trending.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nairobi Sweets | Trending Profiles">
+<meta name="twitter:description" content="View trending Nairobi Sweets profiles ranked by live engagement.">
+<meta name="twitter:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
-
-<!-- PWA APP SUPPORT -->
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#ffd84b">
 <meta name="mobile-web-app-capable" content="yes">
@@ -41,6 +52,8 @@ a{text-decoration:none;color:inherit}
 .body{padding:16px}
 .rank{position:absolute;top:12px;left:12px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:900;z-index:3}
 .badge{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.75);color:#ffd54a;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:900;z-index:3}
+.badge.vip{background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff}
+.badge.signature{background:linear-gradient(135deg,#ffd84b,#ff9f1c);color:#000}
 .name{font-size:22px;font-weight:900;color:#ffd54a;margin-bottom:8px}
 .meta{color:#ddd;font-size:14px;line-height:1.6;margin-bottom:12px}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
@@ -48,11 +61,31 @@ a{text-decoration:none;color:inherit}
 .stat small{display:block;color:#aaa;font-size:11px;margin-bottom:5px}
 .stat strong{color:#ffd54a;font-size:20px}
 .empty{grid-column:1/-1;text-align:center;color:#ffd54a;font-weight:900;padding:60px}
+.seo-links{max-width:1200px;margin:10px auto 40px;padding:20px 18px}
+.seo-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,216,75,.15);border-radius:22px;padding:20px}
+.seo-box h2{color:#ffd54a;margin-bottom:14px}
+.seo-grid{display:flex;flex-wrap:wrap;gap:10px}
+.seo-grid a{background:#07145f;border:1px solid rgba(255,216,75,.2);color:#ffd54a;padding:10px 13px;border-radius:999px;font-size:13px;font-weight:900}
 .bottom-nav{position:fixed;left:0;right:0;bottom:0;height:76px;background:rgba(0,0,0,.96);display:flex;align-items:center;justify-content:space-around;border-top:1px solid rgba(255,213,74,.08)}
 .bottom-nav a{color:#ffd54a;font-size:24px}
 @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){.grid{grid-template-columns:1fr}.hero-box h2{font-size:40px}.brand h1{font-size:28px}.logo{width:58px;height:58px}.card img{height:340px}}
 </style>
+
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"CollectionPage",
+ "name":"Nairobi Sweets Trending Profiles",
+ "url":"https://nairobi-sweets.com/trending.html",
+ "description":"Trending Nairobi Sweets profiles ranked by live engagement.",
+ "isPartOf":{
+   "@type":"WebSite",
+   "name":"Nairobi Sweets",
+   "url":"https://nairobi-sweets.com/"
+ }
+}
+</script>
 </head>
 
 <body>
@@ -68,7 +101,7 @@ a{text-decoration:none;color:inherit}
 <section class="hero">
   <div class="hero-box">
     <h2>🔥 Trending</h2>
-    <p>Live leaderboard ranked by profile views, WhatsApp clicks, calls, shares and video plays.</p>
+    <p>Live leaderboard ranked by profile views, WhatsApp clicks, calls, shares, likes and video plays.</p>
   </div>
 </section>
 
@@ -79,10 +112,29 @@ a{text-decoration:none;color:inherit}
   <button data-sort="call_clicks">☎ Calls</button>
   <button data-sort="share_clicks">🔗 Shares</button>
   <button data-sort="video_plays">🎬 Videos</button>
+  <button data-sort="likes_count">❤️ Likes</button>
 </div>
 
 <section class="grid" id="grid">
   <div class="empty">Loading trending profiles...</div>
+</section>
+
+<section class="seo-links">
+  <div class="seo-box">
+    <h2>Explore More</h2>
+    <div class="seo-grid">
+      <a href="/seo/locations/index.html">All Locations</a>
+      <a href="/seo/categories/index.html">All Categories</a>
+      <a href="/seo/categories/featured.html">Featured</a>
+      <a href="/seo/categories/vip.html">VIP</a>
+      <a href="/seo/categories/signature.html">Signature</a>
+      <a href="/seo/locations/kilimani.html">Kilimani</a>
+      <a href="/seo/locations/westlands.html">Westlands</a>
+      <a href="/seo/locations/lavington.html">Lavington</a>
+      <a href="/seo/locations/ngong-road.html">Ngong Road</a>
+      <a href="/seo/locations/embakasi.html">Embakasi</a>
+    </div>
+  </div>
 </section>
 
 <nav class="bottom-nav">
@@ -90,12 +142,11 @@ a{text-decoration:none;color:inherit}
   <a href="/trending.html">🔥</a>
   <a href="/reel.html">🎬</a>
   <a href="/join.html">➕</a>
-  <a href="/vault-8472.html">☰</a>
 </nav>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
 const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const grid = document.getElementById("grid");
@@ -103,24 +154,67 @@ const grid = document.getElementById("grid");
 let rows = [];
 let sortKey = "trending_score";
 
+function clean(v){
+  return String(v || "").replace(/[<>]/g,"");
+}
+
+function makeSlug(value){
+  return String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
+}
+
 function img(p){
-  return p.photo_url || p.image_url || p.profile_photo || p.main_photo || p.photo || p.image || "/assets/logo/logo-badge.png";
+  return (
+    p.profile_image_url ||
+    p.cover_image_url ||
+    p.image_url ||
+    p.photo_url ||
+    p.image2_url ||
+    p.image3_url ||
+    p.image_url_2 ||
+    p.image_url_3 ||
+    p.avatar_url ||
+    p.profile_photo ||
+    p.main_photo ||
+    p.photo ||
+    p.image ||
+    "/assets/logo/logo-badge.png"
+  );
 }
 
 function nameOf(p){
-  return p.stage_name || p.name || "Verified";
+  return p.stage_name || p.name || p.full_name || "Verified";
 }
 
 function locOf(p){
-  return p.location || p.town || "Nairobi";
+  return p.location || p.town || p.area || "Nairobi";
 }
 
 function planOf(p){
-  return String(p.plan || "featured").toUpperCase();
+  return String(p.plan || p.plan_name || p.package || p.tier || "featured").toUpperCase();
 }
 
 function n(v){
   return Number(v || 0);
+}
+
+function isSignature(p){
+  const plan = planOf(p).toLowerCase();
+  return plan.includes("signature") || plan.includes("vvip") || p.is_signature || p.is_vvip || p.signature || p.vvip;
+}
+
+function isVip(p){
+  const plan = planOf(p).toLowerCase();
+  return (plan.includes("vip") && !isSignature(p)) || p.is_vip || p.vip;
+}
+
+function badgeClass(p){
+  if(isSignature(p)) return "badge signature";
+  if(isVip(p)) return "badge vip";
+  return "badge";
 }
 
 function rankLabel(i){
@@ -131,11 +225,26 @@ function rankLabel(i){
 }
 
 function profileLink(p){
-  if(p.slug){
-    return `/profile.html?slug=${encodeURIComponent(p.slug)}`;
+  const slug = makeSlug(p.slug || `${nameOf(p)}-${locOf(p)}`);
+  if(slug){
+    return `/profile.html?slug=${encodeURIComponent(slug)}`;
   }
+  return `/profile.html?id=${encodeURIComponent(p.id)}`;
+}
 
-  return `/profile.html?slug=${encodeURIComponent(p.id)}`;
+function computedScore(p){
+  return Math.round(
+    n(p.trending_score) ||
+    (
+      n(p.boost) * 1000 +
+      n(p.views) +
+      n(p.whatsapp_clicks) * 10 +
+      n(p.call_clicks) * 15 +
+      n(p.share_clicks) * 7 +
+      n(p.video_plays) * 8 +
+      n(p.likes_count || p.likes) * 12
+    )
+  );
 }
 
 function render(){
@@ -149,21 +258,21 @@ function render(){
   grid.innerHTML = sorted.map((p,i)=>`
     <article class="card" onclick="location.href='${profileLink(p)}'">
       <div class="rank">${rankLabel(i)} TRENDING</div>
-      <div class="badge">${planOf(p)}</div>
+      <div class="${badgeClass(p)}">${clean(planOf(p))}</div>
 
       <img
-        src="${img(p)}"
+        src="${clean(img(p))}"
         onerror="this.src='/assets/logo/logo-badge.png'"
-        alt="${nameOf(p)}"
+        alt="${clean(nameOf(p))} trending Nairobi Sweets profile"
         loading="lazy"
       >
 
       <div class="body">
-        <div class="name">${nameOf(p)}</div>
+        <div class="name">${clean(nameOf(p))}</div>
 
         <div class="meta">
-          📍 ${locOf(p)}<br>
-          🔥 Score: ${n(p.trending_score)}
+          📍 ${clean(locOf(p))}<br>
+          🔥 Score: ${computedScore(p)}
         </div>
 
         <div class="stats">
@@ -195,32 +304,49 @@ async function loadTrending(){
         last_event_at
       )
     `)
-    .eq("approved",true)
-    .or("is_expired.eq.false,is_expired.is.null")
-    .order("trending_score",{ascending:false})
-    .limit(60);
+    .order("id",{ascending:false})
+    .limit(100);
 
   if(error){
-    grid.innerHTML = `<div class="empty">Error: ${error.message}</div>`;
+    grid.innerHTML = `<div class="empty">Error: ${clean(error.message)}</div>`;
     return;
   }
 
-  rows = (data || []).map(p=>{
-    const a = Array.isArray(p.profile_analytics_summary)
-      ? p.profile_analytics_summary[0]
-      : p.profile_analytics_summary;
+  rows = (data || [])
+    .filter(p =>
+      p.approved === true ||
+      p.is_approved === true ||
+      String(p.status || "").toLowerCase() === "approved" ||
+      String(p.status || "").toLowerCase() === "active"
+    )
+    .filter(p => !(p.is_expired === true || String(p.status || "").toLowerCase() === "expired"))
+    .map(p=>{
+      const a = Array.isArray(p.profile_analytics_summary)
+        ? p.profile_analytics_summary[0]
+        : p.profile_analytics_summary;
 
-    return {
-      ...p,
-      views: a?.views || p.views || 0,
-      whatsapp_clicks: a?.whatsapp_clicks || p.whatsapp_clicks || 0,
-      call_clicks: a?.call_clicks || p.call_clicks || 0,
-      share_clicks: a?.share_clicks || p.share_clicks || p.profile_shares || 0,
-      video_plays: a?.video_plays || p.video_plays || 0,
-      last_event_at: a?.last_event_at || null
-    };
-  });
+      return {
+        ...p,
+        views: a?.views || p.views || 0,
+        whatsapp_clicks: a?.whatsapp_clicks || p.whatsapp_clicks || 0,
+        call_clicks: a?.call_clicks || p.call_clicks || 0,
+        share_clicks: a?.share_clicks || p.share_clicks || p.profile_shares || 0,
+        video_plays: a?.video_plays || p.video_plays || 0,
+        likes_count: p.likes_count || p.likes || p.favorites || 0,
+        trending_score: computedScore({
+          ...p,
+          views: a?.views || p.views || 0,
+          whatsapp_clicks: a?.whatsapp_clicks || p.whatsapp_clicks || 0,
+          call_clicks: a?.call_clicks || p.call_clicks || 0,
+          share_clicks: a?.share_clicks || p.share_clicks || p.profile_shares || 0,
+          video_plays: a?.video_plays || p.video_plays || 0,
+          likes_count: p.likes_count || p.likes || p.favorites || 0
+        }),
+        last_event_at: a?.last_event_at || null
+      };
+    });
 
+  rows.sort((a,b)=>n(b.trending_score) - n(a.trending_score));
   render();
 }
 
@@ -235,13 +361,9 @@ document.querySelectorAll(".tabs button").forEach(btn=>{
 
 loadTrending();
 
-/* PWA SERVICE WORKER */
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then(() => console.log("Nairobi Sweets PWA ready"))
-      .catch(err => console.error("PWA error:", err));
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("/sw.js").catch(()=>{});
   });
 }
 </script>
