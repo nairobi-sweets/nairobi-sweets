@@ -3,47 +3,74 @@ const { createClient } = require("@supabase/supabase-js");
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+const SITE_URL = "https://nairobi-sweets.com";
+
 const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-function xmlEscape(value = "") {
+function escapeXml(value = "") {
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function cleanSlug(value = "") {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function safeDate(value) {
+  const date = value ? new Date(value) : new Date();
+  if (Number.isNaN(date.getTime())) {
+    return new Date().toISOString();
+  }
+  return date.toISOString();
 }
 
 exports.handler = async () => {
   try {
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error("Missing Supabase environment variables.");
+    }
+
     const { data, error } = await sb
       .from("profiles")
-      .select("id, slug, updated_at, created_at, approved")
+      .select("id, slug, stage_name, location, updated_at, created_at, approved")
       .eq("approved", true)
       .order("id", { ascending: false })
       .limit(5000);
 
     if (error) throw error;
 
-    const urls = (data || []).map((p) => {
-      const loc = p.slug
-        ? `https://nairobi-sweets.com/profile.html?slug=${encodeURIComponent(p.slug)}`
-        : `https://nairobi-sweets.com/profile.html?id=${encodeURIComponent(p.id)}`;
+    const urls = (data || [])
+      .map((profile) => {
+        const slug =
+          cleanSlug(profile.slug) ||
+          cleanSlug(`${profile.stage_name || "profile"}-${profile.location || profile.id}`);
 
-      return `
-  <url>
-    <loc>${xmlEscape(loc)}</loc>
-    <lastmod>${xmlEscape(p.updated_at || p.created_at || new Date().toISOString())}</lastmod>
+        const profileUrl = slug
+          ? `${SITE_URL}/profile.html?slug=${encodeURIComponent(slug)}`
+          : `${SITE_URL}/profile.html?id=${encodeURIComponent(profile.id)}`;
+
+        return `  <url>
+    <loc>${escapeXml(profileUrl)}</loc>
+    <lastmod>${safeDate(profile.updated_at || profile.created_at)}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`;
-    }).join("");
+      })
+      .join("\n");
 
     return {
       statusCode: 200,
       headers: {
         "Content-Type": "application/xml; charset=utf-8",
-        "Cache-Control": "public, max-age=3600"
+        "Cache-Control": "public, max-age=300"
       },
       body: `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -53,8 +80,10 @@ ${urls}
   } catch (err) {
     return {
       statusCode: 500,
-      headers: { "Content-Type": "text/plain" },
-      body: err.message
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8"
+      },
+      body: `Profile sitemap error: ${err.message}`
     };
   }
 };
