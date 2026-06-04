@@ -1,31 +1,10 @@
 User-agent: *
-
 Allow: /
 
-# Admin / private areas
 Disallow: /vault-8472.html
+Disallow: /vault
 Disallow: /admin/
 Disallow: /private/
-Disallow: /.netlify/
-Disallow: /.git/
+Disallow: /netlify/
 
-# Internal APIs
-Disallow: /.netlify/functions/
-
-# Search pages
-Allow: /profile.html
-Allow: /trending.html
-Allow: /shorts.html
-Allow: /reel.html
-
-# SEO Location Pages
-Allow: /seo/
-Allow: /seo/locations/
-Allow: /seo/categories/
-
-# Sitemaps
 Sitemap: https://nairobi-sweets.com/sitemap.xml
-Sitemap: https://nairobi-sweets.com/profile-sitemap.xml
-
-# Crawl delay
-Crawl-delay: 1
