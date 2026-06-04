@@ -1182,9 +1182,9 @@ AGE GATE
 
   <div class="menu-links">
     <a href="/">🏠 Home</a>
-    <a href="/seo/locations/nairobi.html">📍 Nairobi</a>
-    <a href="/seo/locations/westlands.html">📍 Westlands</a>
-    <a href="/seo/locations/kilimani.html">📍 Kilimani</a>
+    <a href="/nairobi.html">📍 Nairobi</a>
+    <a href="/westlands.html">📍 Westlands</a>
+    <a href="/kilimani.html">📍 Kilimani</a>
     <a href="/shorts.html">🔥 Shorts</a>
     <a href="/reel.html">🎬 Reels</a>
     <a href="/join.html">💎 Join</a>
@@ -1231,16 +1231,16 @@ AGE GATE
     </p>
 
     <div class="seo-location-links">
-      <a href="/seo/locations/nairobi.html" class="primary-location">📍 Nairobi</a>
-      <a href="/seo/locations/westlands.html">Westlands</a>
-      <a href="/seo/locations/kilimani.html">Kilimani</a>
-      <a href="/seo/locations/karen.html">Karen</a>
-      <a href="/seo/locations/ruaka.html">Ruaka</a>
-      <a href="/seo/locations/kiambu.html">Kiambu</a>
-      <a href="/seo/locations/mombasa.html">Mombasa</a>
-      <a href="/seo/locations/kisumu.html">Kisumu</a>
-      <a href="/seo/locations/nakuru.html">Nakuru</a>
-      <a href="/seo/locations/eldoret.html">Eldoret</a>
+      <a href="/nairobi.html" class="primary-location">📍 Nairobi</a>
+      <a href="/westlands.html">Westlands</a>
+      <a href="/kilimani.html">Kilimani</a>
+      <a href="/karen.html">Karen</a>
+      <a href="/ruaka.html">Ruaka</a>
+      <a href="/kiambu.html">Kiambu</a>
+      <a href="/mombasa.html">Mombasa</a>
+      <a href="/kisumu.html">Kisumu</a>
+      <a href="/nakuru.html">Nakuru</a>
+      <a href="/eldoret.html">Eldoret</a>
     </div>
   </div>
 </section>
@@ -1485,6 +1485,17 @@ function isSignatureProfile(profile){
 }
 
 function getProfileUrl(profile){
+  const slug = String(profile.slug || profile.username || "").trim();
+
+  if(
+    slug &&
+    slug.toLowerCase() !== "null" &&
+    slug.toLowerCase() !== "undefined" &&
+    slug.toLowerCase() !== "nan"
+  ){
+    return `/profile.html?slug=${encodeURIComponent(slug)}`;
+  }
+
   return `/profile.html?id=${encodeURIComponent(profile.id)}`;
 }
 
