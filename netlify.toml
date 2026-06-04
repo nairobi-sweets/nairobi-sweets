@@ -2,91 +2,178 @@
   publish = "."
   functions = "netlify/functions"
 
+[functions]
+  node_bundler = "esbuild"
+
+# =========================
+# MAIN WEBSITE
+# =========================
+
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# =========================
+# DYNAMIC PROFILE SITEMAP
+# =========================
+
+[[redirects]]
+  from = "/profile-sitemap.xml"
+  to = "/.netlify/functions/profile-sitemap"
+  status = 200
+
+# =========================
+# API FUNCTIONS
+# =========================
+
+[[redirects]]
+  from = "/api/mpesa-stk-push"
+  to = "/.netlify/functions/mpesa-stk-push"
+  status = 200
+
+[[redirects]]
+  from = "/api/mpesa-callback"
+  to = "/.netlify/functions/mpesa-callback"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-login"
+  to = "/.netlify/functions/admin-login"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-me"
+  to = "/.netlify/functions/admin-me"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-list-users"
+  to = "/.netlify/functions/admin-list-users"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-create-user"
+  to = "/.netlify/functions/admin-create-user"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-update-user"
+  to = "/.netlify/functions/admin-update-user"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-delete-user"
+  to = "/.netlify/functions/admin-delete-user"
+  status = 200
+
+# =========================
+# SEO PAGES
+# =========================
+
+[[redirects]]
+  from = "/nairobi"
+  to = "/seo/locations/nairobi.html"
+  status = 200
+
+[[redirects]]
+  from = "/kilimani"
+  to = "/seo/locations/kilimani.html"
+  status = 200
+
+[[redirects]]
+  from = "/westlands"
+  to = "/seo/locations/westlands.html"
+  status = 200
+
+[[redirects]]
+  from = "/ruaka"
+  to = "/seo/locations/ruaka.html"
+  status = 200
+
+[[redirects]]
+  from = "/ruiru"
+  to = "/seo/locations/ruiru.html"
+  status = 200
+
+[[redirects]]
+  from = "/vip"
+  to = "/seo/categories/vip.html"
+  status = 200
+
+[[redirects]]
+  from = "/featured"
+  to = "/seo/categories/featured.html"
+  status = 200
+
+[[redirects]]
+  from = "/signature"
+  to = "/seo/categories/signature.html"
+  status = 200
+
+# =========================
+# SECURITY HEADERS
+# =========================
+
 [[headers]]
   for = "/*"
+
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+  X-Frame-Options = "SAMEORIGIN"
+  X-Content-Type-Options = "nosniff"
+  Referrer-Policy = "strict-origin-when-cross-origin"
+  Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+  Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+# =========================
+# IMAGE CACHE
+# =========================
 
 [[headers]]
   for = "/assets/*"
+
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+  Cache-Control = "public,max-age=31536000,immutable"
 
-[[redirects]]
-  from = "/sitemap.xml"
-  to = "/.netlify/functions/sitemap"
-  status = 200
-  force = true
+# =========================
+# PROFILE PAGES
+# =========================
 
-[[redirects]]
-  from = "/robots.txt"
-  to = "/robots.txt"
-  status = 200
+[[headers]]
+  for = "/profile.html"
 
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+  [headers.values]
+  Cache-Control = "public,max-age=300"
 
-[[redirects]]
-  from = "/profile/:slug"
-  to = "/profile.html?slug=:slug"
-  status = 200
+# =========================
+# SHORTS / REELS
+# =========================
 
-[[redirects]]
-  from = "/join"
-  to = "/join.html"
-  status = 200
+[[headers]]
+  for = "/shorts.html"
 
-[[redirects]]
-  from = "/login"
-  to = "/login.html"
-  status = 200
+  [headers.values]
+  Cache-Control = "public,max-age=300"
 
-[[redirects]]
-  from = "/dashboard"
-  to = "/user-dashboard.html"
-  status = 200
+[[headers]]
+  for = "/reel.html"
 
-[[redirects]]
-  from = "/payment-status"
-  to = "/payment-status.html"
-  status = 200
+  [headers.values]
+  Cache-Control = "public,max-age=300"
 
-[[redirects]]
-  from = "/trending"
-  to = "/trending.html"
-  status = 200
+# =========================
+# ADMIN VAULT
+# =========================
 
-[[redirects]]
-  from = "/shorts"
-  to = "/shorts.html"
-  status = 200
+[[headers]]
+  for = "/vault-8472.html"
 
-[[redirects]]
-  from = "/reels"
-  to = "/reel.html"
-  status = 200
+  [headers.values]
+  X-Robots-Tag = "noindex, nofollow"
 
-[[redirects]]
-  from = "/vault"
-  to = "/vault-8472.html"
-  status = 200
-
-[functions."auto-renew-check"]
-  schedule = "0 8 * * *"
-
-[functions."send-renewal-reminders"]
-  schedule = "0 9 * * *"
-
-[functions."daily-analytics-rollup"]
-  schedule = "0 1 * * *"
-
-[functions."expire-old-profiles"]
-  schedule = "0 2 * * *"
+# =========================
+# FALLBACK
+# =========================
 
 [[redirects]]
   from = "/*"
