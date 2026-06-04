@@ -2,6 +2,170 @@
   publish = "."
   functions = "netlify/functions"
 
+# --------------------------------------------------
+# SITEMAPS
+# --------------------------------------------------
+
+[[redirects]]
+  from = "/profile-sitemap.xml"
+  to = "/.netlify/functions/profile-sitemap"
+  status = 200
+
+[[redirects]]
+  from = "/location-sitemap.xml"
+  to = "/.netlify/functions/location-sitemap"
+  status = 200
+
+[[redirects]]
+  from = "/dynamic-profile-sitemap.xml"
+  to = "/.netlify/functions/profile-sitemap"
+  status = 200
+
+# --------------------------------------------------
+# M-PESA
+# --------------------------------------------------
+
+[[redirects]]
+  from = "/api/mpesa-stk-push"
+  to = "/.netlify/functions/mpesa-stk-push"
+  status = 200
+
+[[redirects]]
+  from = "/api/mpesa-callback"
+  to = "/.netlify/functions/mpesa-callback"
+  status = 200
+
+# --------------------------------------------------
+# ADMIN
+# --------------------------------------------------
+
+[[redirects]]
+  from = "/api/admin-login"
+  to = "/.netlify/functions/admin-login"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-me"
+  to = "/.netlify/functions/admin-me"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-list-users"
+  to = "/.netlify/functions/admin-list-users"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-create-user"
+  to = "/.netlify/functions/admin-create-user"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-update-user"
+  to = "/.netlify/functions/admin-update-user"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-delete-user"
+  to = "/.netlify/functions/admin-delete-user"
+  status = 200
+
+# --------------------------------------------------
+# SECURITY HEADERS
+# --------------------------------------------------
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "SAMEORIGIN"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+# --------------------------------------------------
+# XML SITEMAPS
+# --------------------------------------------------
+
+[[headers]]
+for = "/sitemap.xml"
+
+[headers.values]
+Content-Type = "application/xml"
+
+[[headers]]
+for = "/static-sitemap.xml"
+
+[headers.values]
+Content-Type = "application/xml"
+
+[[headers]]
+for = "/profile-sitemap.xml"
+
+[headers.values]
+Content-Type = "application/xml"
+
+[[headers]]
+for = "/location-sitemap.xml"
+
+[headers.values]
+Content-Type = "application/xml"
+
+# --------------------------------------------------
+# PWA
+# --------------------------------------------------
+
+[[headers]]
+for = "/manifest.webmanifest"
+
+[headers.values]
+Content-Type = "application/manifest+json"
+
+[[headers]]
+for = "/sw.js"
+
+[headers.values]
+Cache-Control = "no-cache"
+
+# --------------------------------------------------
+# CACHE STATIC ASSETS
+# --------------------------------------------------
+
+[[headers]]
+for = "/assets/*"
+
+[headers.values]
+Cache-Control = "public,max-age=31536000,immutable"
+
+# --------------------------------------------------
+# SPA FALLBACK
+# --------------------------------------------------
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# --------------------------------------------------
+# CRON JOBS
+# --------------------------------------------------
+
+[functions]
+
+[functions."auto-renew"]
+schedule = "@hourly"
+
+[functions."auto-expire"]
+schedule = "@hourly"
+
+[functions."profile-sitemap"]
+schedule = "@daily"
+
+[functions."location-sitemap"]
+schedule = "@daily"[build]
+  publish = "."
+  functions = "netlify/functions"
+
 #################################################
 # PROFILE SITEMAP
 #################################################
