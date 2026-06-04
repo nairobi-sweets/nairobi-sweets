@@ -1,450 +1,472 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <title>Nairobi Sweets Profile</title>
-  <meta name="description" content="Verified Nairobi Sweets profile with WhatsApp and direct call contact." />
-  <meta name="robots" content="index,follow,max-image-preview:large" />
-  <meta name="theme-color" content="#050733" />
+<title>Nairobi Sweets Profile</title>
+<meta name="description" content="Verified Nairobi Sweets profile with gallery, services, WhatsApp and direct call contact.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#050733">
 
-  <meta property="og:title" content="Nairobi Sweets Profile" />
-  <meta property="og:description" content="Verified Nairobi Sweets profile." />
-  <meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png" />
-  <meta property="og:url" content="https://nairobi-sweets.com/profile.html" />
-  <meta property="og:type" content="profile" />
+<meta property="og:title" content="Nairobi Sweets Profile">
+<meta property="og:description" content="Verified Nairobi Sweets profile.">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+<meta property="og:url" content="https://nairobi-sweets.com/profile.html">
+<meta property="og:type" content="profile">
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Nairobi Sweets Profile" />
-  <meta name="twitter:description" content="Verified Nairobi Sweets profile." />
-  <meta name="twitter:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png" />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nairobi Sweets Profile">
+<meta name="twitter:description" content="Verified Nairobi Sweets profile.">
+<meta name="twitter:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
 
-  <link rel="canonical" href="https://nairobi-sweets.com/profile.html" />
-  <link rel="icon" href="/assets/logo/logo-badge.png" />
+<link rel="canonical" href="https://nairobi-sweets.com/profile.html">
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<link rel="manifest" href="/manifest.webmanifest">
 
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
-  <link rel="apple-touch-icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --gold:#ffd84b;
+  --gold2:#ffb700;
+  --navy:#050750;
+  --navy2:#07096f;
+  --black:#000;
+  --line:rgba(255,216,75,.22);
+  --green:#25d366;
+  --pink:#ff2d75;
+  --purple:#7c3aed;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:#000}
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#07105a 0%,#010212 48%,#000 100%);
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  padding-bottom:98px;
+  overflow-x:hidden;
+}
+a{text-decoration:none;color:inherit}
+img,video{max-width:100%;display:block}
+button{font:inherit}
 
-  <style>
-    :root{
-      --gold:#ffd84b;
-      --gold2:#ffb700;
-      --navy:#060852;
-      --navy2:#080b70;
-      --black:#000;
-      --glass:rgba(255,255,255,.075);
-      --line:rgba(255,216,75,.22);
-      --green:#25d366;
-      --pink:#ff2d75;
-      --purple:#7c3aed;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth;background:#000}
-    body{
-      margin:0;
-      background:radial-gradient(circle at top,#07105a 0%,#010212 48%,#000 100%);
-      color:#fff;
-      font-family:Arial,Helvetica,sans-serif;
-      padding-bottom:98px!important;
-      overflow-x:hidden;
-    }
-    a{text-decoration:none;color:inherit}
-    img,video{max-width:100%;display:block}
-    button{font:inherit}
+.site-header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  min-height:88px;
+  background:rgba(0,0,0,.95);
+  border-bottom:1px solid rgba(255,216,75,.18);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 28px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:var(--gold);
+  font-size:34px;
+  font-weight:950;
+  line-height:.82;
+  letter-spacing:-1.4px;
+}
+.brand img{
+  width:64px;
+  height:64px;
+  object-fit:cover;
+  border-radius:18px;
+}
+.home-btn{
+  background:#07106a;
+  color:var(--gold);
+  border:1px solid rgba(255,216,75,.34);
+  padding:13px 25px;
+  border-radius:20px;
+  font-size:18px;
+  font-weight:950;
+}
 
-    .site-header{
-      position:sticky;
-      top:0;
-      z-index:1000;
-      height:92px;
-      background:rgba(0,0,0,.94);
-      backdrop-filter:blur(14px);
-      border-bottom:1px solid rgba(255,216,75,.18);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:12px 28px;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      color:var(--gold);
-      font-size:34px;
-      font-weight:950;
-      line-height:.82;
-      letter-spacing:-1.4px;
-      text-shadow:0 0 18px rgba(255,216,75,.14);
-    }
-    .brand img{
-      width:64px;
-      height:64px;
-      object-fit:cover;
-      border-radius:18px;
-      box-shadow:0 0 22px rgba(255,126,0,.32);
-    }
-    .home-btn{
-      background:#07106a;
-      color:var(--gold);
-      border:1px solid rgba(255,216,75,.34);
-      padding:13px 25px;
-      border-radius:20px;
-      font-size:18px;
-      font-weight:950;
-      box-shadow:inset 0 0 18px rgba(255,255,255,.07);
-    }
+.page{
+  max-width:1180px;
+  margin:0 auto;
+  padding:22px 16px 96px;
+}
+.profile-card{
+  background:linear-gradient(145deg,#02031d,#06075e 62%,#05063d);
+  border:1px solid var(--line);
+  border-radius:28px;
+  overflow:hidden;
+  box-shadow:0 0 42px rgba(0,0,0,.72);
+}
+.hero{
+  position:relative;
+  background:#01020e;
+  overflow:hidden;
+}
+.hero-img{
+  width:100%;
+  height:430px;
+  object-fit:cover;
+  object-position:center top;
+  background:#020315;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0 0;
+  height:46%;
+  background:linear-gradient(to top,rgba(0,0,0,.82),transparent);
+  pointer-events:none;
+}
+.hero-row{
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:18px;
+  z-index:3;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:10px;
+}
+.score-row{display:flex;gap:8px;flex-wrap:wrap}
+.hero-pill,.watermark{
+  background:rgba(0,0,0,.68);
+  border:1px solid rgba(255,216,75,.28);
+  color:var(--gold);
+  border-radius:999px;
+  font-weight:900;
+  font-size:13px;
+  padding:9px 12px;
+  white-space:nowrap;
+}
+.watermark{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  letter-spacing:.35px;
+}
+.watermark img{width:22px;height:22px;border-radius:50%}
 
-    .page{max-width:1160px;margin:0 auto;padding:22px 16px 96px}
-    .profile-card{
-      background:linear-gradient(145deg,#02031d,#06075e 62%,#05063d);
-      border:1px solid var(--line);
-      border-radius:28px;
-      overflow:hidden;
-      box-shadow:0 0 42px rgba(0,0,0,.72);
-    }
-    .hero{position:relative;background:#01020e;overflow:hidden}
-    .hero-img{
-      width:100%;
-      height:470px;
-      object-fit:cover;
-      object-position:center top;
-      background:#020315;
-      user-select:none;
-      -webkit-user-drag:none;
-    }
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:auto 0 0 0;
-      height:46%;
-      background:linear-gradient(to top,rgba(0,0,0,.82),transparent);
-      pointer-events:none;
-    }
-    .hero-row{
-      position:absolute;
-      left:18px;
-      right:18px;
-      bottom:18px;
-      z-index:3;
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-end;
-      gap:10px;
-    }
-    .score-row{display:flex;gap:8px;flex-wrap:wrap}
-    .hero-pill,.watermark{
-      background:rgba(0,0,0,.68);
-      border:1px solid rgba(255,216,75,.28);
-      color:var(--gold);
-      border-radius:999px;
-      font-weight:900;
-      font-size:13px;
-      padding:9px 12px;
-      white-space:nowrap;
-      backdrop-filter:blur(8px);
-    }
-    .watermark{display:flex;align-items:center;gap:7px;letter-spacing:.35px}
-    .watermark img{width:22px;height:22px;border-radius:50%}
+.content{
+  padding:24px 30px 34px;
+}
+.badges,.stats,.chips,.actions{display:flex;flex-wrap:wrap;gap:10px}
+.badge,.stat,.chip{
+  border-radius:999px;
+  font-weight:900;
+  padding:9px 14px;
+  font-size:14px;
+  border:1px solid rgba(255,216,75,.28);
+}
+.badge.signature{background:linear-gradient(135deg,#ffd84b,#ff9f1c);color:#000}
+.badge.vip{background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff}
+.badge.verified{background:linear-gradient(135deg,#22c55e,#15803d);color:#fff}
+.badge.featured,.stat,.chip{background:rgba(255,216,75,.1);color:var(--gold)}
 
-    .content{padding:28px 30px 34px}
-    .badges,.stats,.chips,.actions{display:flex;flex-wrap:wrap;gap:10px}
-    .badge,.stat,.chip{
-      border-radius:999px;
-      font-weight:900;
-      padding:9px 14px;
-      font-size:14px;
-      border:1px solid rgba(255,216,75,.28);
-    }
-    .badge.signature{background:linear-gradient(135deg,#ffd84b,#ff9f1c);color:#000}
-    .badge.vip{background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff}
-    .badge.verified{background:linear-gradient(135deg,#22c55e,#15803d);color:#fff}
-    .badge.featured,.stat,.chip{background:rgba(255,216,75,.1);color:var(--gold)}
+.signature-banner{
+  display:none;
+  margin:0 0 16px;
+  padding:12px 18px;
+  border-radius:18px;
+  background:linear-gradient(90deg,#ffd84b,#ff9f1c,#ffd84b);
+  color:#000;
+  font-weight:950;
+  text-align:center;
+}
+.signature-banner.show{display:block}
 
-    .signature-banner{
-      display:none;
-      margin:0 0 16px;
-      padding:12px 18px;
-      border-radius:18px;
-      background:linear-gradient(90deg,#ffd84b,#ff9f1c,#ffd84b);
-      color:#000;
-      font-weight:950;
-      font-size:15px;
-      text-align:center;
-    }
-    .signature-banner.show{display:block}
+h1{
+  color:var(--gold);
+  font-size:42px;
+  line-height:.96;
+  margin:16px 0 12px;
+  text-transform:uppercase;
+  letter-spacing:-1.2px;
+}
+h2{
+  color:var(--gold);
+  font-size:27px;
+  line-height:1.08;
+  margin:28px 0 14px;
+}
+.meta,.bio{
+  color:#f6f6f6;
+  font-size:17px;
+  line-height:1.55;
+}
+.bio{margin:18px 0 4px;max-width:900px}
+.stats{margin:18px 0}
 
-    h1{
-      color:var(--gold);
-      font-size:42px;
-      line-height:.96;
-      margin:18px 0 12px;
-      text-transform:uppercase;
-      letter-spacing:-1.2px;
-    }
-    h2{
-      color:var(--gold);
-      font-size:28px;
-      line-height:1.08;
-      margin:30px 0 14px;
-      letter-spacing:-.6px;
-    }
-    .meta,.bio{color:#f6f6f6;font-size:17px;line-height:1.55}
-    .bio{margin:20px 0 4px;max-width:880px}
-    .stats{margin:18px 0}
-    .stat{font-size:14px;background:rgba(255,255,255,.07)}
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin:20px 0;
+}
+.info-box{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  padding:14px 16px;
+  border-radius:16px;
+  font-size:15px;
+  font-weight:850;
+}
 
-    .info-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:10px;
-      margin:20px 0;
-    }
-    .info-box{
-      background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.12);
-      padding:14px 16px;
-      border-radius:16px;
-      font-size:15px;
-      font-weight:850;
-    }
-    .chip{font-size:14px;background:rgba(255,216,75,.1)}
+.gallery-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.gallery-item{
+  height:250px;
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:#111;
+  position:relative;
+}
+.gallery-item img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.gallery-item span{
+  position:absolute;
+  right:8px;
+  bottom:8px;
+  background:rgba(0,0,0,.62);
+  color:var(--gold);
+  border-radius:999px;
+  padding:5px 7px;
+  font-size:10px;
+  font-weight:900;
+}
 
-    .reel-box{
-      max-width:360px;
-      border-radius:22px;
-      overflow:hidden;
-      border:1px solid var(--line);
-      background:#000;
-      margin-top:10px;
-    }
-    .reel-box video{width:100%;aspect-ratio:9/16;object-fit:cover;background:#000}
+.reel-box{
+  max-width:360px;
+  border-radius:22px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:#000;
+}
+.reel-box video{
+  width:100%;
+  aspect-ratio:9/16;
+  object-fit:cover;
+  background:#000;
+}
 
-    .gallery-row{
-      display:flex;
-      overflow-x:auto;
-      gap:12px;
-      padding:2px 0 12px;
-      scroll-snap-type:x mandatory;
-      -webkit-overflow-scrolling:touch;
-    }
-    .gallery-row::-webkit-scrollbar,.mini-row::-webkit-scrollbar{height:6px}
-    .gallery-row::-webkit-scrollbar-thumb,.mini-row::-webkit-scrollbar-thumb{background:rgba(255,216,75,.35);border-radius:99px}
-    .gallery-item{
-      flex:0 0 190px;
-      height:250px;
-      border-radius:18px;
-      overflow:hidden;
-      border:1px solid var(--line);
-      background:#111;
-      position:relative;
-      scroll-snap-align:start;
-    }
-    .gallery-item img{width:100%;height:100%;object-fit:cover}
-    .gallery-item span{
-      position:absolute;
-      right:8px;
-      bottom:8px;
-      background:rgba(0,0,0,.62);
-      color:var(--gold);
-      border-radius:999px;
-      padding:5px 7px;
-      font-size:10px;
-      font-weight:900;
-    }
+.btn{
+  border:none;
+  cursor:pointer;
+  min-width:150px;
+  padding:14px 18px;
+  border-radius:18px;
+  font-size:16px;
+  font-weight:950;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-align:center;
+}
+.fav{background:var(--pink);color:#fff}
+.share{background:var(--purple);color:#fff}
+.back{background:#07106a;color:var(--gold);border:1px solid rgba(255,216,75,.32)}
+.actions.compact-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:24px;
+}
+.actions.compact-actions .back{grid-column:1/-1}
 
-    .actions{margin-top:24px}
-    .btn{
-      border:none;
-      cursor:pointer;
-      min-width:150px;
-      padding:14px 18px;
-      border-radius:18px;
-      font-size:16px;
-      font-weight:950;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      text-align:center;
-    }
-    .wa{background:var(--green);color:#fff}
-    .call{background:var(--gold);color:#000}
-    .fav{background:var(--pink);color:#fff}
-    .share{background:var(--purple);color:#fff}
-    .back{background:#07106a;color:var(--gold);border:1px solid rgba(255,216,75,.32)}
+.profile-nav{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:14px 0 10px;
+}
 
-    .profile-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 10px}
-    .feed-section{margin-top:34px;border-top:1px solid rgba(255,216,75,.16);padding-top:22px}
-    .feed-block{margin:0 0 30px}
-    .feed-block h2{font-size:23px;line-height:1.12;margin:24px 0 14px}
-    .mini-row{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-      overflow:visible;
-      padding:0;
-    }
-    .mini-card{
-      min-width:0;
-      width:100%;
-      background:linear-gradient(180deg,#11136e,#070943);
-      border:1px solid rgba(255,216,75,.24);
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow:0 0 20px rgba(0,0,0,.32);
-    }
-    .mini-media{height:155px;position:relative;background:#111;overflow:hidden}
-    .mini-media img{width:100%;height:100%;object-fit:cover}
-    .mini-score{
-      position:absolute;
-      left:8px;
-      bottom:8px;
-      background:rgba(0,0,0,.7);
-      color:var(--gold);
-      border-radius:999px;
-      padding:6px 9px;
-      font-size:12px;
-      font-weight:950;
-    }
-    .mini-body{padding:12px}
-    .mini-name{color:var(--gold);font-size:16px;font-weight:950;line-height:1.15;margin-bottom:7px}
-    .mini-meta{font-size:13px;line-height:1.35;color:#f3f3f3;min-height:34px}
-    .mini-plan{margin-top:10px;background:var(--gold);color:#07105a;border-radius:999px;padding:6px 8px;text-align:center;font-size:11px;font-weight:950;text-transform:uppercase}
+.feed-section{
+  margin-top:34px;
+  border-top:1px solid rgba(255,216,75,.16);
+  padding-top:22px;
+}
+.feed-block{margin:0 0 30px}
+.feed-block h2{font-size:24px}
+.mini-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.mini-card{
+  background:linear-gradient(180deg,#11136e,#070943);
+  border:1px solid rgba(255,216,75,.24);
+  border-radius:16px;
+  overflow:hidden;
+}
+.mini-media{
+  height:180px;
+  position:relative;
+  background:#111;
+}
+.mini-media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.mini-score{
+  position:absolute;
+  left:8px;
+  bottom:8px;
+  background:rgba(0,0,0,.7);
+  color:var(--gold);
+  border-radius:999px;
+  padding:6px 9px;
+  font-size:12px;
+  font-weight:950;
+}
+.mini-body{padding:12px}
+.mini-name{
+  color:var(--gold);
+  font-size:16px;
+  font-weight:950;
+  margin-bottom:7px;
+}
+.mini-meta{
+  font-size:13px;
+  color:#f3f3f3;
+}
+.mini-plan{
+  margin-top:10px;
+  background:var(--gold);
+  color:#07105a;
+  border-radius:999px;
+  padding:6px 8px;
+  text-align:center;
+  font-size:11px;
+  font-weight:950;
+  text-transform:uppercase;
+}
 
-    .actions.compact-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
-    .actions.compact-actions .back{grid-column:1/-1}
-    .actions.compact-actions .btn,.profile-nav .btn{height:46px;min-height:46px;padding:0 12px;border-radius:16px;font-size:14px;margin:0}
+.sticky-contact{
+  position:fixed;
+  left:50%;
+  bottom:72px;
+  transform:translateX(-50%);
+  width:calc(100% - 28px);
+  max-width:460px;
+  display:none;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:7px;
+  background:rgba(5,7,20,.72);
+  border:1px solid rgba(255,216,75,.18);
+  border-radius:22px;
+  box-shadow:0 14px 35px rgba(0,0,0,.55);
+  backdrop-filter:blur(16px);
+  z-index:9999;
+}
+.sticky-contact.show{display:grid}
+.sticky-contact .btn{
+  height:44px;
+  min-height:44px;
+  padding:0 10px;
+  border-radius:16px;
+  font-size:14px;
+  min-width:0;
+}
+.wa{background:linear-gradient(180deg,#2be678,#16bd5a);color:#fff}
+.call{background:linear-gradient(180deg,#ffe15b,#ffc928);color:#050505}
 
-    .sticky-contact{
-      position:fixed!important;
-      left:50%!important;
-      right:auto!important;
-      bottom:72px!important;
-      transform:translateX(-50%)!important;
-      width:calc(100% - 28px)!important;
-      max-width:460px!important;
-      display:none!important;
-      grid-template-columns:1fr 1fr!important;
-      gap:8px!important;
-      padding:7px!important;
-      background:rgba(5,7,20,.72)!important;
-      border:1px solid rgba(255,216,75,.18)!important;
-      border-radius:22px!important;
-      box-shadow:0 14px 35px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04) inset!important;
-      backdrop-filter:blur(16px)!important;
-      -webkit-backdrop-filter:blur(16px)!important;
-      z-index:9999!important;
-    }
-    .sticky-contact.show{display:grid!important}
-    .sticky-contact .btn{
-      height:44px!important;
-      min-height:44px!important;
-      padding:0 10px!important;
-      border-radius:16px!important;
-      font-size:14px!important;
-      line-height:1!important;
-      font-weight:950!important;
-      letter-spacing:.1px!important;
-      box-shadow:0 8px 18px rgba(0,0,0,.32)!important;
-      border:1px solid rgba(255,255,255,.08)!important;
-    }
-    .sticky-contact .wa{background:linear-gradient(180deg,#2be678,#16bd5a)!important;color:#fff!important}
-    .sticky-contact .call{background:linear-gradient(180deg,#ffe15b,#ffc928)!important;color:#050505!important}
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:9998;
+  height:60px;
+  background:rgba(0,0,0,.96);
+  border-top:1px solid rgba(255,216,75,.15);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+}
+.bottom-nav a{
+  font-size:24px;
+  color:var(--gold);
+}
 
-    .bottom-nav{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      z-index:9998;
-      height:60px!important;
-      background:rgba(0,0,0,.96);
-      border-top:1px solid rgba(255,216,75,.15);
-      display:flex;
-      justify-content:space-around;
-      align-items:center;
-      backdrop-filter:blur(10px);
-    }
-    .bottom-nav a{font-size:24px!important;color:var(--gold);opacity:.95}
+.error{
+  min-height:58vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--gold);
+  font-size:24px;
+  font-weight:950;
+  text-align:center;
+  padding:30px;
+}
 
-    .error{min-height:58vh;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:24px;font-weight:950;text-align:center;padding:30px}
+@media(max-width:920px){
+  .gallery-row,.mini-row{grid-template-columns:repeat(2,1fr)}
+  .info-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .site-header{min-height:78px;padding:10px 16px}
+  .brand{font-size:26px}
+  .brand img{width:54px;height:54px}
+  .home-btn{font-size:14px;padding:11px 18px}
+  .page{padding:0 0 88px}
+  .profile-card{border-radius:0;border-left:0;border-right:0}
+  .hero-img{height:330px}
+  .hero-row{left:10px;right:10px;bottom:10px}
+  .watermark{font-size:10px;padding:7px 9px}
+  .hero-pill{font-size:12px;padding:7px 9px}
+  .content{padding:20px 18px 28px}
+  h1{font-size:31px}
+  h2{font-size:23px}
+  .meta,.bio{font-size:16px}
+  .info-grid{grid-template-columns:1fr}
+  .gallery-row,.mini-row{grid-template-columns:1fr 1fr}
+  .gallery-item{height:210px}
+  .mini-media{height:160px}
+  .actions.compact-actions{grid-template-columns:1fr}
+  .profile-nav{grid-template-columns:1fr}
+}
+</style>
 
-    @media(min-width:760px){
-      .mini-row{grid-template-columns:repeat(4,1fr)}
-      .mini-media{height:180px}
-      .feed-block h2{font-size:26px}
-    }
-
-    @media(max-width:860px){
-      .page{padding:0 0 88px}
-      .profile-card{border-radius:0;border-left:0;border-right:0}
-      .site-header{height:82px;padding:10px 16px}
-      .brand{font-size:28px;letter-spacing:-.8px}
-      .brand img{width:58px;height:58px;border-radius:16px}
-      .home-btn{font-size:15px;padding:12px 20px;border-radius:18px}
-      .hero-img{height:355px;object-position:center top}
-      .hero-row{left:10px;right:10px;bottom:10px}
-      .watermark{font-size:10px;padding:7px 9px}
-      .watermark img{width:18px;height:18px}
-      .hero-pill{font-size:12px;padding:7px 9px}
-      .content{padding:22px 20px 30px}
-      h1{font-size:34px;letter-spacing:-.8px}
-      h2{font-size:25px}
-      .meta,.bio{font-size:16px}
-      .badge,.stat,.chip{font-size:13px;padding:8px 12px}
-      .info-grid{grid-template-columns:1fr 1fr}
-      .info-box{font-size:14px;padding:13px 14px}
-      .profile-nav{grid-template-columns:1fr 1fr}
-      .gallery-item{flex-basis:165px;height:220px}
-    }
-
-    @media(max-width:430px){
-      body{padding-bottom:98px!important}
-      .site-header{height:78px}
-      .brand{font-size:26px}
-      .brand img{width:54px;height:54px}
-      .home-btn{font-size:14px;padding:11px 18px}
-      .hero-img{height:330px}
-      .content{padding:20px 18px 28px}
-      h1{font-size:31px}
-      h2{font-size:23px}
-      .info-grid{grid-template-columns:1fr}
-      .actions{display:none}
-      .sticky-contact{bottom:68px!important;width:calc(100% - 24px)!important}
-      .sticky-contact .btn{height:42px!important;min-height:42px!important;font-size:13px!important;border-radius:15px!important}
-      .bottom-nav{height:58px!important}
-      .bottom-nav a{font-size:23px!important}
-      .profile-nav{grid-template-columns:1fr}
-    }
-  </style>
-
-  <script type="application/ld+json" id="schema-json">{}</script>
+<script type="application/ld+json" id="schema-json">{}</script>
 </head>
 
 <body oncontextmenu="return false">
+
 <header class="site-header">
-  <a href="/" class="brand" aria-label="Nairobi Sweets Home">
+  <a href="/" class="brand">
     <img src="/assets/logo/logo-badge.png" onerror="this.src='/logo.png'" alt="Nairobi Sweets">
     <div>Nairobi<br>Sweets</div>
   </a>
   <a href="/" class="home-btn">Home</a>
 </header>
 
-<main id="app"><div class="error">Loading profile...</div></main>
+<main id="app">
+  <div class="error">Loading profile...</div>
+</main>
 
 <div id="stickyContact" class="sticky-contact"></div>
 
 <nav class="bottom-nav">
-  <a href="/" aria-label="Home">🏠</a>
-  <a href="/trending.html" aria-label="Trending">🔥</a>
-  <a href="/shorts.html" aria-label="Shorts">🎬</a>
-  <a href="/join.html" aria-label="Join">➕</a>
+  <a href="/">🏠</a>
+  <a href="/trending.html">🔥</a>
+  <a href="/shorts.html">🎬</a>
+  <a href="/join.html">➕</a>
 </nav>
 
 <script>
@@ -465,7 +487,6 @@ let relatedProfiles = [];
 function getSlug(){
   const q = new URLSearchParams(location.search).get("slug");
   if(q) return q.trim();
-
   const parts = location.pathname.split("/").filter(Boolean);
   return parts[0] === "profile" && parts[1] ? decodeURIComponent(parts[1]).trim() : "";
 }
@@ -480,10 +501,6 @@ function makeSlug(value){
     .trim()
     .replace(/[^a-z0-9]+/g,"-")
     .replace(/^-+|-+$/g,"");
-}
-
-function profileSlug(p){
-  return makeSlug(p.slug || p.username || p.stage_name || p.name || p.full_name || p.id);
 }
 
 function escapeHTML(v){
@@ -566,7 +583,21 @@ function mainImage(p){
 }
 
 function galleryImages(p){
-  const arr = safeArray(p.gallery_images || p.gallery || p.images || p.image_urls);
+  const arr = [
+    ...safeArray(p.gallery_images),
+    ...safeArray(p.gallery),
+    ...safeArray(p.images),
+    ...safeArray(p.image_urls),
+    p.image_url,
+    p.photo_url,
+    p.image2_url,
+    p.image3_url,
+    p.image_url_2,
+    p.image_url_3,
+    p.avatar_url,
+    p.image_path
+  ].filter(Boolean);
+
   return [...new Set([mainImage(p), ...arr].filter(Boolean))];
 }
 
@@ -575,8 +606,7 @@ function reelUrl(p){
 }
 
 function profileUrl(p){
-  const id = encodeURIComponent(p.id || getIdParam() || "");
-  return `${SITE_URL}/profile.html?id=${id}`;
+  return `${SITE_URL}/profile.html?id=${encodeURIComponent(p.id || "")}`;
 }
 
 function planText(p){
@@ -590,7 +620,7 @@ function isSignature(p){
 
 function isVip(p){
   const plan = planText(p).toLowerCase();
-  return plan.includes("vip") && !isSignature(p) || p.is_vip === true || p.vip === true;
+  return (plan.includes("vip") && !isSignature(p)) || p.is_vip === true || p.vip === true;
 }
 
 function niceTitle(v){
@@ -655,81 +685,65 @@ function renderServices(raw){
 
 async function incrementColumn(column){
   if(!currentProfile?.id) return;
-
   const next = Number(currentProfile[column] || 0) + 1;
   currentProfile[column] = next;
 
   try{
     await sb.from("profiles").update({[column]:next}).eq("id",currentProfile.id);
-
     const el = document.getElementById(column);
     if(el) el.textContent = next;
-
     const hv = document.getElementById("hero_views");
     if(column === "views" && hv) hv.textContent = next;
-
     const hs = document.getElementById("hero_score");
     if(hs) hs.textContent = score(currentProfile);
-  }catch(e){
-    console.warn("Counter skipped:", e.message);
-  }
+  }catch(e){}
 }
 
 async function logEvent(type){
   if(!currentProfile?.id) return;
-
   try{
-    await sb.from("profile_analytics").insert({
-      profile_id:currentProfile.id,
-      event_type:type
-    });
+    await sb.from("profile_analytics").insert({profile_id:currentProfile.id,event_type:type});
   }catch(e){}
-
   try{
-    await sb.from("profile_events").insert({
-      profile_id:currentProfile.id,
-      event_type:type
-    });
+    await sb.from("profile_events").insert({profile_id:currentProfile.id,event_type:type});
   }catch(e){}
 }
 
-function setMeta(selector, value){
+function setMeta(selector,value){
   const el = document.querySelector(selector);
-  if(el) el.setAttribute("content", value);
+  if(el) el.setAttribute("content",value);
 }
 
 function updateSEO(p){
   const name = displayName(p);
   const loc = primaryLocation(p);
+  const plan = planText(p);
   const img = absUrl(mainImage(p)) || ABS_FALLBACK_IMAGE;
   const url = profileUrl(p);
-  const desc = `${name} in ${loc}. Verified Nairobi Sweets profile with WhatsApp and direct call contact.`;
+  const desc = `${name} is a verified ${plan} profile located in ${loc}. View gallery photos, services offered, availability and direct contact options on Nairobi Sweets.`;
 
-  document.title = `${name} | Nairobi Sweets`;
+  document.title = `${name} | ${plan} Profile in ${loc} | Nairobi Sweets`;
 
-  setMeta('meta[name="description"]', desc);
-  setMeta('meta[property="og:title"]', `${name} | Nairobi Sweets`);
-  setMeta('meta[property="og:description"]', desc);
-  setMeta('meta[property="og:image"]', img);
-  setMeta('meta[property="og:url"]', url);
-  setMeta('meta[name="twitter:title"]', `${name} | Nairobi Sweets`);
-  setMeta('meta[name="twitter:description"]', desc);
-  setMeta('meta[name="twitter:image"]', img);
+  setMeta('meta[name="description"]',desc);
+  setMeta('meta[property="og:title"]',`${name} | Nairobi Sweets`);
+  setMeta('meta[property="og:description"]',desc);
+  setMeta('meta[property="og:image"]',img);
+  setMeta('meta[property="og:url"]',url);
+  setMeta('meta[name="twitter:title"]',`${name} | Nairobi Sweets`);
+  setMeta('meta[name="twitter:description"]',desc);
+  setMeta('meta[name="twitter:image"]',img);
 
   const canonical = document.querySelector('link[rel="canonical"]');
-  if(canonical) canonical.setAttribute("href", url);
+  if(canonical) canonical.setAttribute("href",url);
 
   const phone = cleanPhone(p.phone || p.whatsapp);
-  const schema = {
+  document.getElementById("schema-json").textContent = JSON.stringify({
     "@context":"https://schema.org",
     "@type":"ProfilePage",
     "name":`${name} | Nairobi Sweets`,
     "description":desc,
     "url":url,
-    "primaryImageOfPage":{
-      "@type":"ImageObject",
-      "url":img
-    },
+    "primaryImageOfPage":{"@type":"ImageObject","url":img},
     "mainEntity":{
       "@type":"Person",
       "name":name,
@@ -747,20 +761,14 @@ function updateSEO(p){
       "@type":"Organization",
       "name":"Nairobi Sweets",
       "url":SITE_URL,
-      "logo":{
-        "@type":"ImageObject",
-        "url":ABS_FALLBACK_IMAGE
-      }
+      "logo":{"@type":"ImageObject","url":ABS_FALLBACK_IMAGE}
     }
-  };
-
-  document.getElementById("schema-json").textContent = JSON.stringify(schema, null, 2);
+  },null,2);
 }
 
 function miniCard(p){
-  const id = encodeURIComponent(p.id || "");
   return `
-    <a class="mini-card" href="/profile.html?id=${id}">
+    <a class="mini-card" href="/profile.html?id=${encodeURIComponent(p.id || "")}">
       <div class="mini-media">
         <img src="${escapeHTML(mainImage(p))}" loading="lazy" alt="${escapeHTML(displayName(p))}" onerror="this.src='${FALLBACK_IMAGE}'">
         <span class="mini-score">🔥 ${score(p)}</span>
@@ -787,17 +795,20 @@ function section(title,emoji,items){
 function buildFeeds(){
   const sorted = [...relatedProfiles].sort((a,b) => score(b) - score(a));
   const locTitle = primaryLocation(currentProfile);
-  const sameLoc = sorted.filter(p => sameLocation(currentProfile,p));
 
-  const signature = sameLoc.filter(isSignature).slice(0,12);
-  const vip = sameLoc.filter(isVip).slice(0,12);
-  const featured = sameLoc.filter(p => !isVip(p) && !isSignature(p)).slice(0,12);
+  const sameLoc = sorted.filter(p => sameLocation(currentProfile,p));
+  const base = sameLoc.length >= 4 ? sameLoc : sorted;
+
+  const vip = base.filter(isVip).slice(0,8);
+  const signature = base.filter(isSignature).slice(0,8);
+  const featured = base.filter(p => !isVip(p) && !isSignature(p)).slice(0,8);
 
   return `
     <section class="feed-section">
-      ${section(`More Signature Profiles in ${locTitle}`,"👑",signature)}
-      ${section(`More VIP Profiles in ${locTitle}`,"💎",vip)}
-      ${section(`More Featured Profiles in ${locTitle}`,"🔥",featured)}
+      ${section(`More Profiles in ${locTitle}`,"📍",sameLoc.slice(0,8))}
+      ${section("More VIP Profiles","⭐",vip)}
+      ${section("Signature Profiles","👑",signature)}
+      ${section("Featured Profiles","🔥",featured)}
     </section>
   `;
 }
@@ -827,12 +838,11 @@ function stickyButtons(p){
     ${phone ? `<a class="btn call" href="tel:+${phone}" onclick="incrementColumn('call_clicks');logEvent('call')">☎ Call</a>` : ""}
   `;
 
-  stickyContact.classList.toggle("show", !!(wa || phone));
+  stickyContact.classList.toggle("show",!!(wa || phone));
 }
 
 async function shareProfile(){
   const url = profileUrl(currentProfile);
-
   await incrementColumn("profile_shares");
   await logEvent("share");
 
@@ -858,7 +868,13 @@ function renderProfile(p){
   const name = escapeHTML(displayName(p));
   const loc = escapeHTML(p.location || primaryLocation(p) || "Nairobi");
   const plan = escapeHTML(planText(p));
-  const bio = escapeHTML(p.bio || p.description || p.about || `Verified Nairobi Sweets profile in ${p.location || "Nairobi"}.`);
+  const bio = escapeHTML(
+    p.bio ||
+    p.description ||
+    p.about ||
+    `${displayName(p)} is a verified ${planText(p)} profile located in ${primaryLocation(p)}. View gallery photos, services offered and direct contact options.`
+  );
+
   const gallery = galleryImages(p);
   const coverage = safeArray(p.coverage_areas || p.coverage || p.areas || p.location);
   const reel = reelUrl(p);
@@ -868,13 +884,11 @@ function renderProfile(p){
       <article class="profile-card">
         <div class="hero">
           <img class="hero-img" src="${escapeHTML(gallery[0] || FALLBACK_IMAGE)}" alt="${name}" onerror="this.src='${FALLBACK_IMAGE}'">
-
           <div class="hero-row">
             <div class="score-row">
               <span class="hero-pill">🔥 Score <span id="hero_score">${score(p)}</span></span>
               <span class="hero-pill">👁 <span id="hero_views">${Number(p.views || 0)}</span> Views</span>
             </div>
-
             <div class="watermark">
               <img src="/assets/logo/logo-badge.png" onerror="this.style.display='none'">
               NAIROBI-SWEETS.COM
@@ -921,14 +935,14 @@ function renderProfile(p){
           }
 
           ${
-            reel
-            ? `<h2>Reel</h2><div class="reel-box"><video controls playsinline preload="metadata" poster="${escapeHTML(gallery[0] || FALLBACK_IMAGE)}" onplay="logEvent('video_play')"><source src="${escapeHTML(reel)}"></video></div>`
+            gallery.length > 1
+            ? `<h2>Gallery</h2><div class="gallery-row">${gallery.slice(1).map(img => `<div class="gallery-item"><img src="${escapeHTML(img)}" loading="lazy" alt="${name}" onerror="this.parentElement.style.display='none'"><span>© NAIROBI-SWEETS.COM</span></div>`).join("")}</div>`
             : ""
           }
 
           ${
-            gallery.length > 1
-            ? `<h2>Gallery</h2><div class="gallery-row">${gallery.slice(1).map(img => `<div class="gallery-item"><img src="${escapeHTML(img)}" loading="lazy" alt="${name}" onerror="this.parentElement.style.display='none'"><span>© NAIROBI-SWEETS.COM</span></div>`).join("")}</div>`
+            reel
+            ? `<h2>Short Reel</h2><div class="reel-box"><video controls playsinline preload="metadata" poster="${escapeHTML(gallery[0] || FALLBACK_IMAGE)}" onplay="logEvent('video_play')"><source src="${escapeHTML(reel)}"></video></div>`
             : ""
           }
 
@@ -951,7 +965,7 @@ async function loadRelated(current){
     .from("profiles")
     .select("*")
     .neq("id",current.id)
-    .limit(120);
+    .limit(160);
 
   relatedProfiles = error ? [] : (data || []);
 }
@@ -965,11 +979,7 @@ async function findProfileById(id){
     .eq("id",id)
     .maybeSingle();
 
-  if(error){
-    console.warn("ID lookup failed:", error.message);
-    return null;
-  }
-
+  if(error) return null;
   return data || null;
 }
 
@@ -983,10 +993,7 @@ async function findProfileBySlug(slug){
     .select("*")
     .limit(1000);
 
-  if(error){
-    console.warn("Slug lookup failed:", error.message);
-    return null;
-  }
+  if(error) return null;
 
   return (data || []).find(p => {
     const possible = [
@@ -1038,12 +1045,10 @@ loadProfile();
 <script>
 if("serviceWorker" in navigator){
   window.addEventListener("load",() => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then(() => console.log("Nairobi Sweets PWA Ready"))
-      .catch(err => console.error("PWA Error:",err));
+    navigator.serviceWorker.register("/sw.js").catch(()=>{});
   });
 }
 </script>
+
 </body>
 </html>
