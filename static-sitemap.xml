@@ -1,33 +1,197 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-<url><loc>https://nairobi-sweets.com/</loc></url>
-<url><loc>https://nairobi-sweets.com/join.html</loc></url>
-<url><loc>https://nairobi-sweets.com/login.html</loc></url>
-<url><loc>https://nairobi-sweets.com/trending.html</loc></url>
-<url><loc>https://nairobi-sweets.com/shorts.html</loc></url>
-<url><loc>https://nairobi-sweets.com/reel.html</loc></url>
+  <!-- Main Pages -->
+  <url>
+    <loc>https://nairobi-sweets.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
 
-<url><loc>https://nairobi-sweets.com/seo/</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/index.html</loc></url>
+  <url>
+    <loc>https://nairobi-sweets.com/join.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
 
-<url><loc>https://nairobi-sweets.com/seo/categories/featured.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/categories/vip.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/categories/signature.html</loc></url>
+  <url>
+    <loc>https://nairobi-sweets.com/login.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
 
-<url><loc>https://nairobi-sweets.com/seo/locations/nairobi.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/kilimani.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/westlands.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/lavington.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/ngong-road.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/embakasi.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/south-b.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/south-c.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/parklands.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/kasarani.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/ruaka.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/ruiru.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/thika.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/juja.html</loc></url>
+  <url>
+    <loc>https://nairobi-sweets.com/trending.html</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/shorts.html</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/reel.html</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- SEO Hub -->
+  <url>
+    <loc>https://nairobi-sweets.com/seo/index.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Category Hub -->
+  <url>
+    <loc>https://nairobi-sweets.com/seo/categories/index.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Category Pages -->
+  <url>
+    <loc>https://nairobi-sweets.com/seo/categories/featured.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/categories/vip.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/categories/signature.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Locations Hub -->
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/index.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Nairobi Locations -->
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/nairobi.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/kilimani.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/westlands.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/lavington.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/ngong-road.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/embakasi.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/south-b.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/south-c.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/parklands.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/karen.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/rongai.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/kitengela.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/kasarani.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/roysambu.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/ruaka.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/ruiru.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Kiambu Corridor -->
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/kiambu.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/thika.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://nairobi-sweets.com/seo/locations/juja.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
 
 </urlset>
