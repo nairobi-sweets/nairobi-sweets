@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-<url><loc>https://nairobi-sweets.com/</loc></url>
-<url><loc>https://nairobi-sweets.com/join.html</loc></url>
-<url><loc>https://nairobi-sweets.com/login.html</loc></url>
-<url><loc>https://nairobi-sweets.com/trending.html</loc></url>
-<url><loc>https://nairobi-sweets.com/shorts.html</loc></url>
-<url><loc>https://nairobi-sweets.com/reel.html</loc></url>
+  <sitemap>
+    <loc>https://nairobi-sweets.com/static-sitemap.xml</loc>
+  </sitemap>
 
-<url><loc>https://nairobi-sweets.com/seo/categories/featured.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/categories/vip.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/categories/signature.html</loc></url>
+  <sitemap>
+    <loc>https://nairobi-sweets.com/location-sitemap.xml</loc>
+  </sitemap>
 
-<url><loc>https://nairobi-sweets.com/seo/locations/nairobi.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/kilimani.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/westlands.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/kasarani.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/ruaka.html</loc></url>
-<url><loc>https://nairobi-sweets.com/seo/locations/ruiru.html</loc></url>
+  <sitemap>
+    <loc>https://nairobi-sweets.com/profile-sitemap.xml</loc>
+  </sitemap>
 
-</urlset>
+</sitemapindex>
