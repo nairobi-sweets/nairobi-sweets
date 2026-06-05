@@ -2,6 +2,26 @@
 publish = "."
 functions = "netlify/functions"
 
+[functions]
+node_bundler = "esbuild"
+
+# ==========================================
+
+# API FUNCTIONS
+
+# ==========================================
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/:splat"
+status = 200
+
+# ==========================================
+
+# SEO SITEMAPS
+
+# ==========================================
+
 [[redirects]]
 from = "/profile-sitemap.xml"
 to = "/.netlify/functions/profile-sitemap"
@@ -14,11 +34,128 @@ to = "/.netlify/functions/location-sitemap"
 status = 200
 force = true
 
+# ==========================================
+
+# PWA
+
+# ==========================================
+
+[[headers]]
+for = "/manifest.webmanifest"
+
+[headers.values]
+Content-Type = "application/manifest+json"
+
+[[headers]]
+for = "/sw.js"
+
+[headers.values]
+Cache-Control = "no-cache"
+
+# ==========================================
+
+# SECURITY HEADERS
+
+# ==========================================
+
 [[headers]]
 for = "/*"
 
 [headers.values]
-X-Frame-Options = "DENY"
+X-Frame-Options = "SAMEORIGIN"
+X-XSS-Protection = "1; mode=block"
 X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
-Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+Permissions-Policy = "camera=(), microphone=(), geolocation=*"
+
+# ==========================================
+
+# STATIC FILE CACHING
+
+# ==========================================
+
+[[headers]]
+for = "/assets/*"
+
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.jpg"
+
+[headers.values]
+Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+for = "/*.jpeg"
+
+[headers.values]
+Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+for = "/*.png"
+
+[headers.values]
+Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+for = "/*.webp"
+
+[headers.values]
+Cache-Control = "public, max-age=31536000"
+
+# ==========================================
+
+# SEO
+
+# ==========================================
+
+[[headers]]
+for = "/sitemap.xml"
+
+[headers.values]
+Content-Type = "application/xml"
+
+[[headers]]
+for = "/static-sitemap.xml"
+
+[headers.values]
+Content-Type = "application/xml"
+
+[[headers]]
+for = "/profile-sitemap.xml"
+
+[headers.values]
+Content-Type = "application/xml"
+
+[[headers]]
+for = "/location-sitemap.xml"
+
+[headers.values]
+Content-Type = "application/xml"
+
+# ==========================================
+
+# SPA FALLBACK (OPTIONAL)
+
+# ==========================================
+
+# [[redirects]]
+
+# from = "/*"
+
+# to = "/index.html"
+
+# status = 200
+
+# ==========================================
+
+# SCHEDULED FUNCTIONS
+
+# ==========================================
+
+[functions."auto-expire"]
+schedule = "@hourly"
+
+[functions."auto-renew"]
+schedule = "@hourly"
