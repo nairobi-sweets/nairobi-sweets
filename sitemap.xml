@@ -2,14 +2,17 @@
 
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
+  <!-- STATIC PAGES -->
   <sitemap>
     <loc>https://nairobi-sweets.com/static-sitemap.xml</loc>
   </sitemap>
 
+  <!-- LOCATION SEO ENGINE -->
   <sitemap>
     <loc>https://nairobi-sweets.com/location-sitemap.xml</loc>
   </sitemap>
 
+  <!-- DYNAMIC PROFILE SEO ENGINE -->
   <sitemap>
     <loc>https://nairobi-sweets.com/profile-sitemap.xml</loc>
   </sitemap>
