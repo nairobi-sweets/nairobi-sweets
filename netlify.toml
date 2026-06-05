@@ -1,25 +1,24 @@
 [build]
-  publish = "."
-  functions = "netlify/functions"
-
-[functions]
-  directory = "netlify/functions"
+publish = "."
+functions = "netlify/functions"
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+from = "/profile-sitemap.xml"
+to = "/.netlify/functions/profile-sitemap"
+status = 200
+force = true
 
 [[redirects]]
-  from = "/profile/:slug"
-  to = "/profile.html?slug=:slug"
-  status = 200
+from = "/location-sitemap.xml"
+to = "/.netlify/functions/location-sitemap"
+status = 200
+force = true
 
-[[redirects]]
-  from = "/*"
-  to = "/under-construction.html"
-  status = 404
+[[headers]]
+for = "/*"
 
-[dev]
-  publish = "."
-  functions = "netlify/functions"
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
