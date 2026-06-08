@@ -1,6 +1,7 @@
 const { createClient } = require("@supabase/supabase-js");
 
 const SITE_URL = "https://nairobi-sweets.com";
+const VERSION = "profiles-fixed-v3";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -75,44 +76,16 @@ ${[
 }
 
 const locations = [
-  "nairobi",
-  "roysambu",
-  "kasarani",
-  "westlands",
-  "kilimani",
-  "ruaka",
-  "ruiru",
-  "kiambu",
-  "zimmerman",
-  "mirema",
-  "trm",
-  "githurai",
-  "kahawa-west",
-  "kahawa-sukari",
-  "donholm",
-  "umoja",
-  "buruburu",
-  "fedha",
-  "syokimau",
-  "athi-river",
-  "thindigua",
-  "kiambu-road",
-  "parklands",
-  "lavington",
-  "karen",
-  "kitengela"
+  "nairobi","roysambu","kasarani","westlands","kilimani","ruaka","ruiru","kiambu",
+  "zimmerman","mirema","trm","githurai","kahawa-west","kahawa-sukari",
+  "donholm","umoja","buruburu","fedha","syokimau","athi-river",
+  "thindigua","kiambu-road","parklands","lavington","karen","kitengela"
 ];
 
 const categories = [
-  "verified",
-  "vip",
-  "signature",
-  "featured",
-  "top-rated",
-  "most-viewed",
-  "most-liked",
-  "trending-this-week",
-  "new-this-week"
+  "verified","vip","signature","featured",
+  "top-rated","most-viewed","most-liked",
+  "trending-this-week","new-this-week"
 ];
 
 function staticSitemap() {
@@ -162,23 +135,43 @@ async function profileSitemap() {
 
   const { data, error } = await client
     .from("active_profiles_view")
-    .select("id, stage_name, name, location, updated_at, created_at")
+    .select("*")
     .limit(5000);
 
   if (error) throw error;
 
   const urls = (data || [])
-    .filter((profile) => profile.id)
+    .filter((profile) => profile.id || profile.profile_id)
     .map((profile) => {
-      const rawName = profile.stage_name || profile.name || "profile";
-      const rawLocation = profile.location || "nairobi";
-      const slug = slugify(`${rawName}-${rawLocation}-${profile.id}`);
+      const id = profile.id || profile.profile_id;
+      const rawName =
+        profile.stage_name ||
+        profile.name ||
+        profile.display_name ||
+        profile.full_name ||
+        "profile";
+
+      const rawLocation =
+        profile.location ||
+        profile.town ||
+        profile.area ||
+        "nairobi";
+
+      const existingSlug =
+        profile.slug ||
+        profile.profile_slug ||
+        profile.seo_slug ||
+        "";
+
+      const slug = existingSlug
+        ? slugify(existingSlug)
+        : slugify(`${rawName}-${rawLocation}-${id}`);
 
       return urlTag(
         `${SITE_URL}/profile.html?slug=${encodeURIComponent(slug)}`,
         "0.80",
         "weekly",
-        profile.updated_at || profile.created_at || nowISO()
+        profile.updated_at || profile.created_at || profile.inserted_at || nowISO()
       );
     });
 
@@ -197,12 +190,13 @@ exports.handler = async function (event) {
       body = locationSitemap();
     } else if (type === "categories") {
       body = categorySitemap();
-    } else if (type === "profiles") {
+    } else if (type === "profiles" || type === "profile") {
       body = await profileSitemap();
     } else if (type === "health") {
       body = `${xmlHeader()}<health>
   <status>ok</status>
   <function>generate-sitemaps</function>
+  <version>${VERSION}</version>
   <supabaseUrl>${SUPABASE_URL ? "present" : "missing"}</supabaseUrl>
   <serviceRole>${SUPABASE_SERVICE_ROLE_KEY ? "present" : "missing"}</serviceRole>
 </health>`;
