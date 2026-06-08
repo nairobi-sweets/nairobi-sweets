@@ -1,0 +1,12 @@
+# Dynamic SEO Location Engine Redirects
+# Paste under your existing netlify.toml redirects, or convert carefully if you already use [[redirects]].
+
+[[redirects]]
+from = "/seo-location/:location"
+to = "/seo-location.html?location=:location"
+status = 200
+
+[[redirects]]
+from = "/seo/locations/:location.html"
+to = "/seo-location.html?location=:location"
+status = 200

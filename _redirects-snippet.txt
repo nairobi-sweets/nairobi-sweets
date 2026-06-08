@@ -1,0 +1,32 @@
+# Dynamic SEO Location Engine Redirects
+# Add these to your Netlify _redirects file OR convert to netlify.toml redirects.
+
+# Main dynamic handler
+/seo-location/:location  /seo-location.html?location=:location  200
+
+# Optional clean location URLs mapped to one dynamic file
+/seo/locations/roysambu.html        /seo-location.html?location=roysambu        200
+/seo/locations/kasarani.html        /seo-location.html?location=kasarani        200
+/seo/locations/westlands.html       /seo-location.html?location=westlands       200
+/seo/locations/kilimani.html        /seo-location.html?location=kilimani        200
+/seo/locations/ruaka.html           /seo-location.html?location=ruaka           200
+/seo/locations/ruiru.html           /seo-location.html?location=ruiru           200
+/seo/locations/kiambu.html          /seo-location.html?location=kiambu          200
+/seo/locations/zimmerman.html       /seo-location.html?location=zimmerman       200
+/seo/locations/mirema.html          /seo-location.html?location=mirema          200
+/seo/locations/trm.html             /seo-location.html?location=trm             200
+/seo/locations/githurai.html        /seo-location.html?location=githurai        200
+/seo/locations/kahawa-west.html     /seo-location.html?location=kahawa-west     200
+/seo/locations/kahawa-sukari.html   /seo-location.html?location=kahawa-sukari   200
+/seo/locations/donholm.html         /seo-location.html?location=donholm         200
+/seo/locations/umoja.html           /seo-location.html?location=umoja           200
+/seo/locations/buruburu.html        /seo-location.html?location=buruburu        200
+/seo/locations/fedha.html           /seo-location.html?location=fedha           200
+/seo/locations/syokimau.html        /seo-location.html?location=syokimau        200
+/seo/locations/athi-river.html      /seo-location.html?location=athi-river      200
+/seo/locations/thindigua.html       /seo-location.html?location=thindigua       200
+/seo/locations/kiambu-road.html     /seo-location.html?location=kiambu-road     200
+/seo/locations/parklands.html       /seo-location.html?location=parklands       200
+/seo/locations/lavington.html       /seo-location.html?location=lavington       200
+/seo/locations/karen.html           /seo-location.html?location=karen           200
+/seo/locations/kitengela.html       /seo-location.html?location=kitengela       200
