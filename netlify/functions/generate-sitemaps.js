@@ -64,15 +64,13 @@ ${urls.join("\n")}
 }
 
 function buildSitemapIndex() {
-  const maps = [
-    `${SITE_URL}/dynamic-static-sitemap.xml`,
-    `${SITE_URL}/dynamic-location-sitemap.xml`,
-    `${SITE_URL}/dynamic-category-sitemap.xml`,
-    `${SITE_URL}/dynamic-profile-sitemap.xml`
-  ];
-
   return `${xmlHeader()}<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${maps.map(sitemapTag).join("\n")}
+${[
+  `${SITE_URL}/dynamic-static-sitemap.xml`,
+  `${SITE_URL}/dynamic-location-sitemap.xml`,
+  `${SITE_URL}/dynamic-category-sitemap.xml`,
+  `${SITE_URL}/dynamic-profile-sitemap.xml`
+].map(sitemapTag).join("\n")}
 </sitemapindex>`;
 }
 
@@ -141,29 +139,18 @@ function locationSitemap() {
 }
 
 function categorySitemap() {
-  const base = categories.map((cat) =>
+  const baseUrls = categories.map((cat) =>
     urlTag(`${SITE_URL}/seo/categories/${cat}.html`, "0.95", "daily")
   );
 
-  const matrix = [];
-
-  locations
+  const matrixUrls = locations
     .filter((loc) => loc !== "nairobi")
-    .forEach((loc) => {
-      matrix.push(
-        urlTag(`${SITE_URL}/seo/categories/${loc}-vip.html`, "0.88", "daily")
-      );
+    .flatMap((loc) => [
+      urlTag(`${SITE_URL}/seo/categories/${loc}-vip.html`, "0.88", "daily"),
+      urlTag(`${SITE_URL}/seo/categories/${loc}-signature.html`, "0.88", "daily")
+    ]);
 
-      matrix.push(
-        urlTag(
-          `${SITE_URL}/seo/categories/${loc}-signature.html`,
-          "0.88",
-          "daily"
-        )
-      );
-    });
-
-  return buildUrlset([...base, ...matrix]);
+  return buildUrlset([...baseUrls, ...matrixUrls]);
 }
 
 async function profileSitemap() {
@@ -181,18 +168,17 @@ async function profileSitemap() {
   if (error) throw error;
 
   const urls = (data || [])
-    .filter((p) => p.id)
-    .map((p) => {
-      const rawName = p.stage_name || p.name || "profile";
-      const rawLocation = p.location || "nairobi";
-
-      const slug = slugify(`${rawName}-${rawLocation}-${p.id}`);
+    .filter((profile) => profile.id)
+    .map((profile) => {
+      const rawName = profile.stage_name || profile.name || "profile";
+      const rawLocation = profile.location || "nairobi";
+      const slug = slugify(`${rawName}-${rawLocation}-${profile.id}`);
 
       return urlTag(
         `${SITE_URL}/profile.html?slug=${encodeURIComponent(slug)}`,
         "0.80",
         "weekly",
-        p.updated_at || p.created_at || nowISO()
+        profile.updated_at || profile.created_at || nowISO()
       );
     });
 
@@ -228,7 +214,7 @@ exports.handler = async function (event) {
       statusCode: 200,
       headers: {
         "Content-Type": "application/xml; charset=utf-8",
-        "Cache-Control": "public, max-age=3600"
+        "Cache-Control": "no-store"
       },
       body
     };
@@ -237,7 +223,7 @@ exports.handler = async function (event) {
       statusCode: 500,
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
-        "Cache-Control": "no-cache"
+        "Cache-Control": "no-store"
       },
       body: "Sitemap generation failed: " + (err.message || String(err))
     };
