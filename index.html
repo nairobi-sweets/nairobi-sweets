@@ -415,6 +415,10 @@ SIGNATURE PROFILES BANNER
   height:100%;
   object-fit:cover;
   display:block;
+  image-rendering:auto;
+  backface-visibility:hidden;
+  transform:translateZ(0);
+  filter:contrast(1.03) saturate(1.04);
 }
 
 .card-image.poster-image{
@@ -492,6 +496,9 @@ SIGNATURE PROFILES BANNER
   width:100%;
   height:100%;
   object-fit:cover;
+  image-rendering:auto;
+  backface-visibility:hidden;
+  transform:translateZ(0);
 }
 
 .short-overlay{
@@ -538,6 +545,10 @@ SIGNATURE PROFILES BANNER
   object-fit:cover;
   display:block;
   background:#020617;
+  image-rendering:auto;
+  backface-visibility:hidden;
+  transform:translateZ(0);
+  filter:contrast(1.03) saturate(1.04);
 }
 
 .card-body{padding:16px}
@@ -1465,8 +1476,36 @@ function safePhone(phone){
   return p;
 }
 
+function cleanImageUrl(url){
+  url = String(url || "").trim();
+  if(!url || url.toLowerCase() === "null" || url.toLowerCase() === "undefined"){
+    return "/assets/logo/logo-badge.png";
+  }
+
+  try{
+    const imageUrl = new URL(url, window.location.origin);
+
+    // Remove tiny thumbnail parameters that make profile cards blurry.
+    [
+      "w",
+      "width",
+      "h",
+      "height",
+      "resize",
+      "quality",
+      "q",
+      "thumbnail",
+      "thumb"
+    ].forEach(param => imageUrl.searchParams.delete(param));
+
+    return imageUrl.href;
+  }catch(error){
+    return url;
+  }
+}
+
 function getImage(profile){
-  return (
+  const rawImage = (
     profile.photo_url ||
     profile.image_url ||
     profile.profile_photo ||
@@ -1475,6 +1514,15 @@ function getImage(profile){
     profile.image ||
     "/assets/logo/logo-badge.png"
   );
+
+  return cleanImageUrl(rawImage);
+}
+
+function getImageSrcSet(profile){
+  const image = getImage(profile);
+
+  // Keep one clean source. This avoids browser picking old tiny thumbnail URLs.
+  return `${image} 1x`;
 }
 
 function getSignatureImage(profile){
@@ -1712,9 +1760,11 @@ function renderSignatureProfiles(list){
       title="Open ${getName(profile)}"
     >
       <img
-        src="${getSignatureImage(profile)}"
+        src="${cleanImageUrl(getSignatureImage(profile))}"
         alt="${getName(profile)}"
         loading="lazy"
+        decoding="async"
+        referrerpolicy="no-referrer"
         onerror="this.src='/assets/logo/logo-badge.png'"
       >
     </div>
@@ -1744,7 +1794,7 @@ function renderShorts(list){
 
     const mediaTag = isVideo(media)
       ? `<video autoplay muted loop playsinline><source src="${media}" type="video/mp4"></video>`
-      : `<img src="${media}" onerror="this.src='/assets/logo/logo-badge.png'">`;
+      : `<img src="${cleanImageUrl(media)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.src='/assets/logo/logo-badge.png'">`;
 
     return `
       <div class="short-card" onclick="window.location.href='/reel.html'">
@@ -1794,8 +1844,13 @@ function renderProfiles(data){
 
         <img
           src="${getImage(profile)}"
+          srcset="${getImageSrcSet(profile)}"
+          sizes="(min-width:1100px) 25vw, (min-width:901px) 33vw, 100vw"
           class="card-image"
-          loading="lazy"
+          loading="${index < 4 ? 'eager' : 'lazy'}"
+          decoding="async"
+          fetchpriority="${index < 4 ? 'high' : 'auto'}"
+          referrerpolicy="no-referrer"
           alt="${getName(profile)}"
           onload="markPosterImage(this)"
           onerror="this.src='/assets/logo/logo-badge.png'"
