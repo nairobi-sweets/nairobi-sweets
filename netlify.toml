@@ -6,12 +6,12 @@ functions = "netlify/functions"
 node_bundler = "esbuild"
 
 # =====================================
-# DYNAMIC SITEMAPS - KEEP AT VERY TOP
+# SITEMAPS
 # =====================================
 
 [[redirects]]
 from = "/dynamic-profile-sitemap.xml"
-to = "/.netlify/functions/generate-sitemaps?type=profiles"
+to = "/.netlify/functions/dynamic-profile-sitemap"
 status = 200
 force = true
 
@@ -40,7 +40,7 @@ status = 200
 force = true
 
 # =====================================
-# API FUNCTIONS
+# MPESA
 # =====================================
 
 [[redirects]]
@@ -73,7 +73,7 @@ to = "/seo-location.html?location=:location"
 status = 200
 
 # =====================================
-# XML HEADERS
+# HEADERS
 # =====================================
 
 [[headers]]
@@ -82,23 +82,6 @@ for = "/*.xml"
 [headers.values]
 Content-Type = "application/xml; charset=utf-8"
 Cache-Control = "no-store"
-
-# =====================================
-# SECURITY HEADERS
-# =====================================
-
-[[headers]]
-for = "/*"
-
-[headers.values]
-X-Frame-Options = "SAMEORIGIN"
-X-Content-Type-Options = "nosniff"
-Referrer-Policy = "strict-origin-when-cross-origin"
-Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-
-# =====================================
-# PWA
-# =====================================
 
 [[headers]]
 for = "/manifest.webmanifest"
@@ -112,15 +95,20 @@ for = "/sw.js"
 [headers.values]
 Cache-Control = "no-cache"
 
-# =====================================
-# CACHE ASSETS
-# =====================================
-
 [[headers]]
 for = "/assets/*"
 
 [headers.values]
 Cache-Control = "public,max-age=31536000,immutable"
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "SAMEORIGIN"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 # =====================================
 # SCHEDULED FUNCTIONS
