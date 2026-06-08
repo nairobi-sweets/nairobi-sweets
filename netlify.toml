@@ -35,7 +35,7 @@ to = "/.netlify/functions/generate-sitemaps?type=profiles"
 status = 200
 
 # =====================================
-# M-PESA FUNCTIONS
+# API / NETLIFY FUNCTIONS
 # =====================================
 
 [[redirects]]
@@ -68,8 +68,15 @@ to = "/seo-location.html?location=:location"
 status = 200
 
 # =====================================
-# SECURITY HEADERS
+# HEADERS
 # =====================================
+
+[[headers]]
+for = "/*.xml"
+
+[headers.values]
+Content-Type = "application/xml; charset=utf-8"
+Cache-Control = "no-store"
 
 [[headers]]
 for = "/*"
@@ -79,21 +86,6 @@ X-Frame-Options = "SAMEORIGIN"
 X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
 Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-
-# =====================================
-# XML SITEMAPS
-# =====================================
-
-[[headers]]
-for = "/*.xml"
-
-[headers.values]
-Content-Type = "application/xml; charset=utf-8"
-Cache-Control = "public,max-age=3600"
-
-# =====================================
-# PWA
-# =====================================
 
 [[headers]]
 for = "/manifest.webmanifest"
@@ -107,48 +99,14 @@ for = "/sw.js"
 [headers.values]
 Cache-Control = "no-cache"
 
-# =====================================
-# CACHE STATIC ASSETS
-# =====================================
-
 [[headers]]
 for = "/assets/*"
 
 [headers.values]
 Cache-Control = "public,max-age=31536000,immutable"
 
-[[headers]]
-for = "/*.png"
-
-[headers.values]
-Cache-Control = "public,max-age=31536000"
-
-[[headers]]
-for = "/*.jpg"
-
-[headers.values]
-Cache-Control = "public,max-age=31536000"
-
-[[headers]]
-for = "/*.jpeg"
-
-[headers.values]
-Cache-Control = "public,max-age=31536000"
-
-[[headers]]
-for = "/*.webp"
-
-[headers.values]
-Cache-Control = "public,max-age=31536000"
-
-[[headers]]
-for = "/*.svg"
-
-[headers.values]
-Cache-Control = "public,max-age=31536000"
-
 # =====================================
-# NETLIFY SCHEDULED FUNCTIONS
+# SCHEDULED FUNCTIONS
 # =====================================
 
 [functions."auto-expire-profiles"]
@@ -159,23 +117,3 @@ schedule = "@hourly"
 
 [functions."auto-renew-check"]
 schedule = "@daily"
-
-# =====================================
-# ROBOTS
-# =====================================
-
-[[headers]]
-for = "/robots.txt"
-
-[headers.values]
-Content-Type = "text/plain"
-
-# =====================================
-# OPTIONAL SPA FALLBACK
-# Leave commented for static HTML site
-# =====================================
-
-# [[redirects]]
-# from = "/*"
-# to = "/index.html"
-# status = 200
