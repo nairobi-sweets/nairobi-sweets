@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <sitemap>
-    <loc>https://nairobi-sweets.com/static-sitemap.xml</loc>
-  </sitemap>
+<sitemap>
+<loc>https://nairobi-sweets.com/dynamic-static-sitemap.xml</loc>
+</sitemap>
 
-  <sitemap>
-    <loc>https://nairobi-sweets.com/location-sitemap.xml</loc>
-  </sitemap>
+<sitemap>
+<loc>https://nairobi-sweets.com/dynamic-location-sitemap.xml</loc>
+</sitemap>
 
-  <sitemap>
-    <loc>https://nairobi-sweets.com/profile-sitemap.xml</loc>
-  </sitemap>
+<sitemap>
+<loc>https://nairobi-sweets.com/dynamic-category-sitemap.xml</loc>
+</sitemap>
+
+<sitemap>
+<loc>https://nairobi-sweets.com/dynamic-profile-sitemap.xml</loc>
+</sitemap>
 
 </sitemapindex>
