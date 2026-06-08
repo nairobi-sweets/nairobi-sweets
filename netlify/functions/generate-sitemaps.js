@@ -8,73 +8,26 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 let sb = null;
 
 function getSupabase() {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    return null;
-  }
-
-  if (!sb) {
-    sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-  }
-
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
+  if (!sb) sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   return sb;
 }
-
-const locations = [
-  "nairobi",
-  "roysambu",
-  "kasarani",
-  "westlands",
-  "kilimani",
-  "ruaka",
-  "ruiru",
-  "kiambu",
-  "zimmerman",
-  "mirema",
-  "trm",
-  "githurai",
-  "kahawa-west",
-  "kahawa-sukari",
-  "donholm",
-  "umoja",
-  "buruburu",
-  "fedha",
-  "syokimau",
-  "athi-river",
-  "thindigua",
-  "kiambu-road",
-  "parklands",
-  "lavington",
-  "karen",
-  "kitengela"
-];
-
-const categories = [
-  "verified",
-  "vip",
-  "signature",
-  "featured",
-  "top-rated",
-  "most-viewed",
-  "most-liked",
-  "trending-this-week",
-  "new-this-week"
-];
 
 function nowISO() {
   return new Date().toISOString();
 }
 
-function xmlHeader() {
-  return `<?xml version="1.0" encoding="UTF-8"?>\n`;
-}
-
-function escapeXml(value) {
-  return String(value || "")
+function escapeXml(value = "") {
+  return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
+}
+
+function xmlHeader() {
+  return `<?xml version="1.0" encoding="UTF-8"?>\n`;
 }
 
 function urlTag(loc, priority = "0.80", changefreq = "daily", lastmod = nowISO()) {
@@ -114,6 +67,59 @@ ${maps.map(sitemapTag).join("\n")}
 </sitemapindex>`;
 }
 
+const locations = [
+  "nairobi", "roysambu", "kasarani", "westlands", "kilimani", "ruaka", "ruiru", "kiambu",
+  "zimmerman", "mirema", "trm", "githurai", "kahawa-west", "kahawa-sukari",
+  "donholm", "umoja", "buruburu", "fedha", "syokimau", "athi-river",
+  "thindigua", "kiambu-road", "parklands", "lavington", "karen", "kitengela"
+];
+
+const categories = [
+  "verified", "vip", "signature", "featured",
+  "top-rated", "most-viewed", "most-liked",
+  "trending-this-week", "new-this-week"
+];
+
+function staticSitemap() {
+  return buildUrlset([
+    urlTag(`${SITE_URL}/`, "1.00", "daily"),
+    urlTag(`${SITE_URL}/join.html`, "0.90", "weekly"),
+    urlTag(`${SITE_URL}/login.html`, "0.60", "monthly"),
+    urlTag(`${SITE_URL}/trending.html`, "0.95", "hourly"),
+    urlTag(`${SITE_URL}/shorts.html`, "0.95", "hourly"),
+    urlTag(`${SITE_URL}/reel.html`, "0.95", "hourly"),
+    urlTag(`${SITE_URL}/profile.html`, "0.85", "daily"),
+    urlTag(`${SITE_URL}/seo/index.html`, "0.95", "daily"),
+    urlTag(`${SITE_URL}/seo/categories/index.html`, "0.95", "daily"),
+    urlTag(`${SITE_URL}/seo/locations/index.html`, "0.95", "daily")
+  ]);
+}
+
+function locationSitemap() {
+  return buildUrlset(
+    locations.map((loc) =>
+      urlTag(`${SITE_URL}/seo/locations/${loc}.html`, "0.90", "daily")
+    )
+  );
+}
+
+function categorySitemap() {
+  const base = categories.map((cat) =>
+    urlTag(`${SITE_URL}/seo/categories/${cat}.html`, "0.95", "daily")
+  );
+
+  const matrix = [];
+
+  locations
+    .filter((loc) => loc !== "nairobi")
+    .forEach((loc) => {
+      matrix.push(urlTag(`${SITE_URL}/seo/categories/${loc}-vip.html`, "0.88", "daily"));
+      matrix.push(urlTag(`${SITE_URL}/seo/categories/${loc}-signature.html`, "0.88", "daily"));
+    });
+
+  return buildUrlset([...base, ...matrix]);
+}
+
 async function profileSitemap() {
   const client = getSupabase();
 
@@ -126,9 +132,7 @@ async function profileSitemap() {
     .select("id, slug, updated_at, created_at")
     .limit(5000);
 
-  if (error) {
-    throw error;
-  }
+  if (error) throw error;
 
   const urls = (data || [])
     .filter((p) => p.slug || p.id)
@@ -148,91 +152,17 @@ async function profileSitemap() {
   return buildUrlset(urls);
 }
 
-function locationSitemap() {
-  const urls = locations.map((loc) =>
-    urlTag(`${SITE_URL}/seo/locations/${loc}.html`, "0.90", "daily")
-  );
-
-  return buildUrlset(urls);
-}
-
-function categorySitemap() {
-  const base = categories.map((cat) =>
-    urlTag(`${SITE_URL}/seo/categories/${cat}.html`, "0.95", "daily")
-  );
-
-  const matrix = [];
-  const matrixLocations = [
-    "roysambu",
-    "kasarani",
-    "westlands",
-    "kilimani",
-    "ruaka",
-    "ruiru",
-    "kiambu",
-    "zimmerman",
-    "mirema",
-    "githurai",
-    "kahawa-west",
-    "kahawa-sukari",
-    "donholm",
-    "umoja",
-    "buruburu",
-    "fedha",
-    "syokimau",
-    "athi-river",
-    "thindigua",
-    "kiambu-road",
-    "parklands",
-    "lavington",
-    "karen",
-    "kitengela"
-  ];
-
-  matrixLocations.forEach((loc) => {
-    matrix.push(
-      urlTag(`${SITE_URL}/seo/categories/${loc}-vip.html`, "0.88", "daily")
-    );
-    matrix.push(
-      urlTag(`${SITE_URL}/seo/categories/${loc}-signature.html`, "0.88", "daily")
-    );
-  });
-
-  return buildUrlset([...base, ...matrix]);
-}
-
-function staticSitemap() {
-  const urls = [
-    urlTag(`${SITE_URL}/`, "1.00", "daily"),
-    urlTag(`${SITE_URL}/join.html`, "0.90", "weekly"),
-    urlTag(`${SITE_URL}/login.html`, "0.60", "monthly"),
-    urlTag(`${SITE_URL}/trending.html`, "0.95", "hourly"),
-    urlTag(`${SITE_URL}/shorts.html`, "0.95", "hourly"),
-    urlTag(`${SITE_URL}/reel.html`, "0.95", "hourly"),
-    urlTag(`${SITE_URL}/profile.html`, "0.85", "daily"),
-    urlTag(`${SITE_URL}/seo/index.html`, "0.95", "daily"),
-    urlTag(`${SITE_URL}/seo/categories/index.html`, "0.95", "daily"),
-    urlTag(`${SITE_URL}/seo/locations/index.html`, "0.95", "daily")
-  ];
-
-  return buildUrlset(urls);
-}
-
 exports.handler = async function (event) {
   try {
     const type = event.queryStringParameters?.type || "index";
 
     let body;
 
-    if (type === "profiles") {
-      body = await profileSitemap();
-    } else if (type === "locations") {
-      body = locationSitemap();
-    } else if (type === "categories") {
-      body = categorySitemap();
-    } else if (type === "static") {
-      body = staticSitemap();
-    } else if (type === "health") {
+    if (type === "static") body = staticSitemap();
+    else if (type === "locations") body = locationSitemap();
+    else if (type === "categories") body = categorySitemap();
+    else if (type === "profiles") body = await profileSitemap();
+    else if (type === "health") {
       body = `${xmlHeader()}<health>
   <status>ok</status>
   <function>generate-sitemaps</function>
