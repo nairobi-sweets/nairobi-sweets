@@ -17,6 +17,10 @@ function nowISO() {
   return new Date().toISOString();
 }
 
+function xmlHeader() {
+  return `<?xml version="1.0" encoding="UTF-8"?>\n`;
+}
+
 function escapeXml(value = "") {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -26,8 +30,13 @@ function escapeXml(value = "") {
     .replace(/'/g, "&apos;");
 }
 
-function xmlHeader() {
-  return `<?xml version="1.0" encoding="UTF-8"?>\n`;
+function slugify(value = "") {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function urlTag(loc, priority = "0.80", changefreq = "daily", lastmod = nowISO()) {
@@ -68,16 +77,44 @@ ${maps.map(sitemapTag).join("\n")}
 }
 
 const locations = [
-  "nairobi", "roysambu", "kasarani", "westlands", "kilimani", "ruaka", "ruiru", "kiambu",
-  "zimmerman", "mirema", "trm", "githurai", "kahawa-west", "kahawa-sukari",
-  "donholm", "umoja", "buruburu", "fedha", "syokimau", "athi-river",
-  "thindigua", "kiambu-road", "parklands", "lavington", "karen", "kitengela"
+  "nairobi",
+  "roysambu",
+  "kasarani",
+  "westlands",
+  "kilimani",
+  "ruaka",
+  "ruiru",
+  "kiambu",
+  "zimmerman",
+  "mirema",
+  "trm",
+  "githurai",
+  "kahawa-west",
+  "kahawa-sukari",
+  "donholm",
+  "umoja",
+  "buruburu",
+  "fedha",
+  "syokimau",
+  "athi-river",
+  "thindigua",
+  "kiambu-road",
+  "parklands",
+  "lavington",
+  "karen",
+  "kitengela"
 ];
 
 const categories = [
-  "verified", "vip", "signature", "featured",
-  "top-rated", "most-viewed", "most-liked",
-  "trending-this-week", "new-this-week"
+  "verified",
+  "vip",
+  "signature",
+  "featured",
+  "top-rated",
+  "most-viewed",
+  "most-liked",
+  "trending-this-week",
+  "new-this-week"
 ];
 
 function staticSitemap() {
@@ -113,8 +150,17 @@ function categorySitemap() {
   locations
     .filter((loc) => loc !== "nairobi")
     .forEach((loc) => {
-      matrix.push(urlTag(`${SITE_URL}/seo/categories/${loc}-vip.html`, "0.88", "daily"));
-      matrix.push(urlTag(`${SITE_URL}/seo/categories/${loc}-signature.html`, "0.88", "daily"));
+      matrix.push(
+        urlTag(`${SITE_URL}/seo/categories/${loc}-vip.html`, "0.88", "daily")
+      );
+
+      matrix.push(
+        urlTag(
+          `${SITE_URL}/seo/categories/${loc}-signature.html`,
+          "0.88",
+          "daily"
+        )
+      );
     });
 
   return buildUrlset([...base, ...matrix]);
@@ -129,23 +175,24 @@ async function profileSitemap() {
 
   const { data, error } = await client
     .from("active_profiles_view")
-    .select("id, slug, updated_at, created_at")
+    .select("id, stage_name, name, location, updated_at, created_at")
     .limit(5000);
 
   if (error) throw error;
 
   const urls = (data || [])
-    .filter((p) => p.slug || p.id)
+    .filter((p) => p.id)
     .map((p) => {
-      const slugOrId = p.slug || p.id;
-      const encodedSlug = encodeURIComponent(String(slugOrId));
-      const lastmod = p.updated_at || p.created_at || nowISO();
+      const rawName = p.stage_name || p.name || "profile";
+      const rawLocation = p.location || "nairobi";
+
+      const slug = slugify(`${rawName}-${rawLocation}-${p.id}`);
 
       return urlTag(
-        `${SITE_URL}/profile.html?slug=${encodedSlug}`,
+        `${SITE_URL}/profile.html?slug=${encodeURIComponent(slug)}`,
         "0.80",
         "weekly",
-        lastmod
+        p.updated_at || p.created_at || nowISO()
       );
     });
 
@@ -158,11 +205,15 @@ exports.handler = async function (event) {
 
     let body;
 
-    if (type === "static") body = staticSitemap();
-    else if (type === "locations") body = locationSitemap();
-    else if (type === "categories") body = categorySitemap();
-    else if (type === "profiles") body = await profileSitemap();
-    else if (type === "health") {
+    if (type === "static") {
+      body = staticSitemap();
+    } else if (type === "locations") {
+      body = locationSitemap();
+    } else if (type === "categories") {
+      body = categorySitemap();
+    } else if (type === "profiles") {
+      body = await profileSitemap();
+    } else if (type === "health") {
       body = `${xmlHeader()}<health>
   <status>ok</status>
   <function>generate-sitemaps</function>
