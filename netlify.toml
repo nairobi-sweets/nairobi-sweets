@@ -5,32 +5,16 @@ functions = "netlify/functions"
 [functions]
 node_bundler = "esbuild"
 
-# =========================
-# SITEMAPS
-# =========================
-
 [[redirects]]
 from = "/profile-sitemap.xml"
 to = "/.netlify/functions/profile-sitemap"
 status = 200
 force = true
 
-# IMPORTANT:
-# Do NOT redirect /location-sitemap.xml
-# It is now a real static XML file in root.
-
-# =========================
-# API FUNCTIONS
-# =========================
-
 [[redirects]]
 from = "/api/*"
 to = "/.netlify/functions/:splat"
 status = 200
-
-# =========================
-# XML HEADERS
-# =========================
 
 [[headers]]
 for = "/sitemap.xml"
@@ -56,10 +40,6 @@ for = "/profile-sitemap.xml"
 [headers.values]
 Content-Type = "application/xml; charset=utf-8"
 
-# =========================
-# PWA
-# =========================
-
 [[headers]]
 for = "/manifest.webmanifest"
 
@@ -70,11 +50,13 @@ Content-Type = "application/manifest+json"
 for = "/sw.js"
 
 [headers.values]
-Cache-Control = "no-cache"
+Cache-Control = "no-cache, no-store, must-revalidate"
 
-# =========================
-# SECURITY
-# =========================
+[[headers]]
+for = "/assets/*"
+
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
 for = "/*"
@@ -84,20 +66,6 @@ X-Frame-Options = "SAMEORIGIN"
 X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
 Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-
-# =========================
-# ASSET CACHE
-# =========================
-
-[[headers]]
-for = "/assets/*"
-
-[headers.values]
-Cache-Control = "public, max-age=31536000, immutable"
-
-# =========================
-# CRON JOBS
-# =========================
 
 [functions."auto-expire"]
 schedule = "@hourly"
