@@ -6,36 +6,41 @@ functions = "netlify/functions"
 node_bundler = "esbuild"
 
 # =====================================
-# DYNAMIC SITEMAPS
+# DYNAMIC SITEMAPS - KEEP AT VERY TOP
 # =====================================
-
-[[redirects]]
-from = "/dynamic-sitemap.xml"
-to = "/.netlify/functions/generate-sitemaps"
-status = 200
-
-[[redirects]]
-from = "/dynamic-static-sitemap.xml"
-to = "/.netlify/functions/generate-sitemaps?type=static"
-status = 200
-
-[[redirects]]
-from = "/dynamic-location-sitemap.xml"
-to = "/.netlify/functions/generate-sitemaps?type=locations"
-status = 200
-
-[[redirects]]
-from = "/dynamic-category-sitemap.xml"
-to = "/.netlify/functions/generate-sitemaps?type=categories"
-status = 200
 
 [[redirects]]
 from = "/dynamic-profile-sitemap.xml"
 to = "/.netlify/functions/generate-sitemaps?type=profiles"
 status = 200
+force = true
+
+[[redirects]]
+from = "/dynamic-static-sitemap.xml"
+to = "/.netlify/functions/generate-sitemaps?type=static"
+status = 200
+force = true
+
+[[redirects]]
+from = "/dynamic-location-sitemap.xml"
+to = "/.netlify/functions/generate-sitemaps?type=locations"
+status = 200
+force = true
+
+[[redirects]]
+from = "/dynamic-category-sitemap.xml"
+to = "/.netlify/functions/generate-sitemaps?type=categories"
+status = 200
+force = true
+
+[[redirects]]
+from = "/dynamic-sitemap.xml"
+to = "/.netlify/functions/generate-sitemaps"
+status = 200
+force = true
 
 # =====================================
-# API / NETLIFY FUNCTIONS
+# API FUNCTIONS
 # =====================================
 
 [[redirects]]
@@ -68,7 +73,7 @@ to = "/seo-location.html?location=:location"
 status = 200
 
 # =====================================
-# HEADERS
+# XML HEADERS
 # =====================================
 
 [[headers]]
@@ -78,6 +83,10 @@ for = "/*.xml"
 Content-Type = "application/xml; charset=utf-8"
 Cache-Control = "no-store"
 
+# =====================================
+# SECURITY HEADERS
+# =====================================
+
 [[headers]]
 for = "/*"
 
@@ -86,6 +95,10 @@ X-Frame-Options = "SAMEORIGIN"
 X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
 Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# =====================================
+# PWA
+# =====================================
 
 [[headers]]
 for = "/manifest.webmanifest"
@@ -98,6 +111,10 @@ for = "/sw.js"
 
 [headers.values]
 Cache-Control = "no-cache"
+
+# =====================================
+# CACHE ASSETS
+# =====================================
 
 [[headers]]
 for = "/assets/*"
