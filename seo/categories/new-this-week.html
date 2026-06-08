@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>New This Week | Nairobi Sweets</title>
+<meta name="description" content="Browse newly added Nairobi Sweets profiles from this week across Nairobi and nearby areas.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://nairobi-sweets.com/seo/categories/new-this-week.html">
+
+<meta property="og:title" content="New This Week | Nairobi Sweets">
+<meta property="og:description" content="Browse newly added Nairobi Sweets profiles from this week across Nairobi and nearby areas.">
+<meta property="og:url" content="https://nairobi-sweets.com/seo/categories/new-this-week.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="New This Week | Nairobi Sweets">
+<meta name="twitter:description" content="Browse newly added Nairobi Sweets profiles from this week across Nairobi and nearby areas.">
+<meta name="twitter:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"CollectionPage",
+  "name":"New This Week | Nairobi Sweets",
+  "description":"Browse newly added Nairobi Sweets profiles from this week across Nairobi and nearby areas.",
+  "url":"https://nairobi-sweets.com/seo/categories/new-this-week.html",
+  "isPartOf":{"@type":"WebSite","name":"Nairobi Sweets","url":"https://nairobi-sweets.com/"}
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"BreadcrumbList",
+  "itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Home","item":"https://nairobi-sweets.com/"},
+    {"@type":"ListItem","position":2,"name":"Categories","item":"https://nairobi-sweets.com/seo/categories/index.html"},
+    {"@type":"ListItem","position":3,"name":"New This Week","item":"https://nairobi-sweets.com/seo/categories/new-this-week.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"FAQPage",
+  "mainEntity":[
+    {"@type":"Question","name":"What appears on New This Week?","acceptedAnswer":{"@type":"Answer","text":"This page highlights recently added or newly active Nairobi Sweets profiles."}},
+    {"@type":"Question","name":"How often does it change?","acceptedAnswer":{"@type":"Answer","text":"New listings can appear as profiles are approved, updated or renewed."}},
+    {"@type":"Question","name":"Can new profiles become trending?","acceptedAnswer":{"@type":"Answer","text":"Yes. New profiles can move into trending or top-rated sections as they gain engagement."}}
+  ]
+}
+</script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;
+  background:radial-gradient(circle at top,#0c1148 0%,#020617 42%,#000 100%);
+  color:white;
+  font-family:Arial,Helvetica,sans-serif;
+}
+a{text-decoration:none;color:inherit}
+.header{
+  position:sticky;top:0;z-index:99;
+  padding:16px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:rgba(0,0,0,.96);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,213,74,.12);
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:58px;height:58px;border-radius:18px;object-fit:cover;box-shadow:0 0 22px rgba(255,140,0,.32)}
+.brand strong{color:#ffd54a;font-size:24px;font-weight:950}
+.header-actions{display:flex;gap:10px;flex-wrap:wrap}
+.header-actions a{
+  padding:11px 15px;border-radius:999px;background:#07145f;
+  border:1px solid rgba(255,213,74,.18);font-size:13px;font-weight:900;
+}
+.header-actions a.join{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.breadcrumb{max-width:1180px;margin:18px auto 0;padding:0 18px;color:#bbb;font-size:14px}
+.breadcrumb a{color:#ffd54a;font-weight:900}
+.hero{padding:44px 18px 30px;text-align:center}
+.hero-badge{
+  display:inline-flex;padding:10px 14px;border-radius:999px;
+  background:rgba(255,213,74,.11);border:1px solid rgba(255,213,74,.18);
+  color:#ffd54a;font-weight:950;margin-bottom:18px;
+}
+.hero h1{color:#ffd54a;font-size:clamp(42px,8vw,86px);line-height:.95;font-weight:950;letter-spacing:-2px;margin-bottom:18px}
+.hero p{max-width:950px;margin:auto;color:#ddd;font-size:17px;line-height:1.8}
+.quick-links,.pill-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:24px}
+.quick-links a,.pill{
+  display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:999px;
+  background:#07145f;border:1px solid rgba(255,213,74,.18);color:#eee;font-size:13px;font-weight:950;
+}
+.quick-links a:hover,.pill:hover{background:#ffd54a;color:#000}
+.gold{background:linear-gradient(145deg,#ffd54a,#ff9f1c)!important;color:#000!important}
+.stats{
+  max-width:1180px;margin:0 auto;padding:10px 18px 20px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+}
+.stat{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:22px;padding:18px;text-align:center}
+.stat strong{display:block;color:#ffd54a;font-size:28px;margin-bottom:5px}
+.stat span{color:#ddd;font-size:13px}
+.section-title{max-width:1380px;margin:auto;padding:20px 18px 10px;color:#ffd54a;font-size:30px;font-weight:950}
+.grid{max-width:1380px;margin:auto;display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:22px;padding:18px 18px 50px}
+.card{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:28px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.card img{width:100%;aspect-ratio:4/4.45;object-fit:cover;display:block;background:#020617}
+.card-body{padding:16px}
+.badge{display:inline-flex;padding:6px 10px;border-radius:999px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;font-size:11px;font-weight:950;margin-bottom:10px}
+.name{font-size:16px;font-weight:950;margin-bottom:8px}
+.meta{color:#d6d6d6;font-size:12px;margin-bottom:8px}
+.bio{font-size:11px;color:#cfcfcf;line-height:1.6;margin-bottom:12px}
+.engage{display:flex;gap:8px;flex-wrap:wrap;color:#ffd54a;font-size:11px;font-weight:900;margin-bottom:12px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions a{padding:10px;border-radius:14px;text-align:center;font-size:11px;font-weight:950}
+.call{background:#111827;color:white}
+.wa{background:#075e2d;color:white}
+.view{grid-column:1/-1;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.content{max-width:1080px;margin:auto;padding:22px 18px 45px;color:#ddd;line-height:1.85}
+.content h2,.content h3{color:#ffd54a;margin:24px 0 10px}
+.content p{margin-bottom:14px}
+.mesh{max-width:1080px;margin:auto;padding:0 18px 48px}
+.mesh h2{color:#ffd54a;font-size:30px;margin:20px 0 0;text-align:center}
+.footer{padding:36px 18px;text-align:center;background:#050505;color:#aaa}
+.footer a{color:#ffd54a;font-weight:900}
+.loading,.empty{grid-column:1/-1;padding:45px;text-align:center;color:#ffd54a;font-weight:950}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}.stats{grid-template-columns:1fr}}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.brand strong{font-size:22px}}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <a href="/" class="brand">
+    <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets">
+    <strong>Nairobi Sweets</strong>
+  </a>
+  <div class="header-actions">
+    <a href="/seo/categories/index.html">Categories</a>
+    <a href="/seo/locations/index.html">Locations</a>
+    <a class="join" href="/join.html">Join</a>
+  </div>
+</header>
+
+<nav class="breadcrumb" aria-label="breadcrumb">
+  <a href="/">Home</a> →
+  <a href="/seo/categories/index.html">Categories</a> →
+  <span>New This Week</span>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">🆕 New This Week</div>
+  <h1>New Profiles This Week Nairobi</h1>
+  <p>Discover recently added Nairobi Sweets profiles and fresh listings across popular Nairobi locations and categories.</p>
+  <div class="quick-links">
+    <a href="/seo/categories/top-rated.html">Top Rated</a>
+    <a href="/seo/categories/most-viewed.html">Most Viewed</a>
+    <a href="/seo/categories/most-liked.html">Most Liked</a>
+    <a href="/seo/categories/trending-this-week.html">Trending This Week</a>
+    <a href="/seo/categories/new-this-week.html">New This Week</a>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><strong id="totalProfiles">0</strong><span>Profiles Loaded</span></div>
+  <div class="stat"><strong>🆕</strong><span>New This Week</span></div>
+  <div class="stat"><strong>Live</strong><span>Supabase Data</span></div>
+</section>
+
+<h2 class="section-title">New This Week</h2>
+<section class="grid" id="profiles">
+  <div class="loading">Loading New This Week...</div>
+</section>
+
+<section class="content">
+  <h2>New Profiles This Week Nairobi</h2>
+  <p>
+    Discover recently added Nairobi Sweets profiles and fresh listings across popular Nairobi locations and categories. This authority hub helps visitors find strong profiles quickly while giving search engines a clear,
+    crawlable page for engagement-based discovery.
+  </p>
+
+  <h2>Why Authority Hub Pages Matter</h2>
+  <p>
+    Ranking pages like top rated, most viewed, most liked, trending and new profiles give Nairobi Sweets fresh internal pages
+    that can update as profile activity changes. These pages also link visitors into location pages, category pages and individual profiles.
+  </p>
+
+  <h2>Frequently Asked Questions</h2>
+  <h3>What appears on New This Week?</h3>
+<p>This page highlights recently added or newly active Nairobi Sweets profiles.</p>
+<h3>How often does it change?</h3>
+<p>New listings can appear as profiles are approved, updated or renewed.</p>
+<h3>Can new profiles become trending?</h3>
+<p>Yes. New profiles can move into trending or top-rated sections as they gain engagement.</p>
+</section>
+
+<section class="mesh">
+  <h2>Browse By Category</h2>
+  <div class="pill-row">
+    <a class="pill gold" href="/seo/categories/verified.html">Verified</a>
+    <a class="pill gold" href="/seo/categories/vip.html">VIP</a>
+    <a class="pill gold" href="/seo/categories/signature.html">Signature</a>
+    <a class="pill gold" href="/seo/categories/featured.html">Featured</a>
+    <a class="pill gold" href="/seo/categories/top-rated.html">Top Rated</a>
+    <a class="pill gold" href="/seo/categories/most-viewed.html">Most Viewed</a>
+    <a class="pill gold" href="/seo/categories/most-liked.html">Most Liked</a>
+    <a class="pill gold" href="/seo/categories/trending-this-week.html">Trending This Week</a>
+    <a class="pill gold" href="/seo/categories/new-this-week.html">New This Week</a>
+  </div>
+
+  <h2>Browse By Location</h2>
+  <div class="pill-row">
+    <a class="pill" href="/seo/locations/roysambu.html">Roysambu</a>
+    <a class="pill" href="/seo/locations/kasarani.html">Kasarani</a>
+    <a class="pill" href="/seo/locations/westlands.html">Westlands</a>
+    <a class="pill" href="/seo/locations/kilimani.html">Kilimani</a>
+    <a class="pill" href="/seo/locations/ruaka.html">Ruaka</a>
+    <a class="pill" href="/seo/locations/ruiru.html">Ruiru</a>
+    <a class="pill" href="/seo/locations/kiambu.html">Kiambu</a>
+    <a class="pill" href="/seo/locations/zimmerman.html">Zimmerman</a>
+    <a class="pill" href="/seo/locations/mirema.html">Mirema</a>
+    <a class="pill" href="/seo/locations/kahawa-west.html">Kahawa West</a>
+    <a class="pill" href="/seo/locations/syokimau.html">Syokimau</a>
+    <a class="pill" href="/seo/locations/athi-river.html">Athi River</a>
+  </div>
+</section>
+
+<footer class="footer">
+  © 2026 Nairobi Sweets ·
+  <a href="/">Home</a> ·
+  <a href="/seo/categories/index.html">Categories</a> ·
+  <a href="/seo/locations/index.html">Locations</a> ·
+  <a href="/sitemap.xml">Sitemap</a>
+</footer>
+
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SITE_URL = "https://nairobi-sweets.com";
+const container = document.getElementById("profiles");
+const totalProfiles = document.getElementById("totalProfiles");
+
+const SORT_FIELD = "created_at";
+const FALLBACK_SORT = "created_at";
+
+function clean(value,fallback=""){return String(value || fallback).replace(/[<>]/g,"")}
+
+function safePhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
+}
+
+function num(v){return Number(v || 0)}
+function getName(p){return p.stage_name || p.name || p.full_name || "Verified Profile"}
+function getLocation(p){return p.location || p.town || p.area || "Nairobi"}
+function getBio(p){return p.bio || p.description || p.about || "Active Nairobi Sweets profile."}
+function getPlan(p){return String(p.plan || p.plan_name || p.package || p.tier || "Featured")}
+
+function getViews(p){return num(p.views || p.profile_views || p.view_count || p.total_views)}
+function getLikes(p){return num(p.likes || p.heart_count || p.like_count || p.total_likes)}
+function getRating(p){return num(p.rating_score || p.rating || p.rank_score || p.boost_score)}
+function getTrend(p){return num(p.trend_score || p.trending_score || p.weekly_score || p.boost_score)}
+
+function score(p){
+  if(SORT_FIELD === "views") return getViews(p);
+  if(SORT_FIELD === "likes") return getLikes(p);
+  if(SORT_FIELD === "rating_score") return getRating(p) || getLikes(p) + getViews(p);
+  if(SORT_FIELD === "trend_score") return getTrend(p) || getLikes(p) + getViews(p);
+  if(SORT_FIELD === "created_at") return new Date(p.created_at || p.inserted_at || 0).getTime();
+  return num(p[SORT_FIELD] || p[FALLBACK_SORT]);
+}
+
+function getImage(p){
+  return p.profile_image_url || p.cover_image_url || p.photo_url || p.image_url || p.profile_photo || p.main_photo || p.photo || p.image || "/assets/logo/logo-badge.png";
+}
+
+function getProfileUrl(p){
+  if(p.slug && String(p.slug).trim()) return "/profile.html?slug=" + encodeURIComponent(String(p.slug).trim());
+  return "/profile.html?id=" + encodeURIComponent(p.id);
+}
+
+function badge(p){
+  const plan = getPlan(p).toLowerCase();
+  if(p.verified || p.is_verified) return "🛡️ Verified";
+  if(plan.includes("signature")) return "👑 Signature";
+  if(plan.includes("vvip")) return "👑 VVIP";
+  if(plan.includes("vip")) return "✨ VIP";
+  if(plan.includes("featured")) return "🔥 Featured";
+  return "🆕 New This Week";
+}
+
+function shortBio(text){
+  text = String(text || "");
+  return text.length > 120 ? text.slice(0,120).trim() + "..." : text;
+}
+
+function waMessage(p){
+  return encodeURIComponent("Hi " + getName(p) + ", I found your profile on Nairobi Sweets: " + SITE_URL + getProfileUrl(p));
+}
+
+async function loadProfiles(){
+  container.innerHTML = `<div class="loading">Loading New This Week...</div>`;
+
+  const {data,error} = await sb
+    .from("active_profiles_view")
+    .select("*")
+    .limit(120);
+
+  if(error){
+    container.innerHTML = `<div class="empty">Unable to load profiles: ${clean(error.message)}</div>`;
+    return;
+  }
+
+  let rows = (data || []).sort((a,b)=>score(b)-score(a)).slice(0,48);
+  totalProfiles.textContent = rows.length;
+
+  if(!rows.length){
+    container.innerHTML = `<div class="empty">No profiles found yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = rows.map((p,index)=>{
+    const phone = safePhone(p.phone || p.whatsapp || p.whatsapp_number);
+    return `
+      <article class="card">
+        <img src="${getImage(p)}" alt="${clean(getName(p))} New This Week" loading="lazy" onerror="this.src='/assets/logo/logo-badge.png'">
+        <div class="card-body">
+          <span class="badge">#${index + 1} ${badge(p)}</span>
+          <div class="name">${clean(getName(p))}</div>
+          <div class="meta">📍 ${clean(getLocation(p))}</div>
+          <div class="engage">
+            <span>👀 ${getViews(p)}</span>
+            <span>💛 ${getLikes(p)}</span>
+            <span>🔥 ${Math.round(score(p))}</span>
+          </div>
+          <div class="bio">${clean(shortBio(getBio(p)))}</div>
+          <div class="actions">
+            ${phone ? `<a class="call" href="tel:+${phone}">☎ Call</a><a class="wa" href="https://wa.me/${phone}?text=${waMessage(p)}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+            <a class="view" href="${getProfileUrl(p)}">View Profile</a>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+loadProfiles();
+</script>
+
+</body>
+</html>
