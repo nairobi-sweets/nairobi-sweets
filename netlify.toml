@@ -5,40 +5,118 @@ functions = "netlify/functions"
 [functions]
 node_bundler = "esbuild"
 
-[[redirects]]
-from = "/profile-sitemap.xml"
-to = "/.netlify/functions/profile-sitemap"
-status = 200
-force = true
+# =========================
+# DYNAMIC SITEMAPS
+# =========================
 
 [[redirects]]
-from = "/api/*"
-to = "/.netlify/functions/:splat"
+from = "/dynamic-sitemap.xml"
+to = "/.netlify/functions/generate-sitemaps"
 status = 200
 
+[[redirects]]
+from = "/dynamic-profile-sitemap.xml"
+to = "/.netlify/functions/generate-sitemaps?type=profiles"
+status = 200
+
+[[redirects]]
+from = "/dynamic-location-sitemap.xml"
+to = "/.netlify/functions/generate-sitemaps?type=locations"
+status = 200
+
+[[redirects]]
+from = "/dynamic-category-sitemap.xml"
+to = "/.netlify/functions/generate-sitemaps?type=categories"
+status = 200
+
+# =========================
+# M-PESA CALLBACK
+# =========================
+
+[[redirects]]
+from = "/api/mpesa-callback"
+to = "/.netlify/functions/mpesa-callback"
+status = 200
+
+[[redirects]]
+from = "/api/mpesa-stk-push"
+to = "/.netlify/functions/mpesa-stk-push"
+status = 200
+
+# =========================
+# SEO LOCATION ENGINE
+# =========================
+
+[[redirects]]
+from = "/seo-location/:location"
+to = "/seo-location.html?location=:location"
+status = 200
+
+[[redirects]]
+from = "/seo/locations/:location.html"
+to = "/seo-location.html?location=:location"
+status = 200
+
+# =========================
+# SECURITY HEADERS
+# =========================
+
 [[headers]]
-for = "/sitemap.xml"
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "SAMEORIGIN"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# =========================
+# CACHE STATIC ASSETS
+# =========================
+
+[[headers]]
+for = "/assets/*"
+
+[headers.values]
+Cache-Control = "public,max-age=31536000,immutable"
+
+[[headers]]
+for = "/*.png"
+
+[headers.values]
+Cache-Control = "public,max-age=31536000"
+
+[[headers]]
+for = "/*.jpg"
+
+[headers.values]
+Cache-Control = "public,max-age=31536000"
+
+[[headers]]
+for = "/*.jpeg"
+
+[headers.values]
+Cache-Control = "public,max-age=31536000"
+
+[[headers]]
+for = "/*.webp"
+
+[headers.values]
+Cache-Control = "public,max-age=31536000"
+
+# =========================
+# XML SITEMAPS
+# =========================
+
+[[headers]]
+for = "/*.xml"
 
 [headers.values]
 Content-Type = "application/xml; charset=utf-8"
 
-[[headers]]
-for = "/static-sitemap.xml"
-
-[headers.values]
-Content-Type = "application/xml; charset=utf-8"
-
-[[headers]]
-for = "/location-sitemap.xml"
-
-[headers.values]
-Content-Type = "application/xml; charset=utf-8"
-
-[[headers]]
-for = "/profile-sitemap.xml"
-
-[headers.values]
-Content-Type = "application/xml; charset=utf-8"
+# =========================
+# PWA
+# =========================
 
 [[headers]]
 for = "/manifest.webmanifest"
@@ -50,25 +128,14 @@ Content-Type = "application/manifest+json"
 for = "/sw.js"
 
 [headers.values]
-Cache-Control = "no-cache, no-store, must-revalidate"
+Cache-Control = "no-cache"
 
-[[headers]]
-for = "/assets/*"
+# =========================
+# SPA FALLBACK (OPTIONAL)
+# Remove if not needed
+# =========================
 
-[headers.values]
-Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-for = "/*"
-
-[headers.values]
-X-Frame-Options = "SAMEORIGIN"
-X-Content-Type-Options = "nosniff"
-Referrer-Policy = "strict-origin-when-cross-origin"
-Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-
-[functions."auto-expire"]
-schedule = "@hourly"
-
-[functions."auto-renew"]
-schedule = "@hourly"
+# [[redirects]]
+# from = "/*"
+# to = "/index.html"
+# status = 200
