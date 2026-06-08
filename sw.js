@@ -1,4 +1,4 @@
-const CACHE_NAME = "nairobi-sweets-v2";
+const CACHE_NAME = "nairobi-sweets-v3";
 
 const FILES_TO_CACHE = [
   "/",
@@ -39,8 +39,8 @@ self.addEventListener("fetch", event => {
 
   if (
     url.pathname.endsWith(".xml") ||
-    url.pathname === "/robots.txt" ||
     url.pathname.endsWith(".txt") ||
+    url.pathname === "/robots.txt" ||
     url.pathname === "/manifest.webmanifest" ||
     url.pathname.startsWith("/.netlify/functions/") ||
     url.pathname.startsWith("/api/")
@@ -49,8 +49,6 @@ self.addEventListener("fetch", event => {
   }
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      return cached || fetch(event.request);
-    })
+    caches.match(event.request).then(cached => cached || fetch(event.request))
   );
 });
