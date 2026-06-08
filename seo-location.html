@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title id="pageTitle">Nairobi Sweets Location Profiles</title>
+<meta id="pageDescription" name="description" content="Browse Nairobi Sweets location profiles.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link id="canonicalLink" rel="canonical" href="https://nairobi-sweets.com/seo-location.html">
+
+<meta id="ogTitle" property="og:title" content="Nairobi Sweets Location Profiles">
+<meta id="ogDescription" property="og:description" content="Browse Nairobi Sweets location profiles.">
+<meta id="ogUrl" property="og:url" content="https://nairobi-sweets.com/seo-location.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta id="twitterTitle" name="twitter:title" content="Nairobi Sweets Location Profiles">
+<meta id="twitterDescription" name="twitter:description" content="Browse Nairobi Sweets location profiles.">
+<meta name="twitter:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script id="schemaPage" type="application/ld+json"></script>
+<script id="schemaBreadcrumb" type="application/ld+json"></script>
+<script id="schemaFAQ" type="application/ld+json"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;
+  background:radial-gradient(circle at top,#0c1148 0%,#020617 42%,#000 100%);
+  color:white;
+  font-family:Arial,Helvetica,sans-serif;
+}
+a{text-decoration:none;color:inherit}
+.header{
+  position:sticky;
+  top:0;
+  z-index:99;
+  padding:16px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  background:rgba(0,0,0,.96);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,213,74,.12);
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:58px;height:58px;border-radius:18px;object-fit:cover;box-shadow:0 0 22px rgba(255,140,0,.32)}
+.brand strong{color:#ffd54a;font-size:24px;font-weight:950}
+.header-actions{display:flex;gap:10px;flex-wrap:wrap}
+.header-actions a{
+  padding:11px 15px;
+  border-radius:999px;
+  background:#07145f;
+  border:1px solid rgba(255,213,74,.18);
+  font-size:13px;
+  font-weight:900;
+}
+.header-actions a.join{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.breadcrumb{max-width:1180px;margin:18px auto 0;padding:0 18px;color:#bbb;font-size:14px}
+.breadcrumb a{color:#ffd54a;font-weight:900}
+.hero{padding:44px 18px 30px;text-align:center}
+.hero-badge{
+  display:inline-flex;
+  padding:10px 14px;
+  border-radius:999px;
+  background:rgba(255,213,74,.11);
+  border:1px solid rgba(255,213,74,.18);
+  color:#ffd54a;
+  font-weight:950;
+  margin-bottom:18px;
+}
+.hero h1{color:#ffd54a;font-size:clamp(42px,8vw,86px);line-height:.95;font-weight:950;letter-spacing:-2px;margin-bottom:18px}
+.hero p{max-width:950px;margin:auto;color:#ddd;font-size:17px;line-height:1.8}
+.quick-links,.pill-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:24px}
+.quick-links a,.pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px 16px;
+  border-radius:999px;
+  background:#07145f;
+  border:1px solid rgba(255,213,74,.18);
+  color:#eee;
+  font-size:13px;
+  font-weight:950;
+}
+.quick-links a:hover,.pill:hover{background:#ffd54a;color:#000}
+.gold{background:linear-gradient(145deg,#ffd54a,#ff9f1c)!important;color:#000!important}
+.section-title{max-width:1380px;margin:auto;padding:20px 18px 10px;color:#ffd54a;font-size:30px;font-weight:950}
+.grid{max-width:1380px;margin:auto;display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:22px;padding:18px 18px 50px}
+.card{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:28px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.card img{width:100%;aspect-ratio:4/4.45;object-fit:cover;display:block;background:#020617}
+.card-body{padding:16px}
+.badge{display:inline-flex;padding:6px 10px;border-radius:999px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;font-size:11px;font-weight:950;margin-bottom:10px}
+.name{font-size:16px;font-weight:950;margin-bottom:8px}
+.meta{color:#d6d6d6;font-size:12px;margin-bottom:8px}
+.bio{font-size:11px;color:#cfcfcf;line-height:1.6;margin-bottom:12px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions a{padding:10px;border-radius:14px;text-align:center;font-size:11px;font-weight:950}
+.call{background:#111827;color:white}
+.wa{background:#075e2d;color:white}
+.view{grid-column:1/-1;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.content{max-width:1080px;margin:auto;padding:22px 18px 45px;color:#ddd;line-height:1.85}
+.content h2,.content h3{color:#ffd54a;margin:24px 0 10px}
+.content p{margin-bottom:14px}
+.mesh{max-width:1080px;margin:auto;padding:0 18px 48px}
+.mesh h2{color:#ffd54a;font-size:30px;margin:20px 0 0;text-align:center}
+.footer{padding:36px 18px;text-align:center;background:#050505;color:#aaa}
+.footer a{color:#ffd54a;font-weight:900}
+.loading,.empty{grid-column:1/-1;padding:45px;text-align:center;color:#ffd54a;font-weight:950}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.brand strong{font-size:22px}}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <a href="/" class="brand">
+    <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets">
+    <strong>Nairobi Sweets</strong>
+  </a>
+  <div class="header-actions">
+    <a href="/seo/locations/index.html">Locations</a>
+    <a href="/seo/categories/index.html">Categories</a>
+    <a class="join" href="/join.html">Join</a>
+  </div>
+</header>
+
+<nav class="breadcrumb" aria-label="breadcrumb">
+  <a href="/">Home</a> →
+  <a href="/seo/locations/index.html">Locations</a> →
+  <span id="crumbLocation">Location</span>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">📍 Location SEO Hub</div>
+  <h1 id="heroTitle">Location Profiles</h1>
+  <p id="heroText">Browse active profiles by location on Nairobi Sweets.</p>
+
+  <div class="quick-links">
+    <a id="vipLink" href="/seo/categories/vip.html">VIP Profiles</a>
+    <a id="signatureLink" href="/seo/categories/signature.html">Signature Profiles</a>
+    <a href="/seo/categories/top-rated.html">Top Rated</a>
+    <a href="/seo/categories/trending-this-week.html">Trending This Week</a>
+    <a href="/trending.html">Trending</a>
+    <a href="/reel.html">Reels</a>
+  </div>
+</section>
+
+<h2 class="section-title" id="sectionTitle">Featured Profiles</h2>
+<section class="grid" id="profiles">
+  <div class="loading">Loading profiles...</div>
+</section>
+
+<section class="content">
+  <h2 id="aboutHeading">About This Location</h2>
+  <p id="aboutText"></p>
+
+  <h2>VIP, Signature and Featured Listings</h2>
+  <p id="categoryText"></p>
+
+  <h2>Nearby Discovery Areas</h2>
+  <p id="nearbyText"></p>
+
+  <h2>Frequently Asked Questions</h2>
+
+  <h3 id="faqOneQ"></h3>
+  <p id="faqOneA"></p>
+
+  <h3 id="faqTwoQ"></h3>
+  <p id="faqTwoA"></p>
+
+  <h3>Can I browse nearby locations?</h3>
+  <p>Yes. Use the location links below to explore more Nairobi Sweets pages.</p>
+</section>
+
+<section class="mesh">
+  <h2>Explore Related Locations</h2>
+  <div class="pill-row" id="locationPills"></div>
+
+  <h2>Explore Profile Categories</h2>
+  <div class="pill-row">
+    <a class="pill gold" href="/seo/categories/verified.html">Verified</a>
+    <a class="pill gold" href="/seo/categories/vip.html">VIP</a>
+    <a class="pill gold" href="/seo/categories/signature.html">Signature</a>
+    <a class="pill gold" href="/seo/categories/featured.html">Featured</a>
+    <a class="pill gold" href="/seo/categories/top-rated.html">Top Rated</a>
+    <a class="pill gold" href="/seo/categories/most-viewed.html">Most Viewed</a>
+    <a class="pill gold" href="/seo/categories/new-this-week.html">New This Week</a>
+  </div>
+</section>
+
+<footer class="footer">
+  © 2026 Nairobi Sweets ·
+  <a href="/">Home</a> ·
+  <a href="/seo/locations/index.html">Locations</a> ·
+  <a href="/seo/categories/index.html">Categories</a> ·
+  <a href="/sitemap.xml">Sitemap</a>
+</footer>
+
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SITE_URL = "https://nairobi-sweets.com";
+const container = document.getElementById("profiles");
+
+const LOCATIONS = {
+  "roysambu": {
+    name:"Roysambu",
+    terms:["Roysambu","TRM","Mirema","Lumumba Drive","Thika Road","Zimmerman"],
+    nearby:["Kasarani","Mirema","TRM","Zimmerman","Githurai","Kahawa West"],
+    intro:"Roysambu is one of Nairobi's strongest discovery zones along Thika Road, connected to TRM, Mirema, Lumumba Drive, Zimmerman and Kasarani."
+  },
+  "kasarani": {
+    name:"Kasarani",
+    terms:["Kasarani","Garden City","Thika Road","Mwiki","Roysambu","Mirema","Zimmerman","TRM"],
+    nearby:["Roysambu","Mirema","TRM","Zimmerman","Mwiki","Garden City"],
+    intro:"Kasarani sits on a busy Nairobi corridor connecting Garden City, Mwiki, Roysambu, Mirema, Zimmerman and TRM."
+  },
+  "westlands": {
+    name:"Westlands",
+    terms:["Westlands","Parklands","Riverside","Waiyaki Way","Lavington","Spring Valley"],
+    nearby:["Parklands","Riverside","Lavington","Spring Valley","Nairobi CBD","Kileleshwa"],
+    intro:"Westlands is a high-demand Nairobi district connected to Parklands, Riverside, Waiyaki Way, Lavington and Spring Valley."
+  },
+  "kilimani": {
+    name:"Kilimani",
+    terms:["Kilimani","Yaya","Hurlingham","Lavington","Kileleshwa","Adams Arcade"],
+    nearby:["Yaya","Hurlingham","Lavington","Kileleshwa","Adams Arcade","Ngong Road"],
+    intro:"Kilimani is a premium Nairobi discovery area connected to Yaya, Hurlingham, Lavington, Kileleshwa and Adams Arcade."
+  },
+  "ruaka": {
+    name:"Ruaka",
+    terms:["Ruaka","Two Rivers","Rosslyn","Banana","Limuru Road","Runda"],
+    nearby:["Two Rivers","Rosslyn","Banana","Runda","Kiambu Road","Thindigua"],
+    intro:"Ruaka connects Nairobi and Kiambu, with strong nearby discovery around Two Rivers, Rosslyn, Banana, Limuru Road and Runda."
+  },
+  "ruiru": {
+    name:"Ruiru",
+    terms:["Ruiru","Kamakis","Membley","Eastern Bypass","Thika Road","Kimbo","Juja"],
+    nearby:["Kamakis","Membley","Kimbo","Juja","Thika Road","Eastern Bypass"],
+    intro:"Ruiru is a fast-growing Thika Road town connected to Kamakis, Membley, Kimbo, Juja and the Eastern Bypass."
+  },
+  "kiambu": {
+    name:"Kiambu",
+    terms:["Kiambu","Kiambu Road","Thindigua","Ridgeways","Ruaka","Runda"],
+    nearby:["Kiambu Road","Thindigua","Ridgeways","Ruaka","Runda","Kiambu Town"],
+    intro:"Kiambu links Nairobi's northern suburbs with Kiambu Road, Thindigua, Ridgeways, Runda and Ruaka."
+  },
+  "zimmerman": {
+    name:"Zimmerman",
+    terms:["Zimmerman","Roysambu","Mirema","TRM","Githurai","Kahawa West","Kasarani"],
+    nearby:["Roysambu","Mirema","TRM","Githurai","Kahawa West","Kasarani"],
+    intro:"Zimmerman is part of the busy Roysambu and Thika Road belt, close to Mirema, TRM, Githurai, Kahawa West and Kasarani."
+  },
+  "mirema": {
+    name:"Mirema",
+    terms:["Mirema","Mirema Drive","Roysambu","TRM","Zimmerman","Lumumba Drive"],
+    nearby:["Roysambu","TRM","Zimmerman","Kasarani","Githurai","Kahawa West"],
+    intro:"Mirema is a high-activity residential area near Roysambu, TRM, Zimmerman and Lumumba Drive."
+  },
+  "trm": {
+    name:"TRM",
+    terms:["TRM","TRM Drive","Roysambu","Mirema","Thika Road","Zimmerman"],
+    nearby:["Roysambu","Mirema","Zimmerman","Kasarani","Githurai","Thika Road"],
+    intro:"TRM and TRM Drive sit in the heart of the Roysambu and Thika Road discovery corridor."
+  },
+  "githurai": {
+    name:"Githurai",
+    terms:["Githurai","Githurai 44","Githurai 45","Zimmerman","Roysambu","Kahawa West"],
+    nearby:["Zimmerman","Roysambu","Kahawa West","Kahawa Sukari","Mwiki","Kasarani"],
+    intro:"Githurai connects northern Nairobi and Kiambu Roadside areas, with nearby discovery across Zimmerman, Roysambu and Kahawa West."
+  },
+  "kahawa-west": {
+    name:"Kahawa West",
+    terms:["Kahawa West","Kahawa","Githurai","Zimmerman","Roysambu","Kahawa Sukari"],
+    nearby:["Kahawa Sukari","Githurai","Zimmerman","Roysambu","Ruiru","Kasarani"],
+    intro:"Kahawa West links Githurai, Zimmerman, Kahawa Sukari, Roysambu and Ruiru."
+  },
+  "kahawa-sukari": {
+    name:"Kahawa Sukari",
+    terms:["Kahawa Sukari","Kahawa","Ruiru","Kahawa West","Githurai","Kenyatta Road"],
+    nearby:["Kahawa West","Ruiru","Githurai","Zimmerman","Kenyatta Road","Thika Road"],
+    intro:"Kahawa Sukari sits between Ruiru, Kahawa West, Githurai and Kenyatta Road."
+  },
+  "donholm": {
+    name:"Donholm",
+    terms:["Donholm","Savannah","Umoja","Buruburu","Tena","Outering Road"],
+    nearby:["Umoja","Buruburu","Fedha","Embakasi","Tena","Savannah"],
+    intro:"Donholm is a key East Nairobi area connected to Umoja, Buruburu, Tena, Savannah and Outering Road."
+  },
+  "umoja": {
+    name:"Umoja",
+    terms:["Umoja","Umoja 1","Umoja 2","Donholm","Buruburu","Tena"],
+    nearby:["Donholm","Buruburu","Tena","Fedha","Embakasi","Outering Road"],
+    intro:"Umoja connects East Nairobi discovery across Donholm, Buruburu, Tena and Outering Road."
+  },
+  "buruburu": {
+    name:"Buruburu",
+    terms:["Buruburu","BuruBuru","Umoja","Donholm","Tena","Jogoo Road"],
+    nearby:["Umoja","Donholm","Tena","Jogoo Road","Fedha","Embakasi"],
+    intro:"Buruburu is one of East Nairobi's most recognized estates, close to Umoja, Donholm, Tena and Jogoo Road."
+  },
+  "fedha": {
+    name:"Fedha",
+    terms:["Fedha","Embakasi","Pipeline","Donholm","Tassia","Airport North Road"],
+    nearby:["Embakasi","Pipeline","Tassia","Donholm","Umoja","Syokimau"],
+    intro:"Fedha sits near Embakasi, Pipeline, Tassia, Airport North Road and Donholm."
+  },
+  "syokimau": {
+    name:"Syokimau",
+    terms:["Syokimau","Mlolongo","JKIA","Mombasa Road","Athi River","Katani"],
+    nearby:["Mlolongo","Athi River","JKIA","Mombasa Road","Katani","Kitengela"],
+    intro:"Syokimau is a strong Mombasa Road discovery area connected to Mlolongo, JKIA, Athi River and Katani."
+  },
+  "athi-river": {
+    name:"Athi River",
+    terms:["Athi River","Kitengela","Mlolongo","Syokimau","Mombasa Road","Sabaki"],
+    nearby:["Kitengela","Mlolongo","Syokimau","Sabaki","Mombasa Road","EPZ"],
+    intro:"Athi River connects Mombasa Road discovery with Kitengela, Mlolongo, Syokimau and Sabaki."
+  },
+  "thindigua": {
+    name:"Thindigua",
+    terms:["Thindigua","Kiambu Road","Ridgeways","Runda","Kiambu","Muthaiga"],
+    nearby:["Kiambu Road","Ridgeways","Runda","Kiambu","Ruaka","Muthaiga"],
+    intro:"Thindigua is a growing Kiambu Road location connected to Ridgeways, Runda, Kiambu and Ruaka."
+  },
+  "kiambu-road": {
+    name:"Kiambu Road",
+    terms:["Kiambu Road","Thindigua","Ridgeways","Runda","Kiambu","Muthaiga"],
+    nearby:["Thindigua","Ridgeways","Runda","Kiambu","Muthaiga","Ruaka"],
+    intro:"Kiambu Road connects Nairobi and Kiambu through Thindigua, Ridgeways, Runda and Muthaiga."
+  },
+  "parklands": {
+    name:"Parklands",
+    terms:["Parklands","Westlands","Ngara","Highridge","Museum Hill","Limuru Road"],
+    nearby:["Westlands","Ngara","Highridge","Museum Hill","Limuru Road","Riverside"],
+    intro:"Parklands is a central Nairobi area connected to Westlands, Ngara, Highridge, Museum Hill and Limuru Road."
+  },
+  "lavington": {
+    name:"Lavington",
+    terms:["Lavington","Kilimani","Kileleshwa","Valley Arcade","Riverside","Hurlingham"],
+    nearby:["Kilimani","Kileleshwa","Valley Arcade","Riverside","Hurlingham","Westlands"],
+    intro:"Lavington sits between Kilimani, Kileleshwa, Valley Arcade, Riverside and Hurlingham."
+  },
+  "karen": {
+    name:"Karen",
+    terms:["Karen","Hardy","Langata","Ngong Road","Rongai","Mbagathi"],
+    nearby:["Hardy","Langata","Rongai","Ngong Road","Mbagathi","Dagoretti"],
+    intro:"Karen is a premium Nairobi location connected to Hardy, Langata, Rongai and Ngong Road."
+  },
+  "kitengela": {
+    name:"Kitengela",
+    terms:["Kitengela","Athi River","Mlolongo","Syokimau","Isinya","Namanga Road"],
+    nearby:["Athi River","Mlolongo","Syokimau","Isinya","Namanga Road","Mombasa Road"],
+    intro:"Kitengela connects Athi River, Mlolongo, Syokimau, Isinya and Namanga Road."
+  }
+};
+
+const CATEGORY_LINKS = [
+  ["Verified", "/seo/categories/verified.html"],
+  ["VIP", "/seo/categories/vip.html"],
+  ["Signature", "/seo/categories/signature.html"],
+  ["Featured", "/seo/categories/featured.html"],
+  ["Top Rated", "/seo/categories/top-rated.html"],
+  ["Trending", "/seo/categories/trending-this-week.html"]
+];
+
+function slugify(value){
+  return String(value || "").toLowerCase().trim().replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+}
+
+function getSlug(){
+  const params = new URLSearchParams(location.search);
+  const fromQuery = params.get("location") || params.get("loc") || params.get("area");
+  if(fromQuery) return slugify(fromQuery);
+
+  const path = location.pathname.split("/").filter(Boolean).pop() || "";
+  return slugify(path.replace(".html",""));
+}
+
+const CURRENT_SLUG = getSlug();
+const LOCATION = LOCATIONS[CURRENT_SLUG] || LOCATIONS["roysambu"];
+
+function setText(id,value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value;
+}
+
+function setMeta(){
+  const loc = LOCATION.name;
+  const canonical = `${SITE_URL}/seo/locations/${CURRENT_SLUG}.html`;
+  const title = `${loc} Profiles | Nairobi Sweets`;
+  const description = `Browse active ${loc} profiles on Nairobi Sweets. Discover Featured, VIP and Signature listings around ${loc}, ${LOCATION.nearby.slice(0,4).join(", ")} and nearby areas.`;
+
+  document.title = title;
+  document.getElementById("pageTitle").textContent = title;
+  document.getElementById("pageDescription").setAttribute("content", description);
+  document.getElementById("canonicalLink").setAttribute("href", canonical);
+
+  document.getElementById("ogTitle").setAttribute("content", title);
+  document.getElementById("ogDescription").setAttribute("content", description);
+  document.getElementById("ogUrl").setAttribute("content", canonical);
+  document.getElementById("twitterTitle").setAttribute("content", title);
+  document.getElementById("twitterDescription").setAttribute("content", description);
+
+  document.getElementById("schemaPage").textContent = JSON.stringify({
+    "@context":"https://schema.org",
+    "@type":"CollectionPage",
+    "name":title,
+    "description":description,
+    "url":canonical,
+    "isPartOf":{"@type":"WebSite","name":"Nairobi Sweets","url":SITE_URL + "/"},
+    "about":{"@type":"Place","name":loc}
+  });
+
+  document.getElementById("schemaBreadcrumb").textContent = JSON.stringify({
+    "@context":"https://schema.org",
+    "@type":"BreadcrumbList",
+    "itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Home","item":SITE_URL + "/"},
+      {"@type":"ListItem","position":2,"name":"Locations","item":SITE_URL + "/seo/locations/index.html"},
+      {"@type":"ListItem","position":3,"name":loc,"item":canonical}
+    ]
+  });
+
+  document.getElementById("schemaFAQ").textContent = JSON.stringify({
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {"@type":"Question","name":`How do I browse ${loc} profiles?`,"acceptedAnswer":{"@type":"Answer","text":`Use this page to browse active profiles around ${loc} and nearby areas, then open a full profile for details.`}},
+      {"@type":"Question","name":`Which nearby areas are connected to ${loc}?`,"acceptedAnswer":{"@type":"Answer","text":`Nearby areas include ${LOCATION.nearby.join(", ")}.`}},
+      {"@type":"Question","name":"Are listings updated?","acceptedAnswer":{"@type":"Answer","text":"Yes. Listings load from active Nairobi Sweets profile data and may change as profiles are approved, renewed or updated."}}
+    ]
+  });
+}
+
+function renderStaticContent(){
+  const loc = LOCATION.name;
+  setText("crumbLocation", loc);
+  setText("heroTitle", `${loc} Profiles`);
+  setText("heroText", LOCATION.intro + " Browse active profiles, premium listings and related nearby areas inside the Nairobi Sweets location network.");
+  setText("sectionTitle", `Featured ${loc} Profiles`);
+  setText("aboutHeading", `About ${loc} Profiles`);
+  setText("aboutText", `${LOCATION.intro} This page gives visitors a focused way to browse active listings connected to ${loc}, while helping search engines understand the local Nairobi Sweets discovery network.`);
+  setText("categoryText", `${loc} visitors can explore Featured, VIP and Signature profiles. These category signals help users narrow discovery while connecting the location page to broader Nairobi Sweets category hubs.`);
+  setText("nearbyText", `People browsing ${loc} often also explore ${LOCATION.nearby.join(", ")}. These related locations help build a stronger internal linking path across Nairobi Sweets.`);
+  setText("faqOneQ", `How do I browse ${loc} profiles?`);
+  setText("faqOneA", `Use the profile cards above, then open a full profile for more details, media and contact options.`);
+  setText("faqTwoQ", `Are ${loc} listings updated?`);
+  setText("faqTwoA", `Yes. Listings load from active Nairobi Sweets data and can change as profiles are approved, renewed or updated.`);
+
+  document.getElementById("vipLink").href = `/seo/categories/${CURRENT_SLUG}-vip.html`;
+  document.getElementById("signatureLink").href = `/seo/categories/${CURRENT_SLUG}-signature.html`;
+
+  const pills = [];
+  LOCATION.nearby.forEach(name=>{
+    const slug = slugify(name);
+    pills.push(`<a class="pill" href="/seo/locations/${slug}.html">${name}</a>`);
+  });
+
+  Object.values(LOCATIONS).slice(0,12).forEach(item=>{
+    const slug = slugify(item.name);
+    if(slug !== CURRENT_SLUG){
+      pills.push(`<a class="pill" href="/seo/locations/${slug}.html">${item.name}</a>`);
+    }
+  });
+
+  document.getElementById("locationPills").innerHTML = pills.join("");
+}
+
+function clean(value,fallback=""){
+  return String(value || fallback).replace(/[<>]/g,"");
+}
+
+function safePhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
+}
+
+function getName(p){return p.stage_name || p.name || p.full_name || "Verified Profile"}
+function getLocation(p){return p.location || p.town || p.area || LOCATION.name}
+function getBio(p){return p.bio || p.description || p.about || `Active ${LOCATION.name} profile on Nairobi Sweets.`}
+function getPlan(p){return String(p.plan || p.plan_name || p.package || p.tier || "Featured")}
+function getImage(p){
+  return p.profile_image_url || p.cover_image_url || p.photo_url || p.image_url || p.profile_photo || p.main_photo || p.photo || p.image || "/assets/logo/logo-badge.png";
+}
+function getProfileUrl(p){
+  if(p.slug && String(p.slug).trim()) return "/profile.html?slug=" + encodeURIComponent(String(p.slug).trim());
+  return "/profile.html?id=" + encodeURIComponent(p.id);
+}
+function badge(p){
+  const plan = getPlan(p).toLowerCase();
+  if(p.verified || p.is_verified) return "🛡️ Verified";
+  if(plan.includes("signature")) return "👑 Signature";
+  if(plan.includes("vvip")) return "👑 VVIP";
+  if(plan.includes("vip")) return "✨ VIP";
+  if(plan.includes("featured")) return "🔥 Featured";
+  return "🔥 Featured";
+}
+function shortBio(text){
+  text = String(text || "");
+  return text.length > 120 ? text.slice(0,120).trim() + "..." : text;
+}
+function waMessage(p){
+  return encodeURIComponent("Hi " + getName(p) + ", I found your profile on Nairobi Sweets: " + SITE_URL + getProfileUrl(p));
+}
+
+async function loadProfiles(){
+  container.innerHTML = `<div class="loading">Loading ${LOCATION.name} profiles...</div>`;
+
+  const locationFilters = LOCATION.terms.map(term => `location.ilike.%${term}%`).join(",");
+
+  const {data,error} = await sb
+    .from("active_profiles_view")
+    .select("*")
+    .or(locationFilters)
+    .order("created_at",{ascending:false})
+    .limit(60);
+
+  if(error){
+    container.innerHTML = `<div class="empty">Unable to load profiles: ${clean(error.message)}</div>`;
+    return;
+  }
+
+  if(!data || !data.length){
+    container.innerHTML = `<div class="empty">No active ${LOCATION.name} profiles found yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = data.map(p=>{
+    const phone = safePhone(p.phone || p.whatsapp || p.whatsapp_number);
+    return `
+      <article class="card">
+        <img src="${getImage(p)}" alt="${clean(getName(p))} ${LOCATION.name} profile" loading="lazy" onerror="this.src='/assets/logo/logo-badge.png'">
+        <div class="card-body">
+          <span class="badge">${badge(p)}</span>
+          <div class="name">${clean(getName(p))}</div>
+          <div class="meta">📍 ${clean(getLocation(p))}</div>
+          <div class="bio">${clean(shortBio(getBio(p)))}</div>
+          <div class="actions">
+            ${phone ? `<a class="call" href="tel:+${phone}">☎ Call</a><a class="wa" href="https://wa.me/${phone}?text=${waMessage(p)}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+            <a class="view" href="${getProfileUrl(p)}">View Profile</a>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+setMeta();
+renderStaticContent();
+loadProfiles();
+</script>
+
+</body>
+</html>
