@@ -1,7 +1,7 @@
 const { createClient } = require("@supabase/supabase-js");
 
 const SITE_URL = "https://nairobi-sweets.com";
-const VERSION = "profiles-fixed-v3";
+const VERSION = "profiles-fixed-v4-existing-pages-only";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -75,17 +75,87 @@ ${[
 </sitemapindex>`;
 }
 
-const locations = [
-  "nairobi","roysambu","kasarani","westlands","kilimani","ruaka","ruiru","kiambu",
-  "zimmerman","mirema","trm","githurai","kahawa-west","kahawa-sukari",
-  "donholm","umoja","buruburu","fedha","syokimau","athi-river",
-  "thindigua","kiambu-road","parklands","lavington","karen","kitengela"
+/*
+  IMPORTANT:
+  Only list URLs here that REALLY exist on your site.
+  If a page is not created/deployed, do not put it in the sitemap.
+*/
+
+const existingLocationPages = [
+  "roysambu",
+  "kasarani",
+  "westlands",
+  "kilimani",
+  "ruaka",
+  "ruiru",
+  "kiambu",
+  "zimmerman",
+  "mirema",
+  "githurai",
+  "kahawa-west",
+  "kahawa-sukari",
+  "syokimau",
+  "athi-river",
+  "thindigua",
+  "kiambu-road",
+  "parklands",
+  "lavington",
+  "karen",
+  "kitengela"
 ];
 
-const categories = [
-  "verified","vip","signature","featured",
-  "top-rated","most-viewed","most-liked",
-  "trending-this-week","new-this-week"
+const existingCategoryPages = [
+  "featured",
+  "vip",
+  "signature",
+  "top-rated",
+  "most-viewed",
+  "most-liked",
+  "trending-this-week",
+  "new-this-week"
+];
+
+const existingLocationCategoryPages = [
+  "roysambu-vip",
+  "roysambu-signature",
+  "kasarani-vip",
+  "kasarani-signature",
+  "westlands-vip",
+  "westlands-signature",
+  "kilimani-vip",
+  "kilimani-signature",
+  "ruaka-vip",
+  "ruaka-signature",
+  "ruiru-vip",
+  "ruiru-signature",
+  "kiambu-vip",
+  "kiambu-signature",
+  "zimmerman-vip",
+  "zimmerman-signature",
+  "mirema-vip",
+  "mirema-signature",
+  "kahawa-west-vip",
+  "kahawa-west-signature",
+  "kahawa-sukari-vip",
+  "kahawa-sukari-signature",
+  "githurai-vip",
+  "githurai-signature",
+  "syokimau-vip",
+  "syokimau-signature",
+  "athi-river-vip",
+  "athi-river-signature",
+  "thindigua-vip",
+  "thindigua-signature",
+  "kiambu-road-vip",
+  "kiambu-road-signature",
+  "parklands-vip",
+  "parklands-signature",
+  "lavington-vip",
+  "lavington-signature",
+  "karen-vip",
+  "karen-signature",
+  "kitengela-vip",
+  "kitengela-signature"
 ];
 
 function staticSitemap() {
@@ -96,32 +166,26 @@ function staticSitemap() {
     urlTag(`${SITE_URL}/trending.html`, "0.95", "hourly"),
     urlTag(`${SITE_URL}/shorts.html`, "0.95", "hourly"),
     urlTag(`${SITE_URL}/reel.html`, "0.95", "hourly"),
-    urlTag(`${SITE_URL}/profile.html`, "0.85", "daily"),
-    urlTag(`${SITE_URL}/seo/index.html`, "0.95", "daily"),
-    urlTag(`${SITE_URL}/seo/categories/index.html`, "0.95", "daily"),
-    urlTag(`${SITE_URL}/seo/locations/index.html`, "0.95", "daily")
+    urlTag(`${SITE_URL}/profile.html`, "0.85", "daily")
   ]);
 }
 
 function locationSitemap() {
   return buildUrlset(
-    locations.map((loc) =>
+    existingLocationPages.map((loc) =>
       urlTag(`${SITE_URL}/seo/locations/${loc}.html`, "0.90", "daily")
     )
   );
 }
 
 function categorySitemap() {
-  const baseUrls = categories.map((cat) =>
+  const baseUrls = existingCategoryPages.map((cat) =>
     urlTag(`${SITE_URL}/seo/categories/${cat}.html`, "0.95", "daily")
   );
 
-  const matrixUrls = locations
-    .filter((loc) => loc !== "nairobi")
-    .flatMap((loc) => [
-      urlTag(`${SITE_URL}/seo/categories/${loc}-vip.html`, "0.88", "daily"),
-      urlTag(`${SITE_URL}/seo/categories/${loc}-signature.html`, "0.88", "daily")
-    ]);
+  const matrixUrls = existingLocationCategoryPages.map((page) =>
+    urlTag(`${SITE_URL}/seo/categories/${page}.html`, "0.88", "daily")
+  );
 
   return buildUrlset([...baseUrls, ...matrixUrls]);
 }
@@ -144,6 +208,7 @@ async function profileSitemap() {
     .filter((profile) => profile.id || profile.profile_id)
     .map((profile) => {
       const id = profile.id || profile.profile_id;
+
       const rawName =
         profile.stage_name ||
         profile.name ||
