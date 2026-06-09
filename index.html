@@ -771,6 +771,50 @@ SIGNATURE PROFILES BANNER
 }
 
 
+
+.verified-badge{
+  position:absolute;
+  top:14px;
+  left:42px;
+  background:#0ea5e9;
+  color:#fff;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:900;
+  z-index:6;
+  box-shadow:0 0 20px rgba(14,165,233,.35);
+  border:1px solid rgba(255,255,255,.28);
+}
+
+.verified-inline{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-left:6px;
+  width:17px;
+  height:17px;
+  border-radius:50%;
+  background:#0ea5e9;
+  color:#fff;
+  font-size:11px;
+  font-weight:950;
+  vertical-align:middle;
+  box-shadow:0 0 14px rgba(14,165,233,.35);
+}
+
+.trust-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  background:rgba(14,165,233,.14);
+  border:1px solid rgba(14,165,233,.32);
+  color:#7dd3fc;
+  border-radius:999px;
+  padding:5px 8px;
+  font-weight:900;
+}
+
 .featured-badge{
   position:absolute;
   top:14px;
@@ -1846,7 +1890,7 @@ function getBio(profile){
 
 function getBadge(profile){
   if((Number(profile.trending_score || 0)) >= 1000) return "🔥 TRENDING";
-  if(profile.verified) return "🛡️ VERIFIED";
+  if(profile.verified) return "✔ VERIFIED";
 
   const plan = getPlan(profile);
   if(plan.includes("signature")) return "👑 SIGNATURE";
@@ -2132,6 +2176,7 @@ function renderProfiles(data){
         <span class="online-dot"></span>
         ${trendRankBadge(index)}
         <div class="featured-badge">${getBadge(profile)}</div>
+        ${profile.verified ? `<div class="verified-badge">✔ VERIFIED</div>` : ``}
 
         <img
           src="${getImage(profile)}"
@@ -2148,7 +2193,10 @@ function renderProfiles(data){
         >
 
         <div class="card-body">
-          <div class="card-name">${getName(profile)}</div>
+          <div class="card-name">
+            ${getName(profile)}
+            ${profile.verified ? `<span class="verified-inline">✓</span>` : ``}
+          </div>
           <div class="online">Online Now</div>
           <div class="location">📍 ${getLocation(profile)}</div>
           <div class="phone">📞 ${phone || "Hidden"}</div>
@@ -2156,6 +2204,7 @@ function renderProfiles(data){
 
           <div class="engagement">
             <span class="ranking-score">🔥 ${rankingScore(profile).toLocaleString()}</span>
+            ${profile.verified ? `<span class="trust-pill">✔ Verified</span>` : ``}
             <span>❤️ ${getLikes(profile)}</span>
             <span>👁 ${getViews(profile)}</span>
             <span>💬 ${Number(profile.whatsapp_clicks || 0)}</span>
