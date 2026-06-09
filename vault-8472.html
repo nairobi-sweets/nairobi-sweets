@@ -547,13 +547,14 @@ REVENUE DASHBOARD UPGRADE
 
   <div class="admin-contact-grid">
     <input id="adminName" placeholder="Admin Name">
-    <input id="adminPhone" placeholder="Admin Phone e.g. 2547XXXXXXXX">
-    <input id="adminWhatsapp" placeholder="Admin WhatsApp e.g. 2547XXXXXXXX">
+    <input id="adminPhone" placeholder="Admin Phone e.g. +254143616363">
+    <input id="adminWhatsapp" placeholder="Admin WhatsApp e.g. +254143616363">
     <input id="adminEmail" placeholder="Admin Email">
   </div>
 
   <div class="admin-contact-actions">
     <button class="admin-contact-btn" onclick="saveAdminContact()">💾 Save Admin Contact</button>
+    <button class="admin-contact-btn" onclick="copyAdminPhone()" style="background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;">📋 Copy Phone</button>
     <a id="adminWhatsappPreview" href="#" target="_blank" rel="noopener">💬 Test WhatsApp</a>
     <a id="adminCallPreview" href="#">📞 Test Call</a>
     <a id="adminEmailPreview" href="#">✉️ Test Email</a>
@@ -2740,6 +2741,13 @@ ADMIN CONTACT CENTER
 ========================= */
 let SITE_SETTINGS_ID = null;
 
+const DEFAULT_ADMIN_CONTACT = {
+  admin_name: "Nairobi Sweets Admin",
+  admin_phone: "+254143616363",
+  admin_whatsapp: "+254143616363",
+  admin_email: "nairobisweets05@gmail.com"
+};
+
 function normalizePhoneForLink(phone){
   return String(phone || "").replace(/\D/g,"");
 }
@@ -2773,16 +2781,22 @@ async function loadAdminContact(){
 
     if(data){
       SITE_SETTINGS_ID = data.id;
-      document.getElementById("adminName").value = data.admin_name || "";
-      document.getElementById("adminPhone").value = data.admin_phone || "";
-      document.getElementById("adminWhatsapp").value = data.admin_whatsapp || "";
-      document.getElementById("adminEmail").value = data.admin_email || "";
+      document.getElementById("adminName").value = data.admin_name || DEFAULT_ADMIN_CONTACT.admin_name;
+      document.getElementById("adminPhone").value = data.admin_phone || DEFAULT_ADMIN_CONTACT.admin_phone;
+      document.getElementById("adminWhatsapp").value = data.admin_whatsapp || DEFAULT_ADMIN_CONTACT.admin_whatsapp;
+      document.getElementById("adminEmail").value = data.admin_email || DEFAULT_ADMIN_CONTACT.admin_email;
       updateAdminContactPreview();
       return;
     }
 
+    document.getElementById("adminName").value = DEFAULT_ADMIN_CONTACT.admin_name;
+    document.getElementById("adminPhone").value = DEFAULT_ADMIN_CONTACT.admin_phone;
+    document.getElementById("adminWhatsapp").value = DEFAULT_ADMIN_CONTACT.admin_whatsapp;
+    document.getElementById("adminEmail").value = DEFAULT_ADMIN_CONTACT.admin_email;
+    updateAdminContactPreview();
+
     if(status){
-      status.textContent = "No admin contact found yet. Fill the form and save.";
+      status.textContent = "Default admin contact loaded. Click Save Admin Contact to store it.";
       status.style.color = "#ffd54a";
     }
   }catch(error){
@@ -2853,6 +2867,25 @@ async function saveAdminContact(){
     if(event.target && event.target.id === id) updateAdminContactPreview();
   });
 });
+
+
+async function copyAdminPhone(){
+  const status = document.getElementById("adminContactStatus");
+  const phone = document.getElementById("adminPhone")?.value || DEFAULT_ADMIN_CONTACT.admin_phone;
+
+  try{
+    await navigator.clipboard.writeText(phone);
+    if(status){
+      status.textContent = "Admin phone copied: " + phone;
+      status.style.color = "#22c55e";
+    }
+  }catch(error){
+    if(status){
+      status.textContent = "Copy failed. Number: " + phone;
+      status.style.color = "#ffd54a";
+    }
+  }
+}
 
 /* =========================
 MEDIA WATERMARK PROTECTION
