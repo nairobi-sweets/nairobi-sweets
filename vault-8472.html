@@ -69,6 +69,17 @@ textarea{grid-column:1/-1;min-height:120px}
 .bulk-trial-note{grid-column:1/-1;color:#ffd54a;background:rgba(255,213,74,.08);border:1px solid rgba(255,213,74,.14);border-radius:16px;padding:14px;font-size:13px;font-weight:900;line-height:1.5}
 @media(max-width:900px){.bulk-trial-actions{grid-template-columns:1fr}}
 
+.membership-control-card{border:1px solid rgba(34,197,94,.25);box-shadow:0 0 34px rgba(34,197,94,.08),0 18px 50px rgba(0,0,0,.35)}
+.membership-control-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.membership-control-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.membership-control-actions button{border:0;border-radius:16px;padding:16px 18px;font-size:15px;font-weight:950;cursor:pointer}
+.membership-control-actions .trial{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.membership-control-actions .approve{background:linear-gradient(145deg,#22c55e,#06b6d4);color:#fff}
+.membership-control-actions .expire{background:linear-gradient(145deg,#ef4444,#ec4899);color:#fff}
+.membership-control-actions .refresh-mini{background:linear-gradient(145deg,#06b6d4,#2563eb);color:#fff}
+.membership-control-note{color:#ffd54a;background:rgba(255,213,74,.08);border:1px solid rgba(255,213,74,.14);border-radius:16px;padding:14px;font-size:13px;font-weight:900;line-height:1.5;margin-top:14px}
+@media(max-width:900px){.membership-control-grid,.membership-control-actions{grid-template-columns:1fr}}
+
 .admin-contact-card{border:1px solid rgba(34,211,238,.28);box-shadow:0 0 34px rgba(34,211,238,.08),0 18px 50px rgba(0,0,0,.35)}
 .admin-contact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:center}
 .admin-contact-card input{background:#08122f;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;font-size:15px}
@@ -397,6 +408,16 @@ REVENUE DASHBOARD UPGRADE
   </div>
 
   <div class="stat-card">
+    <h3>Trial Profiles</h3>
+    <div id="statTrial">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Pending Profiles</h3>
+    <div id="statPending">0</div>
+  </div>
+
+  <div class="stat-card">
     <h3>Paid Profiles</h3>
     <div id="statPaid">0</div>
   </div>
@@ -427,6 +448,11 @@ REVENUE DASHBOARD UPGRADE
   </div>
 
   <div class="stat-card">
+    <h3>VIP+</h3>
+    <div id="statVipPlus">0</div>
+  </div>
+
+  <div class="stat-card">
     <h3>Signature</h3>
     <div id="statSignature">0</div>
   </div>
@@ -445,6 +471,40 @@ REVENUE DASHBOARD UPGRADE
     <h3>Weekly Potential</h3>
     <div id="statWeeklyPotential">KES 0</div>
   </div>
+</section>
+
+<section class="panel membership-control-card">
+  <h2>🧭 Membership Control Center</h2>
+
+  <div class="membership-control-grid">
+    <select id="membershipTrialPlan">
+      <option value="all">All Categories</option>
+      <option value="featured">Featured Only</option>
+      <option value="vip">VIP Only</option>
+      <option value="vip-plus">VIP+ Only</option>
+      <option value="signature">Signature Only</option>
+    </select>
+
+    <select id="membershipTrialDays">
+      <option value="3">3 Days Trial</option>
+      <option value="7">7 Days Trial</option>
+      <option value="15">15 Days Trial</option>
+      <option value="30">30 Days Trial</option>
+    </select>
+  </div>
+
+  <div class="membership-control-actions">
+    <button class="trial" onclick="giveMembershipControlTrial()">🎁 Give Category Trial</button>
+    <button class="approve" onclick="approveAllTrialProfiles()">✅ Approve All Trials</button>
+    <button class="expire" onclick="expireEndedTrialProfiles()">⛔ Expire Ended Trials</button>
+    <button class="refresh-mini" onclick="loadProfiles();loadDashboardStats();loadRevenueDashboard();">🔄 Refresh Center</button>
+  </div>
+
+  <div class="membership-control-note">
+    Use this command center to activate 3, 7, 15 or 30 day trials by category, approve all trial profiles, and cleanly expire trials whose countdown has ended.
+  </div>
+
+  <div class="status" id="membershipControlStatus"></div>
 </section>
 
 <section class="revenue-panels" id="revenueInsights">
@@ -1881,6 +1941,114 @@ async function giveBulkTrial(){
   if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
 }
 
+function setMembershipStatus(text,color){
+  const box = document.getElementById("membershipControlStatus");
+  if(!box) return;
+  box.textContent = text;
+  box.style.color = color || "#ffd54a";
+}
+
+async function giveMembershipControlTrial(){
+  const plan = document.getElementById("membershipTrialPlan")?.value || "all";
+  const days = document.getElementById("membershipTrialDays")?.value || "3";
+
+  const bulkPlan = document.getElementById("bulkTrialPlan");
+  const bulkDays = document.getElementById("bulkTrialDays");
+
+  if(bulkPlan) bulkPlan.value = plan;
+  if(bulkDays) bulkDays.value = days;
+
+  setMembershipStatus("Starting category trial activation...","#ffd54a");
+  await giveBulkTrial();
+  setMembershipStatus(`${days}-day trial command completed for ${plan === "all" ? "all categories" : plan}.`, "#22c55e");
+}
+
+async function approveAllTrialProfiles(){
+  const targets = (ALL_PROFILES || []).filter(p =>
+    p.trial_active === true || String(p.payment_status || "").toLowerCase() === "trial"
+  );
+  const ids = targets.map(p => p.id).filter(Boolean);
+
+  if(!ids.length){
+    setMembershipStatus("No trial profiles found to approve.","#ff6b6b");
+    return;
+  }
+
+  const ok = confirm(`Approve ${ids.length} trial profile(s) and make them visible?`);
+  if(!ok){
+    setMembershipStatus("Approve trials cancelled.","#ffd54a");
+    return;
+  }
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      approved:true,
+      is_expired:false,
+      last_active:new Date().toISOString()
+    })
+    .in("id",ids);
+
+  if(error){
+    setMembershipStatus(error.message,"#ff6b6b");
+    return;
+  }
+
+  await audit("approve_all_trials","","",`${ids.length} trial profile(s) approved`);
+  setMembershipStatus(`${ids.length} trial profile(s) approved successfully.`, "#22c55e");
+  loadProfiles();
+  loadDashboardStats();
+  if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
+}
+
+async function expireEndedTrialProfiles(){
+  const now = Date.now();
+  const targets = (ALL_PROFILES || []).filter(p => {
+    const isTrial = p.trial_active === true || String(p.payment_status || "").toLowerCase() === "trial";
+    const raw = p.trial_expires_at || p.plan_expires_at || p.expiry_date || p.expires_at;
+    if(!isTrial || !raw) return false;
+    const d = new Date(raw);
+    return !Number.isNaN(d.getTime()) && d.getTime() <= now;
+  });
+
+  const ids = targets.map(p => p.id).filter(Boolean);
+
+  if(!ids.length){
+    setMembershipStatus("No ended trials found. The trial garden is still blooming.","#22c55e");
+    return;
+  }
+
+  const ok = confirm(`Expire ${ids.length} trial profile(s) whose trial period has ended?`);
+  if(!ok){
+    setMembershipStatus("Expire ended trials cancelled.","#ffd54a");
+    return;
+  }
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      approved:false,
+      is_expired:true,
+      payment_status:"expired",
+      trial_active:false,
+      boost_score:0,
+      trending_score:0,
+      last_active:new Date().toISOString()
+    })
+    .in("id",ids);
+
+  if(error){
+    setMembershipStatus(error.message,"#ff6b6b");
+    return;
+  }
+
+  await audit("expire_ended_trials","","",`${ids.length} ended trial profile(s) expired`);
+  setMembershipStatus(`${ids.length} ended trial profile(s) expired successfully.`, "#22c55e");
+  loadProfiles();
+  loadDashboardStats();
+  if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
+}
+
 async function giveTrial(id){
   const select = document.getElementById(`trial_days_${id}`);
   const days = Number(select?.value || 3);
@@ -2137,7 +2305,7 @@ async function loadDashboardStats(){
   try{
     const { data,error } = await sb
       .from("profiles")
-      .select("id,stage_name,approved,is_expired,payment_status,plan,is_signature,homepage_featured,revenue_plan_price,plan_expires_at,expiry_date,created_at");
+      .select("id,stage_name,approved,is_expired,payment_status,plan,plan_label,tier,package,is_signature,homepage_featured,revenue_plan_price,plan_expires_at,expiry_date,expires_at,trial_active,trial_expires_at,created_at");
 
     if(error) throw error;
 
@@ -2146,6 +2314,14 @@ async function loadDashboardStats(){
 
     const active = profiles.filter(p =>
       p.approved === true && p.is_expired !== true
+    ).length;
+
+    const trial = profiles.filter(p =>
+      p.trial_active === true || String(p.payment_status || "").toLowerCase() === "trial"
+    ).length;
+
+    const pending = profiles.filter(p =>
+      p.approved !== true || ["pending","unpaid",""].includes(String(p.payment_status || "").toLowerCase())
     ).length;
 
     const paidProfiles = profiles.filter(p =>
@@ -2164,8 +2340,13 @@ async function loadDashboardStats(){
     ).length;
 
     const vip = profiles.filter(p => {
-      const plan = String(p.plan || "").toLowerCase();
-      return plan.includes("vip") && !plan.includes("vvip") && !plan.includes("signature");
+      const combined = `${p.plan || ""} ${p.plan_label || ""} ${p.tier || ""} ${p.package || ""}`.toLowerCase();
+      return combined.includes("vip") && !combined.includes("vip+") && !combined.includes("vip-plus") && !combined.includes("vip plus") && !combined.includes("vvip") && !combined.includes("signature");
+    }).length;
+
+    const vipPlus = profiles.filter(p => {
+      const combined = `${p.plan || ""} ${p.plan_label || ""} ${p.tier || ""} ${p.package || ""}`.toLowerCase();
+      return combined.includes("vip+") || combined.includes("vip-plus") || combined.includes("vip plus");
     }).length;
 
     const signature = profiles.filter(p =>
@@ -2210,12 +2391,15 @@ async function loadDashboardStats(){
 
     setVaultStat("statTotal", total.toLocaleString());
     setVaultStat("statActive", active.toLocaleString());
+    setVaultStat("statTrial", trial.toLocaleString());
+    setVaultStat("statPending", pending.toLocaleString());
     setVaultStat("statPaid", paid.toLocaleString());
     setVaultStat("statExpired", expired.toLocaleString());
     setVaultStat("statRevenue", "KES " + revenue.toLocaleString());
     setVaultStat("statTodayRevenue", "KES " + todayRevenue.toLocaleString());
     setVaultStat("statFeatured", featured.toLocaleString());
     setVaultStat("statVip", vip.toLocaleString());
+    setVaultStat("statVipPlus", vipPlus.toLocaleString());
     setVaultStat("statSignature", signature.toLocaleString());
     setVaultStat("statHero", hero.toLocaleString());
     setVaultStat("statExpiringSoon", expiringSoon.toLocaleString());
