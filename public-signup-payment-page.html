@@ -233,6 +233,67 @@ button:disabled{opacity:.6;cursor:not-allowed}
 }
 .success{color:var(--green)}
 .error{color:var(--red)}
+
+.admin-help-section{
+  width:min(1050px,calc(100% - 28px));
+  margin:0 auto 54px;
+}
+.admin-help-box{
+  background:linear-gradient(135deg,#07145f,#02083d,#140022);
+  border:1px solid rgba(255,216,75,.16);
+  border-radius:30px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 24px 80px rgba(0,0,0,.42);
+}
+.admin-help-box h3{
+  color:var(--gold);
+  font-size:30px;
+  font-weight:950;
+  margin:0 0 12px;
+}
+.admin-help-box p{
+  color:#d8d8e8;
+  font-size:15px;
+  line-height:1.8;
+  max-width:780px;
+  margin:0 auto 20px;
+}
+.admin-help-buttons{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.admin-help-buttons a{
+  min-height:50px;
+  padding:14px 22px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:950;
+  text-decoration:none;
+}
+.admin-call-btn{
+  background:linear-gradient(145deg,#ffd84b,#ffbf00);
+  color:#111;
+}
+.admin-whatsapp-btn{
+  background:#25D366;
+  color:white;
+}
+.admin-email-btn{
+  background:#06b6d4;
+  color:#07111f;
+}
+.admin-help-mini{
+  margin-top:16px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:800;
+}
+
 footer{text-align:center;color:var(--muted);padding:34px}
 @media(max-width:850px){
   .grid,.files,.price-mini{grid-template-columns:1fr}
@@ -459,6 +520,27 @@ footer{text-align:center;color:var(--muted);padding:34px}
     <div id="msg" class="msg"></div>
   </form>
 </main>
+
+
+<section class="admin-help-section">
+  <div class="admin-help-box">
+    <h3>📞 Need Help?</h3>
+    <p>
+      Contact Nairobi Sweets Admin for signup support, payment help, profile approval,
+      VIP / VIP+ upgrades, Signature upgrades, and dashboard assistance.
+    </p>
+
+    <div class="admin-help-buttons">
+      <a id="adminCallBtn" href="tel:+254143616363" class="admin-call-btn">📞 Call Admin</a>
+      <a id="adminWhatsappBtn" href="https://wa.me/254143616363" target="_blank" rel="noopener" class="admin-whatsapp-btn">💬 WhatsApp Admin</a>
+      <a id="adminEmailBtn" href="mailto:nairobisweets05@gmail.com" class="admin-email-btn">📧 Email Admin</a>
+    </div>
+
+    <div class="admin-help-mini" id="adminHelpMini">
+      Nairobi Sweets Admin: +254 143 616363
+    </div>
+  </div>
+</section>
 
 <footer>© Nairobi Sweets</footer>
 
@@ -920,8 +1002,1123 @@ form.addEventListener("submit",async(e)=>{
   }
 });
 
+
+function normalizeContactPhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "254143616363";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
+}
+
+function formatDisplayPhone(phone){
+  const p = normalizeContactPhone(phone);
+  if(p.startsWith("254") && p.length >= 12){
+    return "+" + p.slice(0,3) + " " + p.slice(3,6) + " " + p.slice(6);
+  }
+  return "+" + p;
+}
+
+async function loadAdminContact(){
+  try{
+    const { data, error } = await sb
+      .from("site_settings")
+      .select("admin_name,admin_phone,admin_whatsapp,admin_email")
+      .limit(1)
+      .maybeSingle();
+
+    if(error || !data) return;
+
+    const phone = normalizeContactPhone(data.admin_phone || "254143616363");
+    const whatsapp = normalizeContactPhone(data.admin_whatsapp || data.admin_phone || "254143616363");
+    const email = data.admin_email || "nairobisweets05@gmail.com";
+    const name = data.admin_name || "Nairobi Sweets Admin";
+
+    const callBtn = document.getElementById("adminCallBtn");
+    const whatsappBtn = document.getElementById("adminWhatsappBtn");
+    const emailBtn = document.getElementById("adminEmailBtn");
+    const mini = document.getElementById("adminHelpMini");
+
+    if(callBtn) callBtn.href = `tel:+${phone}`;
+    if(whatsappBtn) whatsappBtn.href = `https://wa.me/${whatsapp}?text=${encodeURIComponent("Hello Nairobi Sweets Admin, I need help with signup/payment.")}`;
+    if(emailBtn) emailBtn.href = `mailto:${email}`;
+    if(mini) mini.innerText = `${name}: ${formatDisplayPhone(phone)} · ${email}`;
+
+  }catch(error){
+    console.log("Admin contact load skipped:", error.message);
+  }
+}
+
+
 applyURLPlan();
 setupSession();
+loadAdminContact();
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker
+      .register("/sw.js")
+      .catch(err=>console.error("PWA error:",err));
+  });
+}
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Create Listing | Nairobi Sweets</title>
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffd84b">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#07091a;
+  --gold:#ffd84b;
+  --gold2:#ffbf00;
+  --pink:#ff4ba3;
+  --text:#f7f7fb;
+  --muted:#aab1c8;
+  --line:rgba(255,255,255,.1);
+  --green:#22c55e;
+  --red:#ff4f86;
+}
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left,rgba(255,75,163,.18),transparent 30%),
+    radial-gradient(circle at top right,rgba(255,216,75,.14),transparent 28%),
+    var(--bg);
+  color:var(--text);
+}
+a{text-decoration:none;color:inherit}
+.header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(7,9,26,.92);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(16px);
+}
+.nav{
+  width:min(1320px,calc(100% - 28px));
+  margin:auto;
+  min-height:86px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:58px;height:58px;object-fit:contain;border-radius:16px}
+.brand small{display:block;color:var(--muted);font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+.brand strong{display:block;color:var(--gold);font-size:24px;font-weight:950}
+.menu{display:flex;gap:10px;flex-wrap:wrap}
+.menu a,.google-btn{
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.05);
+  color:white;
+  font-weight:800;
+}
+.menu .join{
+  background:linear-gradient(180deg,#ffe46b,#ffbf00);
+  color:#111;
+  border:none;
+}
+.hero{text-align:center;padding:42px 14px 24px}
+.hero h1{
+  margin:0;
+  color:var(--gold);
+  font-size:clamp(40px,6vw,64px);
+  letter-spacing:-.05em;
+  font-weight:950;
+}
+.hero p{color:var(--muted);font-size:18px}
+.form-shell{
+  width:min(1050px,calc(100% - 28px));
+  margin:0 auto 54px;
+  background:linear-gradient(180deg,rgba(18,22,50,.96),rgba(7,9,26,.98));
+  border:1px solid var(--line);
+  border-radius:34px;
+  padding:32px;
+  box-shadow:0 30px 90px rgba(0,0,0,.5);
+}
+.notice{color:var(--pink);font-size:18px;margin:0 0 24px;font-weight:900}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 26px}
+.field{
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+}
+.field.full{grid-column:1/-1}
+.field label{
+  display:block;
+  color:var(--gold);
+  font-size:14px;
+  font-weight:900;
+  padding:13px 16px 0;
+}
+input,select,textarea{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:white;
+  padding:9px 16px 16px;
+  font-size:18px;
+  outline:none;
+  font-family:inherit;
+}
+input:disabled{opacity:.7}
+select option{color:#111}
+textarea{min-height:120px;resize:vertical}
+.phone-wrap{display:grid;grid-template-columns:78px 1fr}
+.code{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid var(--line);
+  color:var(--gold);
+  font-size:18px;
+  font-weight:900;
+  background:rgba(255,255,255,.04);
+}
+.account-box,.plan-card{
+  margin-top:30px;
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:22px;
+}
+.account-title,.plan-title{
+  margin:0 0 18px;
+  color:var(--gold);
+  font-size:26px;
+}
+.google-btn{
+  width:100%;
+  margin-top:16px;
+  padding:18px;
+  cursor:pointer;
+  border-radius:16px;
+}
+.files{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px 26px;
+  margin-top:28px;
+}
+.file-box{
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+}
+.file-box span{
+  display:block;
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+  color:var(--gold);
+  font-weight:900;
+}
+.file-box input{padding:16px;font-size:15px}
+.preview{
+  margin-top:10px;
+  width:100%;
+  max-height:230px;
+  object-fit:cover;
+  display:none;
+  border-radius:16px;
+  border:1px solid var(--line);
+}
+.amount{
+  margin-top:18px;
+  padding:22px;
+  border-radius:18px;
+  background:linear-gradient(180deg,#3a3111,#171305);
+  color:var(--gold);
+  font-size:30px;
+  font-weight:950;
+  text-align:center;
+}
+.price-mini{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+.price-pill{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  text-align:center;
+  background:rgba(255,255,255,.05);
+  color:#dbe0f2;
+  font-size:14px;
+}
+.price-pill strong{display:block;color:var(--gold);margin-top:6px;font-size:16px}
+.checks{margin-top:26px;display:grid;gap:16px}
+.check{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  color:#e7ebf8;
+  font-size:16px;
+  line-height:1.5;
+}
+.check input{width:22px;height:22px;margin-top:2px;accent-color:var(--gold)}
+button.main-btn{
+  width:100%;
+  margin-top:30px;
+  padding:22px;
+  border:none;
+  border-radius:999px;
+  background:linear-gradient(180deg,#ffe46b,#ffbf00);
+  color:#111;
+  font-size:22px;
+  font-weight:950;
+  cursor:pointer;
+}
+button:disabled{opacity:.6;cursor:not-allowed}
+.msg{
+  margin-top:20px;
+  font-size:18px;
+  font-weight:900;
+  line-height:1.5;
+  text-align:center;
+}
+.success{color:var(--green)}
+.error{color:var(--red)}
+
+.admin-help-section{
+  width:min(1050px,calc(100% - 28px));
+  margin:0 auto 54px;
+}
+.admin-help-box{
+  background:linear-gradient(135deg,#07145f,#02083d,#140022);
+  border:1px solid rgba(255,216,75,.16);
+  border-radius:30px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 24px 80px rgba(0,0,0,.42);
+}
+.admin-help-box h3{
+  color:var(--gold);
+  font-size:30px;
+  font-weight:950;
+  margin:0 0 12px;
+}
+.admin-help-box p{
+  color:#d8d8e8;
+  font-size:15px;
+  line-height:1.8;
+  max-width:780px;
+  margin:0 auto 20px;
+}
+.admin-help-buttons{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.admin-help-buttons a{
+  min-height:50px;
+  padding:14px 22px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:950;
+  text-decoration:none;
+}
+.admin-call-btn{
+  background:linear-gradient(145deg,#ffd84b,#ffbf00);
+  color:#111;
+}
+.admin-whatsapp-btn{
+  background:#25D366;
+  color:white;
+}
+.admin-email-btn{
+  background:#06b6d4;
+  color:#07111f;
+}
+.admin-help-mini{
+  margin-top:16px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:800;
+}
+
+footer{text-align:center;color:var(--muted);padding:34px}
+@media(max-width:850px){
+  .grid,.files,.price-mini{grid-template-columns:1fr}
+  .nav{flex-direction:column;align-items:flex-start;padding:14px 0}
+  .form-shell{padding:22px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="nav">
+    <a href="/index.html" class="brand">
+      <img src="/assets/logo/logo-navbar.png" alt="Nairobi Sweets Logo" onerror="this.src='/assets/logo/logo-badge.png'">
+      <div>
+        <small>Private VIP Directory</small>
+        <strong>Nairobi Sweets</strong>
+      </div>
+    </a>
+
+    <nav class="menu">
+      <a href="/index.html">Home</a>
+      <a href="/index.html#profiles">Profiles</a>
+      <a href="/login.html">Login</a>
+      <a href="/join.html" class="join">Join Us</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Create Your Listing</h1>
+  <p>Create an account, upload your media, pay, and manage your profile later.</p>
+</section>
+
+<main class="form-shell">
+  <p class="notice">NB: Fill in all areas marked with (*)</p>
+
+  <form id="joinForm">
+
+    <section class="account-box">
+      <h2 class="account-title">Account Access</h2>
+
+      <div class="grid">
+        <div class="field">
+          <label>Email*</label>
+          <input id="email" type="email" required placeholder="you@email.com">
+        </div>
+
+        <div class="field" id="passwordField">
+          <label>Create Password*</label>
+          <input id="password" type="password" required minlength="6" placeholder="Minimum 6 characters">
+        </div>
+      </div>
+
+      <button type="button" class="google-btn" onclick="signupWithGoogle()">
+        Continue with Google
+      </button>
+    </section>
+
+    <div class="grid">
+      <div class="field">
+        <label>User Name*</label>
+        <input id="stageName" required placeholder="Stage name">
+      </div>
+
+      <div class="field">
+        <label>Phone Number*</label>
+        <div class="phone-wrap">
+          <div class="code">+254</div>
+          <input id="phone" required placeholder="700123123">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>WhatsApp Number</label>
+        <div class="phone-wrap">
+          <div class="code">+254</div>
+          <input id="whatsapp" placeholder="Leave blank if same">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Gender*</label>
+        <select id="gender" required>
+          <option value="">Select Gender</option>
+          <option>Female</option>
+          <option>Male</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Your Age*</label>
+        <input id="age" type="number" min="20" required placeholder="20+">
+      </div>
+
+      <div class="field">
+        <label>Your Town*</label>
+        <input id="town" required placeholder="Nairobi">
+      </div>
+
+      <div class="field">
+        <label>Your Location*</label>
+        <input id="location" required placeholder="Kasarani">
+      </div>
+
+      <div class="field">
+        <label>Your Estate</label>
+        <input id="estate" placeholder="Mwiki">
+      </div>
+
+      <div class="field">
+        <label>Meeting Place*</label>
+        <select id="meetingPlace" required>
+          <option value="">Select Meeting Place</option>
+          <option>In Call</option>
+          <option>Out Call</option>
+          <option>Both</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Preference*</label>
+        <select id="preference" required>
+          <option value="">Select Preference</option>
+          <option>Men</option>
+          <option>Women</option>
+          <option>Couples</option>
+          <option>Everyone</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Body Type*</label>
+        <select id="bodyType" required>
+          <option value="">Select Body Type</option>
+          <option>Petite</option>
+          <option>Slim</option>
+          <option>Thick</option>
+          <option>Curvy</option>
+          <option>Athletic</option>
+          <option>BBW</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Your Rate Optional</label>
+        <input id="rate" placeholder="KSh 5,000">
+      </div>
+
+      <div class="field full">
+        <label>Your Short Description Optional</label>
+        <textarea id="bio" placeholder="Short profile description"></textarea>
+      </div>
+
+      <div class="field full">
+        <label>Services You Offer*</label>
+        <textarea id="services" required placeholder="Write the services you offer"></textarea>
+      </div>
+
+      <div class="field full">
+        <label>Services You Don’t Offer Optional</label>
+        <textarea id="servicesDontOffer" placeholder="Write services you do not offer"></textarea>
+      </div>
+    </div>
+
+    <div class="files">
+      <div><div class="file-box"><span>Main Picture*</span><input id="photo1" type="file" accept="image/*" required></div><img id="preview1" class="preview"></div>
+      <div><div class="file-box"><span>2nd Picture*</span><input id="photo2" type="file" accept="image/*" required></div><img id="preview2" class="preview"></div>
+      <div><div class="file-box"><span>3rd Picture*</span><input id="photo3" type="file" accept="image/*" required></div><img id="preview3" class="preview"></div>
+      <div><div class="file-box"><span>4th Picture</span><input id="photo4" type="file" accept="image/*"></div><img id="preview4" class="preview"></div>
+      <div><div class="file-box"><span>Video 1*</span><input id="video1" type="file" accept="video/*" required></div></div>
+      <div><div class="file-box"><span>Video 2</span><input id="video2" type="file" accept="video/*"></div></div>
+    </div>
+
+    <section class="plan-card">
+      <h2 class="plan-title">Choose Membership</h2>
+
+      <div class="grid">
+        <div class="field">
+          <label>Membership Plan*</label>
+          <select id="package" required>
+            <option value="featured">⭐ Featured</option>
+            <option value="vip">🔥 VIP</option>
+            <option value="vip-plus">💎 VIP+</option>
+            <option value="signature">👑 Signature</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Duration*</label>
+          <select id="duration" required>
+            <option value="3">3 Days</option>
+            <option value="7">7 Days</option>
+            <option value="15">15 Days</option>
+            <option value="30">30 Days</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="amount" id="amountBox">Amount: KSh 300</div>
+      <div class="price-mini" id="priceMini"></div>
+    </section>
+
+    <div class="checks">
+      <label class="check">
+        <input id="terms" type="checkbox" required>
+        <span>I agree to the Terms, Advertiser Agreement and Privacy Policy*</span>
+      </label>
+
+      <label class="check">
+        <input id="adult" type="checkbox" required>
+        <span>I am at least 20 years old*</span>
+      </label>
+
+      <label class="check">
+        <input id="independent" type="checkbox" required>
+        <span>I am joining on my own behalf as a consenting adult and I am independent*</span>
+      </label>
+    </div>
+
+    <button id="payBtn" class="main-btn" type="submit">Create Account, Profile & Pay</button>
+    <div id="msg" class="msg"></div>
+  </form>
+</main>
+
+
+<section class="admin-help-section">
+  <div class="admin-help-box">
+    <h3>📞 Need Help?</h3>
+    <p>
+      Contact Nairobi Sweets Admin for signup support, payment help, profile approval,
+      VIP / VIP+ upgrades, Signature upgrades, and dashboard assistance.
+    </p>
+
+    <div class="admin-help-buttons">
+      <a id="adminCallBtn" href="tel:+254143616363" class="admin-call-btn">📞 Call Admin</a>
+      <a id="adminWhatsappBtn" href="https://wa.me/254143616363" target="_blank" rel="noopener" class="admin-whatsapp-btn">💬 WhatsApp Admin</a>
+      <a id="adminEmailBtn" href="mailto:nairobisweets05@gmail.com" class="admin-email-btn">📧 Email Admin</a>
+    </div>
+
+    <div class="admin-help-mini" id="adminHelpMini">
+      Nairobi Sweets Admin: +254 143 616363
+    </div>
+  </div>
+</section>
+
+<footer>© Nairobi Sweets</footer>
+
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const PLAN_PRICES = {
+  featured: { 3: 300, 7: 600, 15: 900, 30: 1500 },
+  vip: { 3: 800, 7: 1500, 15: 2500, 30: 4000 },
+  "vip-plus": { 3: 1000, 7: 2000, 15: 3500, 30: 5000 },
+  signature: { 3: 1500, 7: 3000, 15: 6000, 30: 10000 }
+};
+
+const PLAN_LABELS = {
+  featured: "Featured",
+  vip: "VIP",
+  "vip-plus": "VIP+",
+  signature: "Signature"
+};
+
+const PLAN_RANKS = {
+  featured: 1,
+  vip: 2,
+  "vip-plus": 3,
+  signature: 4
+};
+
+let currentUser = null;
+
+const form = document.getElementById("joinForm");
+const msg = document.getElementById("msg");
+const payBtn = document.getElementById("payBtn");
+const packageSelect = document.getElementById("package");
+const durationSelect = document.getElementById("duration");
+const amountBox = document.getElementById("amountBox");
+const priceMini = document.getElementById("priceMini");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const passwordField = document.getElementById("passwordField");
+
+function money(amount){
+  return "KSh " + Number(amount).toLocaleString("en-KE");
+}
+
+function showMsg(text, type = ""){
+  msg.className = "msg " + type;
+  msg.innerText = text;
+}
+
+function getAmount(){
+  return PLAN_PRICES[packageSelect.value][durationSelect.value];
+}
+
+function updateAmount(){
+  const plan = packageSelect.value;
+  amountBox.innerText = "Amount: " + money(getAmount());
+
+  priceMini.innerHTML = Object.entries(PLAN_PRICES[plan]).map(([days, price]) => `
+    <div class="price-pill">${days} Days<strong>${money(price)}</strong></div>
+  `).join("");
+}
+
+packageSelect.addEventListener("change", updateAmount);
+durationSelect.addEventListener("change", updateAmount);
+
+function applyURLPlan(){
+  const params = new URLSearchParams(window.location.search);
+  const plan = params.get("plan");
+  const duration = params.get("duration");
+
+  if(plan && PLAN_PRICES[plan]) packageSelect.value = plan;
+  if(duration && ["3","7","15","30"].includes(duration)) durationSelect.value = duration;
+
+  updateAmount();
+}
+
+function preview(inputId,imgId){
+  const input = document.getElementById(inputId);
+  const img = document.getElementById(imgId);
+
+  input.addEventListener("change",()=>{
+    const file = input.files[0];
+    if(!file) return;
+
+    img.src = URL.createObjectURL(file);
+    img.style.display = "block";
+  });
+}
+
+preview("photo1","preview1");
+preview("photo2","preview2");
+preview("photo3","preview3");
+preview("photo4","preview4");
+
+function cleanPhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  if(p.length === 9) p = "254" + p;
+
+  return p;
+}
+
+function slugify(text){
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
+}
+
+function addDays(date,days){
+  const d = new Date(date);
+  d.setDate(d.getDate() + Number(days));
+  return d.toISOString();
+}
+
+async function uploadFile(bucket,file,folder){
+  if(!file) return null;
+
+  const ext = file.name.split(".").pop() || "file";
+  const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext.toLowerCase()}`;
+
+  const { error } = await sb.storage
+    .from(bucket)
+    .upload(fileName,file,{
+      cacheControl:"3600",
+      upsert:false
+    });
+
+  if(error) throw error;
+
+  const { data } = sb.storage.from(bucket).getPublicUrl(fileName);
+  return data.publicUrl;
+}
+
+async function checkExistingProfile(userId){
+  const { data, error } = await sb
+    .from("profiles")
+    .select("id,user_id")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  if(error) throw error;
+
+  return data;
+}
+
+async function setupSession(){
+  const { data, error } = await sb.auth.getSession();
+
+  if(error){
+    console.warn(error.message);
+    return;
+  }
+
+  if(data.session?.user){
+    currentUser = data.session.user;
+
+    emailInput.value = currentUser.email || "";
+    emailInput.disabled = true;
+
+    passwordInput.required = false;
+    passwordField.style.display = "none";
+
+    const existingProfile = await checkExistingProfile(currentUser.id);
+
+    if(existingProfile){
+      showMsg("You already have a profile. Redirecting to dashboard...", "success");
+      setTimeout(()=>{
+        window.location.href = "/user-dashboard.html";
+      }, 900);
+    }
+  }
+}
+
+async function getOrCreateUser(email,password){
+  if(currentUser){
+    return currentUser;
+  }
+
+  const { data: sessionData } = await sb.auth.getSession();
+
+  if(sessionData?.session?.user){
+    currentUser = sessionData.session.user;
+    return currentUser;
+  }
+
+  if(!password || password.length < 6){
+    throw new Error("Create a password with at least 6 characters.");
+  }
+
+  const { data, error } = await sb.auth.signUp({
+    email,
+    password,
+    options:{
+      emailRedirectTo: `${window.location.origin}/user-dashboard.html`
+    }
+  });
+
+  if(error){
+    if(error.message.toLowerCase().includes("already registered")){
+      const login = await sb.auth.signInWithPassword({ email, password });
+      if(login.error) throw login.error;
+
+      currentUser = login.data.user;
+      return currentUser;
+    }
+
+    throw error;
+  }
+
+  if(!data.user){
+    throw new Error("Account created. Please confirm your email, then login.");
+  }
+
+  currentUser = data.user;
+  return currentUser;
+}
+
+async function signupWithGoogle(){
+  const { error } = await sb.auth.signInWithOAuth({
+    provider:"google",
+    options:{
+      redirectTo:`${window.location.origin}/public-signup-payment-page.html`
+    }
+  });
+
+  if(error){
+    showMsg(error.message, "error");
+  }
+}
+
+form.addEventListener("submit",async(e)=>{
+  e.preventDefault();
+
+  showMsg("Creating account...");
+  payBtn.disabled = true;
+  payBtn.innerText = "Processing...";
+
+  try{
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if(!email){
+      throw new Error("Email is required.");
+    }
+
+    const user = await getOrCreateUser(email,password);
+
+    const existingProfile = await checkExistingProfile(user.id);
+
+    if(existingProfile){
+      showMsg("This account already has a profile. Opening dashboard...", "success");
+      setTimeout(()=>{
+        window.location.href = "/user-dashboard.html";
+      }, 900);
+      return;
+    }
+
+    const stageName = document.getElementById("stageName").value.trim();
+    const phone = cleanPhone(document.getElementById("phone").value);
+    const whatsappInput = document.getElementById("whatsapp").value.trim();
+    const whatsapp = whatsappInput ? cleanPhone(whatsappInput) : phone;
+    const gender = document.getElementById("gender").value;
+    const age = Number(document.getElementById("age").value);
+    const town = document.getElementById("town").value.trim();
+    const location = document.getElementById("location").value.trim();
+    const estate = document.getElementById("estate").value.trim();
+    const meetingPlace = document.getElementById("meetingPlace").value;
+    const preference = document.getElementById("preference").value;
+    const bodyType = document.getElementById("bodyType").value;
+    const rate = document.getElementById("rate").value.trim();
+    const bio = document.getElementById("bio").value.trim();
+    const services = document.getElementById("services").value.trim();
+    const servicesDontOffer = document.getElementById("servicesDontOffer").value.trim();
+
+    const plan = packageSelect.value;
+    const planLabel = PLAN_LABELS[plan];
+    const durationDays = Number(durationSelect.value);
+    const amount = getAmount();
+
+    if(!stageName || !phone || !gender || !age || !town || !location || !meetingPlace || !preference || !bodyType || !services){
+      throw new Error("Please fill all required fields marked with (*).");
+    }
+
+    if(!phone.startsWith("254") || phone.length < 12){
+      throw new Error("Enter a valid phone number, for example 700123123.");
+    }
+
+    if(age < 20){
+      throw new Error("You must be at least 20 years old.");
+    }
+
+    const photo1 = document.getElementById("photo1").files[0];
+    const photo2 = document.getElementById("photo2").files[0];
+    const photo3 = document.getElementById("photo3").files[0];
+    const photo4 = document.getElementById("photo4").files[0];
+    const video1 = document.getElementById("video1").files[0];
+    const video2 = document.getElementById("video2").files[0];
+
+    if(!photo1 || !photo2 || !photo3 || !video1){
+      throw new Error("Please upload at least 3 pictures and 1 video.");
+    }
+
+    const folder = `${user.id}/${slugify(stageName)}-${Date.now()}`;
+
+    showMsg("Uploading pictures...");
+
+    const imageUrl = await uploadFile("profile-images",photo1,folder);
+    const imageUrl2 = await uploadFile("profile-images",photo2,folder);
+    const imageUrl3 = await uploadFile("profile-images",photo3,folder);
+    const imageUrl4 = photo4 ? await uploadFile("profile-images",photo4,folder) : null;
+    const gallery = [imageUrl,imageUrl2,imageUrl3,imageUrl4].filter(Boolean);
+
+    showMsg("Uploading videos...");
+
+    let videoUrl1 = null;
+    let videoUrl2 = null;
+
+    try{
+      videoUrl1 = await uploadFile("shorts",video1,folder);
+    }catch{
+      videoUrl1 = await uploadFile("profile-images",video1,folder);
+    }
+
+    if(video2){
+      try{
+        videoUrl2 = await uploadFile("shorts",video2,folder);
+      }catch{
+        videoUrl2 = await uploadFile("profile-images",video2,folder);
+      }
+    }
+
+    showMsg("Saving profile...");
+
+    const now = new Date().toISOString();
+    const expiryDate = addDays(now,durationDays);
+    const profileSlug = `${slugify(stageName)}-${Date.now()}`;
+
+    const profilePayload = {
+      user_id:user.id,
+      owner_id:user.id,
+
+      stage_name:stageName,
+      name:stageName,
+      slug:profileSlug,
+      email:user.email || email,
+      phone,
+      whatsapp,
+      gender,
+      age,
+      town,
+      location,
+      estate,
+      body_type:bodyType,
+      meeting_place:meetingPlace,
+      preference,
+      rate,
+      services,
+      services_dont_offer:servicesDontOffer,
+      bio,
+
+      image_url:imageUrl,
+      photo_url:imageUrl,
+      image_url_2:imageUrl2,
+      image_url_3:imageUrl3,
+      image_url_4:imageUrl4,
+      gallery_images:gallery,
+      gallery:gallery,
+
+      short_url:videoUrl1,
+      video_url:videoUrl1,
+      short_video:videoUrl1,
+      video_url_2:videoUrl2,
+
+      package:planLabel,
+      tier:planLabel,
+      plan,
+      plan_label:planLabel,
+      duration_days:durationDays,
+      amount_paid:amount,
+      expected_amount:amount,
+      expires_at:expiryDate,
+
+      payment_status:"pending",
+      approved:false,
+      is_expired:false,
+      online:true,
+
+      likes_count:0,
+      views_count:0,
+      views:0,
+      favorites:0,
+      whatsapp_clicks:0,
+      call_clicks:0,
+      profile_shares:0,
+      video_plays:0,
+      trending_score:0,
+      boost_score:0,
+      plan_rank:PLAN_RANKS[plan] || 1
+    };
+
+    const { data: profile, error: profileError } = await sb
+      .from("profiles")
+      .insert([profilePayload])
+      .select()
+      .single();
+
+    if(profileError) throw profileError;
+
+    showMsg("Sending M-Pesa prompt...");
+
+    const payRes = await fetch("/.netlify/functions/mpesa-stk-push",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
+        profile_id:profile.id,
+        user_id:user.id,
+        profile_name:stageName,
+        phone,
+        amount,
+        plan,
+        plan_label:planLabel,
+        duration_days:durationDays,
+        expires_at:expiryDate
+      })
+    });
+
+    const payText = await payRes.text();
+
+    let payData = {};
+    try{
+      payData = payText ? JSON.parse(payText) : {};
+    }catch{
+      throw new Error(payText || "Invalid payment server response");
+    }
+
+    if(!payRes.ok){
+      throw new Error(payData.error || payData.message || "Payment failed");
+    }
+
+    showMsg("M-Pesa prompt sent. Check your phone. After payment, open your dashboard to update your profile anytime.", "success");
+    payBtn.innerText = "Payment Prompt Sent";
+
+    setTimeout(()=>{
+      window.location.href = "/user-dashboard.html";
+    }, 3500);
+
+  }catch(error){
+    showMsg(error.message || "Something went wrong.", "error");
+
+    payBtn.disabled = false;
+    payBtn.innerText = "Create Account, Profile & Pay";
+  }
+});
+
+
+function normalizeContactPhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "254143616363";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
+}
+
+function formatDisplayPhone(phone){
+  const p = normalizeContactPhone(phone);
+  if(p.startsWith("254") && p.length >= 12){
+    return "+" + p.slice(0,3) + " " + p.slice(3,6) + " " + p.slice(6);
+  }
+  return "+" + p;
+}
+
+async function loadAdminContact(){
+  try{
+    const { data, error } = await sb
+      .from("site_settings")
+      .select("admin_name,admin_phone,admin_whatsapp,admin_email")
+      .limit(1)
+      .maybeSingle();
+
+    if(error || !data) return;
+
+    const phone = normalizeContactPhone(data.admin_phone || "254143616363");
+    const whatsapp = normalizeContactPhone(data.admin_whatsapp || data.admin_phone || "254143616363");
+    const email = data.admin_email || "nairobisweets05@gmail.com";
+    const name = data.admin_name || "Nairobi Sweets Admin";
+
+    const callBtn = document.getElementById("adminCallBtn");
+    const whatsappBtn = document.getElementById("adminWhatsappBtn");
+    const emailBtn = document.getElementById("adminEmailBtn");
+    const mini = document.getElementById("adminHelpMini");
+
+    if(callBtn) callBtn.href = `tel:+${phone}`;
+    if(whatsappBtn) whatsappBtn.href = `https://wa.me/${whatsapp}?text=${encodeURIComponent("Hello Nairobi Sweets Admin, I need help with signup/payment.")}`;
+    if(emailBtn) emailBtn.href = `mailto:${email}`;
+    if(mini) mini.innerText = `${name}: ${formatDisplayPhone(phone)} · ${email}`;
+
+  }catch(error){
+    console.log("Admin contact load skipped:", error.message);
+  }
+}
+
+
+applyURLPlan();
+setupSession();
+loadAdminContact();
 
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
