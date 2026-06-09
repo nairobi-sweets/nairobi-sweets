@@ -37,6 +37,12 @@ textarea{grid-column:1/-1;min-height:120px}
 .approve{background:#22c55e;color:#000;border-radius:12px;padding:12px}
 .unapprove{background:#ffd54a;color:#000;border-radius:12px;padding:12px}
 .delete{background:#ef4444;color:#fff;border-radius:12px;padding:12px}
+.verify-btn{background:linear-gradient(145deg,#0ea5e9,#22d3ee);color:#00111f;border-radius:12px;padding:12px}
+.unverify-btn{background:linear-gradient(145deg,#64748b,#334155);color:#fff;border-radius:12px;padding:12px}
+.verified-chip{display:inline-block;background:linear-gradient(145deg,#0ea5e9,#22d3ee);color:#00111f;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.unverified-chip{display:inline-block;background:rgba(148,163,184,.16);color:#cbd5e1;border:1px solid rgba(148,163,184,.24);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.verification-note{grid-column:1/-1;background:rgba(14,165,233,.09);border:1px solid rgba(14,165,233,.18);border-radius:16px;padding:14px;color:#7dd3fc;font-size:13px;font-weight:900;line-height:1.5}
+
 .edit-btn{width:100%;margin-top:14px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:14px;padding:14px;font-size:15px;box-shadow:0 10px 25px rgba(255,180,0,.25)}
 .status{margin-top:14px;color:#ffd54a;font-weight:900;min-height:24px}
 .small{font-size:12px;color:#aaa;margin-top:8px}
@@ -458,6 +464,11 @@ REVENUE DASHBOARD UPGRADE
   </div>
 
   <div class="stat-card">
+    <h3>Verified Profiles</h3>
+    <div id="statVerified">0</div>
+  </div>
+
+  <div class="stat-card">
     <h3>Hero Billboards</h3>
     <div id="statHero">0</div>
   </div>
@@ -655,6 +666,8 @@ REVENUE DASHBOARD UPGRADE
 
   <label class="checkrow"><input type="checkbox" id="verified"> Verified</label>
   <label class="checkrow"><input type="checkbox" id="featured"> Featured</label>
+  <input id="verification_note" placeholder="Verification note, optional">
+  <div class="verification-note">Verification Center: tick Verified for trusted profiles. Verified profiles get a trust badge and ranking boost.</div>
 
   <div class="filebox">
     <label>Upload Profile Photo</label>
@@ -815,6 +828,8 @@ REVENUE DASHBOARD UPGRADE
 
       <label class="checkrow"><input type="checkbox" id="edit_verified"> Verified</label>
       <label class="checkrow"><input type="checkbox" id="edit_featured"> Featured</label>
+      <input id="edit_verification_note" placeholder="Verification note, optional">
+      <div class="verification-note">Verification Center: add notes for why this profile is trusted or what still needs review.</div>
 
       <textarea id="edit_bio" placeholder="Bio"></textarea>
       <textarea id="edit_about" placeholder="About"></textarea>
@@ -1302,6 +1317,8 @@ async function addProfile(){
       height: valueOf("height"),
       availability: valueOf("availability") || "Online Now",
       verified: checkedOf("verified"),
+      verified_at: checkedOf("verified") ? new Date().toISOString() : null,
+      verification_note: valueOf("verification_note"),
       featured: checkedOf("featured"),
       slug: finalSlug,
       likes_count: numberOf("likes_count"),
@@ -1339,7 +1356,7 @@ function clearForm(){
   [
     "stage_name","phone","location","age","photo_url","video_url","slug",
     "availability","languages","nationality","orientation","height",
-    "incall_price","outcall_price","services","bio","about","last_active","plan_started_at","plan_expires_at","signature_banner_url"
+    "incall_price","outcall_price","services","bio","about","last_active","plan_started_at","plan_expires_at","signature_banner_url","verification_note"
   ].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value = "";
@@ -1559,7 +1576,8 @@ function renderProfiles(){
             🖼️ Banner: ${p.signature_banner_url ? "Yes" : "No"}<br>
             💰 Price: KES ${(Number(p.revenue_plan_price || vaultPlanAmount(p.plan))).toLocaleString()}<br>
             ✅ Approved: ${p.approved ? "Yes" : "No"}<br>
-            🛡️ Verified: ${p.verified ? "Yes" : "No"}<br>
+            ${p.verified ? `<span class="verified-chip">✔ VERIFIED</span><br>` : `<span class="unverified-chip">PENDING VERIFICATION</span><br>`}
+            ${p.verification_note ? `📝 Verification note: ${p.verification_note}<br>` : ""}
             ⭐ Featured: ${p.featured ? "Yes" : "No"}<br>
             🎬 Reel: ${video ? "Yes" : "No"}<br>
             🔗 Slug: ${p.slug || "none"}<br>
@@ -1592,6 +1610,8 @@ function renderProfiles(){
           <div class="actions">
             <button class="approve" onclick="approveProfile('${p.id}')">Approve</button>
             <button class="unapprove" onclick="unapproveProfile('${p.id}')">Hide</button>
+            <button class="verify-btn" onclick="verifyProfile('${p.id}')">✔ Verify</button>
+            <button class="unverify-btn" onclick="unverifyProfile('${p.id}')">✖ Unverify</button>
             <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
             <button class="extend-btn" onclick="extendProfileDays('${p.id}',7)">+7 Days</button>
             <button class="paid-btn" onclick="markProfilePaid('${p.id}')">Mark Paid</button>
@@ -1619,6 +1639,64 @@ function renderProfiles(){
       </article>
     `;
   }).join("");
+}
+
+async function verifyProfile(id){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  const note = prompt("Verification note, optional:", profile.verification_note || "Verified by Nairobi Sweets Admin");
+
+  const updates = {
+    verified:true,
+    verified_at:new Date().toISOString(),
+    verification_note: note || "Verified by Nairobi Sweets Admin",
+    trending_score: trendingFormula(
+      Number(profile.plan_rank || rankFromPlan(profile.plan)),
+      Number(profile.boost_score || boostFromPlan(profile.plan)),
+      Number(profile.views_count || profile.views || 0),
+      Number(profile.likes_count || profile.likes || 0),
+      true,
+      Boolean(profile.featured)
+    )
+  };
+
+  const { error } = await sb
+    .from("profiles")
+    .update(updates)
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("verify_profile",id,profile.stage_name || "","Profile verified");
+  loadProfiles();
+  loadDashboardStats();
+}
+
+async function unverifyProfile(id){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+
+  const ok = confirm("Remove verification from this profile?");
+  if(!ok) return;
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      verified:false,
+      verified_at:null,
+      verification_note:""
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("unverify_profile",id,profile.stage_name || "","Profile verification removed");
+  loadProfiles();
+  loadDashboardStats();
 }
 
 async function openEditModal(id){
@@ -1677,6 +1755,7 @@ async function openEditModal(id){
   document.getElementById("edit_is_expired").checked = Boolean(data.is_expired);
   document.getElementById("edit_verified").checked = Boolean(data.verified);
   document.getElementById("edit_featured").checked = Boolean(data.featured);
+  document.getElementById("edit_verification_note").value = data.verification_note || "";
   document.getElementById("edit_bio").value = data.bio || "";
   document.getElementById("edit_about").value = data.about || "";
 
@@ -1767,6 +1846,8 @@ async function saveProfileEdit(){
     likes: numberOf("edit_likes_count"),
     views: numberOf("edit_views_count"),
     verified: checkedOf("edit_verified"),
+    verified_at: checkedOf("edit_verified") ? new Date().toISOString() : null,
+    verification_note: valueOf("edit_verification_note"),
     featured: checkedOf("edit_featured"),
     bio: valueOf("edit_bio"),
     about: valueOf("edit_about")
@@ -2306,7 +2387,7 @@ async function loadDashboardStats(){
   try{
     const { data,error } = await sb
       .from("profiles")
-      .select("id,stage_name,approved,is_expired,payment_status,plan,plan_label,tier,package,is_signature,homepage_featured,revenue_plan_price,plan_expires_at,expiry_date,expires_at,trial_active,trial_expires_at,created_at");
+      .select("id,stage_name,approved,is_expired,payment_status,plan,plan_label,tier,package,is_signature,homepage_featured,revenue_plan_price,plan_expires_at,expiry_date,expires_at,trial_active,trial_expires_at,created_at,verified");
 
     if(error) throw error;
 
@@ -2356,6 +2437,8 @@ async function loadDashboardStats(){
       String(p.plan || "").toLowerCase().includes("vvip")
     ).length;
 
+    const verifiedCount = profiles.filter(p => p.verified === true).length;
+
     const hero = profiles.filter(p => p.homepage_featured === true).length;
 
     const expiringSoon = profiles.filter(p => {
@@ -2402,6 +2485,7 @@ async function loadDashboardStats(){
     setVaultStat("statVip", vip.toLocaleString());
     setVaultStat("statVipPlus", vipPlus.toLocaleString());
     setVaultStat("statSignature", signature.toLocaleString());
+    setVaultStat("statVerified", verifiedCount.toLocaleString());
     setVaultStat("statHero", hero.toLocaleString());
     setVaultStat("statExpiringSoon", expiringSoon.toLocaleString());
     setVaultStat("statWeeklyPotential", "KES " + weeklyPotential.toLocaleString());
