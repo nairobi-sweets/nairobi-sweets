@@ -68,6 +68,15 @@ textarea{grid-column:1/-1;min-height:120px}
 .bulk-trial-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:16px;padding:16px 22px;font-size:16px;font-weight:900}
 .bulk-trial-note{grid-column:1/-1;color:#ffd54a;background:rgba(255,213,74,.08);border:1px solid rgba(255,213,74,.14);border-radius:16px;padding:14px;font-size:13px;font-weight:900;line-height:1.5}
 @media(max-width:900px){.bulk-trial-actions{grid-template-columns:1fr}}
+
+.admin-contact-card{border:1px solid rgba(34,211,238,.28);box-shadow:0 0 34px rgba(34,211,238,.08),0 18px 50px rgba(0,0,0,.35)}
+.admin-contact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:center}
+.admin-contact-card input{background:#08122f;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;font-size:15px}
+.admin-contact-btn{background:linear-gradient(145deg,#06b6d4,#22d3ee);color:#000;border-radius:16px;padding:16px 22px;font-size:16px;font-weight:900}
+.admin-contact-note{margin-top:14px;color:#22d3ee;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.14);border-radius:16px;padding:14px;font-size:13px;font-weight:900;line-height:1.5}
+.admin-contact-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+.admin-contact-actions a{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:12px 16px;text-decoration:none;font-weight:900}
+@media(max-width:900px){.admin-contact-grid{grid-template-columns:1fr}}
 .trial-chip{display:inline-block;margin-top:8px;padding:8px 10px;border-radius:999px;background:rgba(255,213,74,.16);color:#ffd54a;font-weight:900;font-size:12px}
 .extend-btn{background:#06b6d4;color:#000;border-radius:12px;padding:12px}
 .paid-btn{background:#22c55e;color:#000;border-radius:12px;padding:12px}
@@ -471,6 +480,31 @@ REVENUE DASHBOARD UPGRADE
 </section>
 
 <div class="wrap">
+
+
+<section class="panel admin-contact-card">
+  <h2>📞 Admin Contact Center</h2>
+
+  <div class="admin-contact-grid">
+    <input id="adminName" placeholder="Admin Name">
+    <input id="adminPhone" placeholder="Admin Phone e.g. 2547XXXXXXXX">
+    <input id="adminWhatsapp" placeholder="Admin WhatsApp e.g. 2547XXXXXXXX">
+    <input id="adminEmail" placeholder="Admin Email">
+  </div>
+
+  <div class="admin-contact-actions">
+    <button class="admin-contact-btn" onclick="saveAdminContact()">💾 Save Admin Contact</button>
+    <a id="adminWhatsappPreview" href="#" target="_blank" rel="noopener">💬 Test WhatsApp</a>
+    <a id="adminCallPreview" href="#">📞 Test Call</a>
+    <a id="adminEmailPreview" href="#">✉️ Test Email</a>
+  </div>
+
+  <div class="admin-contact-note">
+    Change the main Nairobi Sweets admin contact from here. These details can be reused on homepage, signup, login, dashboard and profile pages.
+  </div>
+
+  <div class="status" id="adminContactStatus"></div>
+</section>
 
 <section class="panel bulk-trial-card">
   <h2>🎁 Bulk Trial Activation</h2>
@@ -2516,6 +2550,126 @@ async function deleteStaffUser(id){
 }
 
 
+
+/* =========================
+ADMIN CONTACT CENTER
+========================= */
+let SITE_SETTINGS_ID = null;
+
+function normalizePhoneForLink(phone){
+  return String(phone || "").replace(/\D/g,"");
+}
+
+function updateAdminContactPreview(){
+  const phone = normalizePhoneForLink(document.getElementById("adminPhone")?.value || "");
+  const whatsapp = normalizePhoneForLink(document.getElementById("adminWhatsapp")?.value || phone);
+  const email = String(document.getElementById("adminEmail")?.value || "").trim();
+
+  const wa = document.getElementById("adminWhatsappPreview");
+  const call = document.getElementById("adminCallPreview");
+  const mail = document.getElementById("adminEmailPreview");
+
+  if(wa) wa.href = whatsapp ? `https://wa.me/${whatsapp}?text=${encodeURIComponent("Hello Nairobi Sweets Admin")}` : "#";
+  if(call) call.href = phone ? `tel:+${phone}` : "#";
+  if(mail) mail.href = email ? `mailto:${email}` : "#";
+}
+
+async function loadAdminContact(){
+  const status = document.getElementById("adminContactStatus");
+
+  try{
+    const { data, error } = await sb
+      .from("site_settings")
+      .select("id,admin_name,admin_phone,admin_whatsapp,admin_email")
+      .order("id",{ascending:true})
+      .limit(1)
+      .maybeSingle();
+
+    if(error) throw error;
+
+    if(data){
+      SITE_SETTINGS_ID = data.id;
+      document.getElementById("adminName").value = data.admin_name || "";
+      document.getElementById("adminPhone").value = data.admin_phone || "";
+      document.getElementById("adminWhatsapp").value = data.admin_whatsapp || "";
+      document.getElementById("adminEmail").value = data.admin_email || "";
+      updateAdminContactPreview();
+      return;
+    }
+
+    if(status){
+      status.textContent = "No admin contact found yet. Fill the form and save.";
+      status.style.color = "#ffd54a";
+    }
+  }catch(error){
+    if(status){
+      status.textContent = "Admin contact load error: " + error.message;
+      status.style.color = "#ff6b6b";
+    }
+  }
+}
+
+async function saveAdminContact(){
+  const status = document.getElementById("adminContactStatus");
+
+  const payload = {
+    admin_name: valueOf("adminName") || "Nairobi Sweets Admin",
+    admin_phone: cleanPhone(valueOf("adminPhone")),
+    admin_whatsapp: cleanPhone(valueOf("adminWhatsapp") || valueOf("adminPhone")),
+    admin_email: valueOf("adminEmail"),
+    updated_at: new Date().toISOString()
+  };
+
+  if(!payload.admin_phone || !payload.admin_whatsapp){
+    if(status){
+      status.textContent = "Phone and WhatsApp are required.";
+      status.style.color = "#ff6b6b";
+    }
+    return;
+  }
+
+  try{
+    let error = null;
+
+    if(SITE_SETTINGS_ID){
+      const res = await sb
+        .from("site_settings")
+        .update(payload)
+        .eq("id",SITE_SETTINGS_ID);
+      error = res.error;
+    }else{
+      const res = await sb
+        .from("site_settings")
+        .insert(payload)
+        .select("id")
+        .single();
+      error = res.error;
+      if(res.data) SITE_SETTINGS_ID = res.data.id;
+    }
+
+    if(error) throw error;
+
+    updateAdminContactPreview();
+    await audit("admin_contact_updated","","",`${payload.admin_name} / ${payload.admin_whatsapp}`);
+
+    if(status){
+      status.textContent = "Admin contact updated successfully.";
+      status.style.color = "#22c55e";
+    }
+  }catch(error){
+    if(status){
+      status.textContent = "Admin contact save error: " + error.message;
+      status.style.color = "#ff6b6b";
+    }
+  }
+}
+
+["adminName","adminPhone","adminWhatsapp","adminEmail"].forEach(id=>{
+  document.addEventListener("input",(event)=>{
+    if(event.target && event.target.id === id) updateAdminContactPreview();
+  });
+});
+
 /* =========================
 MEDIA WATERMARK PROTECTION
 ========================= */
@@ -2545,6 +2699,7 @@ document.addEventListener("keydown",(e)=>{
   }
 });
 
+loadAdminContact();
 loadProfiles();
 loadStaffUsers();
 
