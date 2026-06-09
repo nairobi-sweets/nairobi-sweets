@@ -43,6 +43,16 @@ textarea{grid-column:1/-1;min-height:120px}
 .unverified-chip{display:inline-block;background:rgba(148,163,184,.16);color:#cbd5e1;border:1px solid rgba(148,163,184,.24);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
 .verification-note{grid-column:1/-1;background:rgba(14,165,233,.09);border:1px solid rgba(14,165,233,.18);border-radius:16px;padding:14px;color:#7dd3fc;font-size:13px;font-weight:900;line-height:1.5}
 
+.boost-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#ff7a18,#ffd54a);color:#000;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.boost-hot-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#ef4444,#f97316);color:#fff;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.pin-top-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#ffd54a,#a855f7);color:#000;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.reset-boost-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#64748b,#111827);color:#fff;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.boost-control-strip{margin-top:12px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.boost-control-strip button{border-radius:14px;padding:12px;font-size:13px;font-weight:950}
+.boost-chip{display:inline-block;background:linear-gradient(145deg,#ff7a18,#ffd54a);color:#000;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.pinned-chip{display:inline-block;background:linear-gradient(145deg,#ffd54a,#a855f7);color:#000;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+
+
 .edit-btn{width:100%;margin-top:14px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:14px;padding:14px;font-size:15px;box-shadow:0 10px 25px rgba(255,180,0,.25)}
 .status{margin-top:14px;color:#ffd54a;font-weight:900;min-height:24px}
 .small{font-size:12px;color:#aaa;margin-top:8px}
@@ -482,6 +492,16 @@ REVENUE DASHBOARD UPGRADE
     <h3>Weekly Potential</h3>
     <div id="statWeeklyPotential">KES 0</div>
   </div>
+  <div class="stat-card">
+    <h3>Boosted Profiles</h3>
+    <div id="statBoosted">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Pinned Top</h3>
+    <div id="statPinnedTop">0</div>
+  </div>
+
 </section>
 
 <section class="panel membership-control-card">
@@ -1331,6 +1351,7 @@ async function addProfile(){
       signature_banner_url: valueOf("signature_banner_url") || finalPhotoUrl,
       homepage_featured: checkedOf("homepage_featured"),
       homepage_featured_position: numberOrDefault("homepage_featured_position",999),
+      pinned_top: checkedOf("homepage_featured"),
       revenue_plan_price: numberOrDefault("revenue_plan_price",planAmount(planValue)),
       created_at: new Date().toISOString()
     };
@@ -1458,6 +1479,7 @@ function profileSearchText(p){
     ${p.orientation || ""}
     ${p.is_signature ? "signature billboard" : ""}
     ${p.homepage_featured ? "hero billboard" : ""}
+    ${p.pinned_top ? "pinned top boost boosted" : ""}
     ${p.signature_banner_url || ""}
     ${services}
   `.toLowerCase();
@@ -1583,6 +1605,9 @@ function renderProfiles(){
             🔗 Slug: ${p.slug || "none"}<br>
             🧠 Rank: ${p.plan_rank || 0} · 🚀 Boost: ${p.boost_score || 0}<br>
             🔥 Trending: ${p.trending_score || 0}<br>
+            🚀 Boost Score: ${p.boost_score || p.boost || 0}<br>
+            ${Number(p.boost_score || p.boost || 0) > 0 ? `<span class="boost-chip">🚀 BOOSTED +${Number(p.boost_score || p.boost || 0)}</span><br>` : ""}
+            ${p.pinned_top ? `<span class="pinned-chip">👑 PINNED TOP</span><br>` : ""}
             🕒 Active: ${p.last_active ? new Date(p.last_active).toLocaleString() : "not set"}<br>
             💳 Payment: ${p.payment_status || "unpaid"}<br>
             👤 Owner: ${p.user_id || p.owner_id || "not linked"}<br>
@@ -1622,6 +1647,14 @@ function renderProfiles(){
           <button class="edit-btn" onclick="openEditModal('${p.id}')" style="background:linear-gradient(145deg,#06b6d4,#22d3ee)">📷 Change Picture</button>
           <button class="edit-btn" onclick="openEditModal('${p.id}')" style="background:linear-gradient(145deg,#a855f7,#ec4899);color:white">🎬 Change Reel</button>
           <button class="signature-btn" onclick="quickMakeSignature('${p.id}')">👑 Make Signature</button>
+
+          <div class="boost-control-strip">
+            <button class="boost-btn" onclick="boostProfile('${p.id}',100)">🚀 Boost +100</button>
+            <button class="boost-hot-btn" onclick="boostProfile('${p.id}',500)">🔥 Boost +500</button>
+            <button class="pin-top-btn" onclick="pinProfileTop('${p.id}')">👑 Pin Top</button>
+            <button class="reset-boost-btn" onclick="resetProfileBoost('${p.id}')">♻ Reset</button>
+          </div>
+
           <button class="renew-btn" onclick="openRenewModal('${p.id}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}')">💰 Renew / Pay Now</button>
 
           <div class="trial-row">
@@ -2312,6 +2345,128 @@ Reply here when ready.`
 }
 
 
+
+async function boostProfile(id,amount){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  const boostAmount = Number(amount || 100);
+  const currentBoost = Number(profile.boost_score || profile.boost || 0);
+  const newBoost = currentBoost + boostAmount;
+
+  const newTrending = trendingFormula(
+    Number(profile.plan_rank || rankFromPlan(profile.plan)),
+    newBoost,
+    Number(profile.views_count || profile.views || 0),
+    Number(profile.likes_count || profile.likes || 0),
+    Boolean(profile.verified),
+    Boolean(profile.featured)
+  );
+
+  const ok = confirm(`Boost ${profile.stage_name || "this profile"} by +${boostAmount}?`);
+  if(!ok) return;
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      boost_score:newBoost,
+      boost:newBoost,
+      trending_score:newTrending,
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("profile_boosted",id,profile.stage_name || "",`Boosted by +${boostAmount}. New boost score: ${newBoost}`);
+  loadProfiles();
+  loadDashboardStats();
+  loadRevenueDashboard();
+}
+
+async function pinProfileTop(id){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  const ok = confirm(`Pin ${profile.stage_name || "this profile"} to the top?`);
+  if(!ok) return;
+
+  const currentBoost = Number(profile.boost_score || profile.boost || 0);
+  const newBoost = Math.max(currentBoost,5000);
+  const newTrending = trendingFormula(
+    10,
+    newBoost,
+    Number(profile.views_count || profile.views || 0),
+    Number(profile.likes_count || profile.likes || 0),
+    Boolean(profile.verified),
+    true
+  ) + 10000;
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      pinned_top:true,
+      homepage_featured:true,
+      homepage_featured_position:1,
+      featured:true,
+      plan_rank:10,
+      boost_score:newBoost,
+      boost:newBoost,
+      trending_score:newTrending,
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("profile_pinned_top",id,profile.stage_name || "","Profile pinned to top with boost engine");
+  loadProfiles();
+  loadDashboardStats();
+  loadRevenueDashboard();
+}
+
+async function resetProfileBoost(id){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  const ok = confirm(`Reset boost for ${profile.stage_name || "this profile"}?`);
+  if(!ok) return;
+
+  const planRank = rankFromPlan(profile.plan);
+  const baseBoost = boostFromPlan(profile.plan);
+  const newTrending = trendingFormula(
+    planRank,
+    baseBoost,
+    Number(profile.views_count || profile.views || 0),
+    Number(profile.likes_count || profile.likes || 0),
+    Boolean(profile.verified),
+    Boolean(profile.featured)
+  );
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      pinned_top:false,
+      boost_score:baseBoost,
+      boost:baseBoost,
+      plan_rank:planRank,
+      trending_score:newTrending,
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("profile_boost_reset",id,profile.stage_name || "","Boost reset to plan default");
+  loadProfiles();
+  loadDashboardStats();
+  loadRevenueDashboard();
+}
+
+
 async function quickMakeSignature(id){
   const current = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
   const nextPosition = Number(current.signature_position || 999) === 999
@@ -2387,7 +2542,7 @@ async function loadDashboardStats(){
   try{
     const { data,error } = await sb
       .from("profiles")
-      .select("id,stage_name,approved,is_expired,payment_status,plan,plan_label,tier,package,is_signature,homepage_featured,revenue_plan_price,plan_expires_at,expiry_date,expires_at,trial_active,trial_expires_at,created_at,verified");
+      .select("id,stage_name,approved,is_expired,payment_status,plan,plan_label,tier,package,is_signature,homepage_featured,revenue_plan_price,plan_expires_at,expiry_date,expires_at,trial_active,trial_expires_at,created_at,verified,boost_score,boost,pinned_top");
 
     if(error) throw error;
 
@@ -2439,6 +2594,9 @@ async function loadDashboardStats(){
 
     const verifiedCount = profiles.filter(p => p.verified === true).length;
 
+    const boostedCount = profiles.filter(p => Number(p.boost_score || p.boost || 0) > 0).length;
+    const pinnedTopCount = profiles.filter(p => p.pinned_top === true).length;
+
     const hero = profiles.filter(p => p.homepage_featured === true).length;
 
     const expiringSoon = profiles.filter(p => {
@@ -2486,6 +2644,8 @@ async function loadDashboardStats(){
     setVaultStat("statVipPlus", vipPlus.toLocaleString());
     setVaultStat("statSignature", signature.toLocaleString());
     setVaultStat("statVerified", verifiedCount.toLocaleString());
+    setVaultStat("statBoosted", boostedCount.toLocaleString());
+    setVaultStat("statPinnedTop", pinnedTopCount.toLocaleString());
     setVaultStat("statHero", hero.toLocaleString());
     setVaultStat("statExpiringSoon", expiringSoon.toLocaleString());
     setVaultStat("statWeeklyPotential", "KES " + weeklyPotential.toLocaleString());
