@@ -1473,6 +1473,47 @@ MOBILE UX CLEANUP PATCH
   .sweet-ai{right:18px;bottom:78px;width:44px;height:44px}
 }
 
+
+
+/* =========================
+CLEAN CARD BADGE RAIL
+Keeps image clear: no badges cover faces/photos
+========================= */
+.card-badge-rail{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  padding:10px 12px 0;
+  background:linear-gradient(180deg,#020a56,#010633);
+}
+.card-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  min-height:28px;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:950;
+  line-height:1;
+  white-space:nowrap;
+}
+.card-chip.verified{background:#0ea5e9;color:#fff}
+.card-chip.trending{background:rgba(0,0,0,.72);color:#ffd54a;border:1px solid rgba(255,213,74,.20)}
+.card-chip.rank{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.card-chip.boost{background:linear-gradient(145deg,#ec4899,#a855f7);color:#fff}
+.card-chip.pinned{background:linear-gradient(145deg,#22c55e,#06b6d4);color:#00111f}
+.card-chip.online-mini{width:16px;min-height:16px;height:16px;padding:0;background:#31ff71;border:3px solid #fff;box-shadow:0 0 12px rgba(49,255,113,.45)}
+.card .online-dot,
+.card .featured-badge,
+.card .verified-badge,
+.card .boost-badge,
+.card .pinned-badge,
+.card .trend-rank-badge{
+  display:none !important;
+}
 </style>
 </head>
 
@@ -1586,6 +1627,26 @@ AGE GATE
   </div>
 </section>
 
+<section class="signature-wrap">
+  <div class="signature-box">
+    <div class="signature-header">
+      <h2>👑 Signature Profiles</h2>
+      <span>Premium Luxury Placement</span>
+    </div>
+
+    <div class="signature-row" id="signatureProfiles"></div>
+  </div>
+</section>
+
+<section class="shorts-section">
+  <div class="shorts-header">
+    <h2>🔥 Nairobi Shorts</h2>
+    <a href="/reel.html">Open Reels →</a>
+  </div>
+
+  <div class="shorts-row" id="shortsRow"></div>
+</section>
+
 <section class="stats-wrap" aria-label="Live Nairobi Sweets stats">
   <div class="stats-box">
     <div class="stat-mini">
@@ -1624,26 +1685,6 @@ AGE GATE
 
 <section class="profiles" id="profiles">
   <div class="loading">Loading profiles...</div>
-</section>
-
-<section class="signature-wrap">
-  <div class="signature-box">
-    <div class="signature-header">
-      <h2>👑 Signature Profiles</h2>
-      <span>Premium Luxury Placement</span>
-    </div>
-
-    <div class="signature-row" id="signatureProfiles"></div>
-  </div>
-</section>
-
-<section class="shorts-section">
-  <div class="shorts-header">
-    <h2>🔥 Nairobi Shorts</h2>
-    <a href="/reel.html">Open Reels →</a>
-  </div>
-
-  <div class="shorts-row" id="shortsRow"></div>
 </section>
 
 <section class="join-pricing-wrap" id="join">
@@ -2314,6 +2355,15 @@ function renderProfiles(data){
           onload="markPosterImage(this)"
           onerror="this.src='/assets/logo/logo-badge.png'"
         >
+
+        <div class="card-badge-rail">
+          <span class="card-chip online-mini" title="Online Now"></span>
+          ${profile.pinned_top ? `<span class="card-chip pinned">👑 PINNED</span>` : ``}
+          ${index < 3 ? `<span class="card-chip rank">${index === 0 ? '🥇 #1' : index === 1 ? '🥈 #2' : '🥉 #3'}</span>` : ``}
+          ${profile.verified ? `<span class="card-chip verified">✔ VERIFIED</span>` : ``}
+          <span class="card-chip trending">${getBadge(profile)}</span>
+          ${Number(profile.boost_score || profile.boost || 0) > 0 ? `<span class="card-chip boost">🚀 ${Number(profile.boost_score || profile.boost || 0).toLocaleString()}</span>` : ``}
+        </div>
 
         <div class="card-body">
           <div class="card-name">
