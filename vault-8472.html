@@ -2507,7 +2507,7 @@ Reply here when ready.`
 
 
 
-async async function boostProfile(id,amount){
+async function boostProfile(id,amount){
   const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
   const boostAmount = Number(amount || 100);
   const currentBoost = Number(profile.boost_score || profile.boost || 0);
