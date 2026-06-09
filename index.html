@@ -651,8 +651,7 @@ SIGNATURE PROFILES BANNER
   cursor:pointer;
 }
 
-.short-card video,
-.short-card img{
+.short-card video{
   width:100%;
   height:100%;
   object-fit:cover;
@@ -660,6 +659,8 @@ SIGNATURE PROFILES BANNER
   backface-visibility:hidden;
   transform:translateZ(0);
 }
+
+.short-card img{display:none !important;}
 
 .short-overlay{
   position:absolute;
@@ -1475,6 +1476,17 @@ MOBILE UX CLEANUP PATCH
 
 
 
+/* FINAL CLEANUP: keep all profile photos clear. Old absolute badges are hidden;
+   the visible badges now live in .card-badge-rail under the image. */
+.card > .featured-badge,
+.card > .verified-badge,
+.card > .boost-badge,
+.card > .pinned-badge,
+.card > .trend-rank-badge,
+.card > .online-dot{
+  display:none !important;
+}
+
 /* =========================
 CLEAN CARD BADGE RAIL
 Keeps image clear: no badges cover faces/photos
@@ -2010,7 +2022,8 @@ function hasVideo(profile){
 }
 
 function isVideo(url){
-  return /\.(mp4|webm|mov)$/i.test(String(url || ""));
+  const clean = String(url || "").split("?")[0].split("#")[0];
+  return /\.(mp4|webm|mov|m4v)$/i.test(clean);
 }
 
 function getName(profile){
@@ -2381,16 +2394,11 @@ function renderProfiles(data){
 
   profilesEl.innerHTML = data.map((profile,index)=>{
     const phone = safePhone(profile.phone || profile.whatsapp);
+    const boostValue = Number(profile.boost_score || profile.boost || 0);
+    const qualityValue = Math.round(derivedImageQuality(profile));
 
     return `
       <article class="card" onclick="openProfileCard('${profile.id}')">
-        <span class="online-dot"></span>
-        ${trendRankBadge(index)}
-        <div class="featured-badge">${getBadge(profile)}</div>
-        ${profile.pinned_top ? `<div class="pinned-badge">👑 PINNED</div>` : ``}
-        ${Number(profile.boost_score || profile.boost || 0) > 0 ? `<div class="boost-badge">🚀 BOOST ${Number(profile.boost_score || profile.boost || 0).toLocaleString()}</div>` : ``}
-        ${profile.verified ? `<div class="verified-badge">✔ VERIFIED</div>` : ``}
-
         <img
           src="${getImage(profile)}"
           srcset="${getImageSrcSet(profile)}"
@@ -2410,9 +2418,9 @@ function renderProfiles(data){
           ${profile.pinned_top ? `<span class="card-chip pinned">👑 PINNED</span>` : ``}
           ${index < 3 ? `<span class="card-chip rank">${index === 0 ? '🥇 #1' : index === 1 ? '🥈 #2' : '🥉 #3'}</span>` : ``}
           ${profile.verified ? `<span class="card-chip verified">✔ VERIFIED</span>` : ``}
-          ${derivedImageQuality(profile) >= 60 ? `<span class="card-chip quality">✨ HD ${Math.round(derivedImageQuality(profile))}</span>` : ``}
+          ${qualityValue >= 60 ? `<span class="card-chip quality">✨ HD ${qualityValue}</span>` : ``}
           <span class="card-chip trending">${getBadge(profile)}</span>
-          ${Number(profile.boost_score || profile.boost || 0) > 0 ? `<span class="card-chip boost">🚀 ${Number(profile.boost_score || profile.boost || 0).toLocaleString()}</span>` : ``}
+          ${boostValue > 0 ? `<span class="card-chip boost">🚀 ${boostValue.toLocaleString()}</span>` : ``}
         </div>
 
         <div class="card-body">
