@@ -183,6 +183,33 @@ body{
   background:rgba(255,255,255,.18);
 }
 
+.profile-action{
+  background:linear-gradient(180deg,#38bdf8,#2563eb);
+  color:#fff;
+}
+
+.hd-badge{
+  display:inline-block;
+  margin-left:8px;
+  background:rgba(14,165,233,.9);
+  color:#fff;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:950;
+}
+
+.verified-reel{
+  display:inline-block;
+  margin-left:8px;
+  background:linear-gradient(135deg,#22c55e,#15803d);
+  color:#fff;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:950;
+}
+
 .bottom-nav{
   position:fixed;
   left:0;
@@ -262,6 +289,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const feed = document.getElementById("feed");
+const viewedReels = new Set();
 
 function safePhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
@@ -273,15 +301,18 @@ function safePhone(phone){
 
 function getVideo(profile){
   return (
-    profile.video_url ||
-    profile.short_url ||
     profile.reel_url ||
+    profile.reel ||
+    profile.video_url ||
+    profile.short_video ||
+    profile.short_url ||
     ""
   );
 }
 
 function isValidVideo(url){
-  return /\.(mp4|webm|mov)$/i.test(String(url || ""));
+  const clean = String(url || "").split("?")[0].toLowerCase();
+  return clean.endsWith(".mp4") || clean.endsWith(".webm") || clean.endsWith(".mov") || clean.includes("/storage/v1/object/public/");
 }
 
 function getName(profile){
@@ -296,36 +327,81 @@ function getPlan(profile){
   return String(profile.plan || profile.plan_name || profile.package || profile.tier || "").toLowerCase();
 }
 
-function getBadge(profile){
+function isSignature(profile){
   const plan = getPlan(profile);
-  if(plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP Pick";
-  if(plan.includes("vip")) return "👑 VIP Pick";
+  return plan.includes("signature") || plan.includes("vvip") || profile.is_signature === true;
+}
+
+function isVip(profile){
+  const plan = getPlan(profile);
+  return plan.includes("vip") || plan.includes("vip-plus") || plan.includes("vip+");
+}
+
+function getBadge(profile){
+  if(isSignature(profile)) return "👑 Signature Reel";
+  if(isVip(profile)) return "⭐ VIP Reel";
   return "🎬 Reel Pick";
 }
 
+function rankingScore(profile){
+  return (
+    (Number(profile.image_quality_score || 0) * 0.40) +
+    (Number(profile.likes_count || profile.likes || 0) * 0.20) +
+    (Number(profile.views_count || profile.views || 0) * 0.15) +
+    (Number(profile.boost_score || profile.boost || 0) * 0.15) +
+    ((profile.verified === true || profile.verified === "true") ? 100 : 0) * 0.10
+  );
+}
+
+function priorityScore(profile){
+  if(isSignature(profile)) return 3;
+  if(isVip(profile)) return 2;
+  return 1;
+}
+
 function getAiBadge(profile){
-  const plan = getPlan(profile);
+  const quality = Number(profile.image_quality_score || 0);
   const views = Number(profile.views_count || profile.views || 0);
   const likes = Number(profile.likes_count || profile.likes || 0);
 
-  if(plan.includes("vip")) return "👑 VIP Energy";
+  if(isSignature(profile)) return "👑 Signature Energy";
+  if(isVip(profile)) return "⭐ VIP Energy";
+  if(quality >= 80) return "📸 HD Reel";
   if(views > 1000) return "🔥 Trending";
   if(likes > 50) return "💋 Most Liked";
 
   return "✨ Sweet Reels";
 }
 
+function profileUrl(profile){
+  if(profile.slug){
+    return `/profile.html?slug=${encodeURIComponent(profile.slug)}`;
+  }
+  return `/profile.html?id=${encodeURIComponent(profile.id)}`;
+}
+
+function escapeHTML(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
 function renderReel(profile){
   const video = getVideo(profile);
   const phone = safePhone(profile.phone || profile.whatsapp);
-  const name = getName(profile);
+  const name = escapeHTML(getName(profile));
+  const quality = Number(profile.image_quality_score || 0);
+  const verified = profile.verified === true || profile.verified === "true";
 
   return `
-    <section class="reel">
+    <section class="reel" data-profile-id="${profile.id}">
 
       <video
         class="video"
-        src="${video}"
+        src="${escapeHTML(video)}"
         autoplay
         muted
         loop
@@ -336,14 +412,19 @@ function renderReel(profile){
       <div class="ai-badge">${getAiBadge(profile)}</div>
 
       <div class="info">
-        <div class="badge">${getBadge(profile)}</div>
+        <div class="badge">
+          ${getBadge(profile)}
+          ${quality >= 80 ? `<span class="hd-badge">📸 HD ${quality}</span>` : ``}
+          ${verified ? `<span class="verified-reel">🎬 Verified Reel</span>` : ``}
+        </div>
         <div class="name">${name}</div>
-        <div class="location">📍 ${getLocation(profile)} · 🟢 Online Now</div>
-        <div class="bio">${profile.bio || profile.description || "Watch the reel, then tap WhatsApp or call to connect."}</div>
+        <div class="location">📍 ${escapeHTML(getLocation(profile))} · 🟢 Online Now</div>
+        <div class="bio">${escapeHTML(profile.bio || profile.description || "Watch the reel, then tap WhatsApp or call to connect.")}</div>
       </div>
 
       <div class="actions">
         <button class="action mute" onclick="toggleMute(this)">🔇</button>
+        <a class="action profile-action" href="${profileUrl(profile)}">👤</a>
         <a class="action" onclick="likeReel('${profile.id}')">❤️</a>
         <a class="action">👁️</a>
         ${phone ? `<a class="action whatsapp" href="https://wa.me/${phone}" target="_blank" rel="noopener">💬</a>` : ""}
@@ -359,8 +440,8 @@ async function loadReels(){
     .from("profiles")
     .select("*")
     .eq("approved",true)
-    .order("created_at",{ascending:false})
-    .limit(80);
+    .or("is_expired.eq.false,is_expired.is.null")
+    .limit(120);
 
   if(error){
     feed.innerHTML = `<div class="empty">Supabase error: ${error.message}</div>`;
@@ -376,16 +457,16 @@ async function loadReels(){
     feed.innerHTML = `
       <div class="empty">
         No video reels yet.<br><br>
-        Add public MP4 links to video_url, short_url, or reel_url in Supabase.
+        Upload reels from Vault or public signup. Reels must use reel_url, video_url, short_video, or short_url.
       </div>
     `;
     return;
   }
 
   const ranked = reels.sort((a,b)=>{
-    const scoreA = Number(a.likes_count || 0) * 3 + Number(a.views_count || 0);
-    const scoreB = Number(b.likes_count || 0) * 3 + Number(b.views_count || 0);
-    return scoreB - scoreA;
+    const priorityDiff = priorityScore(b) - priorityScore(a);
+    if(priorityDiff !== 0) return priorityDiff;
+    return rankingScore(b) - rankingScore(a);
   });
 
   feed.innerHTML = ranked.map(renderReel).join("");
@@ -397,8 +478,15 @@ function observeVideos(){
 
   const observer = new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
+      const reel = entry.target.closest(".reel");
+      const profileId = reel ? reel.dataset.profileId : "";
+
       if(entry.isIntersecting){
         entry.target.play().catch(()=>{});
+        if(profileId && !viewedReels.has(profileId)){
+          viewedReels.add(profileId);
+          trackReelView(profileId);
+        }
       }else{
         entry.target.pause();
       }
@@ -429,6 +517,38 @@ async function likeReel(id){
     .from("profiles")
     .update({likes_count:likes})
     .eq("id",id);
+}
+
+async function trackReelView(id){
+  try{
+    const {data} = await sb
+      .from("profiles")
+      .select("views_count,views,video_plays")
+      .eq("id",id)
+      .single();
+
+    await sb
+      .from("profiles")
+      .update({
+        views_count:Number(data?.views_count || 0) + 1,
+        views:Number(data?.views || 0) + 1,
+        video_plays:Number(data?.video_plays || 0) + 1
+      })
+      .eq("id",id);
+  }catch(error){
+    console.log("Reel view tracking skipped", error.message || error);
+  }
+
+  try{
+    await sb.from("profile_events").insert({
+      profile_id:id,
+      event_type:"reel_view",
+      source_page:"/reel.html",
+      created_at:new Date().toISOString()
+    });
+  }catch(error){
+    console.log("Reel event tracking skipped", error.message || error);
+  }
 }
 
 window.toggleMute = toggleMute;
