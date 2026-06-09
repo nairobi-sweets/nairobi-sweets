@@ -462,12 +462,12 @@ footer{text-align:center;color:var(--muted);padding:34px}
     </div>
 
     <div class="files">
-      <div><div class="file-box"><span>Main Picture*</span><input id="photo1" type="file" accept="image/*" required></div><img id="preview1" class="preview"></div>
-      <div><div class="file-box"><span>2nd Picture*</span><input id="photo2" type="file" accept="image/*" required></div><img id="preview2" class="preview"></div>
-      <div><div class="file-box"><span>3rd Picture*</span><input id="photo3" type="file" accept="image/*" required></div><img id="preview3" class="preview"></div>
-      <div><div class="file-box"><span>4th Picture</span><input id="photo4" type="file" accept="image/*"></div><img id="preview4" class="preview"></div>
-      <div><div class="file-box"><span>Video 1*</span><input id="video1" type="file" accept="video/*" required></div></div>
-      <div><div class="file-box"><span>Video 2</span><input id="video2" type="file" accept="video/*"></div></div>
+      <div><div class="file-box"><span>Main Picture*</span><input id="photo1" type="file" accept="image/jpeg,image/png,image/webp" required></div><img id="preview1" class="preview"></div>
+      <div><div class="file-box"><span>2nd Picture*</span><input id="photo2" type="file" accept="image/jpeg,image/png,image/webp" required></div><img id="preview2" class="preview"></div>
+      <div><div class="file-box"><span>3rd Picture*</span><input id="photo3" type="file" accept="image/jpeg,image/png,image/webp" required></div><img id="preview3" class="preview"></div>
+      <div><div class="file-box"><span>4th Picture</span><input id="photo4" type="file" accept="image/jpeg,image/png,image/webp"></div><img id="preview4" class="preview"></div>
+      <div><div class="file-box"><span>Video 1*</span><input id="video1" type="file" accept="video/mp4,video/webm,video/quicktime" required></div></div>
+      <div><div class="file-box"><span>Video 2</span><input id="video2" type="file" accept="video/mp4,video/webm,video/quicktime"></div></div>
     </div>
 
     <section class="plan-card">
@@ -569,6 +569,11 @@ const PLAN_RANKS = {
   "vip-plus": 3,
   signature: 4
 };
+
+const MAX_IMAGE_SIZE_MB = 5;
+const MAX_VIDEO_SIZE_MB = 80;
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg","image/png","image/webp"];
+const ACCEPTED_VIDEO_TYPES = ["video/mp4","video/webm","video/quicktime"];
 
 let currentUser = null;
 
@@ -718,6 +723,39 @@ function calculateProfileScore({ imageQualityScore, likes=0, views=0, boost=0, v
     Number(boost || 0) * 0.15 +
     verifiedScore * 0.10
   );
+}
+
+function sizeMB(file){
+  return file ? file.size / (1024 * 1024) : 0;
+}
+
+function validateMediaFiles({ photos, videos }){
+  const requiredPhotos = photos.slice(0,3);
+  const requiredVideo = videos[0];
+
+  if(requiredPhotos.some(file => !file) || !requiredVideo){
+    throw new Error("Please upload at least 3 pictures and 1 video.");
+  }
+
+  photos.filter(Boolean).forEach((file,index)=>{
+    if(!ACCEPTED_IMAGE_TYPES.includes(file.type)){
+      throw new Error(`Photo ${index + 1} must be JPG, PNG, or WebP.`);
+    }
+
+    if(sizeMB(file) > MAX_IMAGE_SIZE_MB){
+      throw new Error(`Photo ${index + 1} is too large. Maximum image size is ${MAX_IMAGE_SIZE_MB}MB.`);
+    }
+  });
+
+  videos.filter(Boolean).forEach((file,index)=>{
+    if(!ACCEPTED_VIDEO_TYPES.includes(file.type)){
+      throw new Error(`Video ${index + 1} must be MP4, WebM, or MOV.`);
+    }
+
+    if(sizeMB(file) > MAX_VIDEO_SIZE_MB){
+      throw new Error(`Video ${index + 1} is too large. Maximum video size is ${MAX_VIDEO_SIZE_MB}MB.`);
+    }
+  });
 }
 
 async function uploadFile(bucket,file,folder){
@@ -905,6 +943,13 @@ form.addEventListener("submit",async(e)=>{
     const video1 = document.getElementById("video1").files[0];
     const video2 = document.getElementById("video2").files[0];
 
+    validateMediaFiles({
+      photos:[photo1,photo2,photo3,photo4],
+      videos:[video1,video2]
+    });
+
+    showMsg("Checking image quality...");
+
     const imageQualityScore = await calculateImageQuality(
       [photo1,photo2,photo3,photo4],
       Boolean(video1)
@@ -917,10 +962,6 @@ form.addEventListener("submit",async(e)=>{
       boost:0,
       verified:false
     });
-
-    if(!photo1 || !photo2 || !photo3 || !video1){
-      throw new Error("Please upload at least 3 pictures and 1 video.");
-    }
 
     const folder = `${user.id}/${slugify(stageName)}-${Date.now()}`;
 
