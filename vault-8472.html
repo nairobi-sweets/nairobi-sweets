@@ -60,6 +60,10 @@ textarea{grid-column:1/-1;min-height:120px}
 
 .renew-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#00e676,#00a152);color:#000;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
 .whatsapp-reminder-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#25D366,#128C7E);color:#fff;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.trial-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.trial-row select{padding:12px;border-radius:14px;background:#08122f;color:white;border:1px solid rgba(255,255,255,.14);font-weight:900}
+.trial-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:14px;padding:12px 14px;font-size:14px;font-weight:900}
+.trial-chip{display:inline-block;margin-top:8px;padding:8px 10px;border-radius:999px;background:rgba(255,213,74,.16);color:#ffd54a;font-weight:900;font-size:12px}
 .extend-btn{background:#06b6d4;color:#000;border-radius:12px;padding:12px}
 .paid-btn{background:#22c55e;color:#000;border-radius:12px;padding:12px}
 .expire-btn{background:#f59e0b;color:#000;border-radius:12px;padding:12px}
@@ -921,7 +925,7 @@ function addDaysISO(base,days){
 
 function expiryInfo(p){
   const expired = Boolean(p.is_expired) || String(p.payment_status || "").toLowerCase() === "expired";
-  const raw = p.plan_expires_at || p.expiry_date || "";
+  const raw = p.trial_expires_at || p.plan_expires_at || p.expires_at || p.expiry_date || "";
   if(!raw){
     return {label:"No expiry set", klass:"expiry-soon", days:null, raw:""};
   }
@@ -932,6 +936,10 @@ function expiryInfo(p){
   }
 
   const diff = Math.ceil((exp.getTime() - Date.now()) / 86400000);
+
+  if(String(p.payment_status || "").toLowerCase() === "trial" && diff >= 0){
+    return {label:`Trial active: ${diff} day${diff === 1 ? "" : "s"} left`, klass:"expiry-soon", days:diff, raw};
+  }
 
   if(expired || diff < 0){
     return {label:"Expired", klass:"expiry-expired", days:diff, raw};
@@ -1465,7 +1473,18 @@ function renderProfiles(){
           <button class="edit-btn" onclick="openEditModal('${p.id}')" style="background:linear-gradient(145deg,#a855f7,#ec4899);color:white">🎬 Change Reel</button>
           <button class="signature-btn" onclick="quickMakeSignature('${p.id}')">👑 Make Signature</button>
           <button class="renew-btn" onclick="openRenewModal('${p.id}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}')">💰 Renew / Pay Now</button>
-          <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.plan_expires_at || p.expiry_date || "")}','${p.id}','${escapeAttr(p.slug || "")}')">📲 Send Renewal Reminder</button>
+
+          <div class="trial-row">
+            <select id="trial_days_${p.id}">
+              <option value="3">3 Days Trial</option>
+              <option value="7">7 Days Trial</option>
+              <option value="15">15 Days Trial</option>
+              <option value="30">30 Days Trial</option>
+            </select>
+            <button class="trial-btn" onclick="giveTrial('${p.id}')">🎁 Give Trial</button>
+          </div>
+
+          <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.trial_expires_at || p.plan_expires_at || p.expires_at || p.expiry_date || "")}','${p.id}','${escapeAttr(p.slug || "")}')">📲 Send Renewal Reminder</button>
         </div>
       </article>
     `;
@@ -1681,6 +1700,73 @@ async function extendProfileDays(id,days=7){
   alert(`Profile extended by ${days} days.`);
 }
 
+async function giveTrial(id){
+  const select = document.getElementById(`trial_days_${id}`);
+  const days = Number(select?.value || 3);
+
+  const ok = confirm(`Give this profile a ${days}-day free trial?`);
+  if(!ok) return;
+
+  const now = new Date();
+  const expires = new Date(now);
+  expires.setDate(expires.getDate() + days);
+
+  const { data,error } = await sb
+    .from("profiles")
+    .select("plan,views_count,likes_count,verified,featured,boost_score,plan_rank,stage_name")
+    .eq("id",id)
+    .single();
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  const rank = data.plan_rank || rankFromPlan(data.plan);
+  const boost = data.boost_score || boostFromPlan(data.plan);
+  const trending = trendingFormula(
+    rank,
+    boost,
+    data.views_count || 0,
+    data.likes_count || 0,
+    Boolean(data.verified),
+    Boolean(data.featured)
+  );
+
+  const { error:updateError } = await sb
+    .from("profiles")
+    .update({
+      approved:true,
+      is_expired:false,
+      payment_status:"trial",
+
+      trial_active:true,
+      trial_days:days,
+      trial_started_at:now.toISOString(),
+      trial_expires_at:expires.toISOString(),
+
+      plan_started_at:now.toISOString(),
+      plan_expires_at:expires.toISOString(),
+      expiry_date:expires.toISOString(),
+      expires_at:expires.toISOString(),
+
+      last_active:now.toISOString(),
+      trending_score:trending
+    })
+    .eq("id",id);
+
+  if(updateError){
+    alert(updateError.message);
+    return;
+  }
+
+  await audit("trial_given",id,data.stage_name || "",`${days}-day trial activated`);
+  loadProfiles();
+  loadDashboardStats();
+  loadRevenueDashboard();
+  alert(`${days}-day trial activated.`);
+}
+
 async function markProfilePaid(id){
   await extendProfileDays(id,7);
 }
@@ -1695,6 +1781,7 @@ async function markProfileExpired(id){
       approved:false,
       is_expired:true,
       payment_status:"expired",
+      trial_active:false,
       boost_score:0,
       trending_score:0,
       last_active:new Date().toISOString()
