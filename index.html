@@ -321,6 +321,153 @@ SEO TARGET KEYWORDS BLOCK
   margin:0;
 }
 
+
+/* =========================
+JOIN / MEMBERSHIP CTA
+========================= */
+.hero-cta-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:16px;
+}
+
+.hero-join-btn,
+.hero-login-btn{
+  min-height:54px;
+  border:none;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:950;
+  cursor:pointer;
+  text-align:center;
+}
+
+.hero-join-btn{
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  box-shadow:0 12px 30px rgba(255,180,0,.20);
+}
+
+.hero-login-btn{
+  background:linear-gradient(145deg,#1d243f,#08114f);
+  border:1px solid rgba(255,213,74,.14);
+  color:#fff;
+}
+
+.join-pricing-wrap{
+  padding:0 18px 28px;
+}
+
+.join-pricing-box{
+  background:linear-gradient(135deg,#07145f,#02083d,#140022);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:30px;
+  padding:22px;
+  box-shadow:0 20px 70px rgba(0,0,0,.42),0 0 38px rgba(255,213,74,.08);
+}
+
+.join-pricing-header{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.join-pricing-header h2{
+  color:#ffd54a;
+  font-size:30px;
+  font-weight:950;
+  line-height:1;
+}
+
+.join-pricing-header p{
+  color:#dedede;
+  font-size:14px;
+  line-height:1.6;
+  max-width:680px;
+}
+
+.join-pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+}
+
+.join-price-card{
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:22px;
+  padding:18px;
+}
+
+.join-price-card h3{
+  font-size:18px;
+  color:white;
+  margin-bottom:8px;
+  font-weight:950;
+}
+
+.join-price-card strong{
+  display:block;
+  color:#ffd54a;
+  font-size:24px;
+  font-weight:950;
+  margin-bottom:12px;
+}
+
+.join-price-card p{
+  color:#d8d8d8;
+  font-size:12px;
+  line-height:1.6;
+  min-height:58px;
+}
+
+.join-price-card a{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:42px;
+  margin-top:14px;
+  border-radius:999px;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  font-size:12px;
+  font-weight:950;
+}
+
+.join-main-link{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:54px;
+  margin-top:18px;
+  border-radius:18px;
+  background:linear-gradient(145deg,#ff4d8d,#a855f7);
+  color:white;
+  font-size:14px;
+  font-weight:950;
+  box-shadow:0 14px 32px rgba(255,77,141,.18);
+}
+
+@media(max-width:1100px){
+  .join-pricing-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:650px){
+  .hero-cta-row,
+  .join-pricing-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 .stats-wrap{
   padding:0 18px 20px;
 }
@@ -1244,6 +1391,11 @@ AGE GATE
       placeholder="Search by name, bio, location..."
     >
 
+    <div class="hero-cta-row">
+      <a href="/join.html" class="hero-join-btn">💎 Join / View Pricing</a>
+      <a href="/login.html" class="hero-login-btn">👤 Member Login</a>
+    </div>
+
     <button id="installAppBtn" class="install-app-btn" style="display:none;">
       📲 Install Nairobi Sweets App
     </button>
@@ -1300,6 +1452,54 @@ AGE GATE
   <div class="stats-box">
     <div class="stats-label">Total Profiles</div>
     <div class="stats-number" id="profileCount">0</div>
+  </div>
+</section>
+
+<section class="join-pricing-wrap" id="join">
+  <div class="join-pricing-box">
+    <div class="join-pricing-header">
+      <div>
+        <h2>💎 Join Nairobi Sweets</h2>
+        <p>
+          Choose your visibility level before creating your profile. Start with Featured,
+          upgrade to VIP or VIP+, or take premium placement with Signature.
+        </p>
+      </div>
+    </div>
+
+    <div class="join-pricing-grid">
+      <article class="join-price-card">
+        <h3>⭐ Featured</h3>
+        <strong>From KSh 300</strong>
+        <p>Entry visibility with listing placement, contact buttons and dashboard access.</p>
+        <a href="/public-signup-payment-page.html?plan=featured">Choose Featured</a>
+      </article>
+
+      <article class="join-price-card">
+        <h3>🔥 VIP</h3>
+        <strong>From KSh 800</strong>
+        <p>Higher exposure, better discovery ranking and VIP badge placement.</p>
+        <a href="/public-signup-payment-page.html?plan=vip">Choose VIP</a>
+      </article>
+
+      <article class="join-price-card">
+        <h3>💎 VIP+</h3>
+        <strong>From KSh 1,000</strong>
+        <p>Premium boost, stronger homepage visibility and priority location placement.</p>
+        <a href="/public-signup-payment-page.html?plan=vip-plus">Choose VIP+</a>
+      </article>
+
+      <article class="join-price-card">
+        <h3>👑 Signature</h3>
+        <strong>From KSh 1,500</strong>
+        <p>Top-tier premium placement with maximum ranking priority and luxury visibility.</p>
+        <a href="/public-signup-payment-page.html?plan=signature">Choose Signature</a>
+      </article>
+    </div>
+
+    <a href="/join.html" class="join-main-link">
+      View Full Membership Plans →
+    </a>
   </div>
 </section>
 
