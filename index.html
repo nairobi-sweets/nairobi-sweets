@@ -1991,7 +1991,21 @@ function getSignatureImage(profile){
 }
 
 function getVideo(profile){
-  return profile.video_url || profile.short_url || profile.reel_url || "";
+  return (
+    profile.short_video ||
+    profile.short_video_url ||
+    profile.short_url ||
+    profile.reel ||
+    profile.reel_url ||
+    profile.video_url ||
+    profile.video ||
+    ""
+  );
+}
+
+function hasVideo(profile){
+  const video = String(getVideo(profile) || "").trim();
+  return Boolean(video) && video.toLowerCase() !== "null" && video.toLowerCase() !== "undefined";
 }
 
 function isVideo(url){
@@ -2255,31 +2269,39 @@ function renderSignatureProfiles(list){
 }
 
 function renderShorts(list){
-  const shorts = list.slice(0,10);
+  const shortsSection = document.querySelector(".shorts-section");
+
+  const shorts = list
+    .filter(hasVideo)
+    .filter(profile => isVideo(getVideo(profile)) || String(getVideo(profile)).startsWith("http"))
+    .slice(0,10);
 
   if(!shorts.length){
-    shortsRow.innerHTML = `
-      <div class="short-card">
-        <img src="/assets/logo/logo-badge.png">
-        <div class="short-overlay">
-          <div class="short-name">No shorts yet</div>
-          <div class="short-location">📍 Nairobi</div>
-        </div>
-      </div>
-    `;
+    if(shortsSection) shortsSection.style.display = "none";
+    shortsRow.innerHTML = "";
     return;
   }
 
-  shortsRow.innerHTML = shorts.map(profile=>{
-    const media = getVideo(profile) || getImage(profile);
+  if(shortsSection) shortsSection.style.display = "block";
 
-    const mediaTag = isVideo(media)
-      ? `<video autoplay muted loop playsinline><source src="${media}" type="video/mp4"></video>`
-      : `<img src="${cleanImageUrl(media)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.src='/assets/logo/logo-badge.png'">`;
+  shortsRow.innerHTML = shorts.map(profile=>{
+    const media = getVideo(profile);
 
     return `
       <div class="short-card" onclick="window.location.href='/reel.html'">
-        ${mediaTag}
+        <video
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          controlsList="nodownload"
+          disablePictureInPicture
+          oncontextmenu="return false"
+        >
+          <source src="${media}" type="video/mp4">
+        </video>
+
         <div class="short-overlay">
           <div class="short-name">${getName(profile)}</div>
           <div class="short-location">📍 ${getLocation(profile)}</div>
