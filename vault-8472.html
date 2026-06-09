@@ -63,6 +63,11 @@ textarea{grid-column:1/-1;min-height:120px}
 .trial-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
 .trial-row select{padding:12px;border-radius:14px;background:#08122f;color:white;border:1px solid rgba(255,255,255,.14);font-weight:900}
 .trial-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:14px;padding:12px 14px;font-size:14px;font-weight:900}
+.bulk-trial-card{border:1px solid rgba(255,213,74,.25);box-shadow:0 0 34px rgba(255,213,74,.08),0 18px 50px rgba(0,0,0,.35)}
+.bulk-trial-actions{display:grid;grid-template-columns:1.3fr 1fr auto;gap:14px;align-items:center}
+.bulk-trial-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:16px;padding:16px 22px;font-size:16px;font-weight:900}
+.bulk-trial-note{grid-column:1/-1;color:#ffd54a;background:rgba(255,213,74,.08);border:1px solid rgba(255,213,74,.14);border-radius:16px;padding:14px;font-size:13px;font-weight:900;line-height:1.5}
+@media(max-width:900px){.bulk-trial-actions{grid-template-columns:1fr}}
 .trial-chip{display:inline-block;margin-top:8px;padding:8px 10px;border-radius:999px;background:rgba(255,213,74,.16);color:#ffd54a;font-weight:900;font-size:12px}
 .extend-btn{background:#06b6d4;color:#000;border-radius:12px;padding:12px}
 .paid-btn{background:#22c55e;color:#000;border-radius:12px;padding:12px}
@@ -466,6 +471,36 @@ REVENUE DASHBOARD UPGRADE
 </section>
 
 <div class="wrap">
+
+<section class="panel bulk-trial-card">
+  <h2>🎁 Bulk Trial Activation</h2>
+
+  <div class="bulk-trial-actions">
+    <select id="bulkTrialPlan">
+      <option value="all">All Categories</option>
+      <option value="featured">Featured Only</option>
+      <option value="vip">VIP Only</option>
+      <option value="vip-plus">VIP+ Only</option>
+      <option value="signature">Signature Only</option>
+    </select>
+
+    <select id="bulkTrialDays">
+      <option value="3">3 Days Trial</option>
+      <option value="7">7 Days Trial</option>
+      <option value="15">15 Days Trial</option>
+      <option value="30">30 Days Trial</option>
+    </select>
+
+    <button class="bulk-trial-btn" onclick="giveBulkTrial()">🎁 Give Trial</button>
+
+    <div class="bulk-trial-note">
+      Choose a category and duration, then activate trial for every matching profile at once. This sets profiles live, marks payment as trial, and starts the expiry timer.
+    </div>
+  </div>
+
+  <div class="status" id="bulkTrialStatus"></div>
+</section>
+
 
 <section class="panel">
 <h2>Add New Profile</h2>
@@ -1698,6 +1733,118 @@ async function extendProfileDays(id,days=7){
   await audit("extend_profile",id,"",`Profile extended by ${days} days`);
   loadProfiles();
   alert(`Profile extended by ${days} days.`);
+}
+
+
+function profileMatchesBulkTrialPlan(profile,plan){
+  if(plan === "all") return true;
+
+  const combined = `
+    ${profile.plan || ""}
+    ${profile.plan_label || ""}
+    ${profile.tier || ""}
+    ${profile.package || ""}
+  `.toLowerCase();
+
+  if(plan === "vip-plus"){
+    return combined.includes("vip+") || combined.includes("vip-plus") || combined.includes("vip plus");
+  }
+
+  if(plan === "vip"){
+    return combined.includes("vip") && !combined.includes("vip+") && !combined.includes("vip-plus") && !combined.includes("vip plus") && !combined.includes("signature") && !combined.includes("vvip");
+  }
+
+  if(plan === "signature"){
+    return combined.includes("signature") || combined.includes("vvip");
+  }
+
+  if(plan === "featured"){
+    return combined.includes("featured") || combined.trim() === "";
+  }
+
+  return false;
+}
+
+async function giveBulkTrial(){
+  const plan = document.getElementById("bulkTrialPlan")?.value || "all";
+  const days = Number(document.getElementById("bulkTrialDays")?.value || 3);
+  const status = document.getElementById("bulkTrialStatus");
+
+  if(status){
+    status.textContent = "Preparing trial activation...";
+    status.style.color = "#ffd54a";
+  }
+
+  const targets = (ALL_PROFILES || []).filter(profile => profileMatchesBulkTrialPlan(profile,plan));
+  const ids = targets.map(profile => profile.id).filter(Boolean);
+
+  if(!ids.length){
+    if(status){
+      status.textContent = "No matching profiles found for this category.";
+      status.style.color = "#ff6b6b";
+    }
+    return;
+  }
+
+  const labelMap = {
+    all:"ALL categories",
+    featured:"Featured",
+    vip:"VIP",
+    "vip-plus":"VIP+",
+    signature:"Signature"
+  };
+
+  const ok = confirm(`Give ${days}-day trial to ${ids.length} ${labelMap[plan] || plan} profile(s)?`);
+  if(!ok){
+    if(status) status.textContent = "Bulk trial cancelled.";
+    return;
+  }
+
+  const now = new Date();
+  const expires = new Date(now);
+  expires.setDate(expires.getDate() + days);
+
+  const updates = {
+    approved:true,
+    is_expired:false,
+    payment_status:"trial",
+
+    trial_active:true,
+    trial_days:days,
+    trial_started_at:now.toISOString(),
+    trial_expires_at:expires.toISOString(),
+
+    plan_started_at:now.toISOString(),
+    plan_expires_at:expires.toISOString(),
+    expiry_date:expires.toISOString(),
+    expires_at:expires.toISOString(),
+
+    last_active:now.toISOString()
+  };
+
+  const { error } = await sb
+    .from("profiles")
+    .update(updates)
+    .in("id",ids);
+
+  if(error){
+    if(status){
+      status.textContent = error.message;
+      status.style.color = "#ff6b6b";
+    }
+    return;
+  }
+
+  if(status){
+    status.textContent = `${days}-day trial activated for ${ids.length} profile(s).`;
+    status.style.color = "#22c55e";
+  }
+
+  await audit("bulk_trial_given","","",`${days}-day trial given to ${ids.length} ${labelMap[plan] || plan} profile(s)`);
+
+  loadProfiles();
+  loadDashboardStats();
+  if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
 }
 
 async function giveTrial(id){
