@@ -54,6 +54,11 @@ a{text-decoration:none;color:inherit}
 .badge{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.75);color:#ffd54a;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:900;z-index:3}
 .badge.vip{background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff}
 .badge.signature{background:linear-gradient(135deg,#ffd84b,#ff9f1c);color:#000}
+.chip-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 12px}
+.rank-chip{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:950;background:rgba(255,216,75,.10);border:1px solid rgba(255,216,75,.18);color:#ffd54a}
+.rank-chip.verified{background:linear-gradient(135deg,#0ea5e9,#2563eb);border-color:rgba(14,165,233,.45);color:#fff}
+.rank-chip.hd{background:linear-gradient(135deg,#22c55e,#15803d);border-color:rgba(34,197,94,.45);color:#fff}
+.rank-chip.boost{background:linear-gradient(135deg,#ff7a18,#ffd84b);border-color:rgba(255,216,75,.45);color:#000}
 .name{font-size:22px;font-weight:900;color:#ffd54a;margin-bottom:8px}
 .meta{color:#ddd;font-size:14px;line-height:1.6;margin-bottom:12px}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
@@ -113,6 +118,8 @@ a{text-decoration:none;color:inherit}
   <button data-sort="share_clicks">🔗 Shares</button>
   <button data-sort="video_plays">🎬 Videos</button>
   <button data-sort="likes_count">❤️ Likes</button>
+  <button data-sort="image_quality_score">📸 HD Quality</button>
+  <button data-sort="profile_score">🏆 Rank Score</button>
 </div>
 
 <section class="grid" id="grid">
@@ -232,23 +239,62 @@ function profileLink(p){
   return `/profile.html?id=${encodeURIComponent(p.id)}`;
 }
 
-function computedScore(p){
+function planPriority(p){
+  if(isSignature(p)) return 300;
+  if(isVip(p)) return 180;
+  return 60;
+}
+
+function verifiedScore(p){
+  return (p.verified === true || p.verified === "true" || p.is_verified === true) ? 100 : 0;
+}
+
+function qualityRankScore(p){
+  const imageQuality = n(p.image_quality_score);
+  const likes = n(p.likes_count || p.likes || p.favorites);
+  const views = n(p.views || p.views_count);
+  const boost = n(p.boost_score || p.boost);
+  const verified = verifiedScore(p);
+
   return Math.round(
-    n(p.trending_score) ||
-    (
-      n(p.boost) * 1000 +
-      n(p.views) +
-      n(p.whatsapp_clicks) * 10 +
-      n(p.call_clicks) * 15 +
-      n(p.share_clicks) * 7 +
-      n(p.video_plays) * 8 +
-      n(p.likes_count || p.likes) * 12
-    )
+    planPriority(p) +
+    imageQuality * 0.40 +
+    likes * 0.20 +
+    views * 0.15 +
+    boost * 0.15 +
+    verified * 0.10
   );
 }
 
+function computedScore(p){
+  return n(p.profile_score) || qualityRankScore(p);
+}
+
+function rankChips(p){
+  const quality = n(p.image_quality_score);
+  const boost = n(p.boost_score || p.boost);
+  const verified = verifiedScore(p) > 0;
+
+  return `
+    <div class="chip-row">
+      ${verified ? `<span class="rank-chip verified">✅ Verified</span>` : ``}
+      ${quality >= 80 ? `<span class="rank-chip hd">📸 HD ${quality}</span>` : quality > 0 ? `<span class="rank-chip">📸 Quality ${quality}</span>` : ``}
+      ${boost > 0 ? `<span class="rank-chip boost">🚀 Boost ${boost}</span>` : ``}
+      <span class="rank-chip">🏆 Rank ${computedScore(p)}</span>
+    </div>
+  `;
+}
+
 function render(){
-  const sorted = [...rows].sort((a,b)=>n(b[sortKey]) - n(a[sortKey]));
+  const sorted = [...rows].sort((a,b)=>{
+    if(sortKey === "trending_score" || sortKey === "profile_score"){
+      return computedScore(b) - computedScore(a);
+    }
+    if(sortKey === "image_quality_score"){
+      return n(b.image_quality_score) - n(a.image_quality_score) || computedScore(b) - computedScore(a);
+    }
+    return n(b[sortKey]) - n(a[sortKey]) || computedScore(b) - computedScore(a);
+  });
 
   if(!sorted.length){
     grid.innerHTML = `<div class="empty">No trending data yet.</div>`;
@@ -272,8 +318,10 @@ function render(){
 
         <div class="meta">
           📍 ${clean(locOf(p))}<br>
-          🔥 Score: ${computedScore(p)}
+          🏆 Rank Score: ${computedScore(p)}
         </div>
+
+        ${rankChips(p)}
 
         <div class="stats">
           <div class="stat"><small>Views</small><strong>${n(p.views)}</strong></div>
@@ -333,6 +381,10 @@ async function loadTrending(){
         share_clicks: a?.share_clicks || p.share_clicks || p.profile_shares || 0,
         video_plays: a?.video_plays || p.video_plays || 0,
         likes_count: p.likes_count || p.likes || p.favorites || 0,
+        image_quality_score: p.image_quality_score || 0,
+        profile_score: p.profile_score || 0,
+        boost_score: p.boost_score || p.boost || 0,
+        verified: p.verified || p.is_verified || false,
         trending_score: computedScore({
           ...p,
           views: a?.views || p.views || 0,
@@ -346,7 +398,7 @@ async function loadTrending(){
       };
     });
 
-  rows.sort((a,b)=>n(b.trending_score) - n(a.trending_score));
+  rows.sort((a,b)=>computedScore(b) - computedScore(a));
   render();
 }
 
