@@ -787,6 +787,34 @@ SIGNATURE PROFILES BANNER
   border:1px solid rgba(255,255,255,.28);
 }
 
+.boost-badge{
+  position:absolute;
+  top:54px;
+  right:14px;
+  background:linear-gradient(145deg,#ff4d8d,#a855f7);
+  color:#fff;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:950;
+  z-index:7;
+  box-shadow:0 0 18px rgba(168,85,247,.35);
+}
+
+.pinned-badge{
+  position:absolute;
+  top:54px;
+  left:14px;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:950;
+  z-index:8;
+  box-shadow:0 0 22px rgba(255,213,74,.38);
+}
+
 .verified-inline{
   display:inline-flex;
   align-items:center;
@@ -1922,29 +1950,64 @@ function getProfileUrl(profile){
   return `/profile.html?id=${encodeURIComponent(profile.id)}`;
 }
 
+function boolScore(value){
+  return value === true || value === "true" || value === 1 || value === "1" ? 1 : 0;
+}
+
+function getBoost(profile){
+  return Math.max(
+    Number(profile.boost || 0),
+    Number(profile.boost_score || 0)
+  );
+}
+
 function rankingScore(profile){
   return (
-    (Number(profile.boost || profile.boost_score || 0) * 1000) +
-    (Number(profile.views || profile.views_count || 0) * 1) +
-    (Number(profile.whatsapp_clicks || 0) * 10) +
-    (Number(profile.call_clicks || 0) * 20) +
-    (Number(profile.favorites || profile.likes || profile.likes_count || 0) * 15) +
-    (Number(profile.trending_score || 0) * 1) +
-    (Number(profile.plan_rank || 0) * 100)
+    (boolScore(profile.pinned_top) * 10000000) +
+    (boolScore(profile.homepage_featured) * 5000000) +
+    (isSignatureProfile(profile) ? 2500000 : 0) +
+    (getBoost(profile) * 1000) +
+    (boolScore(profile.verified) * 50000) +
+    (Number(profile.plan_rank || 0) * 10000) +
+    (Number(profile.trending_score || 0) * 100) +
+    (Number(profile.views || profile.views_count || 0) * 2) +
+    (Number(profile.whatsapp_clicks || 0) * 20) +
+    (Number(profile.call_clicks || 0) * 25) +
+    (Number(profile.favorites || profile.likes || profile.likes_count || 0) * 15)
   );
 }
 
 function sortByMarketplaceRank(list){
   return [...list].sort((a,b)=>{
-    const heroA = a.homepage_featured ? 1 : 0;
-    const heroB = b.homepage_featured ? 1 : 0;
+    const pinnedA = boolScore(a.pinned_top);
+    const pinnedB = boolScore(b.pinned_top);
+    if(pinnedA !== pinnedB) return pinnedB - pinnedA;
+
+    const heroA = boolScore(a.homepage_featured);
+    const heroB = boolScore(b.homepage_featured);
     if(heroA !== heroB) return heroB - heroA;
 
     const sigA = isSignatureProfile(a) ? 1 : 0;
     const sigB = isSignatureProfile(b) ? 1 : 0;
     if(sigA !== sigB) return sigB - sigA;
 
-    return rankingScore(b) - rankingScore(a);
+    const boostA = getBoost(a);
+    const boostB = getBoost(b);
+    if(boostA !== boostB) return boostB - boostA;
+
+    const verifiedA = boolScore(a.verified);
+    const verifiedB = boolScore(b.verified);
+    if(verifiedA !== verifiedB) return verifiedB - verifiedA;
+
+    const planA = Number(a.plan_rank || 0);
+    const planB = Number(b.plan_rank || 0);
+    if(planA !== planB) return planB - planA;
+
+    const trendingA = Number(a.trending_score || 0);
+    const trendingB = Number(b.trending_score || 0);
+    if(trendingA !== trendingB) return trendingB - trendingA;
+
+    return Number(b.views || b.views_count || 0) - Number(a.views || a.views_count || 0);
   });
 }
 
@@ -2177,6 +2240,8 @@ function renderProfiles(data){
         ${trendRankBadge(index)}
         <div class="featured-badge">${getBadge(profile)}</div>
         ${profile.verified ? `<div class="verified-badge">✔ VERIFIED</div>` : ``}
+        ${boolScore(profile.pinned_top) ? `<div class="pinned-badge">👑 PINNED</div>` : ``}
+        ${getBoost(profile) > 0 ? `<div class="boost-badge">🚀 BOOST ${getBoost(profile)}</div>` : ``}
 
         <img
           src="${getImage(profile)}"
@@ -2204,6 +2269,8 @@ function renderProfiles(data){
 
           <div class="engagement">
             <span class="ranking-score">🔥 ${rankingScore(profile).toLocaleString()}</span>
+            ${getBoost(profile) > 0 ? `<span class="trust-pill">🚀 Boost ${getBoost(profile)}</span>` : ``}
+            ${boolScore(profile.pinned_top) ? `<span class="trust-pill">👑 Pinned</span>` : ``}
             ${profile.verified ? `<span class="trust-pill">✔ Verified</span>` : ``}
             <span>❤️ ${getLikes(profile)}</span>
             <span>👁 ${getViews(profile)}</span>
@@ -2337,10 +2404,12 @@ async function loadProfiles(){
     .select("*")
     .eq("approved",true)
     .or("is_expired.eq.false,is_expired.is.null")
-    .order("trending_score",{ascending:false})
-    .order("plan_rank",{ascending:false})
+    .order("pinned_top",{ascending:false})
     .order("boost_score",{ascending:false})
+    .order("boost",{ascending:false})
     .order("verified",{ascending:false})
+    .order("plan_rank",{ascending:false})
+    .order("trending_score",{ascending:false})
     .order("last_active",{ascending:false})
     .order("created_at",{ascending:false});
 
