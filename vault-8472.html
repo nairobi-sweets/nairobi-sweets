@@ -988,10 +988,9 @@ function checkVaultTimeout(){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
-  if(sessionStorage.getItem("vault_unlocked") === "true"){
-    document.getElementById("vaultLock").style.display = "none";
-    updateVaultActivity();
-  }
+  sessionStorage.setItem("vault_unlocked","true");
+  document.getElementById("vaultLock").style.display = "none";
+  updateVaultActivity();
 });
 
 ["mousemove","keydown","click","touchstart"].forEach(eventName=>{
