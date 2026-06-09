@@ -3,16 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>User Dashboard | Nairobi Sweets</title>
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
+<link rel="manifest" href="/manifest.webmanifest">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
+
 :root{
   --bg:#07091a;
   --gold:#ffd84b;
+  --gold2:#ffbf00;
   --pink:#ff4ba3;
   --text:#f7f7fb;
   --muted:#aab1c8;
@@ -20,6 +25,7 @@
   --green:#22c55e;
   --red:#ff4f86;
 }
+
 body{
   margin:0;
   font-family:Inter,Arial,sans-serif;
@@ -29,8 +35,14 @@ body{
     var(--bg);
   color:var(--text);
 }
+
 a{text-decoration:none;color:inherit}
-.wrap{width:min(1100px,calc(100% - 28px));margin:auto}
+
+.wrap{
+  width:min(1100px,calc(100% - 28px));
+  margin:auto;
+}
+
 header{
   position:sticky;
   top:0;
@@ -39,6 +51,7 @@ header{
   backdrop-filter:blur(16px);
   border-bottom:1px solid var(--line);
 }
+
 .nav{
   min-height:82px;
   display:flex;
@@ -46,27 +59,32 @@ header{
   justify-content:space-between;
   gap:14px;
 }
+
 .brand{
   display:flex;
   align-items:center;
   gap:12px;
 }
+
 .brand img{
   width:54px;
   height:54px;
   object-fit:contain;
   border-radius:14px;
 }
+
 .brand strong{
   color:var(--gold);
   font-size:23px;
   font-weight:950;
 }
+
 .nav-actions{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
 }
+
 .nav-actions a,
 .nav-actions button{
   border:1px solid var(--line);
@@ -77,14 +95,17 @@ header{
   font-weight:800;
   cursor:pointer;
 }
+
 .nav-actions .gold{
   background:linear-gradient(180deg,#ffe46b,#ffbf00);
   color:#111;
   border:none;
 }
+
 .hero{
   padding:36px 0 20px;
 }
+
 .hero-box{
   background:linear-gradient(180deg,rgba(18,22,50,.96),rgba(7,9,26,.98));
   border:1px solid var(--line);
@@ -92,22 +113,26 @@ header{
   padding:28px;
   box-shadow:0 28px 80px rgba(0,0,0,.42);
 }
+
 .hero h1{
   margin:0;
   color:var(--gold);
   font-size:clamp(36px,6vw,58px);
   letter-spacing:-.05em;
 }
+
 .hero p{
   color:var(--muted);
   line-height:1.7;
 }
+
 .status{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
   margin-top:18px;
 }
+
 .badge{
   padding:9px 12px;
   border-radius:999px;
@@ -117,7 +142,13 @@ header{
   font-weight:800;
   font-size:13px;
 }
-.badge.gold{background:linear-gradient(180deg,#ffe46b,#ffbf00);color:#111;border:none}
+
+.badge.gold{
+  background:linear-gradient(180deg,#ffe46b,#ffbf00);
+  color:#111;
+  border:none;
+}
+
 .card{
   margin:22px 0 44px;
   background:linear-gradient(180deg,#121735,#090c22);
@@ -125,23 +156,28 @@ header{
   border-radius:30px;
   padding:28px;
 }
+
 h2{
   margin-top:0;
   color:var(--gold);
   font-size:30px;
 }
+
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:18px 24px;
 }
+
 .field{
   background:rgba(255,255,255,.055);
   border:1px solid var(--line);
   border-radius:16px;
   overflow:hidden;
 }
+
 .field.full{grid-column:1/-1}
+
 label{
   display:block;
   color:var(--gold);
@@ -149,7 +185,10 @@ label{
   font-weight:900;
   padding:13px 16px 0;
 }
-input,select,textarea{
+
+input,
+select,
+textarea{
   width:100%;
   border:0;
   background:transparent;
@@ -159,20 +198,34 @@ input,select,textarea{
   outline:none;
   font-family:inherit;
 }
-select option{color:#111}
-textarea{min-height:115px;resize:vertical}
+
+input:disabled{
+  opacity:.7;
+}
+
+select option{
+  color:#111;
+}
+
+textarea{
+  min-height:115px;
+  resize:vertical;
+}
+
 .gallery{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:14px;
   margin:18px 0;
 }
+
 .pic{
   background:rgba(255,255,255,.05);
   border:1px solid var(--line);
   border-radius:18px;
   padding:10px;
 }
+
 .pic img{
   width:100%;
   aspect-ratio:3/4;
@@ -180,7 +233,12 @@ textarea{min-height:115px;resize:vertical}
   border-radius:14px;
   background:#111;
 }
-.pic input{font-size:13px;padding:10px 0 0}
+
+.pic input{
+  font-size:13px;
+  padding:10px 0 0;
+}
+
 .video-box{
   margin-top:18px;
   background:rgba(255,255,255,.055);
@@ -188,12 +246,14 @@ textarea{min-height:115px;resize:vertical}
   border-radius:18px;
   padding:16px;
 }
+
 video{
   width:100%;
   max-height:330px;
   border-radius:16px;
   background:#000;
 }
+
 .btn{
   width:100%;
   margin-top:24px;
@@ -205,12 +265,19 @@ video{
   font-size:20px;
   font-weight:950;
   cursor:pointer;
+  text-align:center;
 }
+
 .btn.pink{
   background:linear-gradient(180deg,#ff5fb1,#e6257f);
   color:white;
 }
-.btn:disabled{opacity:.6;cursor:not-allowed}
+
+.btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
 .msg{
   margin-top:18px;
   font-size:18px;
@@ -218,23 +285,48 @@ video{
   text-align:center;
   line-height:1.5;
 }
+
 .success{color:var(--green)}
 .error{color:var(--red)}
+
 .empty{
-  padding:26px;
+  padding:28px;
   border:1px dashed var(--line);
-  border-radius:22px;
+  border-radius:24px;
   color:var(--muted);
   text-align:center;
+  margin:22px 0 44px;
+  background:rgba(255,255,255,.04);
 }
+
+.empty h2{
+  margin:0 0 10px;
+}
+
+.empty .btn{
+  display:inline-flex;
+  justify-content:center;
+  width:auto;
+  padding:14px 22px;
+}
+
 footer{
   text-align:center;
   color:var(--muted);
   padding:34px;
 }
+
 @media(max-width:850px){
-  .grid,.gallery{grid-template-columns:1fr}
-  .nav{flex-direction:column;align-items:flex-start;padding:14px 0}
+  .grid,
+  .gallery{
+    grid-template-columns:1fr;
+  }
+
+  .nav{
+    flex-direction:column;
+    align-items:flex-start;
+    padding:14px 0;
+  }
 }
 </style>
 </head>
@@ -251,6 +343,7 @@ footer{
     <div class="nav-actions">
       <a href="/index.html">Home</a>
       <a href="/join.html">Plans</a>
+      <a href="/public-signup-payment-page.html">Create Profile</a>
       <button class="gold" onclick="logout()">Logout</button>
     </div>
   </div>
@@ -259,14 +352,16 @@ footer{
 <section class="hero">
   <div class="wrap hero-box">
     <h1>My Dashboard</h1>
-    <p>Update your photos, video, location, WhatsApp number, services and profile details.</p>
-
+    <p>Update your photos, video, location, WhatsApp number, services, rate and profile details.</p>
     <div class="status" id="statusBadges"></div>
   </div>
 </section>
 
 <main class="wrap">
-  <div id="loading" class="empty">Loading your profile...</div>
+
+  <div id="loading" class="empty">
+    Loading your profile...
+  </div>
 
   <form id="dashboardForm" class="card" style="display:none;">
     <h2>Edit Profile</h2>
@@ -368,40 +463,47 @@ footer{
     </div>
 
     <h2 style="margin-top:28px;">Photos</h2>
+
     <div class="gallery">
       <div class="pic">
-        <img id="img1" src="/assets/logo/logo-badge.png">
+        <img id="img1" src="/assets/logo/logo-badge.png" alt="Main photo">
         <input id="photo1" type="file" accept="image/*">
       </div>
 
       <div class="pic">
-        <img id="img2" src="/assets/logo/logo-badge.png">
+        <img id="img2" src="/assets/logo/logo-badge.png" alt="Second photo">
         <input id="photo2" type="file" accept="image/*">
       </div>
 
       <div class="pic">
-        <img id="img3" src="/assets/logo/logo-badge.png">
+        <img id="img3" src="/assets/logo/logo-badge.png" alt="Third photo">
         <input id="photo3" type="file" accept="image/*">
       </div>
 
       <div class="pic">
-        <img id="img4" src="/assets/logo/logo-badge.png">
+        <img id="img4" src="/assets/logo/logo-badge.png" alt="Fourth photo">
         <input id="photo4" type="file" accept="image/*">
       </div>
     </div>
 
-    <h2>Short Video</h2>
+    <h2>Short Video / Reel</h2>
+
     <div class="video-box">
       <video id="videoPreview" controls></video>
+
       <label>Replace Video</label>
       <input id="video1" type="file" accept="video/*">
     </div>
 
     <button id="saveBtn" class="btn" type="submit">Save Profile Updates</button>
-    <a href="/join.html" class="btn pink" style="display:flex;justify-content:center;text-decoration:none;">Renew / Upgrade Membership</a>
+
+    <a href="/join.html?from=dashboard" class="btn pink" style="display:flex;justify-content:center;text-decoration:none;">
+      Renew / Upgrade Membership
+    </a>
 
     <div id="msg" class="msg"></div>
   </form>
+
 </main>
 
 <footer>© Nairobi Sweets</footer>
@@ -409,6 +511,7 @@ footer{
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
@@ -422,9 +525,11 @@ const statusBadges = document.getElementById("statusBadges");
 
 function cleanPhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
+
   if(p.startsWith("0")) p = "254" + p.slice(1);
   if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
   if(p.length === 9) p = "254" + p;
+
   return p;
 }
 
@@ -452,6 +557,7 @@ async function uploadFile(bucket,file,folder){
   if(error) throw error;
 
   const { data } = sb.storage.from(bucket).getPublicUrl(fileName);
+
   return data.publicUrl;
 }
 
@@ -467,17 +573,21 @@ function setImage(id,url){
 
 function planBadge(plan){
   const p = String(plan || "").toLowerCase();
+
   if(p.includes("signature")) return "👑 Signature";
-  if(p.includes("vip+")) return "💎 VIP+";
-  if(p.includes("vip-plus")) return "💎 VIP+";
+  if(p.includes("vip+") || p.includes("vip-plus")) return "💎 VIP+";
   if(p.includes("vip")) return "🔥 VIP";
+
   return "⭐ Featured";
 }
 
 function renderStatus(){
+  if(!currentProfile) return;
+
   const approved = currentProfile.approved ? "✅ Approved" : "⏳ Pending Approval";
   const paid = currentProfile.payment_status === "paid" ? "✅ Paid" : "💳 Payment Pending";
   const plan = planBadge(currentProfile.plan_label || currentProfile.tier || currentProfile.plan);
+
   const expiry = currentProfile.expires_at
     ? "Expires: " + new Date(currentProfile.expires_at).toLocaleDateString()
     : "Expiry not set";
@@ -508,6 +618,7 @@ function fillForm(){
   setValue("servicesDontOffer", currentProfile.services_dont_offer);
 
   const gallery = currentProfile.gallery || currentProfile.gallery_images || [];
+
   setImage("img1", currentProfile.image_url || currentProfile.photo_url || gallery[0]);
   setImage("img2", currentProfile.image_url_2 || gallery[1]);
   setImage("img3", currentProfile.image_url_3 || gallery[2]);
@@ -515,7 +626,9 @@ function fillForm(){
 
   const video = document.getElementById("videoPreview");
   const videoUrl = currentProfile.short_url || currentProfile.video_url || currentProfile.short_video;
+
   if(videoUrl){
+    video.style.display = "block";
     video.src = videoUrl;
   }else{
     video.style.display = "none";
@@ -546,9 +659,11 @@ async function loadDashboard(){
 
   if(!data){
     loading.innerHTML = `
-      No profile linked to this account yet.<br><br>
-      <a class="btn" href="/public-signup-payment-page.html" style="display:inline-flex;width:auto;">Create Profile</a>
+      <h2>No profile linked yet</h2>
+      <p>You are logged in, but this account does not have a profile attached.</p>
+      <a class="btn" href="/public-signup-payment-page.html">Create Your Profile</a>
     `;
+    statusBadges.innerHTML = `<span class="badge">Logged in as ${currentUser.email || "Google user"}</span>`;
     return;
   }
 
@@ -566,6 +681,7 @@ function previewReplace(inputId,imgId){
   input.addEventListener("change",()=>{
     const file = input.files[0];
     if(!file) return;
+
     img.src = URL.createObjectURL(file);
   });
 }
@@ -593,6 +709,10 @@ form.addEventListener("submit",async(e)=>{
   saveBtn.innerText = "Saving...";
 
   try{
+    if(!currentUser || !currentProfile){
+      throw new Error("Session or profile not found. Please login again.");
+    }
+
     const folder = `${currentUser.id}/${slugify(currentProfile.stage_name || "profile")}-updates`;
 
     const photo1 = document.getElementById("photo1").files[0];
@@ -601,11 +721,11 @@ form.addEventListener("submit",async(e)=>{
     const photo4 = document.getElementById("photo4").files[0];
     const video1 = document.getElementById("video1").files[0];
 
-    let imageUrl = currentProfile.image_url;
-    let imageUrl2 = currentProfile.image_url_2;
-    let imageUrl3 = currentProfile.image_url_3;
-    let imageUrl4 = currentProfile.image_url_4;
-    let videoUrl = currentProfile.short_url || currentProfile.video_url || currentProfile.short_video;
+    let imageUrl = currentProfile.image_url || currentProfile.photo_url || null;
+    let imageUrl2 = currentProfile.image_url_2 || null;
+    let imageUrl3 = currentProfile.image_url_3 || null;
+    let imageUrl4 = currentProfile.image_url_4 || null;
+    let videoUrl = currentProfile.short_url || currentProfile.video_url || currentProfile.short_video || null;
 
     if(photo1) imageUrl = await uploadFile("profile-images", photo1, folder);
     if(photo2) imageUrl2 = await uploadFile("profile-images", photo2, folder);
@@ -622,9 +742,11 @@ form.addEventListener("submit",async(e)=>{
 
     const gallery = [imageUrl,imageUrl2,imageUrl3,imageUrl4].filter(Boolean);
 
+    const stageName = document.getElementById("stageName").value.trim();
+
     const updates = {
-      stage_name:document.getElementById("stageName").value.trim(),
-      name:document.getElementById("stageName").value.trim(),
+      stage_name:stageName,
+      name:stageName,
       phone:cleanPhone(document.getElementById("phone").value),
       whatsapp:cleanPhone(document.getElementById("whatsapp").value || document.getElementById("phone").value),
       town:document.getElementById("town").value.trim(),
