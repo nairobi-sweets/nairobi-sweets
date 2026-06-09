@@ -1,152 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <title>Login | Nairobi Sweets</title>
+<title>Login | Nairobi Sweets</title>
 
-  <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
+<link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
+<link rel="manifest" href="/manifest.webmanifest">
 
-  <!-- PWA APP SUPPORT -->
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#ffd84b">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
-  <link rel="apple-touch-icon" href="/assets/logo/logo-badge.png">
+<meta name="theme-color" content="#ffd84b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
+<link rel="apple-touch-icon" href="/assets/logo/logo-badge.png">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    body{
-      min-height:100vh;
-      color:#f8fafc;
-      background:
-        radial-gradient(circle at 10% 0%, rgba(236,72,153,.10), transparent 22%),
-        radial-gradient(circle at 90% 10%, rgba(250,204,21,.08), transparent 24%),
-        linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
-      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-    }
-    .glass{
-      background:rgba(9,14,28,.74);
-      border:1px solid rgba(255,255,255,.08);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      box-shadow:0 22px 60px rgba(0,0,0,.30);
-    }
-    .input{
-      width:100%;
-      padding:14px 16px;
-      border-radius:18px;
-      background:rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.08);
-      color:white;
-      outline:none;
-    }
-    .input:focus{
-      border-color:rgba(236,72,153,.55);
-      box-shadow:0 0 0 3px rgba(236,72,153,.10);
-    }
-    .btn{
-      border-radius:18px;
-      transition:.18s ease;
-    }
-    .btn:hover{
-      transform:translateY(-1px);
-      filter:brightness(1.05);
-    }
-    .btn-gold{
-      background:linear-gradient(135deg,#facc15,#f59e0b);
-      color:#111827;
-      font-weight:800;
-    }
-    .btn-dark{
-      background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.08);
-      color:white;
-    }
-  </style>
+<style>
+body{
+  min-height:100vh;
+  color:#f8fafc;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(236,72,153,.14), transparent 25%),
+    radial-gradient(circle at 90% 10%, rgba(250,204,21,.11), transparent 25%),
+    linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+}
+
+.glass{
+  background:rgba(9,14,28,.78);
+  border:1px solid rgba(255,255,255,.09);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  box-shadow:0 24px 70px rgba(0,0,0,.36);
+}
+
+.input{
+  width:100%;
+  padding:14px 16px;
+  border-radius:18px;
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.09);
+  color:white;
+  outline:none;
+}
+
+.input:focus{
+  border-color:rgba(250,204,21,.65);
+  box-shadow:0 0 0 3px rgba(250,204,21,.10);
+}
+
+.btn{
+  border-radius:18px;
+  transition:.18s ease;
+  font-weight:900;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.05);
+}
+
+.btn-gold{
+  background:linear-gradient(135deg,#facc15,#f59e0b);
+  color:#111827;
+}
+
+.btn-dark{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.09);
+  color:white;
+}
+
+.btn-pink{
+  background:linear-gradient(135deg,#ff5fb1,#e6257f);
+  color:white;
+}
+
+.divider{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:#94a3b8;
+  font-size:13px;
+}
+
+.divider::before,
+.divider::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:rgba(255,255,255,.1);
+}
+</style>
 </head>
 
 <body class="flex items-center justify-center px-4 py-10">
-  <div class="glass rounded-[30px] w-full max-w-md p-6 md:p-8">
-    <div class="text-center mb-6">
-      <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets" class="w-16 h-16 rounded-full object-cover mx-auto mb-4">
-      <p class="text-xs uppercase tracking-[0.22em] text-pink-200 mb-2">Welcome back</p>
-      <h1 class="text-3xl font-black text-yellow-300">Login</h1>
-      <p class="text-slate-400 text-sm mt-2">Access your Nairobi Sweets dashboard.</p>
-    </div>
 
-    <div class="space-y-3">
-      <input id="email" type="email" placeholder="Email" class="input">
-      <input id="password" type="password" placeholder="Password" class="input">
+<div class="glass rounded-[30px] w-full max-w-md p-6 md:p-8">
 
-      <button id="loginBtn" class="btn btn-gold w-full py-3">Login</button>
+  <div class="text-center mb-6">
+    <img src="/assets/logo/logo-badge.png"
+         alt="Nairobi Sweets"
+         class="w-16 h-16 rounded-full object-cover mx-auto mb-4"
+         onerror="this.style.display='none'">
 
-      <a href="/join.html" class="btn btn-dark w-full py-3 block text-center">Create an account</a>
+    <p class="text-xs uppercase tracking-[0.22em] text-pink-200 mb-2">
+      Welcome back
+    </p>
 
-      <p id="msg" class="text-sm text-slate-300 text-center"></p>
-    </div>
+    <h1 class="text-3xl font-black text-yellow-300">
+      Login
+    </h1>
+
+    <p class="text-slate-400 text-sm mt-2">
+      Access your Nairobi Sweets dashboard.
+    </p>
   </div>
 
-  <script>
-    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ';
+  <div class="space-y-3">
 
-    const OWNER_EMAIL = 'nairobisweets05@gmail.com';
+    <button id="googleBtn" class="btn btn-dark w-full py-3">
+      Continue with Google
+    </button>
 
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <div class="divider">or login with email</div>
 
-    async function login(){
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const msg = document.getElementById('msg');
+    <input id="email" type="email" placeholder="Email" class="input">
+    <input id="password" type="password" placeholder="Password" class="input">
 
-      msg.textContent = '';
+    <button id="loginBtn" class="btn btn-gold w-full py-3">
+      Login
+    </button>
 
-      if(!email || !password){
-        msg.textContent = 'Enter your email and password.';
-        return;
-      }
+    <a href="/public-signup-payment-page.html" class="btn btn-pink w-full py-3 block text-center">
+      Create an account
+    </a>
 
-      msg.textContent = 'Logging in...';
+    <a href="/index.html" class="btn btn-dark w-full py-3 block text-center">
+      Back to Homepage
+    </a>
 
-      const { error } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
+    <p id="msg" class="text-sm text-slate-300 text-center"></p>
 
-      if(error){
-        msg.textContent = error.message;
-        return;
-      }
+  </div>
+</div>
 
-      msg.textContent = 'Login successful. Redirecting...';
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
-      if(email.toLowerCase() === OWNER_EMAIL.toLowerCase()){
-        window.location.href = '/vault-8472.html';
-      } else {
-        window.location.href = '/user-dashboard.html';
-      }
+const OWNER_EMAILS = [
+  "nairobisweets05@gmail.com",
+  "beezysprout@gmail.com"
+];
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const googleBtn = document.getElementById("googleBtn");
+const msg = document.getElementById("msg");
+
+function showMsg(text, type = "normal"){
+  msg.textContent = text;
+  msg.className = "text-sm text-center " + (
+    type === "error" ? "text-pink-300" :
+    type === "success" ? "text-green-300" :
+    "text-slate-300"
+  );
+}
+
+function isOwner(email){
+  return OWNER_EMAILS.includes(String(email || "").toLowerCase());
+}
+
+async function routeUser(user){
+  if(!user){
+    window.location.href = "/login.html";
+    return;
+  }
+
+  const email = String(user.email || "").toLowerCase();
+
+  if(isOwner(email)){
+    window.location.href = "/vault-8472.html";
+    return;
+  }
+
+  showMsg("Checking your profile...");
+
+  const { data, error } = await sb
+    .from("profiles")
+    .select("id,user_id")
+    .eq("user_id", user.id)
+    .limit(1)
+    .maybeSingle();
+
+  if(error){
+    showMsg(error.message, "error");
+    return;
+  }
+
+  if(data){
+    window.location.href = "/user-dashboard.html";
+  }else{
+    window.location.href = "/public-signup-payment-page.html";
+  }
+}
+
+async function login(){
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  showMsg("");
+
+  if(!email || !password){
+    showMsg("Enter your email and password.", "error");
+    return;
+  }
+
+  loginBtn.disabled = true;
+  loginBtn.textContent = "Logging in...";
+  showMsg("Logging in...");
+
+  const { data, error } = await sb.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if(error){
+    showMsg(error.message, "error");
+    loginBtn.disabled = false;
+    loginBtn.textContent = "Login";
+    return;
+  }
+
+  showMsg("Login successful. Redirecting...", "success");
+  await routeUser(data.user);
+}
+
+async function loginWithGoogle(){
+  showMsg("Opening Google login...");
+
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/login.html`
     }
+  });
 
-    document.getElementById('loginBtn').addEventListener('click', login);
+  if(error){
+    showMsg(error.message, "error");
+  }
+}
 
-    document.getElementById('password').addEventListener('keydown', (e) => {
-      if(e.key === 'Enter') login();
-    });
+async function checkExistingSession(){
+  const { data, error } = await sb.auth.getSession();
 
-    /* PWA SERVICE WORKER */
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("/sw.js")
-          .then(() => console.log("Nairobi Sweets PWA ready"))
-          .catch(err => console.error("PWA error:", err));
-      });
-    }
-  </script>
+  if(error){
+    showMsg(error.message, "error");
+    return;
+  }
+
+  if(data.session?.user){
+    showMsg("Session found. Redirecting...", "success");
+    await routeUser(data.session.user);
+  }
+}
+
+loginBtn.addEventListener("click", login);
+googleBtn.addEventListener("click", loginWithGoogle);
+
+passwordInput.addEventListener("keydown", (e) => {
+  if(e.key === "Enter") login();
+});
+
+emailInput.addEventListener("keydown", (e) => {
+  if(e.key === "Enter") login();
+});
+
+checkExistingSession();
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker
+      .register("/sw.js")
+      .catch(err=>console.error("PWA error:",err));
+  });
+}
+</script>
+
 </body>
 </html>
