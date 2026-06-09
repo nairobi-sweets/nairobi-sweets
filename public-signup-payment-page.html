@@ -4,11 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Create Listing | Nairobi Sweets</title>
+<title>Signup Form | Nairobi Sweets</title>
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#ffd84b">
+
+<meta name="theme-color" content="#ff0088">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
@@ -20,50 +21,47 @@
 *{box-sizing:border-box}
 
 :root{
-  --bg:#07091a;
-  --panel:#10142c;
-  --panel2:#171c38;
+  --pink:#ff0088;
+  --pink2:#ff4bad;
   --gold:#ffd84b;
-  --pink:#ff4ba3;
-  --text:#f7f7fb;
-  --muted:#aab1c8;
-  --line:rgba(255,255,255,.1);
-  --green:#22c55e;
-  --red:#ff4f86;
+  --black:#000;
+  --white:#fff;
+  --text:#171827;
+  --muted:#74788a;
+  --line:#e4e5ec;
+  --soft:#f7f7fb;
+  --green:#16a34a;
+  --red:#e11d48;
 }
 
 body{
   margin:0;
-  background:
-    radial-gradient(circle at top left,rgba(255,75,163,.18),transparent 30%),
-    radial-gradient(circle at top right,rgba(255,216,75,.13),transparent 28%),
-    var(--bg);
-  color:var(--text);
   font-family:Inter,Arial,sans-serif;
+  background:#000;
+  color:var(--text);
 }
 
-a{text-decoration:none;color:inherit}
-
-.wrap{
-  width:min(1100px,calc(100% - 28px));
-  margin:auto;
+a{
+  color:inherit;
+  text-decoration:none;
 }
 
-header{
+.header{
+  background:#fff;
+  border-bottom:1px solid #eee;
   position:sticky;
   top:0;
-  z-index:20;
-  background:rgba(7,9,26,.9);
-  backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--line);
+  z-index:50;
 }
 
 .nav{
-  min-height:76px;
+  width:min(1320px,calc(100% - 28px));
+  margin:auto;
+  min-height:92px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:16px;
+  gap:20px;
 }
 
 .brand{
@@ -73,108 +71,106 @@ header{
 }
 
 .brand img{
-  width:54px;
-  height:54px;
+  width:86px;
+  max-height:70px;
   object-fit:contain;
-  border-radius:14px;
-}
-
-.brand small{
-  display:block;
-  color:var(--muted);
-  font-size:12px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
 }
 
 .brand strong{
-  display:block;
-  color:var(--gold);
-  font-size:23px;
+  font-size:25px;
+  color:var(--pink);
   font-weight:950;
 }
 
-.nav a{
-  padding:10px 15px;
-  border-radius:999px;
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--line);
-  font-weight:800;
+.menu{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
 }
 
-main{
-  padding:34px 0;
+.menu a{
+  color:var(--pink);
+  font-weight:800;
+  padding:10px 12px;
+  border-radius:12px;
+}
+
+.menu .join{
+  border:2px solid var(--pink);
+  border-radius:18px;
+  padding:12px 20px;
 }
 
 .hero{
-  background:linear-gradient(180deg,rgba(18,22,50,.95),rgba(7,9,26,.96));
-  border:1px solid var(--line);
-  border-radius:30px;
-  padding:30px;
-  margin-bottom:22px;
-  box-shadow:0 30px 80px rgba(0,0,0,.35);
+  text-align:center;
+  padding:34px 14px 24px;
+  color:#fff;
 }
 
 .hero h1{
   margin:0;
-  color:var(--gold);
-  font-size:clamp(36px,6vw,58px);
-  letter-spacing:-.05em;
+  color:var(--pink);
+  font-size:clamp(38px,5vw,56px);
+  font-weight:500;
 }
 
 .hero p{
-  color:var(--muted);
-  line-height:1.7;
-  font-size:16px;
-}
-
-.form-card{
-  background:linear-gradient(180deg,#121735,#090c22);
-  border:1px solid var(--line);
-  border-radius:30px;
-  padding:28px;
-  box-shadow:0 20px 60px rgba(0,0,0,.3);
-}
-
-h2{
-  margin-top:0;
-  color:var(--gold);
-  font-size:34px;
-}
-
-.section-title{
-  margin:30px 0 10px;
   color:#fff;
-  font-size:22px;
+  font-size:20px;
 }
 
-.note{
-  color:var(--muted);
-  line-height:1.7;
+.form-shell{
+  width:min(980px,calc(100% - 28px));
+  margin:0 auto 52px;
+  background:#f5f5f7;
+  border-radius:26px;
+  padding:30px;
+  box-shadow:0 0 35px rgba(255,0,136,.45);
+}
+
+.notice{
+  color:var(--pink);
+  font-size:20px;
+  margin:0 0 24px;
+  font-weight:700;
 }
 
 .grid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:18px;
+  grid-template-columns:1fr 1fr;
+  gap:22px 30px;
 }
 
-label{
-  display:block;
-  color:var(--gold);
-  font-weight:900;
-  margin:18px 0 8px;
-}
-
-input,select,textarea{
-  width:100%;
-  padding:16px;
-  border-radius:16px;
+.field{
+  background:#fff;
   border:1px solid var(--line);
-  background:#070a1e;
-  color:white;
-  font-size:16px;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+.field label{
+  display:block;
+  font-size:14px;
+  color:#6a6d7d;
+  padding:12px 16px 0;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  border:0;
+  background:#fff;
+  color:#111;
+  padding:8px 16px 16px;
+  font-size:20px;
   outline:none;
+  font-family:inherit;
 }
 
 textarea{
@@ -182,38 +178,81 @@ textarea{
   resize:vertical;
 }
 
+.phone-wrap{
+  display:grid;
+  grid-template-columns:78px 1fr;
+}
+
+.code{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid var(--line);
+  font-size:20px;
+  background:#fafafa;
+}
+
 .files{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:18px;
+  grid-template-columns:1fr 1fr;
+  gap:22px 30px;
+  margin-top:28px;
+}
+
+.file-box{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  align-items:center;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.file-box span{
+  padding:16px;
+  border-right:1px solid var(--line);
+  font-size:18px;
+  white-space:nowrap;
+}
+
+.file-box input{
+  padding:14px;
+  font-size:16px;
 }
 
 .preview{
-  margin-top:12px;
+  margin-top:10px;
   width:100%;
-  max-height:260px;
+  max-height:220px;
   object-fit:cover;
-  border-radius:18px;
-  border:1px dashed rgba(255,255,255,.25);
   display:none;
+  border-radius:14px;
 }
 
-.plan-box{
-  margin-top:22px;
-  background:rgba(255,255,255,.05);
+.plan-card{
+  margin-top:30px;
+  background:#fff;
   border:1px solid var(--line);
-  border-radius:24px;
-  padding:20px;
+  border-radius:18px;
+  padding:22px;
+}
+
+.plan-title{
+  margin:0 0 16px;
+  color:var(--pink);
+  font-size:25px;
 }
 
 .amount{
   margin-top:18px;
-  padding:22px;
-  border-radius:20px;
-  background:linear-gradient(180deg,#3a3111,#171305);
+  padding:20px;
+  border-radius:16px;
+  background:#111;
   color:var(--gold);
   font-size:30px;
   font-weight:950;
+  text-align:center;
 }
 
 .price-mini{
@@ -224,30 +263,53 @@ textarea{
 }
 
 .price-pill{
-  padding:12px;
-  border-radius:16px;
-  background:rgba(255,255,255,.05);
   border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
   text-align:center;
-  color:#dfe5f7;
+  background:#fafafa;
+  font-size:14px;
 }
 
 .price-pill strong{
   display:block;
-  color:var(--gold);
-  margin-top:5px;
+  color:var(--pink);
+  margin-top:6px;
+  font-size:16px;
+}
+
+.checks{
+  margin-top:26px;
+  display:grid;
+  gap:18px;
+}
+
+.check{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  color:#20212b;
+  font-size:18px;
+  line-height:1.5;
+}
+
+.check input{
+  width:22px;
+  height:22px;
+  margin-top:2px;
+  accent-color:var(--pink);
 }
 
 button{
   width:100%;
-  margin-top:26px;
-  padding:20px;
+  margin-top:30px;
+  padding:22px;
   border:none;
-  border-radius:999px;
-  background:linear-gradient(180deg,#ffe46b,#ffbf00);
-  color:black;
+  border-radius:10px;
+  background:var(--pink);
+  color:#fff;
   font-size:22px;
-  font-weight:950;
+  font-weight:900;
   cursor:pointer;
 }
 
@@ -261,30 +323,57 @@ button:disabled{
   font-size:18px;
   font-weight:900;
   line-height:1.5;
+  text-align:center;
 }
 
 .success{color:var(--green)}
 .error{color:var(--red)}
 
-footer{
+.login-note{
+  margin-top:24px;
   text-align:center;
-  color:var(--muted);
-  padding:34px;
+  font-size:18px;
 }
 
-@media(max-width:800px){
-  .grid,.files,.price-mini{
+.login-note a{
+  color:var(--pink);
+  font-weight:900;
+}
+
+footer{
+  text-align:center;
+  color:#aaa;
+  padding:30px;
+}
+
+@media(max-width:850px){
+  .grid,
+  .files,
+  .price-mini{
     grid-template-columns:1fr;
   }
 
-  .form-card,.hero{
+  .nav{
+    flex-direction:column;
+    align-items:flex-start;
+    padding:14px 0;
+  }
+
+  .menu{
+    gap:6px;
+  }
+
+  .form-shell{
     padding:22px;
   }
 
-  .nav{
-    align-items:flex-start;
-    flex-direction:column;
-    padding:12px 0;
+  .file-box{
+    grid-template-columns:1fr;
+  }
+
+  .file-box span{
+    border-right:0;
+    border-bottom:1px solid var(--line);
   }
 }
 </style>
@@ -292,70 +381,115 @@ footer{
 
 <body>
 
-<header>
-  <div class="wrap nav">
+<header class="header">
+  <div class="nav">
     <a href="/index.html" class="brand">
       <img src="/assets/logo/logo-navbar.png" alt="Nairobi Sweets Logo" onerror="this.src='/assets/logo/logo-badge.png'">
-      <div>
-        <small>Private VIP Directory</small>
-        <strong>Nairobi Sweets</strong>
-      </div>
+      <strong>Nairobi Sweets</strong>
     </a>
 
-    <a href="/join.html">View Plans</a>
+    <nav class="menu">
+      <a href="/index.html">Home</a>
+      <a href="/index.html#profiles">Profiles</a>
+      <a href="/shorts.html">Videos</a>
+      <a href="/join.html" class="join">Join Us</a>
+    </nav>
   </div>
 </header>
 
-<main class="wrap">
-
 <section class="hero">
-  <h1>Create Profile & Pay</h1>
-  <p>
-    Fill your profile details, choose your membership and duration, upload at least 3 photos plus 1 short video,
-    then complete payment through M-Pesa.
-  </p>
+  <h1>Signup Form</h1>
+  <p>It’s quick and easy.</p>
 </section>
 
-<section class="form-card">
-  <h2>Signup Details</h2>
+<main class="form-shell">
+  <p class="notice">NB: Fill in all areas with a (*)</p>
 
   <form id="joinForm">
 
     <div class="grid">
-      <div>
-        <label>Stage Name *</label>
-        <input id="stageName" required placeholder="Sweet Zari" />
+
+      <div class="field">
+        <label>User Name*</label>
+        <input id="stageName" required placeholder="Stage name">
       </div>
 
-      <div>
-        <label>Email *</label>
-        <input id="email" type="email" required placeholder="you@email.com" />
+      <div class="field">
+        <label>Phone Number*</label>
+        <div class="phone-wrap">
+          <div class="code">+254</div>
+          <input id="phone" required placeholder="700123123">
+        </div>
       </div>
 
-      <div>
-        <label>Phone / M-Pesa Number *</label>
-        <input id="phone" required placeholder="2547XXXXXXXX" />
+      <div class="field">
+        <label>Email*</label>
+        <input id="email" type="email" required placeholder="you@email.com">
       </div>
 
-      <div>
+      <div class="field">
         <label>WhatsApp Number</label>
-        <input id="whatsapp" placeholder="Leave blank to use phone number" />
+        <div class="phone-wrap">
+          <div class="code">+254</div>
+          <input id="whatsapp" placeholder="Leave blank if same">
+        </div>
       </div>
 
-      <div>
-        <label>Age *</label>
-        <input id="age" type="number" min="20" required placeholder="22" />
+      <div class="field">
+        <label>Gender*</label>
+        <select id="gender" required>
+          <option value="">Select Your Gender*</option>
+          <option>Female</option>
+          <option>Male</option>
+          <option>Other</option>
+        </select>
       </div>
 
-      <div>
-        <label>Location *</label>
-        <input id="location" required placeholder="Westlands" />
+      <div class="field">
+        <label>Your Age*</label>
+        <input id="age" type="number" min="20" required placeholder="20+">
       </div>
 
-      <div>
-        <label>Body Type *</label>
+      <div class="field">
+        <label>Your Town*</label>
+        <input id="town" required placeholder="i.e. Nairobi">
+      </div>
+
+      <div class="field">
+        <label>Your Location*</label>
+        <input id="location" required placeholder="i.e. Kasarani">
+      </div>
+
+      <div class="field">
+        <label>Your Estate*</label>
+        <input id="estate" placeholder="i.e. Mwiki">
+      </div>
+
+      <div class="field">
+        <label>Meeting Place*</label>
+        <select id="meetingPlace" required>
+          <option value="">Select Your Meeting Place*</option>
+          <option>In Call</option>
+          <option>Out Call</option>
+          <option>Both</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Preference*</label>
+        <select id="preference" required>
+          <option value="">Select Your Preference*</option>
+          <option>Men</option>
+          <option>Women</option>
+          <option>Couples</option>
+          <option>Everyone</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Body Type*</label>
         <select id="bodyType" required>
-          <option value="">Select body type</option>
+          <option value="">Select Your Body Type*</option>
           <option>Petite</option>
           <option>Slim</option>
           <option>Thick</option>
@@ -365,69 +499,82 @@ footer{
         </select>
       </div>
 
-      <div>
-        <label>Meeting Place *</label>
-        <select id="meetingPlace" required>
-          <option value="">Select</option>
-          <option>In Call</option>
-          <option>Out Call</option>
-          <option>Both</option>
-        </select>
+      <div class="field full">
+        <label>Your Rate Optional</label>
+        <input id="rate" placeholder="KSh 5,000">
       </div>
 
-      <div>
-        <label>Rate Optional</label>
-        <input id="rate" placeholder="5,000" />
+      <div class="field full">
+        <label>Your Short Description Optional</label>
+        <textarea id="bio" placeholder="Short profile description"></textarea>
       </div>
 
-      <div>
-        <label>Available Now?</label>
-        <select id="onlineStatus">
-          <option value="true">Online / Available</option>
-          <option value="false">Offline</option>
-        </select>
+      <div class="field full">
+        <label>Services You Offer*</label>
+        <textarea id="services" required placeholder="Write the services you offer"></textarea>
       </div>
+
+      <div class="field full">
+        <label>Services You Don’t Offer Optional</label>
+        <textarea id="servicesDontOffer" placeholder="Write services you do not offer"></textarea>
+      </div>
+
     </div>
-
-    <label>Services You Offer *</label>
-    <textarea id="services" required placeholder="Massage, dinner date, companionship..."></textarea>
-
-    <label>Bio *</label>
-    <textarea id="bio" required placeholder="Short profile description"></textarea>
-
-    <h3 class="section-title">Upload Media</h3>
 
     <div class="files">
       <div>
-        <label>Main Picture *</label>
-        <input id="photo1" type="file" accept="image/*" required />
+        <div class="file-box">
+          <span>Main Picture*</span>
+          <input id="photo1" type="file" accept="image/*" required>
+        </div>
         <img id="preview1" class="preview" alt="">
       </div>
 
       <div>
-        <label>Second Picture *</label>
-        <input id="photo2" type="file" accept="image/*" required />
+        <div class="file-box">
+          <span>2nd Picture*</span>
+          <input id="photo2" type="file" accept="image/*" required>
+        </div>
         <img id="preview2" class="preview" alt="">
       </div>
 
       <div>
-        <label>Third Picture *</label>
-        <input id="photo3" type="file" accept="image/*" required />
+        <div class="file-box">
+          <span>3rd Picture*</span>
+          <input id="photo3" type="file" accept="image/*" required>
+        </div>
         <img id="preview3" class="preview" alt="">
       </div>
 
       <div>
-        <label>Short Video *</label>
-        <input id="shortVideo" type="file" accept="video/*" required />
+        <div class="file-box">
+          <span>4th Picture</span>
+          <input id="photo4" type="file" accept="image/*">
+        </div>
+        <img id="preview4" class="preview" alt="">
+      </div>
+
+      <div>
+        <div class="file-box">
+          <span>Video 1*</span>
+          <input id="video1" type="file" accept="video/*" required>
+        </div>
+      </div>
+
+      <div>
+        <div class="file-box">
+          <span>Video 2</span>
+          <input id="video2" type="file" accept="video/*">
+        </div>
       </div>
     </div>
 
-    <div class="plan-box">
-      <h3 class="section-title">Choose Membership</h3>
+    <section class="plan-card">
+      <h2 class="plan-title">Choose Membership</h2>
 
       <div class="grid">
-        <div>
-          <label>Membership Plan *</label>
+        <div class="field">
+          <label>Membership Plan*</label>
           <select id="package" required>
             <option value="featured">⭐ Featured</option>
             <option value="vip">🔥 VIP</option>
@@ -436,8 +583,8 @@ footer{
           </select>
         </div>
 
-        <div>
-          <label>Duration *</label>
+        <div class="field">
+          <label>Duration*</label>
           <select id="duration" required>
             <option value="3">3 Days</option>
             <option value="7">7 Days</option>
@@ -447,18 +594,36 @@ footer{
         </div>
       </div>
 
-      <div class="amount" id="amountBox">Amount: KES 300</div>
-
+      <div class="amount" id="amountBox">Amount: KSh 300</div>
       <div class="price-mini" id="priceMini"></div>
+    </section>
+
+    <div class="checks">
+      <label class="check">
+        <input id="terms" type="checkbox" required>
+        <span>I agree to the Terms, Advertiser Agreement and Privacy Policy*</span>
+      </label>
+
+      <label class="check">
+        <input id="adult" type="checkbox" required>
+        <span>I am at least 20 years old*</span>
+      </label>
+
+      <label class="check">
+        <input id="independent" type="checkbox" required>
+        <span>I am joining on my own behalf as a consenting adult and I am independent*</span>
+      </label>
     </div>
 
     <button id="payBtn" type="submit">Create Profile & Pay</button>
 
     <div id="msg" class="msg"></div>
 
-  </form>
-</section>
+    <div class="login-note">
+      Already a member? <a href="/login.html">Login here</a>
+    </div>
 
+  </form>
 </main>
 
 <footer>
@@ -472,30 +637,10 @@ const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const PLAN_PRICES = {
-  featured: {
-    3: 300,
-    7: 600,
-    15: 900,
-    30: 1500
-  },
-  vip: {
-    3: 800,
-    7: 1500,
-    15: 2500,
-    30: 4000
-  },
-  "vip-plus": {
-    3: 1000,
-    7: 2000,
-    15: 3500,
-    30: 5000
-  },
-  signature: {
-    3: 1500,
-    7: 3000,
-    15: 6000,
-    30: 10000
-  }
+  featured: { 3: 300, 7: 600, 15: 900, 30: 1500 },
+  vip: { 3: 800, 7: 1500, 15: 2500, 30: 4000 },
+  "vip-plus": { 3: 1000, 7: 2000, 15: 3500, 30: 5000 },
+  signature: { 3: 1500, 7: 3000, 15: 6000, 30: 10000 }
 };
 
 const PLAN_LABELS = {
@@ -525,71 +670,66 @@ function money(amount){
 }
 
 function getAmount(){
-  const plan = packageSelect.value;
-  const duration = durationSelect.value;
-  return PLAN_PRICES[plan][duration];
+  return PLAN_PRICES[packageSelect.value][durationSelect.value];
 }
 
 function updateAmount(){
   const plan = packageSelect.value;
-  const duration = durationSelect.value;
   const amount = getAmount();
 
-  amountBox.innerText = `Amount: ${money(amount)}`;
+  amountBox.innerText = "Amount: " + money(amount);
 
-  const prices = PLAN_PRICES[plan];
-
-  priceMini.innerHTML = Object.keys(prices).map(days => `
+  priceMini.innerHTML = Object.entries(PLAN_PRICES[plan]).map(([days, price]) => `
     <div class="price-pill">
       ${days} Days
-      <strong>${money(prices[days])}</strong>
+      <strong>${money(price)}</strong>
     </div>
   `).join("");
-
-  return amount;
 }
 
 packageSelect.addEventListener("change", updateAmount);
 durationSelect.addEventListener("change", updateAmount);
 
-function applyPlanFromURL(){
+function applyURLPlan(){
   const params = new URLSearchParams(window.location.search);
-  const selectedPlan = params.get("plan");
-  const selectedDuration = params.get("duration");
+  const plan = params.get("plan");
+  const duration = params.get("duration");
 
-  if (selectedPlan && PLAN_PRICES[selectedPlan]) {
-    packageSelect.value = selectedPlan;
+  if(plan && PLAN_PRICES[plan]){
+    packageSelect.value = plan;
   }
 
-  if (selectedDuration && ["3","7","15","30"].includes(selectedDuration)) {
-    durationSelect.value = selectedDuration;
+  if(duration && ["3","7","15","30"].includes(duration)){
+    durationSelect.value = duration;
   }
 
   updateAmount();
 }
 
-function preview(inputId, imgId){
+function preview(inputId,imgId){
   const input = document.getElementById(inputId);
   const img = document.getElementById(imgId);
 
-  input.addEventListener("change", () => {
+  input.addEventListener("change",()=>{
     const file = input.files[0];
-    if (!file) return;
+    if(!file) return;
 
     img.src = URL.createObjectURL(file);
     img.style.display = "block";
   });
 }
 
-preview("photo1", "preview1");
-preview("photo2", "preview2");
-preview("photo3", "preview3");
+preview("photo1","preview1");
+preview("photo2","preview2");
+preview("photo3","preview3");
+preview("photo4","preview4");
 
 function cleanPhone(phone){
-  let p = String(phone || "").replace(/\D/g, "");
+  let p = String(phone || "").replace(/\D/g,"");
 
-  if (p.startsWith("0")) p = "254" + p.slice(1);
-  if (p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  if(p.length === 9) p = "254" + p;
 
   return p;
 }
@@ -598,112 +738,125 @@ function slugify(text){
   return String(text || "")
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
 }
 
-function addDays(date, days){
+function addDays(date,days){
   const d = new Date(date);
   d.setDate(d.getDate() + Number(days));
   return d.toISOString();
 }
 
-async function uploadFile(bucket, file, folder){
-  if (!file) return null;
+async function uploadFile(bucket,file,folder){
+  if(!file) return null;
 
-  const ext = file.name.split(".").pop();
-  const cleanExt = ext ? ext.toLowerCase() : "file";
-  const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${cleanExt}`;
+  const ext = file.name.split(".").pop() || "file";
+  const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext.toLowerCase()}`;
 
   const { error } = await sb.storage
     .from(bucket)
-    .upload(fileName, file, {
-      cacheControl: "3600",
-      upsert: false
+    .upload(fileName,file,{
+      cacheControl:"3600",
+      upsert:false
     });
 
-  if (error) throw error;
+  if(error) throw error;
 
-  const { data } = sb.storage
-    .from(bucket)
-    .getPublicUrl(fileName);
-
+  const { data } = sb.storage.from(bucket).getPublicUrl(fileName);
   return data.publicUrl;
 }
 
-form.addEventListener("submit", async (e) => {
+form.addEventListener("submit",async(e)=>{
   e.preventDefault();
 
   msg.className = "msg";
   msg.innerText = "Creating profile...";
-
   payBtn.disabled = true;
   payBtn.innerText = "Processing...";
 
-  try {
+  try{
     const stageName = document.getElementById("stageName").value.trim();
-    const email = document.getElementById("email").value.trim();
     const phone = cleanPhone(document.getElementById("phone").value);
-    const whatsappRaw = document.getElementById("whatsapp").value.trim();
-    const whatsapp = whatsappRaw ? cleanPhone(whatsappRaw) : phone;
+    const whatsappInput = document.getElementById("whatsapp").value.trim();
+    const whatsapp = whatsappInput ? cleanPhone(whatsappInput) : phone;
+    const email = document.getElementById("email").value.trim();
+    const gender = document.getElementById("gender").value;
     const age = Number(document.getElementById("age").value);
+    const town = document.getElementById("town").value.trim();
     const location = document.getElementById("location").value.trim();
-    const bodyType = document.getElementById("bodyType").value;
+    const estate = document.getElementById("estate").value.trim();
     const meetingPlace = document.getElementById("meetingPlace").value;
+    const preference = document.getElementById("preference").value;
+    const bodyType = document.getElementById("bodyType").value;
     const rate = document.getElementById("rate").value.trim();
-    const services = document.getElementById("services").value.trim();
     const bio = document.getElementById("bio").value.trim();
-    const online = document.getElementById("onlineStatus").value === "true";
+    const services = document.getElementById("services").value.trim();
+    const servicesDontOffer = document.getElementById("servicesDontOffer").value.trim();
 
     const plan = packageSelect.value;
     const planLabel = PLAN_LABELS[plan];
     const durationDays = Number(durationSelect.value);
     const amount = getAmount();
 
-    if (!stageName || !email || !phone || !location || !bodyType || !meetingPlace || !services || !bio) {
-      throw new Error("Please fill all required fields.");
+    if(!stageName || !phone || !email || !gender || !age || !town || !location || !meetingPlace || !preference || !bodyType || !services){
+      throw new Error("Please fill all required fields marked with (*).");
     }
 
-    if (!phone.startsWith("254") || phone.length < 12) {
-      throw new Error("Enter a valid M-Pesa number, for example 2547XXXXXXXX.");
+    if(!phone.startsWith("254") || phone.length < 12){
+      throw new Error("Enter a valid phone number, for example 700123123 or 254700123123.");
     }
 
-    if (age < 20) {
+    if(age < 20){
       throw new Error("You must be at least 20 years old.");
     }
 
     const photo1 = document.getElementById("photo1").files[0];
     const photo2 = document.getElementById("photo2").files[0];
     const photo3 = document.getElementById("photo3").files[0];
-    const shortVideo = document.getElementById("shortVideo").files[0];
+    const photo4 = document.getElementById("photo4").files[0];
+    const video1 = document.getElementById("video1").files[0];
+    const video2 = document.getElementById("video2").files[0];
 
-    if (!photo1 || !photo2 || !photo3 || !shortVideo) {
-      throw new Error("Please upload at least 3 pictures and 1 short video.");
+    if(!photo1 || !photo2 || !photo3 || !video1){
+      throw new Error("Please upload at least 3 pictures and 1 video.");
     }
 
-    msg.innerText = "Uploading photos...";
-
     const folder = `${slugify(stageName)}-${Date.now()}`;
+
+    msg.innerText = "Uploading pictures...";
 
     const imageUrl = await uploadFile("profile-images", photo1, folder);
     const imageUrl2 = await uploadFile("profile-images", photo2, folder);
     const imageUrl3 = await uploadFile("profile-images", photo3, folder);
+    const imageUrl4 = photo4 ? await uploadFile("profile-images", photo4, folder) : null;
 
-    msg.innerText = "Uploading short video...";
+    const gallery = [imageUrl,imageUrl2,imageUrl3,imageUrl4].filter(Boolean);
 
-    let shortUrl = null;
+    msg.innerText = "Uploading videos...";
 
-    try {
-      shortUrl = await uploadFile("shorts", shortVideo, folder);
-    } catch (videoError) {
-      shortUrl = await uploadFile("profile-images", shortVideo, folder);
+    let videoUrl1 = null;
+    let videoUrl2 = null;
+
+    try{
+      videoUrl1 = await uploadFile("shorts", video1, folder);
+    }catch{
+      videoUrl1 = await uploadFile("profile-images", video1, folder);
+    }
+
+    if(video2){
+      try{
+        videoUrl2 = await uploadFile("shorts", video2, folder);
+      }catch{
+        videoUrl2 = await uploadFile("profile-images", video2, folder);
+      }
     }
 
     msg.innerText = "Saving profile...";
 
     const now = new Date().toISOString();
+    const expiryDate = addDays(now,durationDays);
     const profileSlug = `${slugify(stageName)}-${Date.now()}`;
-    const expiryDate = addDays(now, durationDays);
 
     const profilePayload = {
       stage_name: stageName,
@@ -712,24 +865,31 @@ form.addEventListener("submit", async (e) => {
       email,
       phone,
       whatsapp,
+      gender,
       age,
+      town,
       location,
+      estate,
       body_type: bodyType,
       meeting_place: meetingPlace,
+      preference,
       rate,
       services,
+      services_dont_offer: servicesDontOffer,
       bio,
 
       image_url: imageUrl,
       photo_url: imageUrl,
       image_url_2: imageUrl2,
       image_url_3: imageUrl3,
-      gallery_images: [imageUrl, imageUrl2, imageUrl3],
-      gallery: [imageUrl, imageUrl2, imageUrl3],
+      image_url_4: imageUrl4,
+      gallery_images: gallery,
+      gallery: gallery,
 
-      short_url: shortUrl,
-      video_url: shortUrl,
-      short_video: shortUrl,
+      short_url: videoUrl1,
+      video_url: videoUrl1,
+      short_video: videoUrl1,
+      video_url_2: videoUrl2,
 
       package: planLabel,
       tier: planLabel,
@@ -743,7 +903,7 @@ form.addEventListener("submit", async (e) => {
       payment_status: "pending",
       approved: false,
       is_expired: false,
-      online,
+      online: true,
 
       likes_count: 0,
       views_count: 0,
@@ -764,16 +924,14 @@ form.addEventListener("submit", async (e) => {
       .select()
       .single();
 
-    if (profileError) throw profileError;
+    if(profileError) throw profileError;
 
     msg.innerText = "Sending M-Pesa prompt...";
 
-    const payRes = await fetch("/.netlify/functions/mpesa-stk-push", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
+    const payRes = await fetch("/.netlify/functions/mpesa-stk-push",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
         profile_id: profile.id,
         profile_name: stageName,
         phone,
@@ -788,13 +946,13 @@ form.addEventListener("submit", async (e) => {
     const payText = await payRes.text();
 
     let payData = {};
-    try {
+    try{
       payData = payText ? JSON.parse(payText) : {};
-    } catch {
+    }catch{
       throw new Error(payText || "Invalid payment server response");
     }
 
-    if (!payRes.ok) {
+    if(!payRes.ok){
       throw new Error(payData.error || payData.message || "Payment failed");
     }
 
@@ -802,7 +960,7 @@ form.addEventListener("submit", async (e) => {
     msg.innerText = "M-Pesa prompt sent. Check your phone to complete payment.";
     payBtn.innerText = "Payment Prompt Sent";
 
-  } catch (error) {
+  }catch(error){
     msg.className = "msg error";
     msg.innerText = error.message || "Something went wrong.";
 
@@ -811,13 +969,13 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-applyPlanFromURL();
+applyURLPlan();
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
     navigator.serviceWorker
       .register("/sw.js")
-      .catch(err => console.error("PWA error:", err));
+      .catch(err=>console.error("PWA error:",err));
   });
 }
 </script>
