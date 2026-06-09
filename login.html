@@ -131,6 +131,13 @@ body{
     <input id="email" type="email" placeholder="Email" class="input">
     <input id="password" type="password" placeholder="Password" class="input">
 
+    <a id="forgotPassword" href="#" class="text-yellow-300 text-sm text-center block hover:text-yellow-200">Forgot Password?</a>
+
+    <label class="flex items-center gap-2 text-sm text-slate-300 justify-center">
+      <input id="rememberMe" type="checkbox" checked class="accent-yellow-300">
+      Remember me on this device
+    </label>
+
     <button id="loginBtn" class="btn btn-gold w-full py-3">
       Login
     </button>
@@ -163,6 +170,8 @@ const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const loginBtn = document.getElementById("loginBtn");
 const googleBtn = document.getElementById("googleBtn");
+const forgotPassword = document.getElementById("forgotPassword");
+const rememberMe = document.getElementById("rememberMe");
 const msg = document.getElementById("msg");
 
 function showMsg(text, type = "normal"){
@@ -178,6 +187,36 @@ function isOwner(email){
   return OWNER_EMAILS.includes(String(email || "").toLowerCase());
 }
 
+
+async function logLoginEvent(eventType,email,details=""){
+  try{
+    await sb.from("auth_events").insert({
+      event_type:eventType,
+      email:String(email || "").toLowerCase(),
+      details,
+      source_page:"login.html",
+      created_at:new Date().toISOString()
+    });
+  }catch(error){
+    console.log("Login analytics skipped:", error.message || error);
+  }
+}
+
+async function updateLastLogin(user){
+  if(!user?.id) return;
+
+  try{
+    await sb
+      .from("profiles")
+      .update({
+        last_login_at:new Date().toISOString()
+      })
+      .eq("user_id",user.id);
+  }catch(error){
+    console.log("Last login update skipped:", error.message || error);
+  }
+}
+
 async function routeUser(user){
   if(!user){
     window.location.href = "/login.html";
@@ -187,7 +226,9 @@ async function routeUser(user){
   const email = String(user.email || "").toLowerCase();
 
   if(isOwner(email)){
-    window.location.href = "/vault-8472.html";
+    showMsg("🔐 Admin account detected. Opening Vault...", "success");
+    await updateLastLogin(user);
+    setTimeout(()=>{ window.location.href = "/vault-8472.html"; }, 650);
     return;
   }
 
@@ -201,9 +242,12 @@ async function routeUser(user){
     .maybeSingle();
 
   if(error){
+    await logLoginEvent("login_failed",email,error.message);
     showMsg(error.message, "error");
     return;
   }
+
+  await updateLastLogin(user);
 
   if(data){
     window.location.href = "/user-dashboard.html";
@@ -225,6 +269,7 @@ async function login(){
 
   loginBtn.disabled = true;
   loginBtn.textContent = "Logging in...";
+  localStorage.setItem("nairobi_sweets_remember_login", rememberMe?.checked ? "true" : "false");
   showMsg("Logging in...");
 
   const { data, error } = await sb.auth.signInWithPassword({
@@ -233,18 +278,22 @@ async function login(){
   });
 
   if(error){
+    await logLoginEvent("login_failed",email,error.message);
     showMsg(error.message, "error");
     loginBtn.disabled = false;
     loginBtn.textContent = "Login";
     return;
   }
 
+  await logLoginEvent("login_success",email,"Email login successful");
   showMsg("Login successful. Redirecting...", "success");
   await routeUser(data.user);
 }
 
 async function loginWithGoogle(){
   showMsg("Opening Google login...");
+
+  await logLoginEvent("google_login_started",emailInput.value.trim(),"Google OAuth started");
 
   const { error } = await sb.auth.signInWithOAuth({
     provider: "google",
@@ -254,6 +303,7 @@ async function loginWithGoogle(){
   });
 
   if(error){
+    await logLoginEvent("login_failed",email,error.message);
     showMsg(error.message, "error");
   }
 }
@@ -262,6 +312,7 @@ async function checkExistingSession(){
   const { data, error } = await sb.auth.getSession();
 
   if(error){
+    await logLoginEvent("login_failed",email,error.message);
     showMsg(error.message, "error");
     return;
   }
@@ -272,8 +323,40 @@ async function checkExistingSession(){
   }
 }
 
+
+async function sendPasswordReset(event){
+  event.preventDefault();
+
+  const email = emailInput.value.trim();
+
+  if(!email){
+    showMsg("Enter your email first, then tap Forgot Password.","error");
+    emailInput.focus();
+    return;
+  }
+
+  forgotPassword.textContent = "Sending reset link...";
+  showMsg("Sending password reset email...");
+
+  const { error } = await sb.auth.resetPasswordForEmail(email,{
+    redirectTo:`${window.location.origin}/reset-password.html`
+  });
+
+  forgotPassword.textContent = "Forgot Password?";
+
+  if(error){
+    await logLoginEvent("password_reset_failed",email,error.message);
+    showMsg(error.message,"error");
+    return;
+  }
+
+  await logLoginEvent("password_reset_requested",email,"Password reset requested");
+  showMsg("Password reset email sent. Check your inbox.","success");
+}
+
 loginBtn.addEventListener("click", login);
 googleBtn.addEventListener("click", loginWithGoogle);
+forgotPassword.addEventListener("click", sendPasswordReset);
 
 passwordInput.addEventListener("keydown", (e) => {
   if(e.key === "Enter") login();
@@ -282,6 +365,10 @@ passwordInput.addEventListener("keydown", (e) => {
 emailInput.addEventListener("keydown", (e) => {
   if(e.key === "Enter") login();
 });
+
+if(localStorage.getItem("nairobi_sweets_remember_login") === "false" && rememberMe){
+  rememberMe.checked = false;
+}
 
 checkExistingSession();
 
