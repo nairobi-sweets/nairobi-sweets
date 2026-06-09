@@ -3,27 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
 <title>Create Listing | Nairobi Sweets</title>
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
 <link rel="manifest" href="/manifest.webmanifest">
-
 <meta name="theme-color" content="#ffd84b">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
-<link rel="apple-touch-icon" href="/assets/logo/logo-badge.png">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
-
 :root{
   --bg:#07091a;
-  --panel:#10142c;
-  --panel2:#171c38;
   --gold:#ffd84b;
   --gold2:#ffbf00;
   --pink:#ff4ba3;
@@ -33,7 +24,6 @@
   --green:#22c55e;
   --red:#ff4f86;
 }
-
 body{
   margin:0;
   font-family:Inter,Arial,sans-serif;
@@ -43,9 +33,7 @@ body{
     var(--bg);
   color:var(--text);
 }
-
 a{text-decoration:none;color:inherit}
-
 .header{
   position:sticky;
   top:0;
@@ -54,7 +42,6 @@ a{text-decoration:none;color:inherit}
   border-bottom:1px solid var(--line);
   backdrop-filter:blur(16px);
 }
-
 .nav{
   width:min(1320px,calc(100% - 28px));
   margin:auto;
@@ -64,42 +51,12 @@ a{text-decoration:none;color:inherit}
   justify-content:space-between;
   gap:18px;
 }
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.brand img{
-  width:58px;
-  height:58px;
-  object-fit:contain;
-  border-radius:16px;
-}
-
-.brand small{
-  display:block;
-  color:var(--muted);
-  font-size:12px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-}
-
-.brand strong{
-  display:block;
-  color:var(--gold);
-  font-size:24px;
-  font-weight:950;
-}
-
-.menu{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.menu a{
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:58px;height:58px;object-fit:contain;border-radius:16px}
+.brand small{display:block;color:var(--muted);font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+.brand strong{display:block;color:var(--gold);font-size:24px;font-weight:950}
+.menu{display:flex;gap:10px;flex-wrap:wrap}
+.menu a,.google-btn{
   padding:10px 14px;
   border-radius:999px;
   border:1px solid var(--line);
@@ -107,18 +64,12 @@ a{text-decoration:none;color:inherit}
   color:white;
   font-weight:800;
 }
-
 .menu .join{
   background:linear-gradient(180deg,#ffe46b,#ffbf00);
   color:#111;
   border:none;
 }
-
-.hero{
-  text-align:center;
-  padding:42px 14px 24px;
-}
-
+.hero{text-align:center;padding:42px 14px 24px}
 .hero h1{
   margin:0;
   color:var(--gold);
@@ -126,12 +77,7 @@ a{text-decoration:none;color:inherit}
   letter-spacing:-.05em;
   font-weight:950;
 }
-
-.hero p{
-  color:var(--muted);
-  font-size:18px;
-}
-
+.hero p{color:var(--muted);font-size:18px}
 .form-shell{
   width:min(1050px,calc(100% - 28px));
   margin:0 auto 54px;
@@ -141,31 +87,15 @@ a{text-decoration:none;color:inherit}
   padding:32px;
   box-shadow:0 30px 90px rgba(0,0,0,.5);
 }
-
-.notice{
-  color:var(--pink);
-  font-size:18px;
-  margin:0 0 24px;
-  font-weight:900;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px 26px;
-}
-
+.notice{color:var(--pink);font-size:18px;margin:0 0 24px;font-weight:900}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 26px}
 .field{
   background:rgba(255,255,255,.055);
   border:1px solid var(--line);
   border-radius:16px;
   overflow:hidden;
 }
-
-.field.full{
-  grid-column:1/-1;
-}
-
+.field.full{grid-column:1/-1}
 .field label{
   display:block;
   color:var(--gold);
@@ -173,10 +103,7 @@ a{text-decoration:none;color:inherit}
   font-weight:900;
   padding:13px 16px 0;
 }
-
-input,
-select,
-textarea{
+input,select,textarea{
   width:100%;
   border:0;
   background:transparent;
@@ -186,21 +113,9 @@ textarea{
   outline:none;
   font-family:inherit;
 }
-
-select option{
-  color:#111;
-}
-
-textarea{
-  min-height:120px;
-  resize:vertical;
-}
-
-.phone-wrap{
-  display:grid;
-  grid-template-columns:78px 1fr;
-}
-
+select option{color:#111}
+textarea{min-height:120px;resize:vertical}
+.phone-wrap{display:grid;grid-template-columns:78px 1fr}
 .code{
   display:flex;
   align-items:center;
@@ -211,21 +126,37 @@ textarea{
   font-weight:900;
   background:rgba(255,255,255,.04);
 }
-
+.account-box,.plan-card{
+  margin-top:30px;
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:22px;
+}
+.account-title,.plan-title{
+  margin:0 0 18px;
+  color:var(--gold);
+  font-size:26px;
+}
+.google-btn{
+  width:100%;
+  margin-top:16px;
+  padding:18px;
+  cursor:pointer;
+  border-radius:16px;
+}
 .files{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:20px 26px;
   margin-top:28px;
 }
-
 .file-box{
   background:rgba(255,255,255,.055);
   border:1px solid var(--line);
   border-radius:16px;
   overflow:hidden;
 }
-
 .file-box span{
   display:block;
   padding:14px 16px;
@@ -233,12 +164,7 @@ textarea{
   color:var(--gold);
   font-weight:900;
 }
-
-.file-box input{
-  padding:16px;
-  font-size:15px;
-}
-
+.file-box input{padding:16px;font-size:15px}
 .preview{
   margin-top:10px;
   width:100%;
@@ -248,21 +174,6 @@ textarea{
   border-radius:16px;
   border:1px solid var(--line);
 }
-
-.plan-card{
-  margin-top:30px;
-  background:rgba(255,255,255,.055);
-  border:1px solid var(--line);
-  border-radius:24px;
-  padding:22px;
-}
-
-.plan-title{
-  margin:0 0 18px;
-  color:var(--gold);
-  font-size:26px;
-}
-
 .amount{
   margin-top:18px;
   padding:22px;
@@ -273,14 +184,12 @@ textarea{
   font-weight:950;
   text-align:center;
 }
-
 .price-mini{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:10px;
   margin-top:16px;
 }
-
 .price-pill{
   border:1px solid var(--line);
   border-radius:16px;
@@ -290,20 +199,8 @@ textarea{
   color:#dbe0f2;
   font-size:14px;
 }
-
-.price-pill strong{
-  display:block;
-  color:var(--gold);
-  margin-top:6px;
-  font-size:16px;
-}
-
-.checks{
-  margin-top:26px;
-  display:grid;
-  gap:16px;
-}
-
+.price-pill strong{display:block;color:var(--gold);margin-top:6px;font-size:16px}
+.checks{margin-top:26px;display:grid;gap:16px}
 .check{
   display:flex;
   gap:12px;
@@ -312,15 +209,8 @@ textarea{
   font-size:16px;
   line-height:1.5;
 }
-
-.check input{
-  width:22px;
-  height:22px;
-  margin-top:2px;
-  accent-color:var(--gold);
-}
-
-button{
+.check input{width:22px;height:22px;margin-top:2px;accent-color:var(--gold)}
+button.main-btn{
   width:100%;
   margin-top:30px;
   padding:22px;
@@ -332,12 +222,7 @@ button{
   font-weight:950;
   cursor:pointer;
 }
-
-button:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-}
-
+button:disabled{opacity:.6;cursor:not-allowed}
 .msg{
   margin-top:20px;
   font-size:18px;
@@ -345,44 +230,13 @@ button:disabled{
   line-height:1.5;
   text-align:center;
 }
-
 .success{color:var(--green)}
 .error{color:var(--red)}
-
-.login-note{
-  margin-top:24px;
-  text-align:center;
-  font-size:17px;
-  color:var(--muted);
-}
-
-.login-note a{
-  color:var(--gold);
-  font-weight:900;
-}
-
-footer{
-  text-align:center;
-  color:var(--muted);
-  padding:34px;
-}
-
+footer{text-align:center;color:var(--muted);padding:34px}
 @media(max-width:850px){
-  .grid,
-  .files,
-  .price-mini{
-    grid-template-columns:1fr;
-  }
-
-  .nav{
-    flex-direction:column;
-    align-items:flex-start;
-    padding:14px 0;
-  }
-
-  .form-shell{
-    padding:22px;
-  }
+  .grid,.files,.price-mini{grid-template-columns:1fr}
+  .nav{flex-direction:column;align-items:flex-start;padding:14px 0}
+  .form-shell{padding:22px}
 }
 </style>
 </head>
@@ -402,7 +256,7 @@ footer{
     <nav class="menu">
       <a href="/index.html">Home</a>
       <a href="/index.html#profiles">Profiles</a>
-      <a href="/shorts.html">Videos</a>
+      <a href="/login.html">Login</a>
       <a href="/join.html" class="join">Join Us</a>
     </nav>
   </div>
@@ -410,13 +264,33 @@ footer{
 
 <section class="hero">
   <h1>Create Your Listing</h1>
-  <p>Choose your membership, upload your media, and activate through M-Pesa.</p>
+  <p>Create an account, upload your media, pay, and manage your profile later.</p>
 </section>
 
 <main class="form-shell">
   <p class="notice">NB: Fill in all areas marked with (*)</p>
 
   <form id="joinForm">
+
+    <section class="account-box">
+      <h2 class="account-title">Account Access</h2>
+
+      <div class="grid">
+        <div class="field">
+          <label>Email*</label>
+          <input id="email" type="email" required placeholder="you@email.com">
+        </div>
+
+        <div class="field">
+          <label>Create Password*</label>
+          <input id="password" type="password" required minlength="6" placeholder="Minimum 6 characters">
+        </div>
+      </div>
+
+      <button type="button" class="google-btn" onclick="signupWithGoogle()">
+        Continue with Google
+      </button>
+    </section>
 
     <div class="grid">
       <div class="field">
@@ -430,11 +304,6 @@ footer{
           <div class="code">+254</div>
           <input id="phone" required placeholder="700123123">
         </div>
-      </div>
-
-      <div class="field">
-        <label>Email*</label>
-        <input id="email" type="email" required placeholder="you@email.com">
       </div>
 
       <div class="field">
@@ -509,7 +378,7 @@ footer{
         </select>
       </div>
 
-      <div class="field full">
+      <div class="field">
         <label>Your Rate Optional</label>
         <input id="rate" placeholder="KSh 5,000">
       </div>
@@ -531,51 +400,12 @@ footer{
     </div>
 
     <div class="files">
-      <div>
-        <div class="file-box">
-          <span>Main Picture*</span>
-          <input id="photo1" type="file" accept="image/*" required>
-        </div>
-        <img id="preview1" class="preview" alt="">
-      </div>
-
-      <div>
-        <div class="file-box">
-          <span>2nd Picture*</span>
-          <input id="photo2" type="file" accept="image/*" required>
-        </div>
-        <img id="preview2" class="preview" alt="">
-      </div>
-
-      <div>
-        <div class="file-box">
-          <span>3rd Picture*</span>
-          <input id="photo3" type="file" accept="image/*" required>
-        </div>
-        <img id="preview3" class="preview" alt="">
-      </div>
-
-      <div>
-        <div class="file-box">
-          <span>4th Picture</span>
-          <input id="photo4" type="file" accept="image/*">
-        </div>
-        <img id="preview4" class="preview" alt="">
-      </div>
-
-      <div>
-        <div class="file-box">
-          <span>Video 1*</span>
-          <input id="video1" type="file" accept="video/*" required>
-        </div>
-      </div>
-
-      <div>
-        <div class="file-box">
-          <span>Video 2</span>
-          <input id="video2" type="file" accept="video/*">
-        </div>
-      </div>
+      <div><div class="file-box"><span>Main Picture*</span><input id="photo1" type="file" accept="image/*" required></div><img id="preview1" class="preview"></div>
+      <div><div class="file-box"><span>2nd Picture*</span><input id="photo2" type="file" accept="image/*" required></div><img id="preview2" class="preview"></div>
+      <div><div class="file-box"><span>3rd Picture*</span><input id="photo3" type="file" accept="image/*" required></div><img id="preview3" class="preview"></div>
+      <div><div class="file-box"><span>4th Picture</span><input id="photo4" type="file" accept="image/*"></div><img id="preview4" class="preview"></div>
+      <div><div class="file-box"><span>Video 1*</span><input id="video1" type="file" accept="video/*" required></div></div>
+      <div><div class="file-box"><span>Video 2</span><input id="video2" type="file" accept="video/*"></div></div>
     </div>
 
     <section class="plan-card">
@@ -624,25 +454,16 @@ footer{
       </label>
     </div>
 
-    <button id="payBtn" type="submit">Create Profile & Pay</button>
-
+    <button id="payBtn" class="main-btn" type="submit">Create Account, Profile & Pay</button>
     <div id="msg" class="msg"></div>
-
-    <div class="login-note">
-      Already a member? <a href="/login.html">Login here</a>
-    </div>
-
   </form>
 </main>
 
-<footer>
-  © Nairobi Sweets
-</footer>
+<footer>© Nairobi Sweets</footer>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
-
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const PLAN_PRICES = {
@@ -684,15 +505,10 @@ function getAmount(){
 
 function updateAmount(){
   const plan = packageSelect.value;
-  const amount = getAmount();
-
-  amountBox.innerText = "Amount: " + money(amount);
+  amountBox.innerText = "Amount: " + money(getAmount());
 
   priceMini.innerHTML = Object.entries(PLAN_PRICES[plan]).map(([days, price]) => `
-    <div class="price-pill">
-      ${days} Days
-      <strong>${money(price)}</strong>
-    </div>
+    <div class="price-pill">${days} Days<strong>${money(price)}</strong></div>
   `).join("");
 }
 
@@ -704,13 +520,8 @@ function applyURLPlan(){
   const plan = params.get("plan");
   const duration = params.get("duration");
 
-  if(plan && PLAN_PRICES[plan]){
-    packageSelect.value = plan;
-  }
-
-  if(duration && ["3","7","15","30"].includes(duration)){
-    durationSelect.value = duration;
-  }
+  if(plan && PLAN_PRICES[plan]) packageSelect.value = plan;
+  if(duration && ["3","7","15","30"].includes(duration)) durationSelect.value = duration;
 
   updateAmount();
 }
@@ -718,11 +529,9 @@ function applyURLPlan(){
 function preview(inputId,imgId){
   const input = document.getElementById(inputId);
   const img = document.getElementById(imgId);
-
   input.addEventListener("change",()=>{
     const file = input.files[0];
     if(!file) return;
-
     img.src = URL.createObjectURL(file);
     img.style.display = "block";
   });
@@ -735,11 +544,9 @@ preview("photo4","preview4");
 
 function cleanPhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
-
   if(p.startsWith("0")) p = "254" + p.slice(1);
   if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
   if(p.length === 9) p = "254" + p;
-
   return p;
 }
 
@@ -776,20 +583,64 @@ async function uploadFile(bucket,file,folder){
   return data.publicUrl;
 }
 
+async function getOrCreateUser(email,password){
+  const { data: sessionData } = await sb.auth.getSession();
+
+  if(sessionData?.session?.user){
+    return sessionData.session.user;
+  }
+
+  const { data, error } = await sb.auth.signUp({
+    email,
+    password,
+    options:{
+      emailRedirectTo: `${window.location.origin}/user-dashboard.html`
+    }
+  });
+
+  if(error){
+    if(error.message.toLowerCase().includes("already registered")){
+      const login = await sb.auth.signInWithPassword({ email, password });
+      if(login.error) throw login.error;
+      return login.data.user;
+    }
+    throw error;
+  }
+
+  if(!data.user){
+    throw new Error("Account created. Please confirm your email, then login.");
+  }
+
+  return data.user;
+}
+
+async function signupWithGoogle(){
+  await sb.auth.signInWithOAuth({
+    provider:"google",
+    options:{
+      redirectTo:`${window.location.origin}/public-signup-payment-page.html`
+    }
+  });
+}
+
 form.addEventListener("submit",async(e)=>{
   e.preventDefault();
 
   msg.className = "msg";
-  msg.innerText = "Creating profile...";
+  msg.innerText = "Creating account...";
   payBtn.disabled = true;
   payBtn.innerText = "Processing...";
 
   try{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const user = await getOrCreateUser(email,password);
+
     const stageName = document.getElementById("stageName").value.trim();
     const phone = cleanPhone(document.getElementById("phone").value);
     const whatsappInput = document.getElementById("whatsapp").value.trim();
     const whatsapp = whatsappInput ? cleanPhone(whatsappInput) : phone;
-    const email = document.getElementById("email").value.trim();
     const gender = document.getElementById("gender").value;
     const age = Number(document.getElementById("age").value);
     const town = document.getElementById("town").value.trim();
@@ -813,7 +664,7 @@ form.addEventListener("submit",async(e)=>{
     }
 
     if(!phone.startsWith("254") || phone.length < 12){
-      throw new Error("Enter a valid phone number, for example 700123123 or 254700123123.");
+      throw new Error("Enter a valid phone number, for example 700123123.");
     }
 
     if(age < 20){
@@ -831,15 +682,14 @@ form.addEventListener("submit",async(e)=>{
       throw new Error("Please upload at least 3 pictures and 1 video.");
     }
 
-    const folder = `${slugify(stageName)}-${Date.now()}`;
+    const folder = `${user.id}/${slugify(stageName)}-${Date.now()}`;
 
     msg.innerText = "Uploading pictures...";
 
-    const imageUrl = await uploadFile("profile-images", photo1, folder);
-    const imageUrl2 = await uploadFile("profile-images", photo2, folder);
-    const imageUrl3 = await uploadFile("profile-images", photo3, folder);
-    const imageUrl4 = photo4 ? await uploadFile("profile-images", photo4, folder) : null;
-
+    const imageUrl = await uploadFile("profile-images",photo1,folder);
+    const imageUrl2 = await uploadFile("profile-images",photo2,folder);
+    const imageUrl3 = await uploadFile("profile-images",photo3,folder);
+    const imageUrl4 = photo4 ? await uploadFile("profile-images",photo4,folder) : null;
     const gallery = [imageUrl,imageUrl2,imageUrl3,imageUrl4].filter(Boolean);
 
     msg.innerText = "Uploading videos...";
@@ -848,16 +698,16 @@ form.addEventListener("submit",async(e)=>{
     let videoUrl2 = null;
 
     try{
-      videoUrl1 = await uploadFile("shorts", video1, folder);
+      videoUrl1 = await uploadFile("shorts",video1,folder);
     }catch{
-      videoUrl1 = await uploadFile("profile-images", video1, folder);
+      videoUrl1 = await uploadFile("profile-images",video1,folder);
     }
 
     if(video2){
       try{
-        videoUrl2 = await uploadFile("shorts", video2, folder);
+        videoUrl2 = await uploadFile("shorts",video2,folder);
       }catch{
-        videoUrl2 = await uploadFile("profile-images", video2, folder);
+        videoUrl2 = await uploadFile("profile-images",video2,folder);
       }
     }
 
@@ -868,9 +718,12 @@ form.addEventListener("submit",async(e)=>{
     const profileSlug = `${slugify(stageName)}-${Date.now()}`;
 
     const profilePayload = {
-      stage_name: stageName,
-      name: stageName,
-      slug: profileSlug,
+      user_id:user.id,
+      owner_id:user.id,
+
+      stage_name:stageName,
+      name:stageName,
+      slug:profileSlug,
       email,
       phone,
       whatsapp,
@@ -879,52 +732,52 @@ form.addEventListener("submit",async(e)=>{
       town,
       location,
       estate,
-      body_type: bodyType,
-      meeting_place: meetingPlace,
+      body_type:bodyType,
+      meeting_place:meetingPlace,
       preference,
       rate,
       services,
-      services_dont_offer: servicesDontOffer,
+      services_dont_offer:servicesDontOffer,
       bio,
 
-      image_url: imageUrl,
-      photo_url: imageUrl,
-      image_url_2: imageUrl2,
-      image_url_3: imageUrl3,
-      image_url_4: imageUrl4,
-      gallery_images: gallery,
-      gallery: gallery,
+      image_url:imageUrl,
+      photo_url:imageUrl,
+      image_url_2:imageUrl2,
+      image_url_3:imageUrl3,
+      image_url_4:imageUrl4,
+      gallery_images:gallery,
+      gallery:gallery,
 
-      short_url: videoUrl1,
-      video_url: videoUrl1,
-      short_video: videoUrl1,
-      video_url_2: videoUrl2,
+      short_url:videoUrl1,
+      video_url:videoUrl1,
+      short_video:videoUrl1,
+      video_url_2:videoUrl2,
 
-      package: planLabel,
-      tier: planLabel,
-      plan: plan,
-      plan_label: planLabel,
-      duration_days: durationDays,
-      amount_paid: amount,
-      expected_amount: amount,
-      expires_at: expiryDate,
+      package:planLabel,
+      tier:planLabel,
+      plan,
+      plan_label:planLabel,
+      duration_days:durationDays,
+      amount_paid:amount,
+      expected_amount:amount,
+      expires_at:expiryDate,
 
-      payment_status: "pending",
-      approved: false,
-      is_expired: false,
-      online: true,
+      payment_status:"pending",
+      approved:false,
+      is_expired:false,
+      online:true,
 
-      likes_count: 0,
-      views_count: 0,
-      views: 0,
-      favorites: 0,
-      whatsapp_clicks: 0,
-      call_clicks: 0,
-      profile_shares: 0,
-      video_plays: 0,
-      trending_score: 0,
-      boost_score: 0,
-      plan_rank: PLAN_RANKS[plan] || 1
+      likes_count:0,
+      views_count:0,
+      views:0,
+      favorites:0,
+      whatsapp_clicks:0,
+      call_clicks:0,
+      profile_shares:0,
+      video_plays:0,
+      trending_score:0,
+      boost_score:0,
+      plan_rank:PLAN_RANKS[plan] || 1
     };
 
     const { data: profile, error: profileError } = await sb
@@ -941,14 +794,15 @@ form.addEventListener("submit",async(e)=>{
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body:JSON.stringify({
-        profile_id: profile.id,
-        profile_name: stageName,
+        profile_id:profile.id,
+        user_id:user.id,
+        profile_name:stageName,
         phone,
         amount,
         plan,
-        plan_label: planLabel,
-        duration_days: durationDays,
-        expires_at: expiryDate
+        plan_label:planLabel,
+        duration_days:durationDays,
+        expires_at:expiryDate
       })
     });
 
@@ -966,7 +820,7 @@ form.addEventListener("submit",async(e)=>{
     }
 
     msg.className = "msg success";
-    msg.innerText = "M-Pesa prompt sent. Check your phone to complete payment.";
+    msg.innerText = "M-Pesa prompt sent. Check your phone. After payment, login to update your profile anytime.";
     payBtn.innerText = "Payment Prompt Sent";
 
   }catch(error){
@@ -974,7 +828,7 @@ form.addEventListener("submit",async(e)=>{
     msg.innerText = error.message || "Something went wrong.";
 
     payBtn.disabled = false;
-    payBtn.innerText = "Create Profile & Pay";
+    payBtn.innerText = "Create Account, Profile & Pay";
   }
 });
 
