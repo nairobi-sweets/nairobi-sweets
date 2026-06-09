@@ -1,267 +1,700 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>User Dashboard | Nairobi Sweets</title>
-  <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body{
-      min-height:100vh;
-      color:#f8fafc;
-      background:
-        radial-gradient(circle at 10% 0%, rgba(236,72,153,.10), transparent 22%),
-        radial-gradient(circle at 90% 10%, rgba(250,204,21,.08), transparent 24%),
-        linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
-      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-    }
-    .glass{
-      background:rgba(9,14,28,.74);
-      border:1px solid rgba(255,255,255,.08);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      box-shadow:0 22px 60px rgba(0,0,0,.30);
-    }
-    .input, .textarea{
-      width:100%;
-      padding:14px 16px;
-      border-radius:18px;
-      background:rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.08);
-      color:white;
-      outline:none;
-    }
-    .textarea{ min-height:110px; resize:vertical; }
-    .input:focus, .textarea:focus{
-      border-color:rgba(236,72,153,.55);
-      box-shadow:0 0 0 3px rgba(236,72,153,.10);
-    }
-    .btn{
-      border-radius:18px;
-      transition:.18s ease;
-    }
-    .btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
-    .btn-gold{
-      background:linear-gradient(135deg,#facc15,#f59e0b);
-      color:#111827;
-      font-weight:800;
-    }
-    .btn-dark{
-      background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.08);
-      color:white;
-    }
-    .chip{
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.05);
-      border-radius:999px;
-      padding:8px 12px;
-      font-size:12px;
-      font-weight:700;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Dashboard | Nairobi Sweets</title>
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#07091a;
+  --gold:#ffd84b;
+  --pink:#ff4ba3;
+  --text:#f7f7fb;
+  --muted:#aab1c8;
+  --line:rgba(255,255,255,.1);
+  --green:#22c55e;
+  --red:#ff4f86;
+}
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left,rgba(255,75,163,.16),transparent 30%),
+    radial-gradient(circle at top right,rgba(255,216,75,.12),transparent 28%),
+    var(--bg);
+  color:var(--text);
+}
+a{text-decoration:none;color:inherit}
+.wrap{width:min(1100px,calc(100% - 28px));margin:auto}
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(7,9,26,.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+}
+.nav{
+  min-height:82px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.brand img{
+  width:54px;
+  height:54px;
+  object-fit:contain;
+  border-radius:14px;
+}
+.brand strong{
+  color:var(--gold);
+  font-size:23px;
+  font-weight:950;
+}
+.nav-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.nav-actions a,
+.nav-actions button{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.06);
+  color:white;
+  padding:10px 14px;
+  border-radius:999px;
+  font-weight:800;
+  cursor:pointer;
+}
+.nav-actions .gold{
+  background:linear-gradient(180deg,#ffe46b,#ffbf00);
+  color:#111;
+  border:none;
+}
+.hero{
+  padding:36px 0 20px;
+}
+.hero-box{
+  background:linear-gradient(180deg,rgba(18,22,50,.96),rgba(7,9,26,.98));
+  border:1px solid var(--line);
+  border-radius:30px;
+  padding:28px;
+  box-shadow:0 28px 80px rgba(0,0,0,.42);
+}
+.hero h1{
+  margin:0;
+  color:var(--gold);
+  font-size:clamp(36px,6vw,58px);
+  letter-spacing:-.05em;
+}
+.hero p{
+  color:var(--muted);
+  line-height:1.7;
+}
+.status{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:18px;
+}
+.badge{
+  padding:9px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.06);
+  color:#e9edff;
+  font-weight:800;
+  font-size:13px;
+}
+.badge.gold{background:linear-gradient(180deg,#ffe46b,#ffbf00);color:#111;border:none}
+.card{
+  margin:22px 0 44px;
+  background:linear-gradient(180deg,#121735,#090c22);
+  border:1px solid var(--line);
+  border-radius:30px;
+  padding:28px;
+}
+h2{
+  margin-top:0;
+  color:var(--gold);
+  font-size:30px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px 24px;
+}
+.field{
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+}
+.field.full{grid-column:1/-1}
+label{
+  display:block;
+  color:var(--gold);
+  font-size:14px;
+  font-weight:900;
+  padding:13px 16px 0;
+}
+input,select,textarea{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:white;
+  padding:9px 16px 16px;
+  font-size:17px;
+  outline:none;
+  font-family:inherit;
+}
+select option{color:#111}
+textarea{min-height:115px;resize:vertical}
+.gallery{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin:18px 0;
+}
+.pic{
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:10px;
+}
+.pic img{
+  width:100%;
+  aspect-ratio:3/4;
+  object-fit:cover;
+  border-radius:14px;
+  background:#111;
+}
+.pic input{font-size:13px;padding:10px 0 0}
+.video-box{
+  margin-top:18px;
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+}
+video{
+  width:100%;
+  max-height:330px;
+  border-radius:16px;
+  background:#000;
+}
+.btn{
+  width:100%;
+  margin-top:24px;
+  padding:19px;
+  border:0;
+  border-radius:999px;
+  background:linear-gradient(180deg,#ffe46b,#ffbf00);
+  color:#111;
+  font-size:20px;
+  font-weight:950;
+  cursor:pointer;
+}
+.btn.pink{
+  background:linear-gradient(180deg,#ff5fb1,#e6257f);
+  color:white;
+}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.msg{
+  margin-top:18px;
+  font-size:18px;
+  font-weight:900;
+  text-align:center;
+  line-height:1.5;
+}
+.success{color:var(--green)}
+.error{color:var(--red)}
+.empty{
+  padding:26px;
+  border:1px dashed var(--line);
+  border-radius:22px;
+  color:var(--muted);
+  text-align:center;
+}
+footer{
+  text-align:center;
+  color:var(--muted);
+  padding:34px;
+}
+@media(max-width:850px){
+  .grid,.gallery{grid-template-columns:1fr}
+  .nav{flex-direction:column;align-items:flex-start;padding:14px 0}
+}
+</style>
 </head>
+
 <body>
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#080a12]/85 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-      <a href="/index.html" class="flex items-center gap-3">
-        <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets" class="w-11 h-11 rounded-full object-cover">
-        <div>
-          <div class="text-xs uppercase tracking-[0.22em] text-pink-200">Member area</div>
-          <div class="text-2xl font-extrabold text-yellow-300 leading-none">Dashboard</div>
-        </div>
-      </a>
-      <div class="flex gap-2">
-        <a href="/index.html" class="btn btn-dark px-4 py-2 text-sm">Home</a>
-        <button id="logoutBtn" class="btn btn-gold px-4 py-2 text-sm">Logout</button>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/index.html">
+      <img src="/assets/logo/logo-badge.png" onerror="this.style.display='none'" alt="Nairobi Sweets">
+      <strong>Nairobi Sweets</strong>
+    </a>
+
+    <div class="nav-actions">
+      <a href="/index.html">Home</a>
+      <a href="/join.html">Plans</a>
+      <button class="gold" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-box">
+    <h1>My Dashboard</h1>
+    <p>Update your photos, video, location, WhatsApp number, services and profile details.</p>
+
+    <div class="status" id="statusBadges"></div>
+  </div>
+</section>
+
+<main class="wrap">
+  <div id="loading" class="empty">Loading your profile...</div>
+
+  <form id="dashboardForm" class="card" style="display:none;">
+    <h2>Edit Profile</h2>
+
+    <div class="grid">
+      <div class="field">
+        <label>Stage Name</label>
+        <input id="stageName">
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input id="email" disabled>
+      </div>
+
+      <div class="field">
+        <label>Phone</label>
+        <input id="phone">
+      </div>
+
+      <div class="field">
+        <label>WhatsApp</label>
+        <input id="whatsapp">
+      </div>
+
+      <div class="field">
+        <label>Town</label>
+        <input id="town">
+      </div>
+
+      <div class="field">
+        <label>Location</label>
+        <input id="location">
+      </div>
+
+      <div class="field">
+        <label>Estate</label>
+        <input id="estate">
+      </div>
+
+      <div class="field">
+        <label>Age</label>
+        <input id="age" type="number" min="20">
+      </div>
+
+      <div class="field">
+        <label>Body Type</label>
+        <select id="bodyType">
+          <option value="">Select</option>
+          <option>Petite</option>
+          <option>Slim</option>
+          <option>Thick</option>
+          <option>Curvy</option>
+          <option>Athletic</option>
+          <option>BBW</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Meeting Place</label>
+        <select id="meetingPlace">
+          <option value="">Select</option>
+          <option>In Call</option>
+          <option>Out Call</option>
+          <option>Both</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Preference</label>
+        <select id="preference">
+          <option value="">Select</option>
+          <option>Men</option>
+          <option>Women</option>
+          <option>Couples</option>
+          <option>Everyone</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Rate</label>
+        <input id="rate">
+      </div>
+
+      <div class="field full">
+        <label>Bio</label>
+        <textarea id="bio"></textarea>
+      </div>
+
+      <div class="field full">
+        <label>Services Offered</label>
+        <textarea id="services"></textarea>
+      </div>
+
+      <div class="field full">
+        <label>Services Not Offered</label>
+        <textarea id="servicesDontOffer"></textarea>
       </div>
     </div>
-  </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-10">
-    <div class="grid lg:grid-cols-[.9fr_1.1fr] gap-6">
-      <section class="glass rounded-[30px] p-6 md:p-8">
-        <div class="flex items-center gap-4">
-          <img id="previewImage" src="/assets/logo/logo-badge.png" alt="Preview" class="w-24 h-24 rounded-3xl object-cover border border-white/10">
-          <div>
-            <div class="text-sm text-slate-300">Account</div>
-            <h1 id="welcomeName" class="text-3xl font-black text-yellow-300 mt-1">Loading...</h1>
-            <div id="accountEmail" class="text-slate-400 text-sm mt-1"></div>
-          </div>
-        </div>
+    <h2 style="margin-top:28px;">Photos</h2>
+    <div class="gallery">
+      <div class="pic">
+        <img id="img1" src="/assets/logo/logo-badge.png">
+        <input id="photo1" type="file" accept="image/*">
+      </div>
 
-        <div class="grid grid-cols-2 gap-3 mt-6">
-          <div class="glass rounded-2xl p-4">
-            <div class="text-xs text-slate-400">Plan</div>
-            <div id="planText" class="text-lg font-bold mt-1">-</div>
-          </div>
-          <div class="glass rounded-2xl p-4">
-            <div class="text-xs text-slate-400">Payment status</div>
-            <div id="paymentStatus" class="text-lg font-bold mt-1">-</div>
-          </div>
-          <div class="glass rounded-2xl p-4">
-            <div class="text-xs text-slate-400">Online</div>
-            <div id="onlineStatus" class="text-lg font-bold mt-1">-</div>
-          </div>
-          <div class="glass rounded-2xl p-4">
-            <div class="text-xs text-slate-400">Verified</div>
-            <div id="verifiedStatus" class="text-lg font-bold mt-1">-</div>
-          </div>
-        </div>
-      </section>
+      <div class="pic">
+        <img id="img2" src="/assets/logo/logo-badge.png">
+        <input id="photo2" type="file" accept="image/*">
+      </div>
 
-      <section class="glass rounded-[30px] p-6 md:p-8">
-        <div class="flex items-center justify-between gap-3 mb-5">
-          <div>
-            <div class="text-xs uppercase tracking-[0.22em] text-pink-200">Your profile</div>
-            <h2 class="text-3xl font-black text-white">Edit Listing</h2>
-          </div>
-          <span class="chip">Luxury profile</span>
-        </div>
+      <div class="pic">
+        <img id="img3" src="/assets/logo/logo-badge.png">
+        <input id="photo3" type="file" accept="image/*">
+      </div>
 
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm text-slate-300 mb-2">Stage name</label>
-            <input id="stage_name" class="input">
-          </div>
-          <div>
-            <label class="block text-sm text-slate-300 mb-2">Location</label>
-            <input id="location" class="input">
-          </div>
-          <div>
-            <label class="block text-sm text-slate-300 mb-2">Phone</label>
-            <input id="phone" class="input">
-          </div>
-          <div>
-            <label class="block text-sm text-slate-300 mb-2">WhatsApp</label>
-            <input id="whatsapp" class="input">
-          </div>
-          <div class="md:col-span-2">
-            <label class="block text-sm text-slate-300 mb-2">Image URL</label>
-            <input id="image_url" class="input">
-          </div>
-          <div class="md:col-span-2">
-            <label class="block text-sm text-slate-300 mb-2">Bio</label>
-            <textarea id="bio" class="textarea"></textarea>
-          </div>
-        </div>
-
-        <button id="saveBtn" class="btn btn-gold w-full py-3 mt-6">Save Changes</button>
-        <p id="msg" class="text-sm text-slate-300 mt-4"></p>
-      </section>
+      <div class="pic">
+        <img id="img4" src="/assets/logo/logo-badge.png">
+        <input id="photo4" type="file" accept="image/*">
+      </div>
     </div>
-  </main>
 
-  <script>
-    const SUPABASE_URL = 'https://dkjlvyynvgtijccitvvd.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <h2>Short Video</h2>
+    <div class="video-box">
+      <video id="videoPreview" controls></video>
+      <label>Replace Video</label>
+      <input id="video1" type="file" accept="video/*">
+    </div>
 
-    let currentUser = null;
-    let currentProfile = null;
+    <button id="saveBtn" class="btn" type="submit">Save Profile Updates</button>
+    <a href="/join.html" class="btn pink" style="display:flex;justify-content:center;text-decoration:none;">Renew / Upgrade Membership</a>
 
-    async function requireAuth(){
-      const { data } = await supabaseClient.auth.getSession();
-      if(!data.session){
-        window.location.href = '/login.html';
-        return null;
-      }
-      return data.session.user;
-    }
+    <div id="msg" class="msg"></div>
+  </form>
+</main>
 
-    async function loadProfile(){
-      currentUser = await requireAuth();
-      if(!currentUser) return;
+<footer>© Nairobi Sweets</footer>
 
-      document.getElementById('accountEmail').textContent = currentUser.email || '';
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      const { data, error } = await supabaseClient
-        .from('profiles')
-        .select('*')
-        .or(`user_id.eq.${currentUser.id},email.eq.${currentUser.email}`)
-        .order('id', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+let currentUser = null;
+let currentProfile = null;
 
-      if(error){
-        document.getElementById('msg').textContent = error.message;
-        return;
-      }
+const loading = document.getElementById("loading");
+const form = document.getElementById("dashboardForm");
+const msg = document.getElementById("msg");
+const saveBtn = document.getElementById("saveBtn");
+const statusBadges = document.getElementById("statusBadges");
 
-      currentProfile = data;
+function cleanPhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  if(p.length === 9) p = "254" + p;
+  return p;
+}
 
-      if(!currentProfile){
-        document.getElementById('welcomeName').textContent = 'No profile yet';
-        document.getElementById('msg').textContent = 'No profile record found. Create one from the signup page.';
-        return;
-      }
+function slugify(text){
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
+}
 
-      document.getElementById('welcomeName').textContent = currentProfile.stage_name || 'Member';
-      document.getElementById('stage_name').value = currentProfile.stage_name || '';
-      document.getElementById('location').value = currentProfile.location || '';
-      document.getElementById('phone').value = currentProfile.phone || '';
-      document.getElementById('whatsapp').value = currentProfile.whatsapp || '';
-      document.getElementById('image_url').value = currentProfile.profile_image_url || currentProfile.image_url || '';
-      document.getElementById('bio').value = currentProfile.bio || '';
+async function uploadFile(bucket,file,folder){
+  if(!file) return null;
 
-      const image = currentProfile.profile_image_url || currentProfile.image_url || '/assets/logo/logo-badge.png';
-      document.getElementById('previewImage').src = image;
+  const ext = file.name.split(".").pop() || "file";
+  const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext.toLowerCase()}`;
 
-      document.getElementById('planText').textContent = currentProfile.plan || currentProfile.category || '-';
-      document.getElementById('paymentStatus').textContent = currentProfile.payment_status || 'pending';
-      document.getElementById('onlineStatus').textContent = currentProfile.is_online ? 'Live' : 'Offline';
-      document.getElementById('verifiedStatus').textContent = currentProfile.is_verified ? 'Verified' : 'Pending';
-    }
-
-    async function saveProfile(){
-      const msg = document.getElementById('msg');
-      msg.textContent = '';
-
-      if(!currentProfile){
-        msg.textContent = 'No profile found to update.';
-        return;
-      }
-
-      const patch = {
-        stage_name: document.getElementById('stage_name').value.trim(),
-        name: document.getElementById('stage_name').value.trim(),
-        location: document.getElementById('location').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        whatsapp: document.getElementById('whatsapp').value.trim(),
-        profile_image_url: document.getElementById('image_url').value.trim(),
-        image_url: document.getElementById('image_url').value.trim(),
-        bio: document.getElementById('bio').value.trim(),
-        description: document.getElementById('bio').value.trim()
-      };
-
-      const { error } = await supabaseClient
-        .from('profiles')
-        .update(patch)
-        .eq('id', currentProfile.id);
-
-      if(error){
-        msg.textContent = error.message;
-        return;
-      }
-
-      msg.textContent = 'Profile updated successfully.';
-      await loadProfile();
-    }
-
-    async function logout(){
-      await supabaseClient.auth.signOut();
-      window.location.href = '/login.html';
-    }
-
-    document.getElementById('saveBtn').addEventListener('click', saveProfile);
-    document.getElementById('logoutBtn').addEventListener('click', logout);
-    document.getElementById('image_url').addEventListener('input', (e) => {
-      document.getElementById('previewImage').src = e.target.value.trim() || '/assets/logo/logo-badge.png';
+  const { error } = await sb.storage
+    .from(bucket)
+    .upload(fileName,file,{
+      cacheControl:"3600",
+      upsert:false
     });
 
-    loadProfile();
-  </script>
+  if(error) throw error;
+
+  const { data } = sb.storage.from(bucket).getPublicUrl(fileName);
+  return data.publicUrl;
+}
+
+function setValue(id,value){
+  const el = document.getElementById(id);
+  if(el) el.value = value || "";
+}
+
+function setImage(id,url){
+  const img = document.getElementById(id);
+  img.src = url || "/assets/logo/logo-badge.png";
+}
+
+function planBadge(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature")) return "👑 Signature";
+  if(p.includes("vip+")) return "💎 VIP+";
+  if(p.includes("vip-plus")) return "💎 VIP+";
+  if(p.includes("vip")) return "🔥 VIP";
+  return "⭐ Featured";
+}
+
+function renderStatus(){
+  const approved = currentProfile.approved ? "✅ Approved" : "⏳ Pending Approval";
+  const paid = currentProfile.payment_status === "paid" ? "✅ Paid" : "💳 Payment Pending";
+  const plan = planBadge(currentProfile.plan_label || currentProfile.tier || currentProfile.plan);
+  const expiry = currentProfile.expires_at
+    ? "Expires: " + new Date(currentProfile.expires_at).toLocaleDateString()
+    : "Expiry not set";
+
+  statusBadges.innerHTML = `
+    <span class="badge gold">${plan}</span>
+    <span class="badge">${approved}</span>
+    <span class="badge">${paid}</span>
+    <span class="badge">${expiry}</span>
+  `;
+}
+
+function fillForm(){
+  setValue("stageName", currentProfile.stage_name || currentProfile.name);
+  setValue("email", currentProfile.email || currentUser.email);
+  setValue("phone", currentProfile.phone);
+  setValue("whatsapp", currentProfile.whatsapp);
+  setValue("town", currentProfile.town);
+  setValue("location", currentProfile.location);
+  setValue("estate", currentProfile.estate);
+  setValue("age", currentProfile.age);
+  setValue("bodyType", currentProfile.body_type);
+  setValue("meetingPlace", currentProfile.meeting_place);
+  setValue("preference", currentProfile.preference);
+  setValue("rate", currentProfile.rate);
+  setValue("bio", currentProfile.bio);
+  setValue("services", currentProfile.services);
+  setValue("servicesDontOffer", currentProfile.services_dont_offer);
+
+  const gallery = currentProfile.gallery || currentProfile.gallery_images || [];
+  setImage("img1", currentProfile.image_url || currentProfile.photo_url || gallery[0]);
+  setImage("img2", currentProfile.image_url_2 || gallery[1]);
+  setImage("img3", currentProfile.image_url_3 || gallery[2]);
+  setImage("img4", currentProfile.image_url_4 || gallery[3]);
+
+  const video = document.getElementById("videoPreview");
+  const videoUrl = currentProfile.short_url || currentProfile.video_url || currentProfile.short_video;
+  if(videoUrl){
+    video.src = videoUrl;
+  }else{
+    video.style.display = "none";
+  }
+
+  renderStatus();
+}
+
+async function loadDashboard(){
+  const { data: userData, error: userError } = await sb.auth.getUser();
+
+  if(userError || !userData.user){
+    window.location.href = "/login.html";
+    return;
+  }
+
+  currentUser = userData.user;
+
+  let { data, error } = await sb
+    .from("profiles")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending:false })
+    .limit(1)
+    .maybeSingle();
+
+  if(error) throw error;
+
+  if(!data){
+    loading.innerHTML = `
+      No profile linked to this account yet.<br><br>
+      <a class="btn" href="/public-signup-payment-page.html" style="display:inline-flex;width:auto;">Create Profile</a>
+    `;
+    return;
+  }
+
+  currentProfile = data;
+  fillForm();
+
+  loading.style.display = "none";
+  form.style.display = "block";
+}
+
+function previewReplace(inputId,imgId){
+  const input = document.getElementById(inputId);
+  const img = document.getElementById(imgId);
+
+  input.addEventListener("change",()=>{
+    const file = input.files[0];
+    if(!file) return;
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+previewReplace("photo1","img1");
+previewReplace("photo2","img2");
+previewReplace("photo3","img3");
+previewReplace("photo4","img4");
+
+document.getElementById("video1").addEventListener("change",()=>{
+  const file = document.getElementById("video1").files[0];
+  if(!file) return;
+
+  const video = document.getElementById("videoPreview");
+  video.style.display = "block";
+  video.src = URL.createObjectURL(file);
+});
+
+form.addEventListener("submit",async(e)=>{
+  e.preventDefault();
+
+  msg.className = "msg";
+  msg.innerText = "Saving updates...";
+  saveBtn.disabled = true;
+  saveBtn.innerText = "Saving...";
+
+  try{
+    const folder = `${currentUser.id}/${slugify(currentProfile.stage_name || "profile")}-updates`;
+
+    const photo1 = document.getElementById("photo1").files[0];
+    const photo2 = document.getElementById("photo2").files[0];
+    const photo3 = document.getElementById("photo3").files[0];
+    const photo4 = document.getElementById("photo4").files[0];
+    const video1 = document.getElementById("video1").files[0];
+
+    let imageUrl = currentProfile.image_url;
+    let imageUrl2 = currentProfile.image_url_2;
+    let imageUrl3 = currentProfile.image_url_3;
+    let imageUrl4 = currentProfile.image_url_4;
+    let videoUrl = currentProfile.short_url || currentProfile.video_url || currentProfile.short_video;
+
+    if(photo1) imageUrl = await uploadFile("profile-images", photo1, folder);
+    if(photo2) imageUrl2 = await uploadFile("profile-images", photo2, folder);
+    if(photo3) imageUrl3 = await uploadFile("profile-images", photo3, folder);
+    if(photo4) imageUrl4 = await uploadFile("profile-images", photo4, folder);
+
+    if(video1){
+      try{
+        videoUrl = await uploadFile("shorts", video1, folder);
+      }catch{
+        videoUrl = await uploadFile("profile-images", video1, folder);
+      }
+    }
+
+    const gallery = [imageUrl,imageUrl2,imageUrl3,imageUrl4].filter(Boolean);
+
+    const updates = {
+      stage_name:document.getElementById("stageName").value.trim(),
+      name:document.getElementById("stageName").value.trim(),
+      phone:cleanPhone(document.getElementById("phone").value),
+      whatsapp:cleanPhone(document.getElementById("whatsapp").value || document.getElementById("phone").value),
+      town:document.getElementById("town").value.trim(),
+      location:document.getElementById("location").value.trim(),
+      estate:document.getElementById("estate").value.trim(),
+      age:Number(document.getElementById("age").value),
+      body_type:document.getElementById("bodyType").value,
+      meeting_place:document.getElementById("meetingPlace").value,
+      preference:document.getElementById("preference").value,
+      rate:document.getElementById("rate").value.trim(),
+      bio:document.getElementById("bio").value.trim(),
+      services:document.getElementById("services").value.trim(),
+      services_dont_offer:document.getElementById("servicesDontOffer").value.trim(),
+
+      image_url:imageUrl,
+      photo_url:imageUrl,
+      image_url_2:imageUrl2,
+      image_url_3:imageUrl3,
+      image_url_4:imageUrl4,
+      gallery_images:gallery,
+      gallery:gallery,
+
+      short_url:videoUrl,
+      video_url:videoUrl,
+      short_video:videoUrl,
+
+      updated_at:new Date().toISOString()
+    };
+
+    const { data, error } = await sb
+      .from("profiles")
+      .update(updates)
+      .eq("id", currentProfile.id)
+      .eq("user_id", currentUser.id)
+      .select()
+      .single();
+
+    if(error) throw error;
+
+    currentProfile = data;
+    fillForm();
+
+    msg.className = "msg success";
+    msg.innerText = "Profile updated successfully.";
+    saveBtn.innerText = "Saved";
+
+    setTimeout(()=>{
+      saveBtn.disabled = false;
+      saveBtn.innerText = "Save Profile Updates";
+    },1500);
+
+  }catch(error){
+    msg.className = "msg error";
+    msg.innerText = error.message || "Could not update profile.";
+
+    saveBtn.disabled = false;
+    saveBtn.innerText = "Save Profile Updates";
+  }
+});
+
+async function logout(){
+  await sb.auth.signOut();
+  window.location.href = "/login.html";
+}
+
+loadDashboard().catch(error=>{
+  loading.className = "empty error";
+  loading.innerText = error.message || "Could not load dashboard.";
+});
+</script>
+
 </body>
 </html>
