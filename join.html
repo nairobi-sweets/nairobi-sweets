@@ -4,11 +4,30 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Join Nairobi Sweets | Membership Plans</title>
+<title>Join Nairobi Sweets | Featured, VIP, VIP+ & Signature Plans</title>
 
-<meta name="description" content="Join Nairobi Sweets with Featured, VIP, VIP+ or Signature membership plans. Choose 3 days, 7 days, 15 days or 30 days visibility." />
+<meta name="description" content="Join Nairobi Sweets with Featured, VIP, VIP+ or Signature membership plans. Choose 3 days, 7 days, 15 days or 30 days visibility and create your listing." />
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://nairobi-sweets.com/join.html">
+
+<meta property="og:title" content="Join Nairobi Sweets | Membership Plans">
+<meta property="og:description" content="Choose Featured, VIP, VIP+ or Signature plans for 3, 7, 15 or 30 days.">
+<meta property="og:url" content="https://nairobi-sweets.com/join.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Join Nairobi Sweets | Membership Plans">
+<meta name="twitter:description" content="Featured, VIP, VIP+ and Signature listing plans with 3, 7, 15 and 30 day options.">
+<meta name="twitter:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
 
 <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png" />
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffd84b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
+<link rel="apple-touch-icon" href="/assets/logo/logo-badge.png">
 
 <style>
 :root{
@@ -16,7 +35,9 @@
   --card:#10142c;
   --soft:#171c38;
   --gold:#ffd84b;
+  --gold2:#ffbf00;
   --pink:#ff4ba3;
+  --cyan:#22d3ee;
   --text:#f7f7fb;
   --muted:#aab1c8;
   --line:rgba(255,255,255,.1);
@@ -25,14 +46,17 @@
 
 *{box-sizing:border-box}
 
+html{scroll-behavior:smooth}
+
 body{
   margin:0;
   font-family:Inter,Arial,sans-serif;
   background:
     radial-gradient(circle at top left,rgba(255,75,163,.18),transparent 30%),
     radial-gradient(circle at top right,rgba(255,216,75,.14),transparent 28%),
-    var(--bg);
+    linear-gradient(180deg,#07091a,#050617 70%,#02030a);
   color:var(--text);
+  padding-bottom:78px;
 }
 
 a{
@@ -49,7 +73,7 @@ header{
   position:sticky;
   top:0;
   z-index:40;
-  background:rgba(7,9,26,.9);
+  background:rgba(7,9,26,.92);
   backdrop-filter:blur(16px);
   border-bottom:1px solid var(--line);
 }
@@ -71,8 +95,9 @@ header{
 .brand img{
   width:48px;
   height:48px;
-  object-fit:contain;
+  object-fit:cover;
   border-radius:14px;
+  box-shadow:0 0 24px rgba(255,216,75,.12);
 }
 
 .brand small{
@@ -103,7 +128,7 @@ header{
   color:white;
   padding:10px 15px;
   border-radius:999px;
-  font-weight:800;
+  font-weight:850;
 }
 
 .menu .gold,
@@ -132,7 +157,7 @@ header{
 
 .hero-grid{
   display:grid;
-  grid-template-columns:1.1fr .9fr;
+  grid-template-columns:1.12fr .88fr;
   gap:28px;
   align-items:center;
 }
@@ -180,6 +205,7 @@ h1{
 
 .btn:hover{
   transform:translateY(-1px);
+  filter:brightness(1.04);
 }
 
 .btn.gold{
@@ -192,6 +218,11 @@ h1{
   background:linear-gradient(180deg,#ff5fb1,#e6257f);
   color:white;
   border:none;
+}
+
+.btn.dark{
+  background:rgba(255,255,255,.06);
+  color:white;
 }
 
 .info-card{
@@ -212,6 +243,24 @@ h1{
   padding-left:20px;
   color:#dde3f5;
   line-height:1.9;
+}
+
+.quick-matrix{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.quick-matrix span{
+  background:rgba(255,216,75,.09);
+  border:1px solid rgba(255,216,75,.14);
+  color:var(--gold);
+  padding:9px 8px;
+  border-radius:12px;
+  text-align:center;
+  font-size:12px;
+  font-weight:950;
 }
 
 .section{
@@ -244,6 +293,11 @@ h1{
   border-radius:26px;
   overflow:hidden;
   box-shadow:0 18px 50px rgba(0,0,0,.24);
+}
+
+.plan[open]{
+  border-color:rgba(255,216,75,.28);
+  box-shadow:0 0 36px rgba(255,216,75,.06),0 18px 50px rgba(0,0,0,.28);
 }
 
 .plan summary{
@@ -301,7 +355,9 @@ h1{
 
 .price-row{
   display:grid;
-  grid-template-columns:1fr auto;
+  grid-template-columns:1fr auto auto;
+  gap:10px;
+  align-items:center;
   padding:15px 16px;
   border-bottom:1px solid var(--line);
 }
@@ -312,6 +368,15 @@ h1{
 
 .price-row strong{
   color:var(--gold);
+}
+
+.price-row a{
+  background:linear-gradient(180deg,#ffe46b,#ffbf00);
+  color:#111;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:12px;
+  font-weight:950;
 }
 
 .benefits{
@@ -338,6 +403,7 @@ h1{
   display:flex;
   gap:12px;
   flex-wrap:wrap;
+  align-items:center;
 }
 
 .note{
@@ -368,6 +434,45 @@ h1{
   font-size:24px;
 }
 
+.compare-card p{
+  color:var(--muted);
+  line-height:1.55;
+}
+
+.rank-box{
+  background:linear-gradient(135deg,rgba(255,216,75,.09),rgba(255,75,163,.08));
+  border:1px solid rgba(255,216,75,.18);
+  border-radius:26px;
+  padding:24px;
+}
+
+.rank-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+  margin-top:14px;
+}
+
+.rank-item{
+  background:rgba(0,0,0,.22);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+}
+
+.rank-item strong{
+  color:var(--gold);
+  font-size:22px;
+  display:block;
+}
+
+.rank-item span{
+  display:block;
+  color:#dde3f5;
+  margin-top:6px;
+  font-weight:850;
+}
+
 .steps{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -385,12 +490,83 @@ h1{
   color:var(--gold);
 }
 
+.step p{
+  color:var(--muted);
+  line-height:1.65;
+}
+
+.admin-help{
+  background:linear-gradient(135deg,#07145f,#02083d,#140022);
+  border:1px solid rgba(255,216,75,.14);
+  border-radius:30px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 24px 70px rgba(0,0,0,.36);
+}
+
+.admin-help h2{
+  margin:0 0 10px;
+  color:var(--gold);
+  font-size:32px;
+}
+
+.admin-help p{
+  color:#d8d8e8;
+  line-height:1.75;
+  max-width:760px;
+  margin:0 auto 18px;
+}
+
+.admin-buttons{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.admin-buttons a{
+  min-height:48px;
+  padding:13px 20px;
+  border-radius:999px;
+  font-weight:950;
+}
+
+.admin-call{background:linear-gradient(180deg,#ffe46b,#ffbf00);color:#111}
+.admin-wa{background:#25D366;color:white}
+.admin-email{background:#06b6d4;color:#07111f}
+
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:60;
+  height:66px;
+  background:rgba(0,0,0,.94);
+  border-top:1px solid rgba(255,216,75,.12);
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  backdrop-filter:blur(16px);
+}
+
+.bottom-nav a{
+  color:var(--gold);
+  font-size:23px;
+}
+
 footer{
-  padding:36px 0;
+  padding:36px 0 92px;
   text-align:center;
   color:var(--muted);
   border-top:1px solid var(--line);
   margin-top:28px;
+}
+
+@media(max-width:1000px){
+  .rank-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
 }
 
 @media(max-width:900px){
@@ -434,8 +610,59 @@ footer{
   .from{
     font-size:20px;
   }
+
+  .price-row{
+    grid-template-columns:1fr;
+  }
+
+  .price-row a{
+    justify-content:center;
+    display:flex;
+  }
+}
+
+@media(max-width:620px){
+  .quick-matrix,
+  .rank-grid{
+    grid-template-columns:1fr;
+  }
+
+  h1{
+    font-size:40px;
+  }
+
+  .section-head h2{
+    font-size:30px;
+  }
 }
 </style>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"OfferCatalog",
+  "name":"Nairobi Sweets Membership Plans",
+  "url":"https://nairobi-sweets.com/join.html",
+  "itemListElement":[
+    {"@type":"Offer","name":"Featured 3 Days","price":"300","priceCurrency":"KES"},
+    {"@type":"Offer","name":"Featured 7 Days","price":"600","priceCurrency":"KES"},
+    {"@type":"Offer","name":"Featured 15 Days","price":"900","priceCurrency":"KES"},
+    {"@type":"Offer","name":"Featured 30 Days","price":"1500","priceCurrency":"KES"},
+    {"@type":"Offer","name":"VIP 3 Days","price":"800","priceCurrency":"KES"},
+    {"@type":"Offer","name":"VIP 7 Days","price":"1500","priceCurrency":"KES"},
+    {"@type":"Offer","name":"VIP 15 Days","price":"2500","priceCurrency":"KES"},
+    {"@type":"Offer","name":"VIP 30 Days","price":"4000","priceCurrency":"KES"},
+    {"@type":"Offer","name":"VIP+ 3 Days","price":"1000","priceCurrency":"KES"},
+    {"@type":"Offer","name":"VIP+ 7 Days","price":"2000","priceCurrency":"KES"},
+    {"@type":"Offer","name":"VIP+ 15 Days","price":"3500","priceCurrency":"KES"},
+    {"@type":"Offer","name":"VIP+ 30 Days","price":"5000","priceCurrency":"KES"},
+    {"@type":"Offer","name":"Signature 3 Days","price":"1500","priceCurrency":"KES"},
+    {"@type":"Offer","name":"Signature 7 Days","price":"3000","priceCurrency":"KES"},
+    {"@type":"Offer","name":"Signature 15 Days","price":"6000","priceCurrency":"KES"},
+    {"@type":"Offer","name":"Signature 30 Days","price":"10000","priceCurrency":"KES"}
+  ]
+}
+</script>
 </head>
 
 <body>
@@ -470,15 +697,16 @@ footer{
       <div>
         <div class="eyebrow">Join Nairobi Sweets</div>
 
-        <h1>Choose your visibility level and get listed.</h1>
+        <h1>Choose your plan, duration and visibility level.</h1>
 
         <p>
-          Nairobi Sweets now has a cleaner membership structure: Featured, VIP, VIP+ and Signature.
-          Pick a duration, complete your listing, and activate your profile through M-Pesa.
+          Nairobi Sweets has four membership categories: Featured, VIP, VIP+ and Signature.
+          Each category supports 3 days, 7 days, 15 days and 30 days. Choose your visibility level,
+          upload quality photos and video, then activate your profile through M-Pesa.
         </p>
 
         <div class="hero-actions">
-          <a href="#plans" class="btn gold">View Plans</a>
+          <a href="#plans" class="btn gold">View All Plans</a>
           <a href="/public-signup-payment-page.html" class="btn pink">Create Listing</a>
         </div>
       </div>
@@ -491,6 +719,13 @@ footer{
           <li>💎 VIP+: Premium boost</li>
           <li>👑 Signature: Maximum placement</li>
         </ul>
+
+        <div class="quick-matrix">
+          <span>3 Days</span>
+          <span>7 Days</span>
+          <span>15 Days</span>
+          <span>30 Days</span>
+        </div>
       </aside>
     </div>
   </div>
@@ -501,7 +736,7 @@ footer{
     <div class="section-head">
       <h2>Membership Plans</h2>
       <p>
-        Choose from 3 days, 7 days, 15 days or 30 days. Each higher plan gives stronger visibility and better ranking.
+        Choose from 3 days, 7 days, 15 days or 30 days. Every plan links directly to the signup/payment page with the correct plan and duration.
       </p>
     </div>
 
@@ -515,10 +750,10 @@ footer{
 
         <div class="plan-content">
           <div class="price-table">
-            <div class="price-row"><span>3 Days</span><strong>KSh 300</strong></div>
-            <div class="price-row"><span>7 Days</span><strong>KSh 600</strong></div>
-            <div class="price-row"><span>15 Days</span><strong>KSh 900</strong></div>
-            <div class="price-row"><span>30 Days</span><strong>KSh 1,500</strong></div>
+            <div class="price-row"><span>3 Days</span><strong>KSh 300</strong><a href="/public-signup-payment-page.html?plan=featured&duration=3">Choose</a></div>
+            <div class="price-row"><span>7 Days</span><strong>KSh 600</strong><a href="/public-signup-payment-page.html?plan=featured&duration=7">Choose</a></div>
+            <div class="price-row"><span>15 Days</span><strong>KSh 900</strong><a href="/public-signup-payment-page.html?plan=featured&duration=15">Choose</a></div>
+            <div class="price-row"><span>30 Days</span><strong>KSh 1,500</strong><a href="/public-signup-payment-page.html?plan=featured&duration=30">Choose</a></div>
           </div>
 
           <div class="benefits">
@@ -527,7 +762,7 @@ footer{
               <li>Directory listing</li>
               <li>WhatsApp contact button</li>
               <li>Call contact button</li>
-              <li>Up to 5 photos</li>
+              <li>Photo gallery support</li>
               <li>Dashboard access</li>
             </ul>
           </div>
@@ -547,10 +782,10 @@ footer{
 
         <div class="plan-content">
           <div class="price-table">
-            <div class="price-row"><span>3 Days</span><strong>KSh 800</strong></div>
-            <div class="price-row"><span>7 Days</span><strong>KSh 1,500</strong></div>
-            <div class="price-row"><span>15 Days</span><strong>KSh 2,500</strong></div>
-            <div class="price-row"><span>30 Days</span><strong>KSh 4,000</strong></div>
+            <div class="price-row"><span>3 Days</span><strong>KSh 800</strong><a href="/public-signup-payment-page.html?plan=vip&duration=3">Choose</a></div>
+            <div class="price-row"><span>7 Days</span><strong>KSh 1,500</strong><a href="/public-signup-payment-page.html?plan=vip&duration=7">Choose</a></div>
+            <div class="price-row"><span>15 Days</span><strong>KSh 2,500</strong><a href="/public-signup-payment-page.html?plan=vip&duration=15">Choose</a></div>
+            <div class="price-row"><span>30 Days</span><strong>KSh 4,000</strong><a href="/public-signup-payment-page.html?plan=vip&duration=30">Choose</a></div>
           </div>
 
           <div class="benefits">
@@ -559,7 +794,7 @@ footer{
               <li>VIP badge</li>
               <li>Higher homepage visibility</li>
               <li>Priority search ranking</li>
-              <li>Up to 10 photos</li>
+              <li>Better location exposure</li>
               <li>Dashboard access</li>
             </ul>
           </div>
@@ -579,20 +814,20 @@ footer{
 
         <div class="plan-content">
           <div class="price-table">
-            <div class="price-row"><span>3 Days</span><strong>KSh 1,000</strong></div>
-            <div class="price-row"><span>7 Days</span><strong>KSh 2,000</strong></div>
-            <div class="price-row"><span>15 Days</span><strong>KSh 3,500</strong></div>
-            <div class="price-row"><span>30 Days</span><strong>KSh 5,000</strong></div>
+            <div class="price-row"><span>3 Days</span><strong>KSh 1,000</strong><a href="/public-signup-payment-page.html?plan=vip-plus&duration=3">Choose</a></div>
+            <div class="price-row"><span>7 Days</span><strong>KSh 2,000</strong><a href="/public-signup-payment-page.html?plan=vip-plus&duration=7">Choose</a></div>
+            <div class="price-row"><span>15 Days</span><strong>KSh 3,500</strong><a href="/public-signup-payment-page.html?plan=vip-plus&duration=15">Choose</a></div>
+            <div class="price-row"><span>30 Days</span><strong>KSh 5,000</strong><a href="/public-signup-payment-page.html?plan=vip-plus&duration=30">Choose</a></div>
           </div>
 
           <div class="benefits">
             <h4>VIP+ Benefits</h4>
             <ul>
               <li>VIP+ badge</li>
-              <li>Priority homepage placement</li>
+              <li>Premium homepage boost</li>
               <li>Featured on location pages</li>
-              <li>Profile boosting</li>
-              <li>Up to 20 photos</li>
+              <li>Profile boosting advantage</li>
+              <li>Video visibility priority</li>
               <li>Dashboard access</li>
             </ul>
           </div>
@@ -612,10 +847,10 @@ footer{
 
         <div class="plan-content">
           <div class="price-table">
-            <div class="price-row"><span>3 Days</span><strong>KSh 1,500</strong></div>
-            <div class="price-row"><span>7 Days</span><strong>KSh 3,000</strong></div>
-            <div class="price-row"><span>15 Days</span><strong>KSh 6,000</strong></div>
-            <div class="price-row"><span>30 Days</span><strong>KSh 10,000</strong></div>
+            <div class="price-row"><span>3 Days</span><strong>KSh 1,500</strong><a href="/public-signup-payment-page.html?plan=signature&duration=3">Choose</a></div>
+            <div class="price-row"><span>7 Days</span><strong>KSh 3,000</strong><a href="/public-signup-payment-page.html?plan=signature&duration=7">Choose</a></div>
+            <div class="price-row"><span>15 Days</span><strong>KSh 6,000</strong><a href="/public-signup-payment-page.html?plan=signature&duration=15">Choose</a></div>
+            <div class="price-row"><span>30 Days</span><strong>KSh 10,000</strong><a href="/public-signup-payment-page.html?plan=signature&duration=30">Choose</a></div>
           </div>
 
           <div class="benefits">
@@ -624,7 +859,7 @@ footer{
               <li>Signature badge</li>
               <li>Top homepage placement</li>
               <li>Maximum ranking priority</li>
-              <li>Unlimited photos</li>
+              <li>Signature banner visibility</li>
               <li>Featured across location pages</li>
               <li>Premium visibility</li>
               <li>Dashboard access</li>
@@ -653,26 +888,45 @@ footer{
       <div class="compare-card">
         <h3>⭐ Featured</h3>
         <strong>KSh 1,500</strong>
-        <p>Entry visibility</p>
+        <p>Entry visibility with standard listing and contact buttons.</p>
       </div>
 
       <div class="compare-card">
         <h3>🔥 VIP</h3>
         <strong>KSh 4,000</strong>
-        <p>Higher exposure</p>
+        <p>Higher exposure, VIP badge and stronger discovery ranking.</p>
       </div>
 
       <div class="compare-card">
         <h3>💎 VIP+</h3>
         <strong>KSh 5,000</strong>
-        <p>Premium boost</p>
+        <p>Premium boost, video priority and better homepage placement.</p>
       </div>
 
       <div class="compare-card">
         <h3>👑 Signature</h3>
         <strong>KSh 10,000</strong>
-        <p>Maximum placement</p>
+        <p>Maximum placement, Signature banner and top ranking priority.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap rank-box">
+    <div class="section-head">
+      <h2>How Profile Ranking Works</h2>
+      <p>
+        Stronger plans improve visibility, but quality also matters. Upload sharp images and at least one video to perform better in Shorts, Reels, Trending and homepage discovery.
+      </p>
+    </div>
+
+    <div class="rank-grid">
+      <div class="rank-item"><strong>40%</strong><span>Image Quality</span></div>
+      <div class="rank-item"><strong>20%</strong><span>Likes</span></div>
+      <div class="rank-item"><strong>15%</strong><span>Views</span></div>
+      <div class="rank-item"><strong>15%</strong><span>Boost</span></div>
+      <div class="rank-item"><strong>10%</strong><span>Verification</span></div>
     </div>
   </div>
 </section>
@@ -686,18 +940,34 @@ footer{
     <div class="steps">
       <div class="step">
         <strong>1. Choose Plan</strong>
-        <p>Select Featured, VIP, VIP+ or Signature.</p>
+        <p>Select Featured, VIP, VIP+ or Signature, then choose 3, 7, 15 or 30 days.</p>
       </div>
 
       <div class="step">
         <strong>2. Submit Profile</strong>
-        <p>Add your name, phone, WhatsApp, location, photos and listing details.</p>
+        <p>Add your name, phone, WhatsApp, location, photos, services and at least one short video.</p>
       </div>
 
       <div class="step">
         <strong>3. Pay & Go Live</strong>
-        <p>Complete payment through M-Pesa and wait for approval.</p>
+        <p>Complete payment through M-Pesa. After approval, your profile appears on the site.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap admin-help">
+    <h2>📞 Need Help Choosing a Plan?</h2>
+    <p>
+      Contact Nairobi Sweets Admin for signup help, plan selection, renewals, VIP+ upgrades,
+      Signature placement, payment help and approval support.
+    </p>
+
+    <div class="admin-buttons">
+      <a class="admin-call" href="tel:+254143616363">📞 Call Admin</a>
+      <a class="admin-wa" href="https://wa.me/254143616363?text=Hello%20Nairobi%20Sweets%20Admin%2C%20I%20need%20help%20choosing%20a%20membership%20plan." target="_blank" rel="noopener">💬 WhatsApp Admin</a>
+      <a class="admin-email" href="mailto:nairobisweets05@gmail.com">📧 Email Admin</a>
     </div>
   </div>
 </section>
@@ -705,12 +975,38 @@ footer{
 </main>
 
 <footer>
-  Nairobi Sweets © 2026 • Premium Private Directory
+  Nairobi Sweets © 2026 • Featured, VIP, VIP+ and Signature Membership Plans
 </footer>
+
+<nav class="bottom-nav">
+  <a href="/index.html">🏠</a>
+  <a href="/shorts.html">🔥</a>
+  <a href="/reel.html">🎬</a>
+  <a href="/public-signup-payment-page.html">➕</a>
+  <a href="/login.html">👤</a>
+</nav>
 
 <script>
 function toggleMenu(){
-  document.getElementById("menu").classList.toggle("show");
+  const menu = document.getElementById("menu");
+  if(menu){
+    menu.classList.toggle("show");
+  }
+}
+
+document.querySelectorAll(".menu a").forEach(link=>{
+  link.addEventListener("click",()=>{
+    const menu = document.getElementById("menu");
+    if(menu) menu.classList.remove("show");
+  });
+});
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker
+      .register("/sw.js")
+      .catch(()=>{});
+  });
 }
 </script>
 
