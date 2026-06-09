@@ -1,750 +1,718 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Join Nairobi Sweets | Premium Listing Plans</title>
-  <meta name="description" content="Choose your Nairobi Sweets listing plan and join the premium private VIP directory." />
-  <link rel="icon" type="image/png" href="/assets/logo/logo-badge.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root{
-      --bg:#f3f3f4;
-      --nav:#3a3a42;
-      --panel:#05081a;
-      --panel-2:#09112a;
-      --line:rgba(255,255,255,.08);
-      --text:#f5f7ff;
-      --muted:#9ea7bf;
-      --gold:#ffbf00;
-      --gold-2:#ffd84b;
-      --pink:#f13d92;
-      --pink-2:#ffc0de;
-      --green:#69f2a8;
-      --shadow:0 24px 70px rgba(0,0,0,.25);
-      --radius:28px;
-    }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: #111;
-    }
-
-    body {
-      min-height: 100vh;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .topbar {
-      background: linear-gradient(180deg, #3b3b44 0%, #33333c 100%);
-      border-bottom: 1px solid rgba(255,255,255,.06);
-      position: sticky;
-      top: 0;
-      z-index: 30;
-    }
-
-    .wrap {
-      width: min(1450px, calc(100% - 36px));
-      margin: 0 auto;
-    }
-
-    .topbar-inner {
-      min-height: 86px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      min-width: 0;
-    }
-
-    .brand img {
-      width: 46px;
-      height: 46px;
-      object-fit: contain;
-      border-radius: 14px;
-      box-shadow: 0 0 28px rgba(255, 191, 0, .22);
-      background: rgba(255,255,255,.03);
-    }
-
-    .brand-copy {
-      line-height: 1.02;
-    }
-
-    .brand-copy small {
-      display: block;
-      color: rgba(255,255,255,.9);
-      font-size: 12px;
-      letter-spacing: .28em;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    .brand-copy strong {
-      display: block;
-      color: var(--gold-2);
-      font-size: 24px;
-      font-weight: 900;
-      letter-spacing: -.03em;
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .pill-btn {
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.06);
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: 999px;
-      font-weight: 700;
-      transition: .2s ease;
-      white-space: nowrap;
-    }
-
-    .pill-btn:hover {
-      transform: translateY(-1px);
-      background: rgba(255,255,255,.1);
-    }
-
-    .pill-btn.gold {
-      background: linear-gradient(180deg, #ffcf32, #ffbf00);
-      color: #171717;
-      border: none;
-    }
-
-    .pill-btn.pink {
-      background: linear-gradient(180deg, #ff4ba3, #e6257f);
-      color: #fff;
-      border: none;
-    }
-
-    .signature-rail {
-      position: fixed;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      background: linear-gradient(180deg, #ffdf43, #ffbf00);
-      color: #171717;
-      font-weight: 900;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      padding: 18px 12px;
-      border-radius: 18px 0 0 18px;
-      writing-mode: vertical-rl;
-      text-orientation: mixed;
-      box-shadow: 0 18px 40px rgba(0,0,0,.18);
-      z-index: 20;
-    }
-
-    .page-shell {
-      padding: 40px 0 54px;
-    }
-
-    .hero-shell {
-      background:
-        radial-gradient(circle at top left, rgba(255, 76, 160, .10), transparent 28%),
-        radial-gradient(circle at top right, rgba(255, 191, 0, .08), transparent 20%),
-        linear-gradient(180deg, #05081f 0%, #020616 100%);
-      border-radius: 30px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(12, 18, 45, .5);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .hero-shell::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 12% 16%, rgba(255, 120, 170, .10), transparent 18%),
-        radial-gradient(circle at 85% 30%, rgba(255, 191, 0, .06), transparent 16%);
-      pointer-events: none;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.1fr .52fr;
-      gap: 28px;
-      padding: 42px;
-      position: relative;
-      z-index: 1;
-      align-items: center;
-    }
-
-    .hero-logo-box {
-      width: 230px;
-      margin-bottom: 18px;
-      box-shadow: 0 0 55px rgba(241, 61, 146, .12);
-    }
-
-    .hero-logo-box img {
-      width: 100%;
-      display: block;
-      object-fit: cover;
-      background: rgba(255,255,255,.03);
-    }
-
-    .eyebrow {
-      color: var(--pink-2);
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      margin-bottom: 18px;
-    }
-
-    .hero-title {
-      margin: 0;
-      color: #f4f4f6;
-      font-size: clamp(48px, 6vw, 78px);
-      line-height: .95;
-      letter-spacing: -.06em;
-      font-weight: 950;
-      max-width: 760px;
-    }
-
-    .hero-copy {
-      margin: 24px 0 0;
-      max-width: 760px;
-      color: rgba(255,255,255,.82);
-      font-size: 17px;
-      line-height: 1.75;
-    }
-
-    .hero-badges {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 24px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 10px 15px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    .badge-gold {
-      background: linear-gradient(180deg, #ffcf32, #ffbf00);
-      color: #171717;
-    }
-
-    .badge-pink {
-      background: linear-gradient(180deg, #ff4ba3, #e6257f);
-      color: #fff;
-    }
-
-    .hero-actions {
-      margin-top: 26px;
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .cta {
-      padding: 14px 24px;
-      border-radius: 18px;
-      font-weight: 800;
-      font-size: 15px;
-      transition: .2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .cta.primary {
-      background: linear-gradient(180deg, #ffcf32, #ffbf00);
-      color: #171717;
-      box-shadow: 0 14px 30px rgba(255,191,0,.16);
-    }
-
-    .cta.secondary {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
-      color: #e9edff;
-    }
-
-    .cta:hover {
-      transform: translateY(-1px);
-    }
-
-    .info-card {
-      width: 100%;
-      border-radius: 28px;
-      padding: 26px 22px;
-      background: linear-gradient(180deg, rgba(3,9,29,.94), rgba(5,12,34,.96));
-      border: 1px solid rgba(255,255,255,.06);
-      box-shadow: 0 24px 80px rgba(0,0,0,.3);
-    }
-
-    .info-card h3 {
-      margin: 0 0 14px;
-      color: rgba(255,255,255,.95);
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .info-list {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      gap: 12px;
-    }
-
-    .info-list li {
-      color: #d7ddef;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.05);
-      border-radius: 18px;
-      padding: 14px 14px;
-      line-height: 1.55;
-    }
-
-    .plans-section {
-      margin-top: 34px;
-    }
-
-    .section-card {
-      background: #fff;
-      border-radius: 30px;
-      box-shadow: 0 18px 50px rgba(0,0,0,.08);
-      padding: 28px;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 22px;
-      flex-wrap: wrap;
-    }
-
-    .section-title {
-      margin: 0;
-      font-size: 34px;
-      letter-spacing: -.04em;
-      color: #171a24;
-    }
-
-    .section-copy {
-      margin: 8px 0 0;
-      color: #66718a;
-      line-height: 1.7;
-      max-width: 760px;
-    }
-
-    .plans-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .plan-card {
-      position: relative;
-      background: linear-gradient(180deg, #0a1025 0%, #11182f 100%);
-      color: #fff;
-      border-radius: 26px;
-      overflow: hidden;
-      box-shadow: 0 18px 42px rgba(0,0,0,.14);
-      border: 1px solid rgba(255,255,255,.05);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      min-height: 100%;
-    }
-
-    .plan-card.featured-card {
-      border-color: rgba(255,255,255,.08);
-    }
-
-    .plan-card.vip-card {
-      border-color: rgba(255,191,0,.25);
-      box-shadow: 0 22px 58px rgba(255,191,0,.12);
-    }
-
-    .plan-card.signature-card {
-      border-color: rgba(241,61,146,.22);
-      box-shadow: 0 22px 58px rgba(241,61,146,.12);
-    }
-
-    .plan-kicker {
-      font-size: 12px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .18em;
-      margin-bottom: 10px;
-    }
-
-    .featured-card .plan-kicker { color: #d8deef; }
-    .vip-card .plan-kicker { color: #ffd84b; }
-    .signature-card .plan-kicker { color: #ffc0de; }
-
-    .plan-name {
-      font-size: 32px;
-      font-weight: 950;
-      letter-spacing: -.04em;
-      margin: 0 0 6px;
-    }
-
-    .plan-price {
-      font-size: 46px;
-      font-weight: 950;
-      letter-spacing: -.05em;
-      line-height: .95;
-      margin: 0;
-    }
-
-    .plan-period {
-      color: #98a2bd;
-      font-size: 14px;
-      margin-top: 8px;
-    }
-
-    .plan-copy {
-      color: #d9deee;
-      font-size: 15px;
-      line-height: 1.75;
-      margin: 18px 0 18px;
-    }
-
-    .plan-list {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      gap: 10px;
-      color: #e7ebf7;
-      font-size: 14px;
-    }
-
-    .plan-list li {
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.05);
-    }
-
-    .plan-footer {
-      margin-top: auto;
-      padding-top: 22px;
-      display: grid;
-      gap: 10px;
-    }
-
-    .plan-btn {
-      width: 100%;
-      text-align: center;
-      border-radius: 16px;
-      padding: 14px 16px;
-      font-weight: 900;
-      font-size: 15px;
-      transition: .2s ease;
-    }
-
-    .plan-btn.primary {
-      background: linear-gradient(180deg, #ffcf32, #ffbf00);
-      color: #171717;
-    }
-
-    .plan-btn.secondary {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
-      color: #fff;
-    }
-
-    .plan-btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .plan-note {
-      color: #98a2bd;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .faq-section {
-      margin-top: 26px;
-    }
-
-    .faq-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .faq-card {
-      background: #fff;
-      border-radius: 24px;
-      box-shadow: 0 18px 50px rgba(0,0,0,.08);
-      padding: 22px;
-    }
-
-    .faq-card h3 {
-      margin: 0 0 10px;
-      color: #161b26;
-      font-size: 18px;
-      letter-spacing: -.02em;
-    }
-
-    .faq-card p {
-      margin: 0;
-      color: #66718a;
-      line-height: 1.75;
-    }
-
-    .footer {
-      padding: 34px 0 42px;
-      color: #6b7388;
-      font-size: 14px;
-      text-align: center;
-    }
-
-    @media (max-width: 1200px) {
-      .hero-grid,
-      .plans-grid,
-      .faq-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 900px) {
-      .topbar-inner {
-        padding: 10px 0;
-        align-items: flex-start;
-      }
-
-      .hero-title {
-        font-size: clamp(42px, 10vw, 64px);
-      }
-
-      .signature-rail {
-        display: none;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .wrap {
-        width: min(100% - 18px, 1450px);
-      }
-
-      .hero-grid {
-        padding: 24px 20px 24px;
-      }
-
-      .section-card,
-      .faq-card {
-        padding: 20px;
-      }
-
-      .hero-logo-box {
-        width: 180px;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Join Nairobi Sweets | Membership Plans</title>
+
+<meta name="description" content="Join Nairobi Sweets with Featured, VIP, VIP+ or Signature membership plans. Choose 3 days, 7 days, 15 days or 30 days visibility." />
+
+<link rel="icon" type="image/png" href="/assets/logo/logo-badge.png" />
+
+<style>
+:root{
+  --bg:#07091a;
+  --card:#10142c;
+  --soft:#171c38;
+  --gold:#ffd84b;
+  --pink:#ff4ba3;
+  --text:#f7f7fb;
+  --muted:#aab1c8;
+  --line:rgba(255,255,255,.1);
+  --green:#31f29b;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left,rgba(255,75,163,.18),transparent 30%),
+    radial-gradient(circle at top right,rgba(255,216,75,.14),transparent 28%),
+    var(--bg);
+  color:var(--text);
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+.wrap{
+  width:min(1250px,calc(100% - 28px));
+  margin:auto;
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:40;
+  background:rgba(7,9,26,.9);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+}
+
+.nav{
+  min-height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand img{
+  width:48px;
+  height:48px;
+  object-fit:contain;
+  border-radius:14px;
+}
+
+.brand small{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+
+.brand strong{
+  display:block;
+  color:var(--gold);
+  font-size:22px;
+  font-weight:950;
+}
+
+.menu{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.menu a,
+.mobile-btn{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.05);
+  color:white;
+  padding:10px 15px;
+  border-radius:999px;
+  font-weight:800;
+}
+
+.menu .gold,
+.mobile-btn{
+  background:linear-gradient(180deg,#ffe46b,#ffbf00);
+  color:#111;
+  border:none;
+}
+
+.mobile-btn{
+  display:none;
+  cursor:pointer;
+}
+
+.hero{
+  padding:44px 0 26px;
+}
+
+.hero-box{
+  background:linear-gradient(180deg,rgba(18,22,50,.95),rgba(7,9,26,.96));
+  border:1px solid var(--line);
+  border-radius:34px;
+  padding:42px;
+  box-shadow:0 30px 80px rgba(0,0,0,.35);
+}
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:28px;
+  align-items:center;
+}
+
+.eyebrow{
+  color:#ffc0de;
+  font-size:13px;
+  font-weight:950;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  margin-bottom:14px;
+}
+
+h1{
+  margin:0;
+  font-size:clamp(42px,6vw,74px);
+  line-height:.95;
+  letter-spacing:-.06em;
+}
+
+.hero p{
+  color:var(--muted);
+  line-height:1.75;
+  font-size:17px;
+  max-width:760px;
+}
+
+.hero-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:24px;
+}
+
+.btn{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:16px;
+  padding:14px 20px;
+  font-weight:950;
+  border:1px solid var(--line);
+  transition:.2s ease;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.btn.gold{
+  background:linear-gradient(180deg,#ffe46b,#ffbf00);
+  color:#111;
+  border:none;
+}
+
+.btn.pink{
+  background:linear-gradient(180deg,#ff5fb1,#e6257f);
+  color:white;
+  border:none;
+}
+
+.info-card{
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:24px;
+}
+
+.info-card h3{
+  margin:0 0 12px;
+  color:var(--gold);
+  font-size:22px;
+}
+
+.info-card ul{
+  margin:0;
+  padding-left:20px;
+  color:#dde3f5;
+  line-height:1.9;
+}
+
+.section{
+  padding:28px 0;
+}
+
+.section-head{
+  margin-bottom:20px;
+}
+
+.section-head h2{
+  margin:0;
+  font-size:36px;
+  letter-spacing:-.04em;
+}
+
+.section-head p{
+  color:var(--muted);
+  line-height:1.7;
+}
+
+.membership-list{
+  display:grid;
+  gap:16px;
+}
+
+.plan{
+  background:linear-gradient(180deg,#121735,#090c22);
+  border:1px solid var(--line);
+  border-radius:26px;
+  overflow:hidden;
+  box-shadow:0 18px 50px rgba(0,0,0,.24);
+}
+
+.plan summary{
+  list-style:none;
+  cursor:pointer;
+  padding:22px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:16px;
+  align-items:center;
+}
+
+.plan summary::-webkit-details-marker{
+  display:none;
+}
+
+.plan-title{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:23px;
+  font-weight:950;
+}
+
+.plan-title span{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:rgba(255,255,255,.07);
+}
+
+.from{
+  color:var(--gold);
+  font-size:24px;
+  font-weight:950;
+  white-space:nowrap;
+}
+
+.plan-content{
+  border-top:1px solid var(--line);
+  padding:22px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+}
+
+.price-table{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.price-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  padding:15px 16px;
+  border-bottom:1px solid var(--line);
+}
+
+.price-row:last-child{
+  border-bottom:none;
+}
+
+.price-row strong{
+  color:var(--gold);
+}
+
+.benefits{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:18px;
+}
+
+.benefits h4{
+  margin:0 0 10px;
+  color:#fff;
+}
+
+.benefits ul{
+  margin:0;
+  padding-left:20px;
+  color:#dbe0f2;
+  line-height:1.9;
+}
+
+.plan-footer{
+  grid-column:1/-1;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.note{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+
+.comparison{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.compare-card{
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:20px;
+}
+
+.compare-card h3{
+  margin:0 0 8px;
+}
+
+.compare-card strong{
+  color:var(--gold);
+  font-size:24px;
+}
+
+.steps{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.step{
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:20px;
+}
+
+.step strong{
+  color:var(--gold);
+}
+
+footer{
+  padding:36px 0;
+  text-align:center;
+  color:var(--muted);
+  border-top:1px solid var(--line);
+  margin-top:28px;
+}
+
+@media(max-width:900px){
+  .hero-grid,
+  .plan-content,
+  .comparison,
+  .steps{
+    grid-template-columns:1fr;
+  }
+
+  .mobile-btn{
+    display:inline-flex;
+  }
+
+  .menu{
+    display:none;
+    position:absolute;
+    left:14px;
+    right:14px;
+    top:76px;
+    background:#0b0f28;
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:14px;
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .menu.show{
+    display:flex;
+  }
+
+  .hero-box{
+    padding:24px;
+  }
+
+  .plan summary{
+    grid-template-columns:1fr;
+  }
+
+  .from{
+    font-size:20px;
+  }
+}
+</style>
 </head>
+
 <body>
-  <header class="topbar">
-    <div class="wrap topbar-inner">
-      <a href="/index.html" class="brand">
-        <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets logo" onerror="this.style.display='none'">
-        <div class="brand-copy">
-          <small>Private VIP Directory</small>
-          <strong>Nairobi Sweets</strong>
-        </div>
-      </a>
 
-      <nav class="nav-actions">
-        <a class="pill-btn gold" href="/index.html#profiles">Signature</a>
-        <a class="pill-btn" href="/index.html#profiles">Directory</a>
-        <a class="pill-btn" href="/login.html">Login</a>
-        <a class="pill-btn pink" href="/public-signup-payment-page.html">Create Listing</a>
-      </nav>
+<header>
+  <div class="wrap nav">
+    <a href="/index.html" class="brand">
+      <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets Logo" onerror="this.style.display='none'">
+      <div>
+        <small>Private VIP Directory</small>
+        <strong>Nairobi Sweets</strong>
+      </div>
+    </a>
+
+    <button class="mobile-btn" onclick="toggleMenu()">☰ Menu</button>
+
+    <nav class="menu" id="menu">
+      <a href="/index.html">Home</a>
+      <a href="/index.html#profiles">Directory</a>
+      <a href="#plans">Plans</a>
+      <a href="/login.html">Login</a>
+      <a class="gold" href="/public-signup-payment-page.html">Create Listing</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap hero-box">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">Join Nairobi Sweets</div>
+
+        <h1>Choose your visibility level and get listed.</h1>
+
+        <p>
+          Nairobi Sweets now has a cleaner membership structure: Featured, VIP, VIP+ and Signature.
+          Pick a duration, complete your listing, and activate your profile through M-Pesa.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#plans" class="btn gold">View Plans</a>
+          <a href="/public-signup-payment-page.html" class="btn pink">Create Listing</a>
+        </div>
+      </div>
+
+      <aside class="info-card">
+        <h3>Membership Ladder</h3>
+        <ul>
+          <li>⭐ Featured: Entry visibility</li>
+          <li>🔥 VIP: Better exposure</li>
+          <li>💎 VIP+: Premium boost</li>
+          <li>👑 Signature: Maximum placement</li>
+        </ul>
+      </aside>
     </div>
-  </header>
+  </div>
+</section>
 
-  <div class="signature-rail">👑 Signature</div>
+<section class="section" id="plans">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Membership Plans</h2>
+      <p>
+        Choose from 3 days, 7 days, 15 days or 30 days. Each higher plan gives stronger visibility and better ranking.
+      </p>
+    </div>
 
-  <main class="page-shell">
-    <div class="wrap">
-      <section class="hero-shell">
-        <div class="hero-grid">
-          <div>
-            <div class="hero-logo-box">
-              <img src="/assets/logo/logo-hero.png" alt="Nairobi Sweets brand" onerror="this.src='/assets/logo/logo-badge.png'">
-            </div>
+    <div class="membership-list">
 
-            <div class="eyebrow">Join the directory</div>
+      <details class="plan" open>
+        <summary>
+          <div class="plan-title"><span>⭐</span> Featured</div>
+          <div class="from">From KSh 300</div>
+        </summary>
 
-            <h1 class="hero-title">
-              Pick your visibility level and get listed with premium presence.
-            </h1>
-
-            <p class="hero-copy">
-              Nairobi Sweets gives you luxury profile presentation, direct contact actions, stronger visibility, and a polished directory presence built to turn attention into real contact.
-            </p>
-
-            <div class="hero-badges">
-              <span class="badge badge-gold">Premium discovery</span>
-              <span class="badge badge-pink">Direct contact</span>
-            </div>
-
-            <div class="hero-actions">
-              <a href="#plans" class="cta primary">Choose a Plan</a>
-              <a href="/public-signup-payment-page.html" class="cta secondary">Create Listing</a>
-            </div>
+        <div class="plan-content">
+          <div class="price-table">
+            <div class="price-row"><span>3 Days</span><strong>KSh 300</strong></div>
+            <div class="price-row"><span>7 Days</span><strong>KSh 600</strong></div>
+            <div class="price-row"><span>15 Days</span><strong>KSh 900</strong></div>
+            <div class="price-row"><span>30 Days</span><strong>KSh 1,500</strong></div>
           </div>
 
-          <aside class="info-card">
-            <h3>What you get</h3>
-            <ul class="info-list">
-              <li>Premium public profile placement inside the directory</li>
-              <li>WhatsApp and call contact actions for direct reach</li>
-              <li>Featured, VIP, or Signature visibility upgrades</li>
-              <li>Dashboard access for profile edits and updates</li>
-              <li>M-Pesa payment flow for activation and renewals</li>
+          <div class="benefits">
+            <h4>Featured Benefits</h4>
+            <ul>
+              <li>Directory listing</li>
+              <li>WhatsApp contact button</li>
+              <li>Call contact button</li>
+              <li>Up to 5 photos</li>
+              <li>Dashboard access</li>
             </ul>
-          </aside>
-        </div>
-      </section>
-
-      <section class="plans-section" id="plans">
-        <div class="section-card">
-          <div class="section-header">
-            <div>
-              <h2 class="section-title">Choose your plan</h2>
-              <p class="section-copy">
-                Start with Featured, step into VIP, or take crown placement with Signature. Every plan gives you polished visibility, direct contact, and dashboard access.
-              </p>
-            </div>
           </div>
 
-          <div class="plans-grid">
-            <article class="plan-card featured-card">
-              <div class="plan-kicker">Featured</div>
-              <h3 class="plan-name">Featured</h3>
-              <p class="plan-price">KES 1000</p>
-              <div class="plan-period">per week</div>
-
-              <p class="plan-copy">
-                Solid visibility, clean profile placement, and a premium listing presence for a strong, elegant entry point.
-              </p>
-
-              <ul class="plan-list">
-                <li>Featured listing placement</li>
-                <li>Direct contact buttons</li>
-                <li>Dashboard access</li>
-              </ul>
-
-              <div class="plan-footer">
-                <a href="/public-signup-payment-page.html?plan=featured" class="plan-btn secondary">Choose Featured</a>
-                <div class="plan-note">Best for getting started</div>
-              </div>
-            </article>
-
-            <article class="plan-card vip-card">
-              <div class="plan-kicker">VIP</div>
-              <h3 class="plan-name">VIP</h3>
-              <p class="plan-price">KES 1500</p>
-              <div class="plan-period">per week</div>
-
-              <p class="plan-copy">
-                Stronger visibility, richer positioning, and a more premium directory presence designed for faster discovery.
-              </p>
-
-              <ul class="plan-list">
-                <li>VIP tier placement</li>
-                <li>Higher discovery visibility</li>
-                <li>Dashboard access</li>
-              </ul>
-
-              <div class="plan-footer">
-                <a href="/public-signup-payment-page.html?plan=vip" class="plan-btn primary">Choose VIP</a>
-                <div class="plan-note">Best value for visibility</div>
-              </div>
-            </article>
-
-            <article class="plan-card signature-card">
-              <div class="plan-kicker">Signature</div>
-              <h3 class="plan-name">Signature</h3>
-              <p class="plan-price">KES 3000</p>
-              <div class="plan-period">per week</div>
-
-              <p class="plan-copy">
-                Crown placement for maximum directory attention, premium rank priority, and the strongest luxury visibility.
-              </p>
-
-              <ul class="plan-list">
-                <li>Signature section placement</li>
-                <li>Premium rank priority</li>
-                <li>Dashboard access</li>
-              </ul>
-
-              <div class="plan-footer">
-                <a href="/public-signup-payment-page.html?plan=signature" class="plan-btn secondary">Choose Signature</a>
-                <div class="plan-note">Top-tier premium placement</div>
-              </div>
-            </article>
+          <div class="plan-footer">
+            <a class="btn gold" href="/public-signup-payment-page.html?plan=featured">Join Featured</a>
+            <div class="note">Best for new members who want affordable visibility.</div>
           </div>
         </div>
-      </section>
+      </details>
 
-      <section class="faq-section">
-        <div class="faq-grid">
-          <article class="faq-card">
-            <h3>How does activation work?</h3>
-            <p>
-              Choose a plan, complete your profile, and pay through the M-Pesa signup flow. Once approved, your listing becomes visible in the directory.
-            </p>
-          </article>
+      <details class="plan">
+        <summary>
+          <div class="plan-title"><span>🔥</span> VIP</div>
+          <div class="from">From KSh 800</div>
+        </summary>
 
-          <article class="faq-card">
-            <h3>Can I upgrade later?</h3>
-            <p>
-              Yes. You can move from Featured to VIP or Signature later if you want stronger visibility and higher placement.
-            </p>
-          </article>
+        <div class="plan-content">
+          <div class="price-table">
+            <div class="price-row"><span>3 Days</span><strong>KSh 800</strong></div>
+            <div class="price-row"><span>7 Days</span><strong>KSh 1,500</strong></div>
+            <div class="price-row"><span>15 Days</span><strong>KSh 2,500</strong></div>
+            <div class="price-row"><span>30 Days</span><strong>KSh 4,000</strong></div>
+          </div>
 
-          <article class="faq-card">
-            <h3>Do I get dashboard access?</h3>
-            <p>
-              Yes. Every paid plan includes dashboard access so you can manage your profile details and stay current.
-            </p>
-          </article>
+          <div class="benefits">
+            <h4>VIP Benefits</h4>
+            <ul>
+              <li>VIP badge</li>
+              <li>Higher homepage visibility</li>
+              <li>Priority search ranking</li>
+              <li>Up to 10 photos</li>
+              <li>Dashboard access</li>
+            </ul>
+          </div>
+
+          <div class="plan-footer">
+            <a class="btn gold" href="/public-signup-payment-page.html?plan=vip">Join VIP</a>
+            <div class="note">Best for members who want stronger exposure.</div>
+          </div>
         </div>
-      </section>
+      </details>
 
-      <div class="footer">
-        Nairobi Sweets • Private VIP Directory
+      <details class="plan">
+        <summary>
+          <div class="plan-title"><span>💎</span> VIP+</div>
+          <div class="from">From KSh 1,000</div>
+        </summary>
+
+        <div class="plan-content">
+          <div class="price-table">
+            <div class="price-row"><span>3 Days</span><strong>KSh 1,000</strong></div>
+            <div class="price-row"><span>7 Days</span><strong>KSh 2,000</strong></div>
+            <div class="price-row"><span>15 Days</span><strong>KSh 3,500</strong></div>
+            <div class="price-row"><span>30 Days</span><strong>KSh 5,000</strong></div>
+          </div>
+
+          <div class="benefits">
+            <h4>VIP+ Benefits</h4>
+            <ul>
+              <li>VIP+ badge</li>
+              <li>Priority homepage placement</li>
+              <li>Featured on location pages</li>
+              <li>Profile boosting</li>
+              <li>Up to 20 photos</li>
+              <li>Dashboard access</li>
+            </ul>
+          </div>
+
+          <div class="plan-footer">
+            <a class="btn gold" href="/public-signup-payment-page.html?plan=vip-plus">Join VIP+</a>
+            <div class="note">Best for members who want premium visibility without Signature pricing.</div>
+          </div>
+        </div>
+      </details>
+
+      <details class="plan">
+        <summary>
+          <div class="plan-title"><span>👑</span> Signature</div>
+          <div class="from">From KSh 1,500</div>
+        </summary>
+
+        <div class="plan-content">
+          <div class="price-table">
+            <div class="price-row"><span>3 Days</span><strong>KSh 1,500</strong></div>
+            <div class="price-row"><span>7 Days</span><strong>KSh 3,000</strong></div>
+            <div class="price-row"><span>15 Days</span><strong>KSh 6,000</strong></div>
+            <div class="price-row"><span>30 Days</span><strong>KSh 10,000</strong></div>
+          </div>
+
+          <div class="benefits">
+            <h4>Signature Benefits</h4>
+            <ul>
+              <li>Signature badge</li>
+              <li>Top homepage placement</li>
+              <li>Maximum ranking priority</li>
+              <li>Unlimited photos</li>
+              <li>Featured across location pages</li>
+              <li>Premium visibility</li>
+              <li>Dashboard access</li>
+            </ul>
+          </div>
+
+          <div class="plan-footer">
+            <a class="btn gold" href="/public-signup-payment-page.html?plan=signature">Join Signature</a>
+            <div class="note">Best for members who want the highest visibility.</div>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>30-Day Plan Comparison</h2>
+      <p>A simple monthly view for customers who want a full month of visibility.</p>
+    </div>
+
+    <div class="comparison">
+      <div class="compare-card">
+        <h3>⭐ Featured</h3>
+        <strong>KSh 1,500</strong>
+        <p>Entry visibility</p>
+      </div>
+
+      <div class="compare-card">
+        <h3>🔥 VIP</h3>
+        <strong>KSh 4,000</strong>
+        <p>Higher exposure</p>
+      </div>
+
+      <div class="compare-card">
+        <h3>💎 VIP+</h3>
+        <strong>KSh 5,000</strong>
+        <p>Premium boost</p>
+      </div>
+
+      <div class="compare-card">
+        <h3>👑 Signature</h3>
+        <strong>KSh 10,000</strong>
+        <p>Maximum placement</p>
       </div>
     </div>
-  </main>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>How It Works</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <strong>1. Choose Plan</strong>
+        <p>Select Featured, VIP, VIP+ or Signature.</p>
+      </div>
+
+      <div class="step">
+        <strong>2. Submit Profile</strong>
+        <p>Add your name, phone, WhatsApp, location, photos and listing details.</p>
+      </div>
+
+      <div class="step">
+        <strong>3. Pay & Go Live</strong>
+        <p>Complete payment through M-Pesa and wait for approval.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Nairobi Sweets © 2026 • Premium Private Directory
+</footer>
+
+<script>
+function toggleMenu(){
+  document.getElementById("menu").classList.toggle("show");
+}
+</script>
+
 </body>
 </html>
