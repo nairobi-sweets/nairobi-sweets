@@ -54,7 +54,7 @@ body{
   color:white;
   font-family:Arial,Helvetica,sans-serif;
   overflow-x:hidden;
-  padding-bottom:100px;
+  padding-bottom:120px;
 }
 a{text-decoration:none;color:inherit}
 
@@ -473,10 +473,17 @@ JOIN / MEMBERSHIP CTA
 }
 
 .stats-box{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+}
+
+.stat-mini{
   background:linear-gradient(180deg,#020a56,#010633);
   border:1px solid rgba(255,213,74,.08);
   border-radius:24px;
   padding:18px;
+  min-height:100px;
 }
 
 .stats-label{
@@ -490,6 +497,12 @@ JOIN / MEMBERSHIP CTA
   font-size:38px;
   font-weight:900;
   margin-top:6px;
+}
+
+@media(max-width:760px){
+  .stats-box{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stat-mini{padding:16px;min-height:86px}
+  .stats-number{font-size:30px}
 }
 
 /* =========================
@@ -787,34 +800,6 @@ SIGNATURE PROFILES BANNER
   border:1px solid rgba(255,255,255,.28);
 }
 
-.boost-badge{
-  position:absolute;
-  top:54px;
-  right:14px;
-  background:linear-gradient(145deg,#ff4d8d,#a855f7);
-  color:#fff;
-  padding:7px 12px;
-  border-radius:999px;
-  font-size:10px;
-  font-weight:950;
-  z-index:7;
-  box-shadow:0 0 18px rgba(168,85,247,.35);
-}
-
-.pinned-badge{
-  position:absolute;
-  top:54px;
-  left:14px;
-  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
-  color:#000;
-  padding:7px 12px;
-  border-radius:999px;
-  font-size:10px;
-  font-weight:950;
-  z-index:8;
-  box-shadow:0 0 22px rgba(255,213,74,.38);
-}
-
 .verified-inline{
   display:inline-flex;
   align-items:center;
@@ -999,9 +984,9 @@ SIGNATURE PROFILES BANNER
 .sweet-ai{
   position:fixed;
   right:18px;
-  bottom:98px;
-  width:52px;
-  height:52px;
+  bottom:82px;
+  width:44px;
+  height:44px;
   border-radius:50%;
   overflow:hidden;
   z-index:999;
@@ -1027,7 +1012,7 @@ SIGNATURE PROFILES BANNER
 .sweet-panel{
   position:fixed;
   right:18px;
-  bottom:160px;
+  bottom:138px;
   width:min(360px,92vw);
   background:linear-gradient(180deg,#071a17,#120022);
   border:1px solid rgba(125,255,207,.22);
@@ -1130,7 +1115,7 @@ SIGNATURE PROFILES BANNER
   left:0;
   right:0;
   bottom:0;
-  height:76px;
+  height:64px;
   background:rgba(0,0,0,.96);
   display:flex;
   align-items:center;
@@ -1143,7 +1128,7 @@ SIGNATURE PROFILES BANNER
   border:none;
   background:none;
   color:#ffd54a;
-  font-size:22px;
+  font-size:20px;
   cursor:pointer;
 }
 
@@ -1432,6 +1417,62 @@ ADMIN HELP CENTER
   }
 }
 
+
+/* =========================
+MOBILE UX CLEANUP PATCH
+========================= */
+.boost-badge{
+  position:absolute;
+  top:52px;
+  right:14px;
+  background:linear-gradient(145deg,#ec4899,#a855f7);
+  color:#fff;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:950;
+  z-index:7;
+  box-shadow:0 0 20px rgba(236,72,153,.34);
+}
+
+.pinned-badge{
+  position:absolute;
+  top:52px;
+  left:14px;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:950;
+  z-index:7;
+  box-shadow:0 0 20px rgba(255,213,74,.34);
+}
+
+@media(max-width:650px){
+  body{padding-bottom:110px}
+  .topbar{padding:10px 14px}
+  .brand-logo{width:58px;height:58px;min-width:58px;border-radius:17px}
+  .brand-text span{font-size:34px;letter-spacing:-1.5px}
+  .menu-btn{width:58px;height:58px;min-width:58px;border-radius:18px}
+  .menu-btn span{font-size:30px}
+  .hero{padding:14px 14px 10px}
+  .hero-box{padding:26px 20px;border-radius:28px}
+  .hero-box h2{font-size:64px}
+  .hero-box p{font-size:18px;line-height:1.55}
+  .filters{padding:10px 14px}
+  .profiles{padding:10px 14px 34px}
+  .card-name{font-size:20px}
+  .card-image{aspect-ratio:4/5;object-fit:cover}
+  .seo-locations,.join-pricing-wrap,.signature-wrap,.shorts-section,.map-wrap,.admin-help-section,.disclaimer,.stats-wrap{padding-left:14px;padding-right:14px}
+  .seo-locations{padding-top:8px}
+  .seo-keyword-intro h1{font-size:36px}
+  .seo-keyword-intro p,.seo-locations-box p{font-size:15px;line-height:1.75}
+  .bottom-nav{height:64px}
+  .bottom-nav button{font-size:21px}
+  .sweet-ai{right:18px;bottom:78px;width:44px;height:44px}
+}
+
 </style>
 </head>
 
@@ -1545,6 +1586,30 @@ AGE GATE
   </div>
 </section>
 
+<section class="stats-wrap" aria-label="Live Nairobi Sweets stats">
+  <div class="stats-box">
+    <div class="stat-mini">
+      <div class="stats-label">Total Profiles</div>
+      <div class="stats-number" id="profileCount">0</div>
+    </div>
+
+    <div class="stat-mini">
+      <div class="stats-label">Verified</div>
+      <div class="stats-number" id="verifiedCount">0</div>
+    </div>
+
+    <div class="stat-mini">
+      <div class="stats-label">VIP / VIP+</div>
+      <div class="stats-number" id="vipCount">0</div>
+    </div>
+
+    <div class="stat-mini">
+      <div class="stats-label">Signature</div>
+      <div class="stats-number" id="signatureCount">0</div>
+    </div>
+  </div>
+</section>
+
 <div class="filters">
   <button class="active" data-filter="home">HOME</button>
   <button data-filter="vip">VIP</button>
@@ -1557,45 +1622,28 @@ AGE GATE
   <button data-filter="kasarani">KASARANI</button>
 </div>
 
-<section class="seo-locations" aria-label="Nairobi escorts directory by location and category">
-  <div class="seo-locations-box">
-    <h2>Browse Verified Escorts Nairobi By Location</h2>
-    <p>
-      Nairobi Sweets is a Nairobi escorts directory helping visitors discover verified escorts Nairobi,
-      VIP escorts Nairobi and Signature escorts Nairobi across Roysambu, Kasarani, Ruiru, Kiambu,
-      Westlands, Kilimani and Ruaka.
-    </p>
+<section class="profiles" id="profiles">
+  <div class="loading">Loading profiles...</div>
+</section>
 
-    <div class="seo-keyword-intro">
-      <h1>Nairobi Escorts Directory</h1>
-      <p>
-        Find Roysambu escorts, Kasarani escorts, Ruiru escorts, Kiambu escorts, Westlands escorts,
-        Kilimani escorts and Ruaka escorts from one trusted Nairobi directory. Browse VIP escorts Nairobi,
-        verified escorts Nairobi and Signature escorts Nairobi with location-based discovery.
-      </p>
+<section class="signature-wrap">
+  <div class="signature-box">
+    <div class="signature-header">
+      <h2>👑 Signature Profiles</h2>
+      <span>Premium Luxury Placement</span>
     </div>
 
-    <div class="seo-location-links">
-      <a href="/roysambu.html" class="primary-location">Roysambu Escorts</a>
-      <a href="/kasarani.html">Kasarani Escorts</a>
-      <a href="/ruiru.html">Ruiru Escorts</a>
-      <a href="/kiambu.html">Kiambu Escorts</a>
-      <a href="/westlands.html">Westlands Escorts</a>
-      <a href="/kilimani.html">Kilimani Escorts</a>
-      <a href="/ruaka.html">Ruaka Escorts</a>
-      <a href="/seo/">Nairobi Escorts Directory</a>
-      <a href="/seo/categories/verified.html">Verified Escorts Nairobi</a>
-      <a href="/seo/categories/vip.html">VIP Escorts Nairobi</a>
-      <a href="/seo/categories/signature.html">Signature Escorts Nairobi</a>
-    </div>
+    <div class="signature-row" id="signatureProfiles"></div>
   </div>
 </section>
 
-<section class="stats-wrap">
-  <div class="stats-box">
-    <div class="stats-label">Total Profiles</div>
-    <div class="stats-number" id="profileCount">0</div>
+<section class="shorts-section">
+  <div class="shorts-header">
+    <h2>🔥 Nairobi Shorts</h2>
+    <a href="/reel.html">Open Reels →</a>
   </div>
+
+  <div class="shorts-row" id="shortsRow"></div>
 </section>
 
 <section class="join-pricing-wrap" id="join">
@@ -1646,29 +1694,38 @@ AGE GATE
   </div>
 </section>
 
+<section class="seo-locations" aria-label="Nairobi escorts directory by location and category">
+  <div class="seo-locations-box">
+    <h2>Browse Verified Escorts Nairobi By Location</h2>
+    <p>
+      Nairobi Sweets is a Nairobi escorts directory helping visitors discover verified escorts Nairobi,
+      VIP escorts Nairobi and Signature escorts Nairobi across Roysambu, Kasarani, Ruiru, Kiambu,
+      Westlands, Kilimani and Ruaka.
+    </p>
 
-<section class="signature-wrap">
-  <div class="signature-box">
-    <div class="signature-header">
-      <h2>👑 Signature Profiles</h2>
-      <span>Premium Luxury Placement</span>
+    <div class="seo-keyword-intro">
+      <h1>Nairobi Escorts Directory</h1>
+      <p>
+        Find Roysambu escorts, Kasarani escorts, Ruiru escorts, Kiambu escorts, Westlands escorts,
+        Kilimani escorts and Ruaka escorts from one trusted Nairobi directory. Browse VIP escorts Nairobi,
+        verified escorts Nairobi and Signature escorts Nairobi with location-based discovery.
+      </p>
     </div>
 
-    <div class="signature-row" id="signatureProfiles"></div>
+    <div class="seo-location-links">
+      <a href="/roysambu.html" class="primary-location">Roysambu Escorts</a>
+      <a href="/kasarani.html">Kasarani Escorts</a>
+      <a href="/ruiru.html">Ruiru Escorts</a>
+      <a href="/kiambu.html">Kiambu Escorts</a>
+      <a href="/westlands.html">Westlands Escorts</a>
+      <a href="/kilimani.html">Kilimani Escorts</a>
+      <a href="/ruaka.html">Ruaka Escorts</a>
+      <a href="/seo/">Nairobi Escorts Directory</a>
+      <a href="/seo/categories/verified.html">Verified Escorts Nairobi</a>
+      <a href="/seo/categories/vip.html">VIP Escorts Nairobi</a>
+      <a href="/seo/categories/signature.html">Signature Escorts Nairobi</a>
+    </div>
   </div>
-</section>
-
-<section class="shorts-section">
-  <div class="shorts-header">
-    <h2>🔥 Nairobi Shorts</h2>
-    <a href="/reel.html">Open Reels →</a>
-  </div>
-
-  <div class="shorts-row" id="shortsRow"></div>
-</section>
-
-<section class="profiles" id="profiles">
-  <div class="loading">Loading profiles...</div>
 </section>
 
 <section class="map-wrap">
@@ -1950,64 +2007,49 @@ function getProfileUrl(profile){
   return `/profile.html?id=${encodeURIComponent(profile.id)}`;
 }
 
-function boolScore(value){
-  return value === true || value === "true" || value === 1 || value === "1" ? 1 : 0;
-}
-
-function getBoost(profile){
-  return Math.max(
-    Number(profile.boost || 0),
-    Number(profile.boost_score || 0)
-  );
-}
-
 function rankingScore(profile){
   return (
-    (boolScore(profile.pinned_top) * 10000000) +
-    (boolScore(profile.homepage_featured) * 5000000) +
-    (isSignatureProfile(profile) ? 2500000 : 0) +
-    (getBoost(profile) * 1000) +
-    (boolScore(profile.verified) * 50000) +
-    (Number(profile.plan_rank || 0) * 10000) +
-    (Number(profile.trending_score || 0) * 100) +
-    (Number(profile.views || profile.views_count || 0) * 2) +
-    (Number(profile.whatsapp_clicks || 0) * 20) +
-    (Number(profile.call_clicks || 0) * 25) +
-    (Number(profile.favorites || profile.likes || profile.likes_count || 0) * 15)
+    (Number(profile.boost || profile.boost_score || 0) * 1000) +
+    (Number(profile.views || profile.views_count || 0) * 1) +
+    (Number(profile.whatsapp_clicks || 0) * 10) +
+    (Number(profile.call_clicks || 0) * 20) +
+    (Number(profile.favorites || profile.likes || profile.likes_count || 0) * 15) +
+    (Number(profile.trending_score || 0) * 1) +
+    (Number(profile.plan_rank || 0) * 100)
   );
 }
 
 function sortByMarketplaceRank(list){
   return [...list].sort((a,b)=>{
-    const pinnedA = boolScore(a.pinned_top);
-    const pinnedB = boolScore(b.pinned_top);
+    const pinnedA = a.pinned_top ? 1 : 0;
+    const pinnedB = b.pinned_top ? 1 : 0;
     if(pinnedA !== pinnedB) return pinnedB - pinnedA;
 
-    const heroA = boolScore(a.homepage_featured);
-    const heroB = boolScore(b.homepage_featured);
+    const heroA = a.homepage_featured ? 1 : 0;
+    const heroB = b.homepage_featured ? 1 : 0;
     if(heroA !== heroB) return heroB - heroA;
+
+    const boostA = Number(a.boost_score || a.boost || 0);
+    const boostB = Number(b.boost_score || b.boost || 0);
+    if(boostA !== boostB) return boostB - boostA;
+
+    const verifiedA = a.verified ? 1 : 0;
+    const verifiedB = b.verified ? 1 : 0;
+    if(verifiedA !== verifiedB) return verifiedB - verifiedA;
 
     const sigA = isSignatureProfile(a) ? 1 : 0;
     const sigB = isSignatureProfile(b) ? 1 : 0;
     if(sigA !== sigB) return sigB - sigA;
 
-    const boostA = getBoost(a);
-    const boostB = getBoost(b);
-    if(boostA !== boostB) return boostB - boostA;
-
-    const verifiedA = boolScore(a.verified);
-    const verifiedB = boolScore(b.verified);
-    if(verifiedA !== verifiedB) return verifiedB - verifiedA;
-
     const planA = Number(a.plan_rank || 0);
     const planB = Number(b.plan_rank || 0);
     if(planA !== planB) return planB - planA;
 
-    const trendingA = Number(a.trending_score || 0);
-    const trendingB = Number(b.trending_score || 0);
-    if(trendingA !== trendingB) return trendingB - trendingA;
+    const trendA = Number(a.trending_score || 0);
+    const trendB = Number(b.trending_score || 0);
+    if(trendA !== trendB) return trendB - trendA;
 
-    return Number(b.views || b.views_count || 0) - Number(a.views || a.views_count || 0);
+    return rankingScore(b) - rankingScore(a);
   });
 }
 
@@ -2226,6 +2268,22 @@ function trendRankBadge(index){
 function renderProfiles(data){
   profileCount.textContent = data.length.toLocaleString();
 
+  const verifiedCountEl = document.getElementById("verifiedCount");
+  const vipCountEl = document.getElementById("vipCount");
+  const signatureCountEl = document.getElementById("signatureCount");
+
+  if(verifiedCountEl){
+    verifiedCountEl.textContent = data.filter(p => p.verified).length.toLocaleString();
+  }
+
+  if(vipCountEl){
+    vipCountEl.textContent = data.filter(p => getPlan(p).includes("vip")).length.toLocaleString();
+  }
+
+  if(signatureCountEl){
+    signatureCountEl.textContent = data.filter(isSignatureProfile).length.toLocaleString();
+  }
+
   if(!data.length){
     profilesEl.innerHTML = `<div class="empty">No profiles found.</div>`;
     return;
@@ -2239,9 +2297,9 @@ function renderProfiles(data){
         <span class="online-dot"></span>
         ${trendRankBadge(index)}
         <div class="featured-badge">${getBadge(profile)}</div>
+        ${profile.pinned_top ? `<div class="pinned-badge">👑 PINNED</div>` : ``}
+        ${Number(profile.boost_score || profile.boost || 0) > 0 ? `<div class="boost-badge">🚀 BOOST ${Number(profile.boost_score || profile.boost || 0).toLocaleString()}</div>` : ``}
         ${profile.verified ? `<div class="verified-badge">✔ VERIFIED</div>` : ``}
-        ${boolScore(profile.pinned_top) ? `<div class="pinned-badge">👑 PINNED</div>` : ``}
-        ${getBoost(profile) > 0 ? `<div class="boost-badge">🚀 BOOST ${getBoost(profile)}</div>` : ``}
 
         <img
           src="${getImage(profile)}"
@@ -2269,8 +2327,6 @@ function renderProfiles(data){
 
           <div class="engagement">
             <span class="ranking-score">🔥 ${rankingScore(profile).toLocaleString()}</span>
-            ${getBoost(profile) > 0 ? `<span class="trust-pill">🚀 Boost ${getBoost(profile)}</span>` : ``}
-            ${boolScore(profile.pinned_top) ? `<span class="trust-pill">👑 Pinned</span>` : ``}
             ${profile.verified ? `<span class="trust-pill">✔ Verified</span>` : ``}
             <span>❤️ ${getLikes(profile)}</span>
             <span>👁 ${getViews(profile)}</span>
@@ -2406,7 +2462,6 @@ async function loadProfiles(){
     .or("is_expired.eq.false,is_expired.is.null")
     .order("pinned_top",{ascending:false})
     .order("boost_score",{ascending:false})
-    .order("boost",{ascending:false})
     .order("verified",{ascending:false})
     .order("plan_rank",{ascending:false})
     .order("trending_score",{ascending:false})
