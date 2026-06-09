@@ -53,6 +53,12 @@ textarea{grid-column:1/-1;min-height:120px}
 .pinned-chip{display:inline-block;background:linear-gradient(145deg,#ffd54a,#a855f7);color:#000;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
 
 
+.quality-chip{display:inline-block;background:linear-gradient(145deg,#7dffcf,#22d3ee);color:#00111f;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.score-chip{display:inline-block;background:linear-gradient(145deg,#a855f7,#ec4899);color:#fff;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.quality-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#7dffcf,#22d3ee);color:#00111f;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.quality-panel{grid-column:1/-1;background:rgba(125,255,207,.08);border:1px solid rgba(125,255,207,.18);border-radius:16px;padding:14px;color:#7dffcf;font-size:13px;font-weight:900;line-height:1.5}
+.diagnostics-box{margin-top:12px;background:rgba(0,0,0,.25);border:1px solid rgba(125,255,207,.14);border-radius:14px;padding:12px;color:#dff;font-size:12px;font-weight:900;line-height:1.6}
+
 .edit-btn{width:100%;margin-top:14px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:14px;padding:14px;font-size:15px;box-shadow:0 10px 25px rgba(255,180,0,.25)}
 .status{margin-top:14px;color:#ffd54a;font-weight:900;min-height:24px}
 .small{font-size:12px;color:#aaa;margin-top:8px}
@@ -502,6 +508,16 @@ REVENUE DASHBOARD UPGRADE
     <div id="statPinnedTop">0</div>
   </div>
 
+  <div class="stat-card">
+    <h3>HD Quality Profiles</h3>
+    <div id="statHDQuality">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Avg Quality Score</h3>
+    <div id="statAvgQuality">0</div>
+  </div>
+
 </section>
 
 <section class="panel membership-control-card">
@@ -627,6 +643,15 @@ REVENUE DASHBOARD UPGRADE
   <div class="status" id="bulkTrialStatus"></div>
 </section>
 
+<section class="panel bulk-trial-card">
+  <h2>✨ Image Quality Command Center</h2>
+  <div class="quality-panel">
+    Recalculate image quality and final ranking score using: 40% Image Quality, 20% Likes, 15% Views, 15% Boost, 10% Verification.
+  </div>
+  <button class="quality-btn" onclick="recalculateAllQualityScores()">✨ Recalculate All Quality Scores</button>
+  <div class="status" id="qualityBulkStatus"></div>
+</section>
+
 
 <section class="panel">
 <h2>Add New Profile</h2>
@@ -669,6 +694,8 @@ REVENUE DASHBOARD UPGRADE
   <input id="plan_rank" type="number" value="2" placeholder="Plan rank">
   <input id="boost_score" type="number" value="100" placeholder="Boost score">
   <input id="trending_score" type="number" value="0" placeholder="Trending score">
+  <input id="image_quality_score" type="number" value="50" placeholder="Image Quality Score">
+  <input id="profile_score" type="number" value="0" placeholder="Final Profile Score">
   <input id="last_active" type="datetime-local" placeholder="Last active">
   <input id="plan_started_at" type="datetime-local" placeholder="Plan started">
   <input id="plan_expires_at" type="datetime-local" placeholder="Plan expires">
@@ -831,6 +858,8 @@ REVENUE DASHBOARD UPGRADE
       <input id="edit_plan_rank" type="number" placeholder="Plan rank">
       <input id="edit_boost_score" type="number" placeholder="Boost score">
       <input id="edit_trending_score" type="number" placeholder="Trending score">
+      <input id="edit_image_quality_score" type="number" placeholder="Image Quality Score">
+      <input id="edit_profile_score" type="number" placeholder="Final Profile Score">
       <input id="edit_last_active" type="datetime-local" placeholder="Last active">
       <input id="edit_plan_started_at" type="datetime-local" placeholder="Plan started">
       <input id="edit_plan_expires_at" type="datetime-local" placeholder="Plan expires">
@@ -1049,6 +1078,83 @@ function trendingFormula(planRank,boostScore,views,likes,verified,featured){
     + (featured ? 60 : 0);
 }
 
+function qualityScoreFromProfile(profile){
+  const manual = Number(profile.image_quality_score || 0);
+  if(manual > 0) return Math.min(100, manual);
+
+  let score = 0;
+  const gallery = Array.isArray(profile.gallery_images)
+    ? profile.gallery_images
+    : Array.isArray(profile.gallery)
+      ? profile.gallery
+      : [];
+
+  const imageCount = [
+    profile.photo_url,
+    profile.image_url,
+    profile.image_url_2,
+    profile.image_url_3,
+    profile.image_url_4,
+    ...gallery
+  ].filter(Boolean).length;
+
+  const hasVideo = Boolean(profile.video_url || profile.reel_url || profile.short_url || profile.short_video);
+
+  if(imageCount >= 1) score += 20;
+  if(imageCount >= 3) score += 25;
+  if(imageCount >= 4) score += 15;
+  if(hasVideo) score += 20;
+  if(profile.verified === true) score += 10;
+  if(String(profile.plan || "").toLowerCase().includes("signature")) score += 10;
+
+  return Math.min(100, score);
+}
+
+function finalProfileScoreFromInputs(imageQuality,likes,views,boost,verified){
+  return Math.round(
+    Number(imageQuality || 0) * 0.40 +
+    Number(likes || 0) * 0.20 +
+    Number(views || 0) * 0.15 +
+    Number(boost || 0) * 0.15 +
+    (verified ? 100 : 0) * 0.10
+  );
+}
+
+function finalProfileScore(profile){
+  const imageQuality = Number(profile.image_quality_score || qualityScoreFromProfile(profile) || 0);
+  const likes = Number(profile.likes_count || profile.likes || profile.favorites || 0);
+  const views = Number(profile.views_count || profile.views || 0);
+  const boost = Number(profile.boost_score || profile.boost || 0);
+  const verified = profile.verified === true ? 100 : 0;
+
+  return Math.round(
+    imageQuality * 0.40 +
+    likes * 0.20 +
+    views * 0.15 +
+    boost * 0.15 +
+    verified * 0.10
+  );
+}
+
+function rankingDiagnosticsHTML(profile){
+  const imageQuality = Number(profile.image_quality_score || qualityScoreFromProfile(profile) || 0);
+  const likes = Number(profile.likes_count || profile.likes || profile.favorites || 0);
+  const views = Number(profile.views_count || profile.views || 0);
+  const boost = Number(profile.boost_score || profile.boost || 0);
+  const verified = profile.verified === true ? 100 : 0;
+
+  return `
+    <div class="diagnostics-box">
+      ✨ Image Quality: ${imageQuality} → ${(imageQuality * 0.40).toFixed(1)}<br>
+      ❤️ Likes: ${likes} → ${(likes * 0.20).toFixed(1)}<br>
+      👁 Views: ${views} → ${(views * 0.15).toFixed(1)}<br>
+      🚀 Boost: ${boost} → ${(boost * 0.15).toFixed(1)}<br>
+      ✔ Verification: ${verified} → ${(verified * 0.10).toFixed(1)}<br>
+      🏆 Final Score: ${finalProfileScore(profile)}
+    </div>
+  `;
+}
+
 function toDatetimeLocal(value){
   if(!value) return "";
   const d = new Date(value);
@@ -1151,6 +1257,20 @@ function syncRanking(prefix=""){
       checkedOf(verifiedId),
       checkedOf(featuredId)
     );
+  }
+
+  const qualityId = prefix ? "edit_image_quality_score" : "image_quality_score";
+  const profileScoreId = prefix ? "edit_profile_score" : "profile_score";
+  const qualityEl = document.getElementById(qualityId);
+  const profileScoreEl = document.getElementById(profileScoreId);
+  if(profileScoreEl){
+    profileScoreEl.value = finalProfileScore({
+      image_quality_score: qualityEl ? Number(qualityEl.value || 0) : 0,
+      likes_count: numberOf(likesId),
+      views_count: numberOf(viewsId),
+      boost_score: boost,
+      verified: checkedOf(verifiedId)
+    });
   }
 
   const signatureId = prefix ? "edit_is_signature" : "is_signature";
@@ -1267,9 +1387,17 @@ document.getElementById("editPhotoUpload").addEventListener("change",()=>{
 document.getElementById("plan").addEventListener("change",()=>syncRanking(""));
 document.getElementById("verified").addEventListener("change",()=>syncRanking(""));
 document.getElementById("featured").addEventListener("change",()=>syncRanking(""));
+document.getElementById("image_quality_score").addEventListener("input",()=>syncRanking(""));
+document.getElementById("likes_count").addEventListener("input",()=>syncRanking(""));
+document.getElementById("views_count").addEventListener("input",()=>syncRanking(""));
+document.getElementById("boost_score").addEventListener("input",()=>syncRanking(""));
 document.getElementById("edit_plan").addEventListener("change",()=>syncRanking("edit_"));
 document.getElementById("edit_verified").addEventListener("change",()=>syncRanking("edit_"));
 document.getElementById("edit_featured").addEventListener("change",()=>syncRanking("edit_"));
+document.getElementById("edit_image_quality_score").addEventListener("input",()=>syncRanking("edit_"));
+document.getElementById("edit_likes_count").addEventListener("input",()=>syncRanking("edit_"));
+document.getElementById("edit_views_count").addEventListener("input",()=>syncRanking("edit_"));
+document.getElementById("edit_boost_score").addEventListener("input",()=>syncRanking("edit_"));
 
 async function addProfile(){
   statusBox.textContent = "Saving profile...";
@@ -1294,6 +1422,8 @@ async function addProfile(){
       "trending_score",
       trendingFormula(finalPlanRank,finalBoostScore,numberOf("views_count"),numberOf("likes_count"),checkedOf("verified"),checkedOf("featured"))
     );
+    const finalImageQualityScore = numberOrDefault("image_quality_score",50);
+    const finalProfileScoreValue = numberOrDefault("profile_score",finalProfileScoreFromInputs(finalImageQualityScore,numberOf("likes_count"),numberOf("views_count"),finalBoostScore,checkedOf("verified")));
 
     if(!stageName){
       statusBox.textContent = "Stage name is required.";
@@ -1322,6 +1452,10 @@ async function addProfile(){
       plan_rank: finalPlanRank,
       boost_score: finalBoostScore,
       trending_score: finalTrendingScore,
+    image_quality_score: finalImageQualityScore,
+    profile_score: finalProfileScoreValue,
+      image_quality_score: finalImageQualityScore,
+      profile_score: finalProfileScoreValue,
       last_active: fromDatetimeLocal(valueOf("last_active")),
       plan_started_at: fromDatetimeLocal(valueOf("plan_started_at")),
       plan_expires_at: valueOf("plan_expires_at") ? fromDatetimeLocal(valueOf("plan_expires_at")) : addDaysISO(new Date().toISOString(),7),
@@ -1388,6 +1522,8 @@ function clearForm(){
   document.getElementById("plan_rank").value = 2;
   document.getElementById("boost_score").value = 100;
   document.getElementById("trending_score").value = 0;
+  document.getElementById("image_quality_score").value = 50;
+  document.getElementById("profile_score").value = 0;
   document.getElementById("signature_position").value = 999;
   document.getElementById("homepage_featured_position").value = 999;
   document.getElementById("revenue_plan_price").value = 1000;
@@ -1412,6 +1548,7 @@ async function loadProfiles(){
     .order("plan_rank",{ascending:false})
     .order("signature_position",{ascending:true})
     .order("trending_score",{ascending:false})
+    .order("profile_score",{ascending:false})
     .order("boost_score",{ascending:false})
     .order("verified",{ascending:false})
     .order("created_at",{ascending:false});
@@ -1480,6 +1617,7 @@ function profileSearchText(p){
     ${p.is_signature ? "signature billboard" : ""}
     ${p.homepage_featured ? "hero billboard" : ""}
     ${p.pinned_top ? "pinned top boost boosted" : ""}
+    ${Number(p.image_quality_score || 0) >= 70 ? "hd quality high quality" : ""}
     ${p.signature_banner_url || ""}
     ${services}
   `.toLowerCase();
@@ -1600,10 +1738,13 @@ function renderProfiles(){
             ✅ Approved: ${p.approved ? "Yes" : "No"}<br>
             ${p.verified ? `<span class="verified-chip">✔ VERIFIED</span><br>` : `<span class="unverified-chip">PENDING VERIFICATION</span><br>`}
             ${p.verification_note ? `📝 Verification note: ${p.verification_note}<br>` : ""}
+            ${Number(p.image_quality_score || qualityScoreFromProfile(p) || 0) >= 70 ? `<span class="quality-chip">✨ HD QUALITY</span><br>` : `<span class="quality-chip">✨ QUALITY ${Number(p.image_quality_score || qualityScoreFromProfile(p) || 0)}</span><br>`}
+            <span class="score-chip">🏆 SCORE ${Number(p.profile_score || finalProfileScore(p) || 0)}</span><br>
             ⭐ Featured: ${p.featured ? "Yes" : "No"}<br>
             🎬 Reel: ${video ? "Yes" : "No"}<br>
             🔗 Slug: ${p.slug || "none"}<br>
             🧠 Rank: ${p.plan_rank || 0} · 🚀 Boost: ${p.boost_score || 0}<br>
+            ✨ Image Quality: ${Number(p.image_quality_score || qualityScoreFromProfile(p) || 0)} · 🏆 Final: ${Number(p.profile_score || finalProfileScore(p) || 0)}<br>
             🔥 Trending: ${p.trending_score || 0}<br>
             🚀 Boost Score: ${p.boost_score || p.boost || 0}<br>
             ${Number(p.boost_score || p.boost || 0) > 0 ? `<span class="boost-chip">🚀 BOOSTED +${Number(p.boost_score || p.boost || 0)}</span><br>` : ""}
@@ -1654,6 +1795,9 @@ function renderProfiles(){
             <button class="pin-top-btn" onclick="pinProfileTop('${p.id}')">👑 Pin Top</button>
             <button class="reset-boost-btn" onclick="resetProfileBoost('${p.id}')">♻ Reset</button>
           </div>
+
+          <button class="quality-btn" onclick="recalculateProfileQuality('${p.id}')">✨ Recalculate Quality</button>
+          ${rankingDiagnosticsHTML(p)}
 
           <button class="renew-btn" onclick="openRenewModal('${p.id}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}')">💰 Renew / Pay Now</button>
 
@@ -1781,6 +1925,8 @@ async function openEditModal(id){
   document.getElementById("edit_plan_rank").value = data.plan_rank ?? rankFromPlan(data.plan || "featured");
   document.getElementById("edit_boost_score").value = data.boost_score ?? boostFromPlan(data.plan || "featured");
   document.getElementById("edit_trending_score").value = data.trending_score ?? trendingFormula(rankFromPlan(data.plan || "featured"),boostFromPlan(data.plan || "featured"),data.views_count || data.views || 0,data.likes_count || data.likes || 0,Boolean(data.verified),Boolean(data.featured));
+  document.getElementById("edit_image_quality_score").value = data.image_quality_score ?? qualityScoreFromProfile(data);
+  document.getElementById("edit_profile_score").value = data.profile_score ?? finalProfileScore(data);
   document.getElementById("edit_last_active").value = toDatetimeLocal(data.last_active || data.created_at);
   document.getElementById("edit_plan_started_at").value = toDatetimeLocal(data.plan_started_at || data.paid_at || data.created_at);
   document.getElementById("edit_plan_expires_at").value = toDatetimeLocal(data.plan_expires_at || data.expiry_date);
@@ -1837,6 +1983,8 @@ async function saveProfileEdit(){
     "edit_trending_score",
     trendingFormula(finalPlanRank,finalBoostScore,numberOf("edit_views_count"),numberOf("edit_likes_count"),checkedOf("edit_verified"),checkedOf("edit_featured"))
   );
+  const finalImageQualityScore = numberOrDefault("edit_image_quality_score",50);
+  const finalProfileScoreValue = numberOrDefault("edit_profile_score",finalProfileScoreFromInputs(finalImageQualityScore,numberOf("edit_likes_count"),numberOf("edit_views_count"),finalBoostScore,checkedOf("edit_verified")));
 
   const updates = {
     stage_name: valueOf("edit_stage_name"),
@@ -2346,7 +2494,7 @@ Reply here when ready.`
 
 
 
-async function boostProfile(id,amount){
+async async function boostProfile(id,amount){
   const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
   const boostAmount = Number(amount || 100);
   const currentBoost = Number(profile.boost_score || profile.boost || 0);
@@ -2370,6 +2518,7 @@ async function boostProfile(id,amount){
       boost_score:newBoost,
       boost:newBoost,
       trending_score:newTrending,
+      profile_score:finalProfileScore({...profile,boost_score:newBoost,boost:newBoost,trending_score:newTrending}),
       last_active:new Date().toISOString()
     })
     .eq("id",id);
@@ -2412,6 +2561,7 @@ async function pinProfileTop(id){
       boost_score:newBoost,
       boost:newBoost,
       trending_score:newTrending,
+      profile_score:finalProfileScore({...profile,boost_score:newBoost,boost:newBoost,verified:true,featured:true,trending_score:newTrending}),
       last_active:new Date().toISOString()
     })
     .eq("id",id);
@@ -2451,6 +2601,7 @@ async function resetProfileBoost(id){
       boost:baseBoost,
       plan_rank:planRank,
       trending_score:newTrending,
+      profile_score:finalProfileScore({...profile,boost_score:baseBoost,boost:baseBoost,trending_score:newTrending}),
       last_active:new Date().toISOString()
     })
     .eq("id",id);
@@ -2466,6 +2617,75 @@ async function resetProfileBoost(id){
   loadRevenueDashboard();
 }
 
+
+
+async function recalculateProfileQuality(id){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  if(!profile.id){
+    alert("Profile not found in loaded vault list.");
+    return;
+  }
+
+  const quality = qualityScoreFromProfile({...profile,image_quality_score:0});
+  const profileScore = finalProfileScore({...profile,image_quality_score:quality});
+  const trending = trendingFormula(
+    Number(profile.plan_rank || rankFromPlan(profile.plan)),
+    Number(profile.boost_score || profile.boost || boostFromPlan(profile.plan)),
+    Number(profile.views_count || profile.views || 0),
+    Number(profile.likes_count || profile.likes || 0),
+    Boolean(profile.verified),
+    Boolean(profile.featured)
+  );
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      image_quality_score:quality,
+      profile_score:profileScore,
+      trending_score:trending,
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("quality_recalculated",id,profile.stage_name || "",`Quality ${quality}, final score ${profileScore}`);
+  loadProfiles();
+  loadDashboardStats();
+  alert(`Quality recalculated. Image Quality: ${quality}. Final Score: ${profileScore}.`);
+}
+
+async function recalculateAllQualityScores(){
+  const status = document.getElementById("qualityBulkStatus");
+  const ok = confirm("Recalculate quality scores for all loaded profiles?");
+  if(!ok) return;
+
+  if(status) status.textContent = "Recalculating quality scores...";
+
+  let updated = 0;
+  for(const profile of ALL_PROFILES){
+    const quality = qualityScoreFromProfile({...profile,image_quality_score:0});
+    const profileScore = finalProfileScore({...profile,image_quality_score:quality});
+
+    const { error } = await sb
+      .from("profiles")
+      .update({
+        image_quality_score:quality,
+        profile_score:profileScore
+      })
+      .eq("id",profile.id);
+
+    if(!error) updated++;
+  }
+
+  await audit("bulk_quality_recalculated","","",`Updated ${updated} profiles`);
+  if(status) status.textContent = `Updated ${updated} profile quality scores.`;
+  loadProfiles();
+  loadDashboardStats();
+}
 
 async function quickMakeSignature(id){
   const current = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
@@ -2542,7 +2762,7 @@ async function loadDashboardStats(){
   try{
     const { data,error } = await sb
       .from("profiles")
-      .select("id,stage_name,approved,is_expired,payment_status,plan,plan_label,tier,package,is_signature,homepage_featured,revenue_plan_price,plan_expires_at,expiry_date,expires_at,trial_active,trial_expires_at,created_at,verified,boost_score,boost,pinned_top");
+      .select("id,stage_name,approved,is_expired,payment_status,plan,plan_label,tier,package,is_signature,homepage_featured,revenue_plan_price,plan_expires_at,expiry_date,expires_at,trial_active,trial_expires_at,created_at,verified,boost_score,boost,pinned_top,image_quality_score,profile_score");
 
     if(error) throw error;
 
@@ -2596,6 +2816,10 @@ async function loadDashboardStats(){
 
     const boostedCount = profiles.filter(p => Number(p.boost_score || p.boost || 0) > 0).length;
     const pinnedTopCount = profiles.filter(p => p.pinned_top === true).length;
+    const hdQualityCount = profiles.filter(p => Number(p.image_quality_score || qualityScoreFromProfile(p) || 0) >= 70).length;
+    const avgQuality = profiles.length
+      ? Math.round(profiles.reduce((sum,p)=>sum + Number(p.image_quality_score || qualityScoreFromProfile(p) || 0),0) / profiles.length)
+      : 0;
 
     const hero = profiles.filter(p => p.homepage_featured === true).length;
 
@@ -2646,6 +2870,8 @@ async function loadDashboardStats(){
     setVaultStat("statVerified", verifiedCount.toLocaleString());
     setVaultStat("statBoosted", boostedCount.toLocaleString());
     setVaultStat("statPinnedTop", pinnedTopCount.toLocaleString());
+    setVaultStat("statHDQuality", hdQualityCount.toLocaleString());
+    setVaultStat("statAvgQuality", avgQuality.toLocaleString());
     setVaultStat("statHero", hero.toLocaleString());
     setVaultStat("statExpiringSoon", expiringSoon.toLocaleString());
     setVaultStat("statWeeklyPotential", "KES " + weeklyPotential.toLocaleString());
