@@ -486,6 +486,7 @@ REVENUE DASHBOARD UPGRADE
   <select id="plan">
     <option value="featured">Featured</option>
     <option value="vip">VIP</option>
+    <option value="vip-plus">VIP+</option>
     <option value="vvip">VVIP</option>
     <option value="signature">Signature</option>
   </select>
@@ -552,6 +553,7 @@ REVENUE DASHBOARD UPGRADE
     <option value="">All Plans</option>
     <option value="featured">Featured</option>
     <option value="vip">VIP</option>
+    <option value="vip-plus">VIP+</option>
     <option value="vvip">VVIP</option>
     <option value="signature">Signature</option>
   </select>
@@ -644,6 +646,7 @@ REVENUE DASHBOARD UPGRADE
       <select id="edit_plan">
         <option value="featured">Featured</option>
         <option value="vip">VIP</option>
+        <option value="vip-plus">VIP+</option>
         <option value="vvip">VVIP</option>
         <option value="signature">Signature</option>
       </select>
@@ -702,8 +705,9 @@ REVENUE DASHBOARD UPGRADE
 
       <select id="renew_plan" onchange="syncRenewAmount()">
         <option value="featured">Featured - 1000 KES</option>
-        <option value="vip">VIP - 1500 KES</option>
-        <option value="vvip">VVIP - 3000 KES</option>
+        <option value="vip">VIP - 4000 KES</option>
+        <option value="vip-plus">VIP+ - 5000 KES</option>
+        <option value="vvip">VVIP - 10000 KES</option>
         <option value="signature">Signature - 3000 KES</option>
       </select>
 
@@ -817,7 +821,7 @@ async function audit(action,profileId="",profileName="",details=""){
 }
 
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 const list = document.getElementById("list");
@@ -852,6 +856,7 @@ function numberOrDefault(id,fallback){
 function rankFromPlan(plan){
   const p = String(plan || "").toLowerCase();
   if(p.includes("signature") || p.includes("vvip")) return 4;
+  if(p.includes("vip-plus") || p.includes("vip+")) return 3.5;
   if(p.includes("vip")) return 3;
   if(p.includes("featured")) return 2;
   return 1;
@@ -860,6 +865,7 @@ function rankFromPlan(plan){
 function boostFromPlan(plan){
   const p = String(plan || "").toLowerCase();
   if(p.includes("signature") || p.includes("vvip")) return 600;
+  if(p.includes("vip-plus") || p.includes("vip+")) return 450;
   if(p.includes("vip")) return 300;
   if(p.includes("featured")) return 100;
   return 0;
@@ -890,9 +896,10 @@ function fromDatetimeLocal(value){
 
 function planAmount(plan){
   const p = String(plan || "").toLowerCase();
-  if(p.includes("signature") || p.includes("vvip")) return 3000;
-  if(p.includes("vip")) return 1500;
-  if(p.includes("featured")) return 1000;
+  if(p.includes("signature") || p.includes("vvip")) return 10000;
+  if(p.includes("vip-plus") || p.includes("vip+")) return 5000;
+  if(p.includes("vip")) return 4000;
+  if(p.includes("featured")) return 1500;
   return 1500;
 }
 
@@ -1422,6 +1429,7 @@ function renderProfiles(){
             🔥 Trending: ${p.trending_score || 0}<br>
             🕒 Active: ${p.last_active ? new Date(p.last_active).toLocaleString() : "not set"}<br>
             💳 Payment: ${p.payment_status || "unpaid"}<br>
+            👤 Owner: ${p.user_id || p.owner_id || "not linked"}<br>
             🚦 Expired: ${p.is_expired ? "Yes" : "No"}<br>
             ▶ Started: ${p.plan_started_at ? new Date(p.plan_started_at).toLocaleDateString() : "not set"}<br>
             ⏳ Expires: ${p.plan_expires_at || p.expiry_date ? new Date(p.plan_expires_at || p.expiry_date).toLocaleDateString() : "not set"}<br>
@@ -1845,9 +1853,10 @@ async function deleteProfile(id){
 
 function vaultPlanAmount(plan){
   const p = String(plan || "").toLowerCase();
-  if(p.includes("signature") || p.includes("vvip")) return 3000;
-  if(p.includes("vip")) return 1500;
-  if(p.includes("featured")) return 1000;
+  if(p.includes("signature") || p.includes("vvip")) return 10000;
+  if(p.includes("vip-plus") || p.includes("vip+")) return 5000;
+  if(p.includes("vip")) return 4000;
+  if(p.includes("featured")) return 1500;
   return 0;
 }
 
