@@ -988,9 +988,23 @@ function checkVaultTimeout(){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
+  /* TEMPORARY RECOVERY BYPASS
+     This opens the vault while the proper email/password admin login is repaired. */
   sessionStorage.setItem("vault_unlocked","true");
-  document.getElementById("vaultLock").style.display = "none";
+  localStorage.setItem("vault_last_activity",String(Date.now()));
+
+  const lock = document.getElementById("vaultLock");
+  if(lock) lock.style.display = "none";
+
   updateVaultActivity();
+
+  setTimeout(()=>{
+    if(typeof loadProfiles === "function") loadProfiles();
+    if(typeof loadDashboardStats === "function") loadDashboardStats();
+    if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
+    if(typeof loadStaffUsers === "function") loadStaffUsers();
+    if(typeof loadAdminContact === "function") loadAdminContact();
+  },600);
 });
 
 ["mousemove","keydown","click","touchstart"].forEach(eventName=>{
