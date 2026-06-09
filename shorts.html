@@ -2,58 +2,72 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<title>Nairobi Sweets Shorts</title>
+<title>Nairobi Sweets Shorts | Video-Only Feed</title>
+<meta name="description" content="Watch Nairobi Sweets video shorts from verified, VIP and Signature profiles.">
+<meta name="robots" content="index,follow,max-video-preview:-1,max-image-preview:large">
+<meta name="theme-color" content="#000000">
+
+<link rel="canonical" href="https://nairobi-sweets.com/shorts.html">
 <link rel="icon" href="/assets/logo/logo-badge.png">
+<link rel="manifest" href="/manifest.webmanifest">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-
+html{background:#000;scroll-behavior:smooth}
 body{
   background:#000;
   color:#fff;
   font-family:Arial,Helvetica,sans-serif;
   overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
 }
+a{text-decoration:none;color:inherit}
+button{font:inherit;border:0;cursor:pointer}
 
 .topbar{
   position:fixed;
   top:0;
   left:0;
   right:0;
-  z-index:50;
+  z-index:80;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:18px 18px;
-  background:linear-gradient(to bottom,rgba(0,0,0,.82),transparent);
+  padding:calc(14px + env(safe-area-inset-top)) 18px 16px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.88),rgba(0,0,0,.48),transparent);
+  pointer-events:none;
 }
-
 .logo{
   color:#ffd54a;
-  font-size:25px;
-  font-weight:900;
+  font-size:24px;
+  font-weight:950;
+  letter-spacing:-.4px;
+  text-shadow:0 2px 18px rgba(0,0,0,.85);
+  pointer-events:auto;
 }
-
 .home{
-  background:rgba(255,255,255,.16);
-  border:1px solid rgba(255,213,74,.24);
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,213,74,.28);
   color:#fff;
-  text-decoration:none;
   padding:10px 16px;
   border-radius:999px;
-  font-weight:900;
-  backdrop-filter:blur(12px);
+  font-weight:950;
+  backdrop-filter:blur(14px);
+  box-shadow:0 12px 28px rgba(0,0,0,.28);
+  pointer-events:auto;
 }
 
 .feed{
   height:100vh;
-  overflow-y:scroll;
+  overflow-y:auto;
   scroll-snap-type:y mandatory;
+  overscroll-behavior-y:contain;
+  scrollbar-width:none;
 }
-
 .feed::-webkit-scrollbar{display:none}
 
 .short{
@@ -62,94 +76,107 @@ body{
   scroll-snap-align:start;
   background:#020617;
   overflow:hidden;
+  isolation:isolate;
 }
-
 .short::after{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(to top,rgba(0,0,0,.72),transparent 38%);
+  z-index:2;
+  background:
+    linear-gradient(to top,rgba(0,0,0,.86),transparent 44%),
+    linear-gradient(to bottom,rgba(0,0,0,.55),transparent 25%);
   pointer-events:none;
 }
-
 .media{
   width:100%;
   height:100%;
   object-fit:cover;
   display:block;
+  background:#000;
 }
-
-.overlay{
+.video-loader{
   position:absolute;
   inset:0;
-  background:linear-gradient(to top,rgba(0,0,0,.82),transparent 55%,rgba(0,0,0,.35));
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#ffd54a;
+  font-weight:950;
+  background:radial-gradient(circle at center,#07105a 0%,#000 64%);
 }
+.short video:not([poster]) + .video-loader{display:flex}
 
-.ai-badge{
+.top-badges{
   position:absolute;
-  top:95px;
+  top:calc(86px + env(safe-area-inset-top));
   left:18px;
+  right:86px;
   z-index:8;
-  background:#ff1493;
-  color:#fff;
-  padding:10px 16px;
-  border-radius:999px;
-  font-weight:900;
-  font-size:14px;
-  box-shadow:0 0 25px rgba(255,0,128,.45);
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
 }
+.pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-height:34px;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:950;
+  backdrop-filter:blur(14px);
+  box-shadow:0 10px 28px rgba(0,0,0,.35);
+}
+.pill.gold{background:linear-gradient(135deg,#ffd54a,#ff9f1c);color:#000}
+.pill.blue{background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff}
+.pill.pink{background:linear-gradient(135deg,#ff1493,#a855f7);color:#fff}
+.pill.dark{background:rgba(0,0,0,.58);border:1px solid rgba(255,255,255,.18);color:#fff}
 
 .info{
   position:absolute;
   left:18px;
-  right:90px;
-  bottom:100px;
+  right:92px;
+  bottom:112px;
   z-index:8;
+  text-shadow:0 2px 18px rgba(0,0,0,.85);
 }
-
-.badge{
-  display:inline-block;
-  background:#ffd54a;
-  color:#000;
-  padding:8px 14px;
-  border-radius:999px;
-  font-weight:900;
-  margin-bottom:12px;
-  font-size:14px;
-}
-
 .name{
-  font-size:28px;
-  font-weight:900;
+  font-size:clamp(28px,7vw,46px);
+  font-weight:950;
+  line-height:.98;
+  letter-spacing:-1px;
   margin-bottom:10px;
-  line-height:1.05;
-  text-shadow:0 2px 20px rgba(0,0,0,.6);
 }
-
 .location{
   font-size:15px;
-  color:#e5e7eb;
+  color:#f4f4f5;
   margin-bottom:8px;
   line-height:1.35;
-  font-weight:700;
+  font-weight:800;
 }
-
 .bio{
   font-size:14px;
   line-height:1.45;
   color:#d1d5db;
   max-width:96%;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 
 .actions{
   position:absolute;
   right:14px;
-  bottom:138px;
+  bottom:118px;
   z-index:9;
   display:grid;
-  gap:14px;
+  gap:12px;
 }
-
 .action{
   width:54px;
   height:54px;
@@ -157,22 +184,32 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(0,0,0,.55);
+  background:rgba(0,0,0,.58);
   border:1px solid rgba(255,255,255,.18);
   color:#fff;
-  text-decoration:none;
   font-size:22px;
   backdrop-filter:blur(12px);
   box-shadow:0 10px 24px rgba(0,0,0,.35);
 }
+.action.small-text{font-size:13px;font-weight:950;color:#ffd54a}
+.whatsapp{background:#25D366;color:#fff}
+.call{background:#ffd54a;color:#000}
+.profile{background:linear-gradient(135deg,#ffd54a,#ff9f1c);color:#000}
+.action:active{transform:scale(.94)}
 
-.whatsapp{
-  background:#25D366;
-}
-
-.call{
-  background:#ffd54a;
-  color:#000;
+.sound-hint{
+  position:absolute;
+  left:18px;
+  bottom:82px;
+  z-index:8;
+  color:#e5e7eb;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:999px;
+  padding:8px 11px;
+  font-size:12px;
+  font-weight:900;
+  backdrop-filter:blur(12px);
 }
 
 .bottom-nav{
@@ -180,31 +217,28 @@ body{
   left:0;
   right:0;
   bottom:0;
-  height:78px;
+  height:calc(66px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
   background:rgba(0,0,0,.94);
-  z-index:60;
+  z-index:90;
   display:flex;
   align-items:center;
   justify-content:space-around;
   border-top:1px solid rgba(255,213,74,.12);
   backdrop-filter:blur(18px);
 }
-
 .bottom-nav a{
   color:#ffd54a;
-  text-decoration:none;
-  font-size:24px;
+  font-size:22px;
   opacity:.95;
-  transition:.25s ease;
+  transition:.2s ease;
 }
-
-.bottom-nav a:hover{
+.bottom-nav a.active{
   transform:translateY(-2px);
-  opacity:1;
+  filter:drop-shadow(0 0 12px rgba(255,213,74,.45));
 }
 
-.loader,
-.empty{
+.loader,.empty{
   height:100vh;
   display:flex;
   align-items:center;
@@ -212,34 +246,58 @@ body{
   text-align:center;
   color:#ffd54a;
   font-size:22px;
-  font-weight:900;
+  font-weight:950;
   padding:24px;
+  background:radial-gradient(circle at top,#07105a 0%,#000 60%);
+}
+.empty-box{
+  width:min(520px,92vw);
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,213,74,.16);
+  border-radius:28px;
+  padding:28px;
+}
+.empty-box p{color:#ddd;font-size:15px;line-height:1.6;margin-top:10px}
+.empty-box a{
+  display:inline-flex;
+  margin-top:18px;
+  padding:13px 18px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#ffd54a,#ff9f1c);
+  color:#000;
+  font-size:14px;
+  font-weight:950;
 }
 
+@media(min-width:800px){
+  .short{max-width:520px;margin:0 auto;border-left:1px solid rgba(255,213,74,.12);border-right:1px solid rgba(255,213,74,.12)}
+  .topbar{max-width:520px;margin:auto}
+  .bottom-nav{max-width:520px;margin:auto;left:50%;right:auto;transform:translateX(-50%);width:520px;border-left:1px solid rgba(255,213,74,.12);border-right:1px solid rgba(255,213,74,.12)}
+}
 @media(max-width:700px){
-  .logo{font-size:24px}
-  .home{padding:10px 16px}
-  .name{font-size:28px}
-  .bottom-nav{height:82px}
-  .bottom-nav a{font-size:24px}
+  .logo{font-size:22px}
+  .home{padding:9px 14px;font-size:14px}
+  .info{bottom:106px;right:88px}
+  .actions{bottom:112px}
+  .action{width:50px;height:50px;font-size:20px}
 }
 </style>
 </head>
 
 <body>
-
 <header class="topbar">
   <div class="logo">🔥 Nairobi Shorts</div>
   <a href="/" class="home">Home</a>
 </header>
 
 <main class="feed" id="feed">
-  <div class="loader">Loading shorts...</div>
+  <div class="loader">Loading video shorts...</div>
 </main>
 
 <nav class="bottom-nav">
   <a href="/">🏠</a>
-  <a href="/shorts.html">🔥</a>
+  <a href="/shorts.html" class="active">🔥</a>
+  <a href="/reel.html">🎬</a>
   <a href="/join.html">➕</a>
   <a href="/login.html">👤</a>
 </nav>
@@ -247,9 +305,20 @@ body{
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const SITE_URL = "https://nairobi-sweets.com";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const feed = document.getElementById("feed");
+const viewedVideos = new Set();
+
+function escapeHTML(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
 function safePhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
@@ -259,11 +328,18 @@ function safePhone(phone){
   return p;
 }
 
-function mediaUrl(p){
-  return (
+function videoUrl(p){
+  return String(
+    p.short_video ||
     p.video_url ||
     p.short_url ||
     p.reel_url ||
+    ""
+  ).trim();
+}
+
+function posterUrl(p){
+  return String(
     p.photo_url ||
     p.image_url ||
     p.profile_photo ||
@@ -271,11 +347,12 @@ function mediaUrl(p){
     p.photo ||
     p.image ||
     "/assets/logo/logo-badge.png"
-  );
+  ).trim();
 }
 
-function isVideo(url){
-  return /\.(mp4|webm|mov)$/i.test(String(url || ""));
+function isPlayableVideo(url){
+  const clean = String(url || "").split("?")[0].toLowerCase();
+  return /\.(mp4|webm|mov|m4v)$/i.test(clean) || String(url || "").includes("supabase.co/storage/v1/object/public/");
 }
 
 function nameOf(p){
@@ -287,142 +364,258 @@ function locationOf(p){
 }
 
 function planOf(p){
-  return String(p.plan || p.plan_name || p.package || p.tier || "").toLowerCase();
+  return String(p.plan || p.plan_name || p.package || p.tier || "featured").toLowerCase();
+}
+
+function isSignature(p){
+  const plan = planOf(p);
+  return Boolean(p.is_signature) || plan.includes("signature") || plan.includes("vvip");
+}
+
+function isVip(p){
+  const plan = planOf(p);
+  return plan.includes("vip") && !isSignature(p);
+}
+
+function profileUrl(p){
+  const slug = String(p.slug || p.username || "").trim();
+  if(slug && !["null","undefined","nan"].includes(slug.toLowerCase())){
+    return `/profile.html?slug=${encodeURIComponent(slug)}`;
+  }
+  return `/profile.html?id=${encodeURIComponent(p.id)}`;
 }
 
 function badgeOf(p){
-  const plan = planOf(p);
-  if(plan.includes("vvip") || plan.includes("signature")) return "👑 VVIP Pick";
-  if(plan.includes("vip")) return "👑 VIP Pick";
-  return "🔥 Sweet Pick";
+  if(isSignature(p)) return "👑 Signature Video";
+  if(isVip(p)) return "⭐ VIP Video";
+  if(p.verified) return "✔ Verified Video";
+  return "🔥 Sweet Video";
 }
 
 function aiBadge(p){
-  const plan = planOf(p);
   const views = Number(p.views_count || p.views || 0);
-  const likes = Number(p.likes_count || p.likes || 0);
-
-  if(plan.includes("vip")) return "👑 VIP Energy";
+  const likes = Number(p.likes_count || p.likes || p.favorites || 0);
+  const quality = Number(p.image_quality_score || 0);
+  if(isSignature(p)) return "👑 Signature First";
+  if(quality >= 75) return "📸 HD Pick";
   if(views > 1000) return "🔥 Trending";
   if(likes > 50) return "💋 Most Liked";
+  if(p.verified) return "✔ Verified";
   return "✨ Sweet Pick";
 }
 
-function renderShort(p){
-  const media = mediaUrl(p);
-  const phone = safePhone(p.phone || p.whatsapp);
-  const name = nameOf(p);
+function finalShortScore(p){
+  const imageQuality = Number(p.image_quality_score || 0);
+  const likes = Number(p.likes_count || p.likes || p.favorites || 0);
+  const views = Number(p.views_count || p.views || 0);
+  const boost = Number(p.boost_score || p.boost || 0);
+  const verified = p.verified ? 100 : 0;
+  const signatureBonus = isSignature(p) ? 500 : 0;
+  const vipBonus = isVip(p) ? 220 : 0;
+  const pinnedBonus = p.pinned_top ? 800 : 0;
 
-  const mediaTag = isVideo(media)
-    ? `
+  return (
+    pinnedBonus +
+    signatureBonus +
+    vipBonus +
+    imageQuality * 0.40 +
+    likes * 0.20 +
+    views * 0.15 +
+    boost * 0.15 +
+    verified * 0.10
+  );
+}
+
+function whatsappMessage(p){
+  return encodeURIComponent(`Hi ${nameOf(p)}, I found your Nairobi Sweets video short: ${SITE_URL}${profileUrl(p)}`);
+}
+
+function compact(text,max=118){
+  const s = String(text || "Tap WhatsApp or call to connect.").trim();
+  return s.length > max ? s.slice(0,max).trim() + "..." : s;
+}
+
+function renderShort(p){
+  const video = videoUrl(p);
+  if(!video || !isPlayableVideo(video)) return "";
+
+  const phone = safePhone(p.phone || p.whatsapp);
+  const name = escapeHTML(nameOf(p));
+  const loc = escapeHTML(locationOf(p));
+  const profileHref = profileUrl(p);
+  const poster = escapeHTML(posterUrl(p));
+  const quality = Number(p.image_quality_score || 0);
+  const score = Math.round(finalShortScore(p));
+
+  return `
+    <section class="short" data-id="${escapeHTML(p.id)}" data-name="${name}" data-views="${Number(p.views_count || p.views || 0)}">
       <video
         class="media"
-        src="${media}"
-        autoplay
+        src="${escapeHTML(video)}"
+        poster="${poster}"
         muted
         loop
         playsinline
         preload="metadata"
+        controlsList="nodownload"
+        disablePictureInPicture
+        oncontextmenu="return false"
       ></video>
-    `
-    : `
-      <img
-        class="media"
-        src="${media}"
-        alt="${name}"
-        onerror="this.src='/assets/logo/logo-badge.png'"
-      >
-    `;
 
-  return `
-    <section class="short">
-      ${mediaTag}
-
-      <div class="overlay"></div>
-
-      <div class="ai-badge">
-        ${aiBadge(p)}
+      <div class="top-badges">
+        <span class="pill pink">${aiBadge(p)}</span>
+        <span class="pill gold">${badgeOf(p)}</span>
+        ${p.verified ? `<span class="pill blue">✔ Verified</span>` : ``}
+        ${quality >= 60 ? `<span class="pill dark">📸 HD ${quality}</span>` : ``}
       </div>
 
       <div class="info">
-        <div class="badge">${badgeOf(p)}</div>
         <div class="name">${name}</div>
-        <div class="location">📍 ${locationOf(p)} · 🟢 Online Now</div>
-        <div class="bio">${p.bio || p.description || "Tap WhatsApp or call to connect."}</div>
+        <div class="location">📍 ${loc} · 🟢 Online Now · 🔥 ${score.toLocaleString()}</div>
+        <div class="bio">${escapeHTML(compact(p.bio || p.description || p.about))}</div>
       </div>
 
       <div class="actions">
-        <a class="action" onclick="likeShort('${p.id}')">❤️</a>
-        <a class="action">👁️</a>
-        ${phone ? `<a class="action whatsapp" href="https://wa.me/${phone}" target="_blank" rel="noopener">💬</a>` : ""}
-        ${phone ? `<a class="action call" href="tel:${phone}">☎</a>` : ""}
+        <button class="action" onclick="likeShort('${escapeHTML(p.id)}')" title="Like">❤️</button>
+        <a class="action profile" href="${profileHref}" title="Open profile">👤</a>
+        ${phone ? `<a class="action whatsapp" href="https://wa.me/${phone}?text=${whatsappMessage(p)}" target="_blank" rel="noopener" onclick="trackContact('${escapeHTML(p.id)}','whatsapp_clicks')" title="WhatsApp">💬</a>` : ""}
+        ${phone ? `<a class="action call" href="tel:+${phone}" onclick="trackContact('${escapeHTML(p.id)}','call_clicks')" title="Call">☎</a>` : ""}
       </div>
+
+      <div class="sound-hint">Tap video for sound</div>
     </section>
   `;
 }
 
-async function loadShorts(){
-  const {data,error} = await sb
-    .from("profiles")
-    .select("*")
-    .eq("approved",true)
-    .order("created_at",{ascending:false})
-    .limit(50);
-
-  if(error){
-    feed.innerHTML = `<div class="empty">Supabase error: ${error.message}</div>`;
-    return;
+async function trackEvent(profileId,eventType){
+  try{
+    await sb.from("profile_events").insert({
+      profile_id:profileId,
+      event_type:eventType,
+      source_page:"/shorts.html",
+      created_at:new Date().toISOString()
+    });
+  }catch(error){
+    console.log("Event log skipped:",error.message);
   }
+}
 
-  if(!data || !data.length){
-    feed.innerHTML = `<div class="empty">No shorts yet. Add video_url, short_url, or profile photos in Supabase.</div>`;
-    return;
+async function incrementProfileCounter(profileId,column){
+  try{
+    const { data } = await sb
+      .from("profiles")
+      .select(`${column}`)
+      .eq("id",profileId)
+      .maybeSingle();
+
+    const next = Number(data?.[column] || 0) + 1;
+
+    await sb
+      .from("profiles")
+      .update({[column]:next})
+      .eq("id",profileId);
+
+    return next;
+  }catch(error){
+    console.log("Counter update skipped:",error.message);
+    return null;
   }
+}
 
-  const ranked = data.sort((a,b)=>{
-    const scoreA = Number(a.likes_count || 0) * 3 + Number(a.views_count || 0);
-    const scoreB = Number(b.likes_count || 0) * 3 + Number(b.views_count || 0);
-    return scoreB - scoreA;
-  });
+async function trackVideoView(profileId){
+  if(!profileId || viewedVideos.has(String(profileId))) return;
+  viewedVideos.add(String(profileId));
 
-  feed.innerHTML = ranked.map(renderShort).join("");
-  observeVideos();
+  await incrementProfileCounter(profileId,"views_count");
+  await incrementProfileCounter(profileId,"views");
+  await incrementProfileCounter(profileId,"video_plays");
+  await trackEvent(profileId,"video_play");
+}
+
+async function trackContact(profileId,column){
+  await incrementProfileCounter(profileId,column);
+  await trackEvent(profileId,column === "whatsapp_clicks" ? "whatsapp" : "call");
+}
+
+async function likeShort(id){
+  await incrementProfileCounter(id,"likes_count");
+  await incrementProfileCounter(id,"likes");
+  await trackEvent(id,"like");
 }
 
 function observeVideos(){
-  const videos = document.querySelectorAll("video");
+  const sections = document.querySelectorAll(".short");
 
   const observer = new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
+      const section = entry.target;
+      const video = section.querySelector("video");
+      if(!video) return;
+
       if(entry.isIntersecting){
-        entry.target.play().catch(()=>{});
+        video.play().catch(()=>{});
+        trackVideoView(section.dataset.id);
       }else{
-        entry.target.pause();
+        video.pause();
       }
     });
   },{threshold:.65});
 
-  videos.forEach(video=>observer.observe(video));
+  sections.forEach(section=>observer.observe(section));
+
+  document.querySelectorAll("video").forEach(video=>{
+    video.addEventListener("click",()=>{
+      video.muted = !video.muted;
+      video.play().catch(()=>{});
+    });
+  });
 }
 
-async function likeShort(id){
-  const {data} = await sb
-    .from("profiles")
-    .select("likes_count")
-    .eq("id",id)
-    .single();
+async function loadShorts(){
+  feed.innerHTML = `<div class="loader">Loading video shorts...</div>`;
 
-  const likes = Number(data?.likes_count || 0) + 1;
-
-  await sb
+  const {data,error} = await sb
     .from("profiles")
-    .update({likes_count:likes})
-    .eq("id",id);
+    .select("*")
+    .eq("approved",true)
+    .or("is_expired.eq.false,is_expired.is.null")
+    .limit(120);
+
+  if(error){
+    feed.innerHTML = `<div class="empty"><div class="empty-box">Supabase error<p>${escapeHTML(error.message)}</p></div></div>`;
+    return;
+  }
+
+  const videoProfiles = (data || [])
+    .filter(p => videoUrl(p) && isPlayableVideo(videoUrl(p)))
+    .sort((a,b)=> finalShortScore(b) - finalShortScore(a));
+
+  if(!videoProfiles.length){
+    feed.innerHTML = `
+      <div class="empty">
+        <div class="empty-box">
+          No video shorts yet.
+          <p>Upload MP4/WebM/MOV videos into <strong>short_video</strong>, <strong>video_url</strong>, <strong>short_url</strong>, or <strong>reel_url</strong>. Photos are not shown in Shorts.</p>
+          <a href="/join.html">Add a Video Profile</a>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  feed.innerHTML = videoProfiles.map(renderShort).join("");
+  observeVideos();
 }
 
 window.likeShort = likeShort;
+window.trackContact = trackContact;
 loadShorts();
-</script>
 
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("/sw.js").catch(()=>{});
+  });
+}
+</script>
 </body>
 </html>
