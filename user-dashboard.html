@@ -310,6 +310,124 @@ video{
   padding:14px 22px;
 }
 
+
+/* =========================
+MEMBERSHIP STATUS PANEL
+========================= */
+.membership-panel{
+  margin:22px 0;
+  background:linear-gradient(135deg,#07145f,#02083d,#160024);
+  border:1px solid rgba(255,216,75,.14);
+  border-radius:30px;
+  padding:26px;
+  box-shadow:0 24px 70px rgba(0,0,0,.42);
+}
+.membership-panel h2{
+  margin:0 0 16px;
+  color:var(--gold);
+  font-size:30px;
+  font-weight:950;
+}
+.membership-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+}
+.membership-stat{
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+}
+.membership-stat small{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+.membership-stat strong{
+  display:block;
+  color:white;
+  font-size:18px;
+  font-weight:950;
+  line-height:1.25;
+}
+.membership-actions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+.member-action-btn{
+  min-height:50px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-weight:950;
+  padding:12px;
+}
+.member-renew-btn{background:linear-gradient(180deg,#ffe46b,#ffbf00);color:#111}
+.member-vip-btn{background:linear-gradient(180deg,#ff5fb1,#e6257f);color:#fff}
+.member-signature-btn{background:linear-gradient(180deg,#b76cff,#6d28d9);color:#fff}
+.member-admin-btn{background:linear-gradient(180deg,#22c55e,#16a34a);color:#fff}
+
+/* =========================
+ADMIN HELP CENTER
+========================= */
+.admin-help-section{
+  margin:22px 0 44px;
+  background:linear-gradient(135deg,#07145f,#02083d,#160024);
+  border:1px solid rgba(255,216,75,.14);
+  border-radius:30px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 24px 70px rgba(0,0,0,.42);
+}
+.admin-help-section h2{
+  margin:0 0 12px;
+  color:var(--gold);
+  font-size:32px;
+  font-weight:950;
+}
+.admin-help-section p{
+  color:#d8ddf4;
+  line-height:1.8;
+  max-width:820px;
+  margin:0 auto 20px;
+}
+.admin-help-buttons{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.admin-help-buttons a{
+  min-height:50px;
+  padding:14px 22px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:950;
+}
+.admin-call-btn{background:linear-gradient(180deg,#ffe46b,#ffbf00);color:#111}
+.admin-whatsapp-btn{background:linear-gradient(180deg,#22c55e,#16a34a);color:white}
+.admin-email-btn{background:linear-gradient(180deg,#38bdf8,#06b6d4);color:#06101a}
+.admin-contact-line{
+  margin-top:18px;
+  color:var(--muted);
+  font-weight:900;
+}
+@media(max-width:850px){
+  .membership-grid,
+  .membership-actions{
+    grid-template-columns:1fr;
+  }
+}
+
 footer{
   text-align:center;
   color:var(--muted);
@@ -362,6 +480,46 @@ footer{
   <div id="loading" class="empty">
     Loading your profile...
   </div>
+
+
+
+  <section id="membershipPanel" class="membership-panel" style="display:none;">
+    <h2>🔥 My Membership Status</h2>
+
+    <div class="membership-grid">
+      <div class="membership-stat">
+        <small>Current Plan</small>
+        <strong id="memberPlan">Loading...</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>Days Remaining</small>
+        <strong id="memberDaysLeft">Loading...</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>Expiry Date</small>
+        <strong id="memberExpiry">Loading...</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>Payment Status</small>
+        <strong id="memberPayment">Loading...</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>Profile Status</small>
+        <strong id="memberProfileStatus">Loading...</strong>
+      </div>
+    </div>
+
+    <div class="membership-actions">
+      <a class="member-action-btn member-renew-btn" href="/join.html?from=dashboard">💳 Renew Now</a>
+      <a class="member-action-btn member-vip-btn" href="/public-signup-payment-page.html?plan=vip-plus&from=dashboard">🚀 Upgrade To VIP+</a>
+      <a class="member-action-btn member-signature-btn" href="/public-signup-payment-page.html?plan=signature&from=dashboard">👑 Upgrade To Signature</a>
+      <a id="memberAdminWhatsappBtn" class="member-action-btn member-admin-btn" href="https://wa.me/254143616363" target="_blank" rel="noopener">💬 Contact Admin</a>
+    </div>
+  </section>
 
   <form id="dashboardForm" class="card" style="display:none;">
     <h2>Edit Profile</h2>
@@ -504,6 +662,25 @@ footer{
     <div id="msg" class="msg"></div>
   </form>
 
+
+  <section class="admin-help-section">
+    <h2>📞 Need Help?</h2>
+    <p>
+      Contact Nairobi Sweets Admin for profile edits, photo/video upload issues,
+      payment renewals, VIP upgrades, Signature upgrades, location changes, and dashboard support.
+    </p>
+
+    <div class="admin-help-buttons">
+      <a id="adminCallBtn" class="admin-call-btn" href="tel:+254143616363">📞 Call Admin</a>
+      <a id="adminWhatsappBtn" class="admin-whatsapp-btn" href="https://wa.me/254143616363" target="_blank" rel="noopener">💬 WhatsApp Admin</a>
+      <a id="adminEmailBtn" class="admin-email-btn" href="mailto:nairobisweets05@gmail.com">📧 Email Admin</a>
+    </div>
+
+    <div id="adminContactLine" class="admin-contact-line">
+      Nairobi Sweets Admin: +254 143 616363
+    </div>
+  </section>
+
 </main>
 
 <footer>© Nairobi Sweets</footer>
@@ -522,6 +699,7 @@ const form = document.getElementById("dashboardForm");
 const msg = document.getElementById("msg");
 const saveBtn = document.getElementById("saveBtn");
 const statusBadges = document.getElementById("statusBadges");
+const membershipPanel = document.getElementById("membershipPanel");
 
 function cleanPhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
@@ -581,6 +759,79 @@ function planBadge(plan){
   return "⭐ Featured";
 }
 
+
+function formatDate(value){
+  if(!value) return "Not set";
+  const d = new Date(value);
+  if(Number.isNaN(d.getTime())) return "Not set";
+  return d.toLocaleDateString("en-KE", { year:"numeric", month:"short", day:"numeric" });
+}
+
+function daysRemaining(value){
+  if(!value) return "Not set";
+  const expiry = new Date(value).getTime();
+  if(Number.isNaN(expiry)) return "Not set";
+  const diff = Math.ceil((expiry - Date.now()) / (1000 * 60 * 60 * 24));
+  if(diff < 0) return "Expired";
+  if(diff === 0) return "Expires today";
+  return `${diff} day${diff === 1 ? "" : "s"}`;
+}
+
+function paymentText(status){
+  const s = String(status || "pending").toLowerCase();
+  if(s === "paid" || s === "success") return "✅ Paid";
+  if(s === "failed") return "❌ Failed";
+  return "💳 Pending";
+}
+
+function profileStatusText(profile){
+  if(profile.is_expired) return "⛔ Expired";
+  if(profile.approved) return "✅ Approved";
+  return "⏳ Pending";
+}
+
+function renderMembershipPanel(){
+  if(!currentProfile || !membershipPanel) return;
+
+  document.getElementById("memberPlan").innerText = planBadge(currentProfile.plan_label || currentProfile.tier || currentProfile.plan || currentProfile.package);
+  document.getElementById("memberDaysLeft").innerText = daysRemaining(currentProfile.expires_at || currentProfile.expiry || currentProfile.trial_expires_at);
+  document.getElementById("memberExpiry").innerText = formatDate(currentProfile.expires_at || currentProfile.expiry || currentProfile.trial_expires_at);
+  document.getElementById("memberPayment").innerText = paymentText(currentProfile.payment_status);
+  document.getElementById("memberProfileStatus").innerText = profileStatusText(currentProfile);
+
+  membershipPanel.style.display = "block";
+}
+
+async function loadAdminContact(){
+  try{
+    const { data } = await sb
+      .from("site_settings")
+      .select("admin_name,admin_phone,admin_whatsapp,admin_email")
+      .limit(1)
+      .maybeSingle();
+
+    const name = data?.admin_name || "Nairobi Sweets Admin";
+    const phone = data?.admin_phone || "+254143616363";
+    const whatsapp = data?.admin_whatsapp || phone;
+    const email = data?.admin_email || "nairobisweets05@gmail.com";
+    const waClean = cleanPhone(whatsapp);
+
+    const callBtn = document.getElementById("adminCallBtn");
+    const waBtn = document.getElementById("adminWhatsappBtn");
+    const emailBtn = document.getElementById("adminEmailBtn");
+    const memberWaBtn = document.getElementById("memberAdminWhatsappBtn");
+    const line = document.getElementById("adminContactLine");
+
+    if(callBtn) callBtn.href = `tel:${phone}`;
+    if(waBtn) waBtn.href = `https://wa.me/${waClean}`;
+    if(emailBtn) emailBtn.href = `mailto:${email}`;
+    if(memberWaBtn) memberWaBtn.href = `https://wa.me/${waClean}?text=${encodeURIComponent("Hi Nairobi Sweets Admin, I need help with my dashboard/profile.")}`;
+    if(line) line.innerText = `${name}: ${phone}`;
+  }catch(error){
+    console.log("Admin contact could not load", error);
+  }
+}
+
 function renderStatus(){
   if(!currentProfile) return;
 
@@ -635,6 +886,7 @@ function fillForm(){
   }
 
   renderStatus();
+  renderMembershipPanel();
 }
 
 async function loadDashboard(){
@@ -811,6 +1063,8 @@ async function logout(){
   await sb.auth.signOut();
   window.location.href = "/login.html";
 }
+
+loadAdminContact();
 
 loadDashboard().catch(error=>{
   loading.className = "empty error";
