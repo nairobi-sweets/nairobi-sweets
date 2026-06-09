@@ -113,6 +113,7 @@ input,select,textarea{
   outline:none;
   font-family:inherit;
 }
+input:disabled{opacity:.7}
 select option{color:#111}
 textarea{min-height:120px;resize:vertical}
 .phone-wrap{display:grid;grid-template-columns:78px 1fr}
@@ -281,7 +282,7 @@ footer{text-align:center;color:var(--muted);padding:34px}
           <input id="email" type="email" required placeholder="you@email.com">
         </div>
 
-        <div class="field">
+        <div class="field" id="passwordField">
           <label>Create Password*</label>
           <input id="password" type="password" required minlength="6" placeholder="Minimum 6 characters">
         </div>
@@ -487,6 +488,8 @@ const PLAN_RANKS = {
   signature: 4
 };
 
+let currentUser = null;
+
 const form = document.getElementById("joinForm");
 const msg = document.getElementById("msg");
 const payBtn = document.getElementById("payBtn");
@@ -494,9 +497,17 @@ const packageSelect = document.getElementById("package");
 const durationSelect = document.getElementById("duration");
 const amountBox = document.getElementById("amountBox");
 const priceMini = document.getElementById("priceMini");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const passwordField = document.getElementById("passwordField");
 
 function money(amount){
   return "KSh " + Number(amount).toLocaleString("en-KE");
+}
+
+function showMsg(text, type = ""){
+  msg.className = "msg " + type;
+  msg.innerText = text;
 }
 
 function getAmount(){
@@ -529,9 +540,11 @@ function applyURLPlan(){
 function preview(inputId,imgId){
   const input = document.getElementById(inputId);
   const img = document.getElementById(imgId);
+
   input.addEventListener("change",()=>{
     const file = input.files[0];
     if(!file) return;
+
     img.src = URL.createObjectURL(file);
     img.style.display = "block";
   });
@@ -544,9 +557,11 @@ preview("photo4","preview4");
 
 function cleanPhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
+
   if(p.startsWith("0")) p = "254" + p.slice(1);
   if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
   if(p.length === 9) p = "254" + p;
+
   return p;
 }
 
@@ -583,11 +598,61 @@ async function uploadFile(bucket,file,folder){
   return data.publicUrl;
 }
 
+async function checkExistingProfile(userId){
+  const { data, error } = await sb
+    .from("profiles")
+    .select("id,user_id")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  if(error) throw error;
+
+  return data;
+}
+
+async function setupSession(){
+  const { data, error } = await sb.auth.getSession();
+
+  if(error){
+    console.warn(error.message);
+    return;
+  }
+
+  if(data.session?.user){
+    currentUser = data.session.user;
+
+    emailInput.value = currentUser.email || "";
+    emailInput.disabled = true;
+
+    passwordInput.required = false;
+    passwordField.style.display = "none";
+
+    const existingProfile = await checkExistingProfile(currentUser.id);
+
+    if(existingProfile){
+      showMsg("You already have a profile. Redirecting to dashboard...", "success");
+      setTimeout(()=>{
+        window.location.href = "/user-dashboard.html";
+      }, 900);
+    }
+  }
+}
+
 async function getOrCreateUser(email,password){
+  if(currentUser){
+    return currentUser;
+  }
+
   const { data: sessionData } = await sb.auth.getSession();
 
   if(sessionData?.session?.user){
-    return sessionData.session.user;
+    currentUser = sessionData.session.user;
+    return currentUser;
+  }
+
+  if(!password || password.length < 6){
+    throw new Error("Create a password with at least 6 characters.");
   }
 
   const { data, error } = await sb.auth.signUp({
@@ -602,8 +667,11 @@ async function getOrCreateUser(email,password){
     if(error.message.toLowerCase().includes("already registered")){
       const login = await sb.auth.signInWithPassword({ email, password });
       if(login.error) throw login.error;
-      return login.data.user;
+
+      currentUser = login.data.user;
+      return currentUser;
     }
+
     throw error;
   }
 
@@ -611,31 +679,49 @@ async function getOrCreateUser(email,password){
     throw new Error("Account created. Please confirm your email, then login.");
   }
 
-  return data.user;
+  currentUser = data.user;
+  return currentUser;
 }
 
 async function signupWithGoogle(){
-  await sb.auth.signInWithOAuth({
+  const { error } = await sb.auth.signInWithOAuth({
     provider:"google",
     options:{
       redirectTo:`${window.location.origin}/public-signup-payment-page.html`
     }
   });
+
+  if(error){
+    showMsg(error.message, "error");
+  }
 }
 
 form.addEventListener("submit",async(e)=>{
   e.preventDefault();
 
-  msg.className = "msg";
-  msg.innerText = "Creating account...";
+  showMsg("Creating account...");
   payBtn.disabled = true;
   payBtn.innerText = "Processing...";
 
   try{
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if(!email){
+      throw new Error("Email is required.");
+    }
 
     const user = await getOrCreateUser(email,password);
+
+    const existingProfile = await checkExistingProfile(user.id);
+
+    if(existingProfile){
+      showMsg("This account already has a profile. Opening dashboard...", "success");
+      setTimeout(()=>{
+        window.location.href = "/user-dashboard.html";
+      }, 900);
+      return;
+    }
 
     const stageName = document.getElementById("stageName").value.trim();
     const phone = cleanPhone(document.getElementById("phone").value);
@@ -659,7 +745,7 @@ form.addEventListener("submit",async(e)=>{
     const durationDays = Number(durationSelect.value);
     const amount = getAmount();
 
-    if(!stageName || !phone || !email || !gender || !age || !town || !location || !meetingPlace || !preference || !bodyType || !services){
+    if(!stageName || !phone || !gender || !age || !town || !location || !meetingPlace || !preference || !bodyType || !services){
       throw new Error("Please fill all required fields marked with (*).");
     }
 
@@ -684,7 +770,7 @@ form.addEventListener("submit",async(e)=>{
 
     const folder = `${user.id}/${slugify(stageName)}-${Date.now()}`;
 
-    msg.innerText = "Uploading pictures...";
+    showMsg("Uploading pictures...");
 
     const imageUrl = await uploadFile("profile-images",photo1,folder);
     const imageUrl2 = await uploadFile("profile-images",photo2,folder);
@@ -692,7 +778,7 @@ form.addEventListener("submit",async(e)=>{
     const imageUrl4 = photo4 ? await uploadFile("profile-images",photo4,folder) : null;
     const gallery = [imageUrl,imageUrl2,imageUrl3,imageUrl4].filter(Boolean);
 
-    msg.innerText = "Uploading videos...";
+    showMsg("Uploading videos...");
 
     let videoUrl1 = null;
     let videoUrl2 = null;
@@ -711,7 +797,7 @@ form.addEventListener("submit",async(e)=>{
       }
     }
 
-    msg.innerText = "Saving profile...";
+    showMsg("Saving profile...");
 
     const now = new Date().toISOString();
     const expiryDate = addDays(now,durationDays);
@@ -724,7 +810,7 @@ form.addEventListener("submit",async(e)=>{
       stage_name:stageName,
       name:stageName,
       slug:profileSlug,
-      email,
+      email:user.email || email,
       phone,
       whatsapp,
       gender,
@@ -788,7 +874,7 @@ form.addEventListener("submit",async(e)=>{
 
     if(profileError) throw profileError;
 
-    msg.innerText = "Sending M-Pesa prompt...";
+    showMsg("Sending M-Pesa prompt...");
 
     const payRes = await fetch("/.netlify/functions/mpesa-stk-push",{
       method:"POST",
@@ -819,13 +905,15 @@ form.addEventListener("submit",async(e)=>{
       throw new Error(payData.error || payData.message || "Payment failed");
     }
 
-    msg.className = "msg success";
-    msg.innerText = "M-Pesa prompt sent. Check your phone. After payment, login to update your profile anytime.";
+    showMsg("M-Pesa prompt sent. Check your phone. After payment, open your dashboard to update your profile anytime.", "success");
     payBtn.innerText = "Payment Prompt Sent";
 
+    setTimeout(()=>{
+      window.location.href = "/user-dashboard.html";
+    }, 3500);
+
   }catch(error){
-    msg.className = "msg error";
-    msg.innerText = error.message || "Something went wrong.";
+    showMsg(error.message || "Something went wrong.", "error");
 
     payBtn.disabled = false;
     payBtn.innerText = "Create Account, Profile & Pay";
@@ -833,6 +921,7 @@ form.addEventListener("submit",async(e)=>{
 });
 
 applyURLPlan();
+setupSession();
 
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
