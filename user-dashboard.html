@@ -719,6 +719,93 @@ function slugify(text){
     .replace(/^-+|-+$/g,"");
 }
 
+
+/* =========================
+PHASE 1 PRODUCTION PATCH
+Upload validation + image quality scoring
+========================= */
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 60 * 1024 * 1024;
+
+function validateImageFile(file,label){
+  if(!file) return;
+  if(!file.type || !file.type.startsWith("image/")){
+    throw new Error(`${label} must be an image file.`);
+  }
+  if(file.size > MAX_IMAGE_SIZE){
+    throw new Error(`${label} is too large. Maximum image size is 5MB.`);
+  }
+}
+
+function validateVideoFile(file,label){
+  if(!file) return;
+  if(!file.type || !file.type.startsWith("video/")){
+    throw new Error(`${label} must be a video file.`);
+  }
+  if(file.size > MAX_VIDEO_SIZE){
+    throw new Error(`${label} is too large. Maximum video size is 60MB.`);
+  }
+}
+
+function getImageDimensions(file){
+  return new Promise((resolve)=>{
+    if(!file){
+      resolve({width:0,height:0});
+      return;
+    }
+
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve({width:img.naturalWidth || img.width,height:img.naturalHeight || img.height});
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve({width:0,height:0});
+    };
+
+    img.src = objectUrl;
+  });
+}
+
+async function calculateUploadImageQuality(imageFiles,hasVideo){
+  const files = imageFiles.filter(Boolean);
+  let score = 0;
+
+  for(const file of files){
+    const dims = await getImageDimensions(file);
+
+    if(dims.width >= 1080) score += 10;
+    if(dims.height >= 1350) score += 10;
+    if(dims.width >= 1600 || dims.height >= 2000) score += 5;
+    if(file.size >= 500000) score += 5;
+  }
+
+  if(files.length >= 3) score += 20;
+  if(files.length >= 4) score += 10;
+  if(hasVideo) score += 20;
+
+  return Math.min(score,100);
+}
+
+function calculateProfileScore(profile,imageQualityScore){
+  const likes = Number(profile.likes_count || profile.likes || profile.favorites || 0);
+  const views = Number(profile.views_count || profile.views || 0);
+  const boost = Number(profile.boost_score || profile.boost || 0);
+  const verified = profile.verified ? 100 : 0;
+
+  return Math.round(
+    Number(imageQualityScore || 0) * 0.40 +
+    likes * 0.20 +
+    views * 0.15 +
+    boost * 0.15 +
+    verified * 0.10
+  );
+}
+
 async function uploadFile(bucket,file,folder){
   if(!file) return null;
 
@@ -848,6 +935,7 @@ function renderStatus(){
     <span class="badge">${approved}</span>
     <span class="badge">${paid}</span>
     <span class="badge">${expiry}</span>
+    <span class="badge">📸 Quality: ${Number(currentProfile.image_quality_score || 0)}</span>
   `;
 }
 
@@ -973,6 +1061,17 @@ form.addEventListener("submit",async(e)=>{
     const photo4 = document.getElementById("photo4").files[0];
     const video1 = document.getElementById("video1").files[0];
 
+    validateImageFile(photo1,"Main photo");
+    validateImageFile(photo2,"Second photo");
+    validateImageFile(photo3,"Third photo");
+    validateImageFile(photo4,"Fourth photo");
+    validateVideoFile(video1,"Short video / reel");
+
+    const uploadedImageQualityScore = await calculateUploadImageQuality(
+      [photo1,photo2,photo3,photo4],
+      Boolean(video1)
+    );
+
     let imageUrl = currentProfile.image_url || currentProfile.photo_url || null;
     let imageUrl2 = currentProfile.image_url_2 || null;
     let imageUrl3 = currentProfile.image_url_3 || null;
@@ -993,6 +1092,12 @@ form.addEventListener("submit",async(e)=>{
     }
 
     const gallery = [imageUrl,imageUrl2,imageUrl3,imageUrl4].filter(Boolean);
+
+    const existingQualityScore = Number(currentProfile.image_quality_score || 0);
+    const imageQualityScore = uploadedImageQualityScore > 0
+      ? Math.max(existingQualityScore, uploadedImageQualityScore)
+      : existingQualityScore;
+    const profileScore = calculateProfileScore(currentProfile, imageQualityScore);
 
     const stageName = document.getElementById("stageName").value.trim();
 
@@ -1024,6 +1129,9 @@ form.addEventListener("submit",async(e)=>{
       short_url:videoUrl,
       video_url:videoUrl,
       short_video:videoUrl,
+
+      image_quality_score:imageQualityScore,
+      profile_score:profileScore,
 
       updated_at:new Date().toISOString()
     };
