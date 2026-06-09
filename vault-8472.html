@@ -988,23 +988,24 @@ function checkVaultTimeout(){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
-  /* TEMPORARY RECOVERY BYPASS
-     This opens the vault while the proper email/password admin login is repaired. */
+  // TEMPORARY RECOVERY BYPASS: auto-unlock vault while admin email/password is being fixed.
   sessionStorage.setItem("vault_unlocked","true");
   localStorage.setItem("vault_last_activity",String(Date.now()));
 
   const lock = document.getElementById("vaultLock");
   if(lock) lock.style.display = "none";
 
+  document.body.style.overflow = "auto";
   updateVaultActivity();
 
+  // Auto-load the dashboard after all functions have been parsed.
   setTimeout(()=>{
     if(typeof loadProfiles === "function") loadProfiles();
     if(typeof loadDashboardStats === "function") loadDashboardStats();
     if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
     if(typeof loadStaffUsers === "function") loadStaffUsers();
     if(typeof loadAdminContact === "function") loadAdminContact();
-  },600);
+  },500);
 });
 
 ["mousemove","keydown","click","touchstart"].forEach(eventName=>{
@@ -1034,6 +1035,7 @@ async function audit(action,profileId="",profileName="",details=""){
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+window.sb = sb;
 
 const list = document.getElementById("list");
 const statusBox = document.getElementById("status");
@@ -1465,8 +1467,6 @@ async function addProfile(){
       plan_rank: finalPlanRank,
       boost_score: finalBoostScore,
       trending_score: finalTrendingScore,
-    image_quality_score: finalImageQualityScore,
-    profile_score: finalProfileScoreValue,
       image_quality_score: finalImageQualityScore,
       profile_score: finalProfileScoreValue,
       last_active: fromDatetimeLocal(valueOf("last_active")),
@@ -3399,12 +3399,11 @@ document.addEventListener("keydown",(e)=>{
   }
 });
 
-loadAdminContact();
-loadProfiles();
-loadStaffUsers();
-
-loadDashboardStats();
-loadRevenueDashboard();
+if(typeof loadAdminContact === "function") loadAdminContact();
+if(typeof loadProfiles === "function") loadProfiles();
+if(typeof loadStaffUsers === "function") loadStaffUsers();
+if(typeof loadDashboardStats === "function") loadDashboardStats();
+if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
 </script>
 
 </body>
