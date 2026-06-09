@@ -1289,6 +1289,77 @@ AGE GATE
   .age-logo{width:92px;height:92px}
 }
 
+
+/* =========================
+ADMIN HELP CENTER
+========================= */
+.admin-help-section{
+  padding:0 18px 28px;
+}
+
+.admin-help-box{
+  background:linear-gradient(135deg,#07145f,#02083d,#140022);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:30px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 20px 70px rgba(0,0,0,.42);
+}
+
+.admin-help-box h3{
+  color:#ffd54a;
+  font-size:30px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+
+.admin-help-box p{
+  color:#d8d8d8;
+  font-size:14px;
+  line-height:1.8;
+  max-width:800px;
+  margin:auto auto 20px;
+}
+
+.admin-help-buttons{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.admin-help-buttons a{
+  min-height:50px;
+  padding:14px 22px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+}
+
+.admin-call-btn{
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+}
+
+.admin-whatsapp-btn{
+  background:#25D366;
+  color:white;
+}
+
+.admin-email-btn{
+  background:#06b6d4;
+  color:#000;
+}
+
+@media(min-width:1100px){
+  .admin-help-section{
+    padding-left:90px;
+    padding-right:90px;
+  }
+}
+
 </style>
 </head>
 
@@ -1540,6 +1611,26 @@ AGE GATE
       loading="lazy"
       allowfullscreen>
     </iframe>
+  </div>
+</section>
+
+
+<section class="admin-help-section">
+  <div class="admin-help-box">
+
+    <h3>📞 Need Help?</h3>
+
+    <p>
+      Contact Nairobi Sweets Admin for profile approvals, payments, renewals, VIP upgrades,
+      Signature upgrades, and technical support.
+    </p>
+
+    <div class="admin-help-buttons">
+      <a id="adminCallBtn" href="tel:+254143616363" class="admin-call-btn">📞 Call Admin</a>
+      <a id="adminWhatsappBtn" href="https://wa.me/254143616363" target="_blank" rel="noopener" class="admin-whatsapp-btn">💬 WhatsApp Admin</a>
+      <a id="adminEmailBtn" href="mailto:nairobisweets05@gmail.com" class="admin-email-btn">📧 Email Admin</a>
+    </div>
+
   </div>
 </section>
 
@@ -2319,6 +2410,40 @@ if("serviceWorker" in navigator){
   });
 }
 
+
+/* =========================
+ADMIN CONTACT LOADER
+========================= */
+async function loadAdminContact(){
+  try{
+    const { data } = await sb
+      .from("site_settings")
+      .select("admin_name,admin_phone,admin_whatsapp,admin_email")
+      .limit(1)
+      .single();
+
+    if(!data) return;
+
+    const phone = data.admin_phone || "+254143616363";
+    const whatsapp = data.admin_whatsapp || phone || "+254143616363";
+    const email = data.admin_email || "nairobisweets05@gmail.com";
+
+    const cleanWhatsapp = String(whatsapp).replace(/\D/g,"");
+
+    const callBtn = document.getElementById("adminCallBtn");
+    const whatsappBtn = document.getElementById("adminWhatsappBtn");
+    const emailBtn = document.getElementById("adminEmailBtn");
+
+    if(callBtn) callBtn.href = `tel:${phone}`;
+    if(whatsappBtn) whatsappBtn.href = `https://wa.me/${cleanWhatsapp}`;
+    if(emailBtn) emailBtn.href = `mailto:${email}`;
+
+  }catch(error){
+    console.log("Admin contact load failed:", error.message || error);
+  }
+}
+
+loadAdminContact();
 loadProfiles();
 </script>
 
