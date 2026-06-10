@@ -16,58 +16,89 @@ body{
   align-items:center;
   justify-content:center;
   padding:22px;
-  background:radial-gradient(circle at top,#111a65 0%,#030514 48%,#000 100%);
+  background:radial-gradient(circle at top,#151f78 0%,#020514 48%,#000 100%);
   color:#fff;
   font-family:Arial,Helvetica,sans-serif;
 }
 .card{
-  width:min(460px,96vw);
-  background:linear-gradient(180deg,#020a56,#010633);
-  border:1px solid rgba(255,213,74,.18);
+  width:min(480px,96vw);
+  background:linear-gradient(180deg,#06106a,#020735);
+  border:1px solid rgba(255,216,75,.22);
   border-radius:30px;
-  padding:32px;
-  box-shadow:0 0 45px rgba(255,213,74,.12),0 30px 100px rgba(0,0,0,.75);
+  padding:34px;
+  box-shadow:0 0 45px rgba(255,216,75,.14),0 35px 100px rgba(0,0,0,.8);
 }
-.logo{text-align:center;margin-bottom:22px}
+.logo{text-align:center;margin-bottom:20px}
 .logo img{
-  width:92px;height:92px;object-fit:cover;border-radius:26px;
-  box-shadow:0 0 30px rgba(255,140,0,.45);
+  width:92px;
+  height:92px;
+  object-fit:cover;
+  border-radius:26px;
+  box-shadow:0 0 32px rgba(255,140,0,.5);
 }
 h1{
-  color:#ffd54a;
+  color:#ffd84b;
   text-align:center;
-  font-size:34px;
+  font-size:36px;
   margin:14px 0 8px;
 }
-p{
-  color:#d7d7d7;
+.sub{
+  color:#d8dcff;
   text-align:center;
   line-height:1.6;
-  margin-bottom:22px;
+  margin-bottom:24px;
 }
 input{
   width:100%;
   padding:17px;
   border-radius:16px;
-  border:1px solid rgba(255,255,255,.14);
-  background:#08122f;
+  border:1px solid rgba(255,255,255,.15);
+  background:#07122f;
   color:#fff;
   font-size:16px;
   margin-bottom:14px;
   outline:none;
+}
+input:focus{
+  border-color:#ffd84b;
 }
 button{
   width:100%;
   padding:17px;
   border:none;
   border-radius:16px;
-  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
-  color:#000;
   font-size:16px;
   font-weight:900;
   cursor:pointer;
+  margin-top:8px;
 }
-button:disabled{opacity:.65;cursor:not-allowed}
+.login-btn{
+  background:linear-gradient(145deg,#ffd84b,#ff9f1c);
+  color:#000;
+}
+.google-btn{
+  background:#fff;
+  color:#111;
+}
+button:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+}
+.divider{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:#aaa;
+  margin:20px 0 12px;
+  font-size:13px;
+  font-weight:800;
+}
+.divider:before,.divider:after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:rgba(255,255,255,.18);
+}
 .links{
   display:flex;
   justify-content:space-between;
@@ -76,7 +107,7 @@ button:disabled{opacity:.65;cursor:not-allowed}
   flex-wrap:wrap;
 }
 .links a{
-  color:#ffd54a;
+  color:#ffd84b;
   font-size:13px;
   font-weight:900;
   text-decoration:none;
@@ -88,15 +119,15 @@ button:disabled{opacity:.65;cursor:not-allowed}
   font-weight:900;
   line-height:1.5;
 }
-.error{color:#ff6b6b}
-.success{color:#31f29b}
+.error{color:#ff6868}
+.success{color:#35f59c}
 .notice{
   margin-top:18px;
   padding:14px;
   border-radius:16px;
-  background:rgba(255,213,74,.08);
-  border:1px solid rgba(255,213,74,.14);
-  color:#ffd54a;
+  background:rgba(255,216,75,.08);
+  border:1px solid rgba(255,216,75,.14);
+  color:#ffd84b;
   font-size:12px;
   line-height:1.6;
   text-align:center;
@@ -112,12 +143,16 @@ button:disabled{opacity:.65;cursor:not-allowed}
   </div>
 
   <h1>Vault Login</h1>
-  <p>Sign in with your admin email and password.</p>
+  <p class="sub">Sign in with your approved admin account.</p>
 
   <input id="email" type="email" placeholder="Admin Email" autocomplete="email">
   <input id="password" type="password" placeholder="Password" autocomplete="current-password">
 
-  <button id="loginBtn" onclick="loginVault()">Login to Vault</button>
+  <button id="loginBtn" class="login-btn" onclick="loginWithEmail()">Login with Email</button>
+
+  <div class="divider">OR</div>
+
+  <button id="googleBtn" class="google-btn" onclick="loginWithGoogle()">Continue with Google</button>
 
   <div class="links">
     <a href="/reset-password.html">Forgot Password?</a>
@@ -127,25 +162,66 @@ button:disabled{opacity:.65;cursor:not-allowed}
   <div id="msg" class="msg"></div>
 
   <div class="notice">
-    Access is restricted to approved Nairobi Sweets admins only.
+    Access is restricted to active Nairobi Sweets admins only.
   </div>
 </div>
 
 <script>
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+
+const sb = supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 const msg = document.getElementById("msg");
 const loginBtn = document.getElementById("loginBtn");
+const googleBtn = document.getElementById("googleBtn");
 
 function showMessage(text,type="error"){
   msg.textContent = text;
   msg.className = "msg " + type;
 }
 
-async function loginVault(){
+async function verifyAdminAndRedirect(session){
+  if(!session || !session.user){
+    return false;
+  }
+
+  const userId = session.user.id;
+
+  const { data: admin, error } = await sb
+    .from("admin_users")
+    .select("id,name,email,role,is_active,auth_user_id")
+    .eq("auth_user_id", userId)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if(error){
+    showMessage(error.message);
+    return false;
+  }
+
+  if(!admin){
+    await sb.auth.signOut();
+    showMessage("Access denied. This account is not an active admin.");
+    return false;
+  }
+
+  localStorage.setItem("ns_admin_email", admin.email);
+  localStorage.setItem("ns_admin_name", admin.name || admin.email);
+  localStorage.setItem("ns_admin_role", admin.role || "staff");
+
+  showMessage("Login successful. Opening vault...", "success");
+
+  setTimeout(()=>{
+    window.location.href = "/vault-8472.html";
+  },700);
+
+  return true;
+}
+
+async function loginWithEmail(){
   const email = document.getElementById("email").value.trim().toLowerCase();
   const password = document.getElementById("password").value.trim();
 
@@ -168,53 +244,46 @@ async function loginVault(){
       return;
     }
 
-    const userId = data?.user?.id;
-
-    if(!userId){
-      showMessage("Login failed. No user session found.");
-      return;
-    }
-
-    const { data: admin, error: adminError } = await sb
-      .from("admin_users")
-      .select("id,name,email,role,is_active,auth_user_id")
-      .eq("auth_user_id", userId)
-      .eq("is_active", true)
-      .maybeSingle();
-
-    if(adminError){
-      showMessage(adminError.message);
-      await sb.auth.signOut();
-      return;
-    }
-
-    if(!admin){
-      showMessage("Access denied. This email is not an active admin.");
-      await sb.auth.signOut();
-      return;
-    }
-
-    localStorage.setItem("ns_admin_email", admin.email);
-    localStorage.setItem("ns_admin_name", admin.name || admin.email);
-    localStorage.setItem("ns_admin_role", admin.role || "staff");
-
-    showMessage("Login successful. Opening vault...", "success");
-
-    setTimeout(()=>{
-      window.location.href = "/vault-8472.html";
-    },800);
+    await verifyAdminAndRedirect(data.session);
 
   }catch(err){
     showMessage(err.message || "Login failed.");
   }finally{
     loginBtn.disabled = false;
-    loginBtn.textContent = "Login to Vault";
+    loginBtn.textContent = "Login with Email";
+  }
+}
+
+async function loginWithGoogle(){
+  googleBtn.disabled = true;
+  googleBtn.textContent = "Opening Google...";
+
+  const { error } = await sb.auth.signInWithOAuth({
+    provider:"google",
+    options:{
+      redirectTo:"https://nairobi-sweets.com/vault-login.html"
+    }
+  });
+
+  if(error){
+    showMessage(error.message);
+    googleBtn.disabled = false;
+    googleBtn.textContent = "Continue with Google";
+  }
+}
+
+async function checkExistingSession(){
+  const { data:{session} } = await sb.auth.getSession();
+  if(session){
+    await verifyAdminAndRedirect(session);
   }
 }
 
 document.addEventListener("keydown",(e)=>{
-  if(e.key === "Enter") loginVault();
+  if(e.key === "Enter") loginWithEmail();
 });
+
+checkExistingSession();
 </script>
 
 </body>
