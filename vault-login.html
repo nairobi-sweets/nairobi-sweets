@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Vault Login | Nairobi Sweets</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:radial-gradient(circle at top,#111a65 0%,#030514 48%,#000 100%);
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+}
+.card{
+  width:min(460px,96vw);
+  background:linear-gradient(180deg,#020a56,#010633);
+  border:1px solid rgba(255,213,74,.18);
+  border-radius:30px;
+  padding:32px;
+  box-shadow:0 0 45px rgba(255,213,74,.12),0 30px 100px rgba(0,0,0,.75);
+}
+.logo{text-align:center;margin-bottom:22px}
+.logo img{
+  width:92px;height:92px;object-fit:cover;border-radius:26px;
+  box-shadow:0 0 30px rgba(255,140,0,.45);
+}
+h1{
+  color:#ffd54a;
+  text-align:center;
+  font-size:34px;
+  margin:14px 0 8px;
+}
+p{
+  color:#d7d7d7;
+  text-align:center;
+  line-height:1.6;
+  margin-bottom:22px;
+}
+input{
+  width:100%;
+  padding:17px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:#08122f;
+  color:#fff;
+  font-size:16px;
+  margin-bottom:14px;
+  outline:none;
+}
+button{
+  width:100%;
+  padding:17px;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+}
+button:disabled{opacity:.65;cursor:not-allowed}
+.links{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:16px;
+  flex-wrap:wrap;
+}
+.links a{
+  color:#ffd54a;
+  font-size:13px;
+  font-weight:900;
+  text-decoration:none;
+}
+.msg{
+  margin-top:16px;
+  min-height:24px;
+  text-align:center;
+  font-weight:900;
+  line-height:1.5;
+}
+.error{color:#ff6b6b}
+.success{color:#31f29b}
+.notice{
+  margin-top:18px;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(255,213,74,.08);
+  border:1px solid rgba(255,213,74,.14);
+  color:#ffd54a;
+  font-size:12px;
+  line-height:1.6;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <div class="logo">
+    <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets">
+  </div>
+
+  <h1>Vault Login</h1>
+  <p>Sign in with your admin email and password.</p>
+
+  <input id="email" type="email" placeholder="Admin Email" autocomplete="email">
+  <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+
+  <button id="loginBtn" onclick="loginVault()">Login to Vault</button>
+
+  <div class="links">
+    <a href="/reset-password.html">Forgot Password?</a>
+    <a href="/">Back to Site</a>
+  </div>
+
+  <div id="msg" class="msg"></div>
+
+  <div class="notice">
+    Access is restricted to approved Nairobi Sweets admins only.
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const msg = document.getElementById("msg");
+const loginBtn = document.getElementById("loginBtn");
+
+function showMessage(text,type="error"){
+  msg.textContent = text;
+  msg.className = "msg " + type;
+}
+
+async function loginVault(){
+  const email = document.getElementById("email").value.trim().toLowerCase();
+  const password = document.getElementById("password").value.trim();
+
+  if(!email || !password){
+    showMessage("Enter email and password.");
+    return;
+  }
+
+  loginBtn.disabled = true;
+  loginBtn.textContent = "Checking...";
+
+  try{
+    const { data, error } = await sb.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if(error){
+      showMessage(error.message);
+      return;
+    }
+
+    const userId = data?.user?.id;
+
+    if(!userId){
+      showMessage("Login failed. No user session found.");
+      return;
+    }
+
+    const { data: admin, error: adminError } = await sb
+      .from("admin_users")
+      .select("id,name,email,role,is_active,auth_user_id")
+      .eq("auth_user_id", userId)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if(adminError){
+      showMessage(adminError.message);
+      await sb.auth.signOut();
+      return;
+    }
+
+    if(!admin){
+      showMessage("Access denied. This email is not an active admin.");
+      await sb.auth.signOut();
+      return;
+    }
+
+    localStorage.setItem("ns_admin_email", admin.email);
+    localStorage.setItem("ns_admin_name", admin.name || admin.email);
+    localStorage.setItem("ns_admin_role", admin.role || "staff");
+
+    showMessage("Login successful. Opening vault...", "success");
+
+    setTimeout(()=>{
+      window.location.href = "/vault-8472.html";
+    },800);
+
+  }catch(err){
+    showMessage(err.message || "Login failed.");
+  }finally{
+    loginBtn.disabled = false;
+    loginBtn.textContent = "Login to Vault";
+  }
+}
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key === "Enter") loginVault();
+});
+</script>
+
+</body>
+</html>
