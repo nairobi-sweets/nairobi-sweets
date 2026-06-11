@@ -1,0 +1,3392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Nairobi Sweets Vault</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000814;color:#fff;font-family:Arial,Helvetica,sans-serif;padding-bottom:40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:26px;background:#000;border-bottom:1px solid rgba(255,213,74,.18);position:sticky;top:0;z-index:50}
+h1{color:#ffd54a;font-size:42px;font-weight:900}
+button{border:none;cursor:pointer;font-weight:900}
+.refresh{background:#ffd54a;color:#000;border-radius:16px;padding:16px 28px;font-size:16px}
+.wrap{padding:28px}
+.panel{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:28px;padding:28px;margin-bottom:28px}
+h2{font-size:28px;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+input,select,textarea{width:100%;background:#08122f;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;font-size:16px}
+textarea{grid-column:1/-1;min-height:120px}
+.filebox{background:#08122f;border:1px dashed rgba(255,213,74,.25);border-radius:16px;padding:16px}
+.filebox label{display:block;color:#ffd54a;font-weight:900;margin-bottom:10px}
+.checkrow{display:flex;align-items:center;gap:12px;background:#08122f;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px}
+.checkrow input{width:auto}
+.add{background:#22c55e;color:#000;border-radius:16px;padding:16px 28px;margin-top:18px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.card{background:linear-gradient(180deg,#020a56,#010633);border-radius:24px;overflow:hidden;border:1px solid rgba(255,213,74,.1)}
+.card img,.card video{width:100%;height:240px;object-fit:cover;background:#020617}
+.body{padding:16px}
+.name{font-size:22px;font-weight:900;color:#ffd54a;margin-bottom:8px}
+.meta{font-size:14px;color:#ddd;line-height:1.6;word-break:break-word}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tags span{background:rgba(255,213,74,.13);color:#ffd54a;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900}
+.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
+.approve{background:#22c55e;color:#000;border-radius:12px;padding:12px}
+.unapprove{background:#ffd54a;color:#000;border-radius:12px;padding:12px}
+.delete{background:#ef4444;color:#fff;border-radius:12px;padding:12px}
+.verify-btn{background:linear-gradient(145deg,#0ea5e9,#22d3ee);color:#00111f;border-radius:12px;padding:12px}
+.unverify-btn{background:linear-gradient(145deg,#64748b,#334155);color:#fff;border-radius:12px;padding:12px}
+.verified-chip{display:inline-block;background:linear-gradient(145deg,#0ea5e9,#22d3ee);color:#00111f;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.unverified-chip{display:inline-block;background:rgba(148,163,184,.16);color:#cbd5e1;border:1px solid rgba(148,163,184,.24);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.verification-note{grid-column:1/-1;background:rgba(14,165,233,.09);border:1px solid rgba(14,165,233,.18);border-radius:16px;padding:14px;color:#7dd3fc;font-size:13px;font-weight:900;line-height:1.5}
+
+.boost-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#ff7a18,#ffd54a);color:#000;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.boost-hot-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#ef4444,#f97316);color:#fff;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.pin-top-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#ffd54a,#a855f7);color:#000;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.reset-boost-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#64748b,#111827);color:#fff;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.boost-control-strip{margin-top:12px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.boost-control-strip button{border-radius:14px;padding:12px;font-size:13px;font-weight:950}
+.boost-chip{display:inline-block;background:linear-gradient(145deg,#ff7a18,#ffd54a);color:#000;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.pinned-chip{display:inline-block;background:linear-gradient(145deg,#ffd54a,#a855f7);color:#000;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+
+
+.quality-chip{display:inline-block;background:linear-gradient(145deg,#7dffcf,#22d3ee);color:#00111f;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.score-chip{display:inline-block;background:linear-gradient(145deg,#a855f7,#ec4899);color:#fff;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.quality-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#7dffcf,#22d3ee);color:#00111f;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.quality-panel{grid-column:1/-1;background:rgba(125,255,207,.08);border:1px solid rgba(125,255,207,.18);border-radius:16px;padding:14px;color:#7dffcf;font-size:13px;font-weight:900;line-height:1.5}
+.diagnostics-box{margin-top:12px;background:rgba(0,0,0,.25);border:1px solid rgba(125,255,207,.14);border-radius:14px;padding:12px;color:#dff;font-size:12px;font-weight:900;line-height:1.6}
+
+.edit-btn{width:100%;margin-top:14px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:14px;padding:14px;font-size:15px;box-shadow:0 10px 25px rgba(255,180,0,.25)}
+.status{margin-top:14px;color:#ffd54a;font-weight:900;min-height:24px}
+.small{font-size:12px;color:#aaa;margin-top:8px}
+.preview{margin-top:14px;display:grid;grid-template-columns:120px 120px;gap:14px}
+.preview img,.preview video{width:120px;height:120px;object-fit:cover;border-radius:16px;background:#020617;border:1px solid rgba(255,213,74,.15)}
+
+.edit-modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:999999;padding:20px}
+.edit-box{width:min(720px,95vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:28px;padding:24px}
+.edit-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.edit-top h2{color:#ffd54a;font-size:28px;margin:0}
+.edit-top button{background:none;color:white;border:none;font-size:28px}
+.edit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.edit-box textarea{grid-column:1/-1}
+.save-edit{width:100%;background:#22c55e;color:#000;border-radius:16px;padding:16px;font-size:16px;margin-top:10px}
+.close-edit{width:100%;background:#ef4444;color:white;border-radius:16px;padding:14px;font-size:15px;margin-top:10px}
+.rank-help{grid-column:1/-1;background:rgba(255,213,74,.09);border:1px solid rgba(255,213,74,.18);border-radius:16px;padding:14px;color:#ffd54a;font-size:13px;font-weight:900;line-height:1.5}
+.signature-help{grid-column:1/-1;background:linear-gradient(135deg,rgba(255,213,74,.13),rgba(168,85,247,.13));border:1px solid rgba(255,213,74,.22);border-radius:18px;padding:16px;color:#ffd54a;font-size:13px;font-weight:900;line-height:1.6}
+.signature-chip{display:inline-block;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.hero-chip{display:inline-block;background:linear-gradient(145deg,#a855f7,#ec4899);color:#fff;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;margin-top:8px}
+.signature-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#ffd54a,#a855f7);color:#000;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+
+.renew-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#00e676,#00a152);color:#000;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.whatsapp-reminder-btn{width:100%;margin-top:10px;background:linear-gradient(145deg,#25D366,#128C7E);color:#fff;border-radius:14px;padding:14px;font-size:15px;font-weight:900}
+.trial-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.trial-row select{padding:12px;border-radius:14px;background:#08122f;color:white;border:1px solid rgba(255,255,255,.14);font-weight:900}
+.trial-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:14px;padding:12px 14px;font-size:14px;font-weight:900}
+.bulk-trial-card{border:1px solid rgba(255,213,74,.25);box-shadow:0 0 34px rgba(255,213,74,.08),0 18px 50px rgba(0,0,0,.35)}
+.bulk-trial-actions{display:grid;grid-template-columns:1.3fr 1fr auto;gap:14px;align-items:center}
+.bulk-trial-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:16px;padding:16px 22px;font-size:16px;font-weight:900}
+.bulk-trial-note{grid-column:1/-1;color:#ffd54a;background:rgba(255,213,74,.08);border:1px solid rgba(255,213,74,.14);border-radius:16px;padding:14px;font-size:13px;font-weight:900;line-height:1.5}
+@media(max-width:900px){.bulk-trial-actions{grid-template-columns:1fr}}
+
+.membership-control-card{border:1px solid rgba(34,197,94,.25);box-shadow:0 0 34px rgba(34,197,94,.08),0 18px 50px rgba(0,0,0,.35)}
+.membership-control-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.membership-control-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.membership-control-actions button{border:0;border-radius:16px;padding:16px 18px;font-size:15px;font-weight:950;cursor:pointer}
+.membership-control-actions .trial{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.membership-control-actions .approve{background:linear-gradient(145deg,#22c55e,#06b6d4);color:#fff}
+.membership-control-actions .expire{background:linear-gradient(145deg,#ef4444,#ec4899);color:#fff}
+.membership-control-actions .refresh-mini{background:linear-gradient(145deg,#06b6d4,#2563eb);color:#fff}
+.membership-control-note{color:#ffd54a;background:rgba(255,213,74,.08);border:1px solid rgba(255,213,74,.14);border-radius:16px;padding:14px;font-size:13px;font-weight:900;line-height:1.5;margin-top:14px}
+@media(max-width:900px){.membership-control-grid,.membership-control-actions{grid-template-columns:1fr}}
+
+.admin-contact-card{border:1px solid rgba(34,211,238,.28);box-shadow:0 0 34px rgba(34,211,238,.08),0 18px 50px rgba(0,0,0,.35)}
+.admin-contact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:center}
+.admin-contact-card input{background:#08122f;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;font-size:15px}
+.admin-contact-btn{background:linear-gradient(145deg,#06b6d4,#22d3ee);color:#000;border-radius:16px;padding:16px 22px;font-size:16px;font-weight:900}
+.admin-contact-note{margin-top:14px;color:#22d3ee;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.14);border-radius:16px;padding:14px;font-size:13px;font-weight:900;line-height:1.5}
+.admin-contact-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+.admin-contact-actions a{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:12px 16px;text-decoration:none;font-weight:900}
+@media(max-width:900px){.admin-contact-grid{grid-template-columns:1fr}}
+.trial-chip{display:inline-block;margin-top:8px;padding:8px 10px;border-radius:999px;background:rgba(255,213,74,.16);color:#ffd54a;font-weight:900;font-size:12px}
+.extend-btn{background:#06b6d4;color:#000;border-radius:12px;padding:12px}
+.paid-btn{background:#22c55e;color:#000;border-radius:12px;padding:12px}
+.expire-btn{background:#f59e0b;color:#000;border-radius:12px;padding:12px}
+.expiry-pill{display:inline-block;margin-top:8px;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px}
+.expiry-active{background:rgba(34,197,94,.16);color:#22c55e}
+.expiry-expired{background:rgba(239,68,68,.16);color:#ff6b6b}
+.expiry-soon{background:rgba(245,158,11,.16);color:#fbbf24}
+
+.analytics-strip{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+.analytics-pill{
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,213,74,.14);
+  border-radius:12px;
+  padding:10px;
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+}
+.analytics-pill strong{
+  color:#ffd54a;
+  font-size:18px;
+  display:block;
+  margin-top:3px;
+}
+
+
+.searchbar{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr auto;
+  gap:12px;
+  margin-bottom:22px;
+}
+.searchbar input,
+.searchbar select{
+  background:#08122f;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  padding:16px;
+  font-size:15px;
+}
+.search-count{
+  color:#ffd54a;
+  font-weight:900;
+  margin-bottom:16px;
+}
+.search-reset{
+  background:#ef4444;
+  color:#fff;
+  border-radius:16px;
+  padding:14px 18px;
+}
+@media(max-width:900px){
+  .searchbar{grid-template-columns:1fr}
+}
+
+
+.dashboard-stats{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:16px;
+  padding:22px 28px 0;
+  background:#000814;
+}
+.stat-card{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:24px;
+  padding:22px;
+  box-shadow:0 18px 50px rgba(0,0,0,.35);
+}
+.stat-card h3{
+  color:#aaa;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin-bottom:10px;
+}
+.stat-card div{
+  color:#ffd54a;
+  font-size:30px;
+  font-weight:900;
+}
+.header-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.header-link{
+  background:#06b6d4;
+  color:#000;
+  border-radius:16px;
+  padding:16px 22px;
+  font-size:16px;
+  font-weight:900;
+  text-decoration:none;
+}
+
+
+
+.media-lock{
+  position:relative;
+  overflow:hidden;
+}
+
+.media-lock img,
+.media-lock video{
+  width:100%;
+  height:240px;
+  object-fit:cover;
+  background:#020617;
+  user-select:none;
+  -webkit-user-drag:none;
+  display:block;
+}
+
+.ns-watermark{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+  z-index:30;
+  color:#ffd54a;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:1px;
+  opacity:.78;
+  pointer-events:none;
+  text-shadow:0 0 10px rgba(0,0,0,.95);
+  background:rgba(0,0,0,.58);
+  border:1px solid rgba(255,213,74,.35);
+  padding:8px 12px;
+  border-radius:999px;
+  backdrop-filter:blur(6px);
+}
+
+.ns-watermark-center{
+  position:absolute;
+  top:50%;
+  left:50%;
+  z-index:29;
+  transform:translate(-50%,-50%) rotate(-25deg);
+  font-size:32px;
+  font-weight:900;
+  color:#ffd54a;
+  opacity:.18;
+  pointer-events:none;
+  white-space:nowrap;
+  text-shadow:0 0 15px rgba(0,0,0,.95);
+}
+
+
+
+/* =========================
+REVENUE DASHBOARD UPGRADE
+========================= */
+.revenue-dashboard-grid{
+  grid-template-columns:repeat(6,1fr);
+}
+
+.revenue-gold{
+  border-color:rgba(255,213,74,.35);
+  box-shadow:0 0 30px rgba(255,213,74,.12),0 18px 50px rgba(0,0,0,.35);
+}
+
+.revenue-panels{
+  display:grid;
+  grid-template-columns:1.3fr 1fr 1fr;
+  gap:18px;
+  padding:22px 28px 0;
+  background:#000814;
+}
+
+.revenue-card{
+  background:linear-gradient(180deg,#020a56,#010633);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:24px;
+  padding:22px;
+  min-height:260px;
+  box-shadow:0 18px 50px rgba(0,0,0,.35);
+}
+
+.revenue-card-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.revenue-card-head h2{
+  color:#ffd54a;
+  font-size:22px;
+  margin:0;
+  line-height:1.1;
+}
+
+.revenue-card-head span{
+  color:#aaa;
+  font-size:12px;
+  font-weight:900;
+  text-align:right;
+}
+
+.revenue-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.revenue-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:12px;
+  align-items:center;
+  background:rgba(0,0,0,.30);
+  border:1px solid rgba(255,213,74,.10);
+  border-radius:16px;
+  padding:12px;
+}
+
+.revenue-rank{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  font-size:13px;
+  font-weight:900;
+}
+
+.revenue-title{
+  color:#fff;
+  font-size:14px;
+  font-weight:900;
+  line-height:1.3;
+}
+
+.revenue-sub{
+  color:#aaa;
+  font-size:12px;
+  line-height:1.45;
+  margin-top:4px;
+}
+
+.revenue-amount{
+  color:#ffd54a;
+  font-size:14px;
+  font-weight:900;
+  text-align:right;
+  white-space:nowrap;
+}
+
+.revenue-empty{
+  padding:18px;
+  color:#ffd54a;
+  background:rgba(255,213,74,.08);
+  border:1px solid rgba(255,213,74,.12);
+  border-radius:16px;
+  font-weight:900;
+}
+
+@media(max-width:1200px){
+  .revenue-dashboard-grid{grid-template-columns:repeat(3,1fr)}
+  .revenue-panels{grid-template-columns:1fr}
+}
+
+@media(max-width:700px){
+  .revenue-dashboard-grid{grid-template-columns:1fr}
+  .revenue-panels{padding:18px;grid-template-columns:1fr}
+}
+
+@media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}.dashboard-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid,.dashboard-stats{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.dashboard-stats{padding:18px}}
+</style>
+</head>
+
+<body>
+
+<!-- Vault password overlay removed. Access is now handled by Supabase Auth via /vault-login.html. -->
+
+<header>
+  <h1>Nairobi Sweets Vault</h1>
+  <div class="header-actions">
+    <a class="header-link" href="/vault-analytics.html">📊 Analytics</a>
+    <button class="refresh" onclick="loadProfiles();loadDashboardStats();loadRevenueDashboard();">Refresh</button>
+    <button class="refresh" onclick="runAutoRenewNow()" style="background:#22c55e;color:#000">Auto-Renew Now</button>
+    <button class="refresh" onclick="logoutVault()" style="background:#ef4444;color:white">Logout</button>
+  </div>
+</header>
+
+<section class="dashboard-stats revenue-dashboard-grid" id="dashboardStats">
+  <div class="stat-card">
+    <h3>Total Profiles</h3>
+    <div id="statTotal">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Active Profiles</h3>
+    <div id="statActive">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Trial Profiles</h3>
+    <div id="statTrial">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Pending Profiles</h3>
+    <div id="statPending">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Paid Profiles</h3>
+    <div id="statPaid">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Expired Profiles</h3>
+    <div id="statExpired">0</div>
+  </div>
+
+  <div class="stat-card revenue-gold">
+    <h3>Total Revenue Estimate</h3>
+    <div id="statRevenue">KES 0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Today's Revenue</h3>
+    <div id="statTodayRevenue">KES 0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Featured</h3>
+    <div id="statFeatured">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>VIP</h3>
+    <div id="statVip">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>VIP+</h3>
+    <div id="statVipPlus">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Signature</h3>
+    <div id="statSignature">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Verified Profiles</h3>
+    <div id="statVerified">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Hero Billboards</h3>
+    <div id="statHero">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Expiring Soon</h3>
+    <div id="statExpiringSoon">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Weekly Potential</h3>
+    <div id="statWeeklyPotential">KES 0</div>
+  </div>
+  <div class="stat-card">
+    <h3>Boosted Profiles</h3>
+    <div id="statBoosted">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Pinned Top</h3>
+    <div id="statPinnedTop">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>HD Quality Profiles</h3>
+    <div id="statHDQuality">0</div>
+  </div>
+
+  <div class="stat-card">
+    <h3>Avg Quality Score</h3>
+    <div id="statAvgQuality">0</div>
+  </div>
+
+</section>
+
+<section class="panel membership-control-card">
+  <h2>🧭 Membership Control Center</h2>
+
+  <div class="membership-control-grid">
+    <select id="membershipTrialPlan">
+      <option value="all">All Categories</option>
+      <option value="featured">Featured Only</option>
+      <option value="vip">VIP Only</option>
+      <option value="vip-plus">VIP+ Only</option>
+      <option value="signature">Signature Only</option>
+    </select>
+
+    <select id="membershipTrialDays">
+      <option value="3">3 Days Trial</option>
+      <option value="7">7 Days Trial</option>
+      <option value="15">15 Days Trial</option>
+      <option value="30">30 Days Trial</option>
+    </select>
+  </div>
+
+  <div class="membership-control-actions">
+    <button class="trial" onclick="giveMembershipControlTrial()">🎁 Give Category Trial</button>
+    <button class="approve" onclick="approveAllTrialProfiles()">✅ Approve All Trials</button>
+    <button class="expire" onclick="expireEndedTrialProfiles()">⛔ Expire Ended Trials</button>
+    <button class="refresh-mini" onclick="loadProfiles();loadDashboardStats();loadRevenueDashboard();">🔄 Refresh Center</button>
+  </div>
+
+  <div class="membership-control-note">
+    Use this command center to activate 3, 7, 15 or 30 day trials by category, approve all trial profiles, and cleanly expire trials whose countdown has ended.
+  </div>
+
+  <div class="status" id="membershipControlStatus"></div>
+</section>
+
+<section class="revenue-panels" id="revenueInsights">
+  <div class="revenue-card">
+    <div class="revenue-card-head">
+      <h2>📈 Top Viewed Profiles</h2>
+      <span>Views, WhatsApp, Calls</span>
+    </div>
+    <div id="topProfilesList" class="revenue-list">
+      <div class="revenue-empty">Loading top profiles...</div>
+    </div>
+  </div>
+
+  <div class="revenue-card">
+    <div class="revenue-card-head">
+      <h2>⏰ Expiring This Week</h2>
+      <span>Renew before they disappear</span>
+    </div>
+    <div id="expiringProfilesList" class="revenue-list">
+      <div class="revenue-empty">Loading expiring profiles...</div>
+    </div>
+  </div>
+
+  <div class="revenue-card">
+    <div class="revenue-card-head">
+      <h2>💰 Plan Revenue</h2>
+      <span>Plan counts and weekly value</span>
+    </div>
+    <div id="planRevenueList" class="revenue-list">
+      <div class="revenue-empty">Loading plan revenue...</div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+
+<section class="panel admin-contact-card">
+  <h2>📞 Admin Contact Center</h2>
+
+  <div class="admin-contact-grid">
+    <input id="adminName" placeholder="Admin Name">
+    <input id="adminPhone" placeholder="Admin Phone e.g. +254143616363">
+    <input id="adminWhatsapp" placeholder="Admin WhatsApp e.g. +254143616363">
+    <input id="adminEmail" placeholder="Admin Email">
+  </div>
+
+  <div class="admin-contact-actions">
+    <button class="admin-contact-btn" onclick="saveAdminContact()">💾 Save Admin Contact</button>
+    <button class="admin-contact-btn" onclick="copyAdminPhone()" style="background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;">📋 Copy Phone</button>
+    <a id="adminWhatsappPreview" href="#" target="_blank" rel="noopener">💬 Test WhatsApp</a>
+    <a id="adminCallPreview" href="#">📞 Test Call</a>
+    <a id="adminEmailPreview" href="#">✉️ Test Email</a>
+  </div>
+
+  <div class="admin-contact-note">
+    Change the main Nairobi Sweets admin contact from here. These details can be reused on homepage, signup, login, dashboard and profile pages.
+  </div>
+
+  <div class="status" id="adminContactStatus"></div>
+</section>
+
+<section class="panel bulk-trial-card">
+  <h2>🎁 Bulk Trial Activation</h2>
+
+  <div class="bulk-trial-actions">
+    <select id="bulkTrialPlan">
+      <option value="all">All Categories</option>
+      <option value="featured">Featured Only</option>
+      <option value="vip">VIP Only</option>
+      <option value="vip-plus">VIP+ Only</option>
+      <option value="signature">Signature Only</option>
+    </select>
+
+    <select id="bulkTrialDays">
+      <option value="3">3 Days Trial</option>
+      <option value="7">7 Days Trial</option>
+      <option value="15">15 Days Trial</option>
+      <option value="30">30 Days Trial</option>
+    </select>
+
+    <button class="bulk-trial-btn" onclick="giveBulkTrial()">🎁 Give Trial</button>
+
+    <div class="bulk-trial-note">
+      Choose a category and duration, then activate trial for every matching profile at once. This sets profiles live, marks payment as trial, and starts the expiry timer.
+    </div>
+  </div>
+
+  <div class="status" id="bulkTrialStatus"></div>
+</section>
+
+<section class="panel bulk-trial-card">
+  <h2>✨ Image Quality Command Center</h2>
+  <div class="quality-panel">
+    Recalculate image quality and final ranking score using: 40% Image Quality, 20% Likes, 15% Views, 15% Boost, 10% Verification.
+  </div>
+  <button class="quality-btn" onclick="recalculateAllQualityScores()">✨ Recalculate All Quality Scores</button>
+  <div class="status" id="qualityBulkStatus"></div>
+</section>
+
+
+<section class="panel">
+<h2>Add New Profile</h2>
+
+<div class="grid">
+  <input id="stage_name" placeholder="Stage name">
+  <input id="phone" placeholder="Phone">
+  <input id="location" placeholder="Location">
+  <input id="age" placeholder="Age">
+  <input id="photo_url" placeholder="Photo URL">
+  <input id="video_url" placeholder="Existing Reel / Video Public URL">
+  <input id="slug" placeholder="SEO slug, auto if empty">
+  <input id="availability" placeholder="Availability e.g. Online Now">
+  <input id="languages" placeholder="Languages e.g. English, Swahili">
+  <input id="nationality" placeholder="Nationality">
+  <input id="orientation" placeholder="Orientation">
+  <input id="height" placeholder="Height">
+  <input id="incall_price" placeholder="Incall price">
+  <input id="outcall_price" placeholder="Outcall price">
+  <input id="services" placeholder="Services tags, comma separated">
+
+  <select id="plan">
+    <option value="featured">Featured</option>
+    <option value="vip">VIP</option>
+    <option value="vip-plus">VIP+</option>
+    <option value="vvip">VVIP</option>
+    <option value="signature">Signature</option>
+  </select>
+
+  <label class="checkrow"><input type="checkbox" id="is_signature"> Signature Billboard</label>
+  <input id="signature_position" type="number" value="999" placeholder="Signature Position, 1 is first">
+  <input id="signature_banner_url" placeholder="Signature Banner Image URL, optional">
+  <label class="checkrow"><input type="checkbox" id="homepage_featured"> Homepage Hero Billboard</label>
+  <input id="homepage_featured_position" type="number" value="999" placeholder="Hero Position, 1 is first">
+  <input id="revenue_plan_price" type="number" value="1000" placeholder="Plan Price KES">
+  <div class="signature-help">Signature/VVIP appears in the homepage billboard slider. Use signature_position 1, 2, 3 to control order. Banner URL overrides normal photo.</div>
+
+  <input id="likes_count" type="number" value="0" placeholder="Likes">
+  <input id="views_count" type="number" value="0" placeholder="Views">
+  <input id="plan_rank" type="number" value="2" placeholder="Plan rank">
+  <input id="boost_score" type="number" value="100" placeholder="Boost score">
+  <input id="trending_score" type="number" value="0" placeholder="Trending score">
+  <input id="image_quality_score" type="number" value="50" placeholder="Image Quality Score">
+  <input id="profile_score" type="number" value="0" placeholder="Final Profile Score">
+  <input id="last_active" type="datetime-local" placeholder="Last active">
+  <input id="plan_started_at" type="datetime-local" placeholder="Plan started">
+  <input id="plan_expires_at" type="datetime-local" placeholder="Plan expires">
+
+  <select id="payment_status">
+    <option value="unpaid">Unpaid</option>
+    <option value="paid">Paid</option>
+    <option value="pending">Pending</option>
+    <option value="expired">Expired</option>
+  </select>
+
+  <label class="checkrow"><input type="checkbox" id="is_expired"> Expired</label>
+
+  <div class="rank-help">Ranking guide: Signature/VVIP rank 4, VIP rank 3, Featured rank 2. Higher boost + trending = higher homepage position.</div>
+
+  <label class="checkrow"><input type="checkbox" id="verified"> Verified</label>
+  <label class="checkrow"><input type="checkbox" id="featured"> Featured</label>
+  <input id="verification_note" placeholder="Verification note, optional">
+  <div class="verification-note">Verification Center: tick Verified for trusted profiles. Verified profiles get a trust badge and ranking boost.</div>
+
+  <div class="filebox">
+    <label>Upload Profile Photo</label>
+    <input type="file" id="photoUpload" accept="image/*">
+    <div class="small">Bucket: profile-images</div>
+  </div>
+
+  <div class="filebox">
+    <label>Upload Reel Video</label>
+    <input type="file" id="reelUpload" accept="video/mp4,video/webm,video/quicktime">
+    <div class="small">Bucket: profile-videos</div>
+  </div>
+
+  <textarea id="bio" placeholder="Short bio / description"></textarea>
+  <textarea id="about" placeholder="Full premium about section"></textarea>
+</div>
+
+<div class="preview" id="preview"></div>
+<button class="add" onclick="addProfile()">Add Profile</button>
+<div class="status" id="status"></div>
+</section>
+
+<section class="panel">
+<h2>Profiles</h2>
+
+<div class="searchbar">
+  <input id="vaultSearch" placeholder="Search name, phone, location, plan, slug, services..." oninput="renderProfiles()">
+
+  <select id="vaultPlanFilter" onchange="renderProfiles()">
+    <option value="">All Plans</option>
+    <option value="featured">Featured</option>
+    <option value="vip">VIP</option>
+    <option value="vip-plus">VIP+</option>
+    <option value="vvip">VVIP</option>
+    <option value="signature">Signature</option>
+  </select>
+
+  <select id="vaultStatusFilter" onchange="renderProfiles()">
+    <option value="">All Payment</option>
+    <option value="paid">Paid</option>
+    <option value="unpaid">Unpaid</option>
+    <option value="pending">Pending</option>
+    <option value="expired">Expired</option>
+  </select>
+
+  <select id="vaultApprovalFilter" onchange="renderProfiles()">
+    <option value="">All Approval</option>
+    <option value="approved">Approved</option>
+    <option value="hidden">Hidden</option>
+    <option value="verified">Verified</option>
+    <option value="featured">Featured Only</option>
+    <option value="expired">Expired Only</option>
+  </select>
+
+  <button class="search-reset" onclick="resetVaultSearch()">Reset</button>
+</div>
+
+<div class="search-count" id="vaultSearchCount">Showing profiles...</div>
+<div class="cards" id="list"></div>
+</section>
+
+<section class="panel" id="staffPanel">
+<h2>👥 Staff Management</h2>
+<div class="rank-help">Staff Management uses the new role login token. Owner can manage staff. Manager can manage profiles. Staff can approve/view only.</div>
+<div class="grid">
+  <input id="staff_name" placeholder="Staff name">
+  <input id="staff_email" placeholder="Staff email">
+  <input id="staff_password" type="password" placeholder="Password, minimum 8 characters">
+  <select id="staff_role">
+    <option value="staff">Staff</option>
+    <option value="manager">Manager</option>
+    <option value="owner">Owner</option>
+  </select>
+</div>
+<button class="add" onclick="createStaffUser()">Create Staff</button>
+<div class="status" id="staffStatus"></div>
+<div class="cards" id="staffList" style="margin-top:22px"></div>
+</section>
+
+
+</div>
+
+<div class="edit-modal" id="editModal">
+  <div class="edit-box">
+    <div class="edit-top">
+      <h2>Edit Profile</h2>
+      <button onclick="closeEditModal()">✕</button>
+    </div>
+
+    <div class="edit-grid">
+      <input id="edit_stage_name" placeholder="Stage name">
+      <input id="edit_phone" placeholder="Phone">
+      <input id="edit_location" placeholder="Location">
+      <input id="edit_age" placeholder="Age">
+      <input id="edit_photo_url" placeholder="Photo URL">
+
+      <div class="filebox">
+        <label>Change Profile Picture</label>
+        <input type="file" id="editPhotoUpload" accept="image/*">
+        <div class="small">Uploads to profile-images bucket</div>
+      </div>
+
+      <div class="preview" id="editPreview"></div>
+      <input id="edit_video_url" placeholder="Video URL">
+
+      <div class="filebox">
+        <label>Change Reel / Video</label>
+        <input type="file" id="editReelUpload" accept="video/mp4,video/webm,video/quicktime">
+        <div class="small">Uploads to profile-videos bucket</div>
+      </div>
+
+      <div class="preview" id="editReelPreview"></div>
+      <input id="edit_slug" placeholder="SEO slug">
+      <input id="edit_availability" placeholder="Availability">
+      <input id="edit_languages" placeholder="Languages">
+      <input id="edit_nationality" placeholder="Nationality">
+      <input id="edit_orientation" placeholder="Orientation">
+      <input id="edit_height" placeholder="Height">
+      <input id="edit_incall_price" placeholder="Incall price">
+      <input id="edit_outcall_price" placeholder="Outcall price">
+      <input id="edit_services" placeholder="Services, comma separated">
+
+      <select id="edit_plan">
+        <option value="featured">Featured</option>
+        <option value="vip">VIP</option>
+        <option value="vip-plus">VIP+</option>
+        <option value="vvip">VVIP</option>
+        <option value="signature">Signature</option>
+      </select>
+
+      <label class="checkrow"><input type="checkbox" id="edit_is_signature"> Signature Billboard</label>
+      <input id="edit_signature_position" type="number" placeholder="Signature Position, 1 is first">
+      <input id="edit_signature_banner_url" placeholder="Signature Banner Image URL, optional">
+      <label class="checkrow"><input type="checkbox" id="edit_homepage_featured"> Homepage Hero Billboard</label>
+      <input id="edit_homepage_featured_position" type="number" placeholder="Hero Position, 1 is first">
+      <input id="edit_revenue_plan_price" type="number" placeholder="Plan Price KES">
+      <div class="signature-help">Billboard control: Signature/VVIP appears on homepage Signature slider. Use a poster URL in Signature Banner URL for the clean advert image.</div>
+
+      <input id="edit_likes_count" type="number" placeholder="Likes">
+      <input id="edit_views_count" type="number" placeholder="Views">
+      <input id="edit_plan_rank" type="number" placeholder="Plan rank">
+      <input id="edit_boost_score" type="number" placeholder="Boost score">
+      <input id="edit_trending_score" type="number" placeholder="Trending score">
+      <input id="edit_image_quality_score" type="number" placeholder="Image Quality Score">
+      <input id="edit_profile_score" type="number" placeholder="Final Profile Score">
+      <input id="edit_last_active" type="datetime-local" placeholder="Last active">
+      <input id="edit_plan_started_at" type="datetime-local" placeholder="Plan started">
+      <input id="edit_plan_expires_at" type="datetime-local" placeholder="Plan expires">
+
+      <select id="edit_payment_status">
+        <option value="unpaid">Unpaid</option>
+        <option value="paid">Paid</option>
+        <option value="pending">Pending</option>
+        <option value="expired">Expired</option>
+      </select>
+
+      <label class="checkrow"><input type="checkbox" id="edit_is_expired"> Expired</label>
+
+      <div class="rank-help">Control homepage order here. Use Signature/VVIP = 4, VIP = 3, Featured = 2. Trending score can be manually boosted.</div>
+
+      <label class="checkrow"><input type="checkbox" id="edit_verified"> Verified</label>
+      <label class="checkrow"><input type="checkbox" id="edit_featured"> Featured</label>
+      <input id="edit_verification_note" placeholder="Verification note, optional">
+      <div class="verification-note">Verification Center: add notes for why this profile is trusted or what still needs review.</div>
+
+      <textarea id="edit_bio" placeholder="Bio"></textarea>
+      <textarea id="edit_about" placeholder="About"></textarea>
+    </div>
+
+    <button class="save-edit" onclick="saveProfileEdit()">Save Changes</button>
+    <button class="close-edit" onclick="closeEditModal()">Cancel</button>
+  </div>
+</div>
+
+
+<div class="edit-modal" id="renewModal">
+  <div class="edit-box">
+    <div class="edit-top">
+      <h2>Renew / Pay Now</h2>
+      <button onclick="closeRenewModal()">✕</button>
+    </div>
+
+    <div class="edit-grid">
+      <input id="renew_profile_id" placeholder="Profile ID" readonly>
+      <input id="renew_phone" placeholder="Phone e.g. 2547XXXXXXXX">
+
+      <select id="renew_plan" onchange="syncRenewAmount()">
+        <option value="featured">Featured - 1000 KES</option>
+        <option value="vip">VIP - 4000 KES</option>
+        <option value="vip-plus">VIP+ - 5000 KES</option>
+        <option value="vvip">VVIP - 10000 KES</option>
+        <option value="signature">Signature - 3000 KES</option>
+      </select>
+
+      <input id="renew_amount" type="number" placeholder="Amount">
+    </div>
+
+    <div class="rank-help" style="margin-top:12px">
+      This sends an M-Pesa STK push. When payment succeeds, mpesa-callback.js marks the profile paid, active, approved and extends it by 7 days.
+    </div>
+
+    <button class="save-edit" onclick="startRenewPayment()">Send M-Pesa STK</button>
+    <button class="close-edit" onclick="closeRenewModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+const VAULT_TIMEOUT = 30 * 60 * 1000;
+let vaultSessionStartedAt = Date.now();
+
+async function requireAdminSession(){
+  try{
+    const { data:{ session }, error: sessionError } = await sb.auth.getSession();
+
+    if(sessionError || !session || !session.user){
+      window.location.href = "/vault-login.html";
+      return false;
+    }
+
+    const { data: admin, error: adminError } = await sb
+      .from("admin_users")
+      .select("id,name,email,role,is_active,auth_user_id")
+      .eq("auth_user_id", session.user.id)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if(adminError || !admin){
+      await sb.auth.signOut();
+      window.location.href = "/vault-login.html";
+      return false;
+    }
+
+    localStorage.setItem("ns_admin_email", admin.email || session.user.email || "");
+    localStorage.setItem("ns_admin_name", admin.name || admin.email || session.user.email || "Admin");
+    localStorage.setItem("ns_admin_role", admin.role || "staff");
+    localStorage.setItem("vault_last_activity", String(Date.now()));
+    vaultSessionStartedAt = Date.now();
+
+    return true;
+  }catch(error){
+    console.error("Vault auth guard failed:", error);
+    window.location.href = "/vault-login.html";
+    return false;
+  }
+}
+
+function updateVaultActivity(){
+  localStorage.setItem("vault_last_activity", String(Date.now()));
+}
+
+async function logoutVault(){
+  localStorage.removeItem("vault_last_activity");
+  localStorage.removeItem("ns_admin_email");
+  localStorage.removeItem("ns_admin_name");
+  localStorage.removeItem("ns_admin_role");
+  await sb.auth.signOut();
+  window.location.href = "/vault-login.html";
+}
+
+async function checkVaultTimeout(){
+  const last = Number(localStorage.getItem("vault_last_activity") || vaultSessionStartedAt || 0);
+
+  if(last && Date.now() - last > VAULT_TIMEOUT){
+    alert("Vault session expired. Please login again.");
+    await logoutVault();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async()=>{
+  const allowed = await requireAdminSession();
+  if(!allowed) return;
+
+  updateVaultActivity();
+
+  setTimeout(()=>{
+    if(typeof loadProfiles === "function") loadProfiles();
+    if(typeof loadDashboardStats === "function") loadDashboardStats();
+    if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
+    if(typeof loadStaffUsers === "function") loadStaffUsers();
+    if(typeof loadAdminContact === "function") loadAdminContact();
+  },500);
+});
+
+["mousemove","keydown","click","touchstart"].forEach(eventName=>{
+  document.addEventListener(eventName,updateVaultActivity,{passive:true});
+});
+
+setInterval(checkVaultTimeout,60000);
+
+async function audit(action,profileId="",profileName="",details=""){
+  try{
+    await fetch("/.netlify/functions/vault-audit-log",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        action,
+        admin_name:"Owner",
+        profile_id:profileId || null,
+        profile_name:profileName || null,
+        details:details || null
+      })
+    });
+  }catch(error){
+    console.log("Audit log skipped:",error.message);
+  }
+}
+
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+window.sb = sb;
+
+const list = document.getElementById("list");
+const statusBox = document.getElementById("status");
+const previewBox = document.getElementById("preview");
+
+let editingProfileId = null;
+let ALL_PROFILES = [];
+
+function valueOf(id){
+  const el = document.getElementById(id);
+  return el ? String(el.value || "").trim() : "";
+}
+
+function checkedOf(id){
+  const el = document.getElementById(id);
+  return el ? Boolean(el.checked) : false;
+}
+
+function numberOf(id){
+  const el = document.getElementById(id);
+  return el ? Number(el.value || 0) : 0;
+}
+
+function numberOrDefault(id,fallback){
+  const el = document.getElementById(id);
+  if(!el) return fallback;
+  const raw = String(el.value || "").trim();
+  return raw === "" ? fallback : Number(raw);
+}
+
+function rankFromPlan(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature") || p.includes("vvip")) return 4;
+  if(p.includes("vip-plus") || p.includes("vip+")) return 3.5;
+  if(p.includes("vip")) return 3;
+  if(p.includes("featured")) return 2;
+  return 1;
+}
+
+function boostFromPlan(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature") || p.includes("vvip")) return 600;
+  if(p.includes("vip-plus") || p.includes("vip+")) return 450;
+  if(p.includes("vip")) return 300;
+  if(p.includes("featured")) return 100;
+  return 0;
+}
+
+function trendingFormula(planRank,boostScore,views,likes,verified,featured){
+  return Number(boostScore || 0)
+    + Number(views || 0) * 2
+    + Number(likes || 0) * 5
+    + Number(planRank || 0) * 50
+    + (verified ? 80 : 0)
+    + (featured ? 60 : 0);
+}
+
+function qualityScoreFromProfile(profile){
+  const manual = Number(profile.image_quality_score || 0);
+  if(manual > 0) return Math.min(100, manual);
+
+  let score = 0;
+  const gallery = Array.isArray(profile.gallery_images)
+    ? profile.gallery_images
+    : Array.isArray(profile.gallery)
+      ? profile.gallery
+      : [];
+
+  const imageCount = [
+    profile.photo_url,
+    profile.image_url,
+    profile.image_url_2,
+    profile.image_url_3,
+    profile.image_url_4,
+    ...gallery
+  ].filter(Boolean).length;
+
+  const hasVideo = Boolean(profile.video_url || profile.reel_url || profile.short_url || profile.short_video);
+
+  if(imageCount >= 1) score += 20;
+  if(imageCount >= 3) score += 25;
+  if(imageCount >= 4) score += 15;
+  if(hasVideo) score += 20;
+  if(profile.verified === true) score += 10;
+  if(String(profile.plan || "").toLowerCase().includes("signature")) score += 10;
+
+  return Math.min(100, score);
+}
+
+function finalProfileScoreFromInputs(imageQuality,likes,views,boost,verified){
+  return Math.round(
+    Number(imageQuality || 0) * 0.40 +
+    Number(likes || 0) * 0.20 +
+    Number(views || 0) * 0.15 +
+    Number(boost || 0) * 0.15 +
+    (verified ? 100 : 0) * 0.10
+  );
+}
+
+function finalProfileScore(profile){
+  const imageQuality = Number(profile.image_quality_score || qualityScoreFromProfile(profile) || 0);
+  const likes = Number(profile.likes_count || profile.likes || profile.favorites || 0);
+  const views = Number(profile.views_count || profile.views || 0);
+  const boost = Number(profile.boost_score || profile.boost || 0);
+  const verified = profile.verified === true ? 100 : 0;
+
+  return Math.round(
+    imageQuality * 0.40 +
+    likes * 0.20 +
+    views * 0.15 +
+    boost * 0.15 +
+    verified * 0.10
+  );
+}
+
+function rankingDiagnosticsHTML(profile){
+  const imageQuality = Number(profile.image_quality_score || qualityScoreFromProfile(profile) || 0);
+  const likes = Number(profile.likes_count || profile.likes || profile.favorites || 0);
+  const views = Number(profile.views_count || profile.views || 0);
+  const boost = Number(profile.boost_score || profile.boost || 0);
+  const verified = profile.verified === true ? 100 : 0;
+
+  return `
+    <div class="diagnostics-box">
+      ✨ Image Quality: ${imageQuality} → ${(imageQuality * 0.40).toFixed(1)}<br>
+      ❤️ Likes: ${likes} → ${(likes * 0.20).toFixed(1)}<br>
+      👁 Views: ${views} → ${(views * 0.15).toFixed(1)}<br>
+      🚀 Boost: ${boost} → ${(boost * 0.15).toFixed(1)}<br>
+      ✔ Verification: ${verified} → ${(verified * 0.10).toFixed(1)}<br>
+      🏆 Final Score: ${finalProfileScore(profile)}
+    </div>
+  `;
+}
+
+function toDatetimeLocal(value){
+  if(!value) return "";
+  const d = new Date(value);
+  if(Number.isNaN(d.getTime())) return "";
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0,16);
+}
+
+function fromDatetimeLocal(value){
+  if(!value) return new Date().toISOString();
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+}
+
+function planAmount(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature") || p.includes("vvip")) return 10000;
+  if(p.includes("vip-plus") || p.includes("vip+")) return 5000;
+  if(p.includes("vip")) return 4000;
+  if(p.includes("featured")) return 1500;
+  return 1500;
+}
+
+function isSignaturePlan(plan){
+  const p = String(plan || "").toLowerCase();
+  return p.includes("signature") || p.includes("vvip");
+}
+
+function signatureBannerOf(profile){
+  return profile.signature_banner_url || imageOf(profile);
+}
+
+function addDaysISO(base,days){
+  const start = base ? new Date(base) : new Date();
+  const d = Number.isNaN(start.getTime()) ? new Date() : start;
+  d.setDate(d.getDate() + Number(days || 7));
+  return d.toISOString();
+}
+
+function expiryInfo(p){
+  const expired = Boolean(p.is_expired) || String(p.payment_status || "").toLowerCase() === "expired";
+  const raw = p.trial_expires_at || p.plan_expires_at || p.expires_at || p.expiry_date || "";
+  if(!raw){
+    return {label:"No expiry set", klass:"expiry-soon", days:null, raw:""};
+  }
+
+  const exp = new Date(raw);
+  if(Number.isNaN(exp.getTime())){
+    return {label:"Invalid expiry", klass:"expiry-soon", days:null, raw};
+  }
+
+  const diff = Math.ceil((exp.getTime() - Date.now()) / 86400000);
+
+  if(String(p.payment_status || "").toLowerCase() === "trial" && diff >= 0){
+    return {label:`Trial active: ${diff} day${diff === 1 ? "" : "s"} left`, klass:"expiry-soon", days:diff, raw};
+  }
+
+  if(expired || diff < 0){
+    return {label:"Expired", klass:"expiry-expired", days:diff, raw};
+  }
+
+  if(diff <= 2){
+    return {label:`Expiring soon: ${diff} day${diff === 1 ? "" : "s"} left`, klass:"expiry-soon", days:diff, raw};
+  }
+
+  return {label:`Active: ${diff} days left`, klass:"expiry-active", days:diff, raw};
+}
+
+function escapeAttr(value){
+  return String(value || "").replace(/'/g,"&#39;").replace(/"/g,"&quot;");
+}
+
+function syncRanking(prefix=""){
+  const planId = prefix ? "edit_plan" : "plan";
+  const rankId = prefix ? "edit_plan_rank" : "plan_rank";
+  const boostId = prefix ? "edit_boost_score" : "boost_score";
+  const trendingId = prefix ? "edit_trending_score" : "trending_score";
+  const likesId = prefix ? "edit_likes_count" : "likes_count";
+  const viewsId = prefix ? "edit_views_count" : "views_count";
+  const verifiedId = prefix ? "edit_verified" : "verified";
+  const featuredId = prefix ? "edit_featured" : "featured";
+
+  const plan = valueOf(planId);
+  const rank = rankFromPlan(plan);
+  const boost = boostFromPlan(plan);
+
+  const rankEl = document.getElementById(rankId);
+  const boostEl = document.getElementById(boostId);
+  const trendingEl = document.getElementById(trendingId);
+
+  if(rankEl) rankEl.value = rank;
+  if(boostEl) boostEl.value = boost;
+
+  if(trendingEl){
+    trendingEl.value = trendingFormula(
+      rank,
+      boost,
+      numberOf(viewsId),
+      numberOf(likesId),
+      checkedOf(verifiedId),
+      checkedOf(featuredId)
+    );
+  }
+
+  const qualityId = prefix ? "edit_image_quality_score" : "image_quality_score";
+  const profileScoreId = prefix ? "edit_profile_score" : "profile_score";
+  const qualityEl = document.getElementById(qualityId);
+  const profileScoreEl = document.getElementById(profileScoreId);
+  if(profileScoreEl){
+    profileScoreEl.value = finalProfileScore({
+      image_quality_score: qualityEl ? Number(qualityEl.value || 0) : 0,
+      likes_count: numberOf(likesId),
+      views_count: numberOf(viewsId),
+      boost_score: boost,
+      verified: checkedOf(verifiedId)
+    });
+  }
+
+  const signatureId = prefix ? "edit_is_signature" : "is_signature";
+  const priceId = prefix ? "edit_revenue_plan_price" : "revenue_plan_price";
+  const signatureEl = document.getElementById(signatureId);
+  const priceEl = document.getElementById(priceId);
+  if(signatureEl) signatureEl.checked = isSignaturePlan(plan);
+  if(priceEl) priceEl.value = planAmount(plan);
+}
+
+function cleanPhone(phone){
+  let p = String(phone || "").replace(/\D/g,"");
+  if(!p) return "";
+  if(p.startsWith("0")) p = "254" + p.slice(1);
+  if(p.startsWith("7") || p.startsWith("1")) p = "254" + p;
+  return p;
+}
+
+function makeSlug(text){
+  return String(text || "").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+}
+
+function parseServices(text){
+  return String(text || "").split(",").map(s => s.trim()).filter(Boolean);
+}
+
+function servicesToText(services){
+  if(Array.isArray(services)) return services.join(", ");
+  if(typeof services === "string") return services;
+  return "";
+}
+
+function imageOf(p){
+  return p.photo_url || p.image_url || p.profile_photo || p.main_photo || p.photo || p.image || "/assets/logo/logo-badge.png";
+}
+
+function videoOf(p){
+  return p.reel_url || p.video_url || p.short_url || "";
+}
+
+function safeFileName(file){
+  const original = file && file.name ? file.name : "upload";
+  return Date.now() + "-" + original.replace(/[^a-zA-Z0-9._-]/g,"-");
+}
+
+async function uploadFile(bucket,file){
+  if(!file) return "";
+  const fileName = safeFileName(file);
+
+  const { error } = await sb.storage.from(bucket).upload(fileName,file,{upsert:false});
+  if(error) throw error;
+
+  const { data } = sb.storage.from(bucket).getPublicUrl(fileName);
+  return data.publicUrl;
+}
+
+function previewFiles(){
+  previewBox.innerHTML = "";
+
+  const imageFile = document.getElementById("photoUpload").files[0];
+  const reelFile = document.getElementById("reelUpload").files[0];
+
+  if(imageFile){
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(imageFile);
+    previewBox.appendChild(img);
+  }
+
+  if(reelFile){
+    const video = document.createElement("video");
+    video.src = URL.createObjectURL(reelFile);
+    video.muted = true;
+    video.controls = true;
+    previewBox.appendChild(video);
+  }
+}
+
+document.getElementById("photoUpload").addEventListener("change",previewFiles);
+document.getElementById("reelUpload").addEventListener("change",previewFiles);
+
+
+document.getElementById("editReelUpload").addEventListener("change",()=>{
+  const box = document.getElementById("editReelPreview");
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  const file = document.getElementById("editReelUpload").files[0];
+
+  if(!file) return;
+
+  const video = document.createElement("video");
+  video.src = URL.createObjectURL(file);
+  video.controls = true;
+  video.muted = true;
+  box.appendChild(video);
+});
+
+document.getElementById("editPhotoUpload").addEventListener("change",()=>{
+  const box = document.getElementById("editPreview");
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  const file = document.getElementById("editPhotoUpload").files[0];
+
+  if(!file) return;
+
+  const img = document.createElement("img");
+  img.src = URL.createObjectURL(file);
+  box.appendChild(img);
+});
+
+document.getElementById("plan").addEventListener("change",()=>syncRanking(""));
+document.getElementById("verified").addEventListener("change",()=>syncRanking(""));
+document.getElementById("featured").addEventListener("change",()=>syncRanking(""));
+document.getElementById("image_quality_score").addEventListener("input",()=>syncRanking(""));
+document.getElementById("likes_count").addEventListener("input",()=>syncRanking(""));
+document.getElementById("views_count").addEventListener("input",()=>syncRanking(""));
+document.getElementById("boost_score").addEventListener("input",()=>syncRanking(""));
+document.getElementById("edit_plan").addEventListener("change",()=>syncRanking("edit_"));
+document.getElementById("edit_verified").addEventListener("change",()=>syncRanking("edit_"));
+document.getElementById("edit_featured").addEventListener("change",()=>syncRanking("edit_"));
+document.getElementById("edit_image_quality_score").addEventListener("input",()=>syncRanking("edit_"));
+document.getElementById("edit_likes_count").addEventListener("input",()=>syncRanking("edit_"));
+document.getElementById("edit_views_count").addEventListener("input",()=>syncRanking("edit_"));
+document.getElementById("edit_boost_score").addEventListener("input",()=>syncRanking("edit_"));
+
+async function addProfile(){
+  statusBox.textContent = "Saving profile...";
+
+  try{
+    const photoFile = document.getElementById("photoUpload").files[0] || null;
+    const reelFile = document.getElementById("reelUpload").files[0] || null;
+
+    const uploadedPhotoUrl = await uploadFile("profile-images",photoFile);
+    const uploadedReelUrl = await uploadFile("profile-videos",reelFile);
+
+    const finalPhotoUrl = uploadedPhotoUrl || valueOf("photo_url");
+    const finalVideoUrl = uploadedReelUrl || valueOf("video_url");
+
+    const stageName = valueOf("stage_name");
+    const phoneClean = cleanPhone(valueOf("phone"));
+    const finalSlug = valueOf("slug") || makeSlug(stageName + "-" + valueOf("location"));
+    const planValue = valueOf("plan") || "featured";
+    const finalPlanRank = numberOrDefault("plan_rank",rankFromPlan(planValue));
+    const finalBoostScore = numberOrDefault("boost_score",boostFromPlan(planValue));
+    const finalTrendingScore = numberOrDefault(
+      "trending_score",
+      trendingFormula(finalPlanRank,finalBoostScore,numberOf("views_count"),numberOf("likes_count"),checkedOf("verified"),checkedOf("featured"))
+    );
+    const finalImageQualityScore = numberOrDefault("image_quality_score",50);
+    const finalProfileScoreValue = numberOrDefault("profile_score",finalProfileScoreFromInputs(finalImageQualityScore,numberOf("likes_count"),numberOf("views_count"),finalBoostScore,checkedOf("verified")));
+
+    if(!stageName){
+      statusBox.textContent = "Stage name is required.";
+      return;
+    }
+
+    if(!phoneClean){
+      statusBox.textContent = "Phone number is required.";
+      return;
+    }
+
+    const payload = {
+      stage_name: stageName,
+      phone: phoneClean,
+      whatsapp: phoneClean,
+      location: valueOf("location"),
+      age: valueOf("age"),
+      bio: valueOf("bio"),
+      about: valueOf("about"),
+      photo_url: finalPhotoUrl,
+      image_url: finalPhotoUrl,
+      video_url: finalVideoUrl,
+      reel_url: finalVideoUrl,
+      short_url: finalVideoUrl,
+      plan: planValue,
+      plan_rank: finalPlanRank,
+      boost_score: finalBoostScore,
+      trending_score: finalTrendingScore,
+      image_quality_score: finalImageQualityScore,
+      profile_score: finalProfileScoreValue,
+      last_active: fromDatetimeLocal(valueOf("last_active")),
+      plan_started_at: fromDatetimeLocal(valueOf("plan_started_at")),
+      plan_expires_at: valueOf("plan_expires_at") ? fromDatetimeLocal(valueOf("plan_expires_at")) : addDaysISO(new Date().toISOString(),7),
+      expiry_date: valueOf("plan_expires_at") ? fromDatetimeLocal(valueOf("plan_expires_at")) : addDaysISO(new Date().toISOString(),7),
+      payment_status: valueOf("payment_status") || "unpaid",
+      is_expired: checkedOf("is_expired"),
+      services: parseServices(valueOf("services")),
+      incall_price: valueOf("incall_price"),
+      outcall_price: valueOf("outcall_price"),
+      languages: valueOf("languages"),
+      nationality: valueOf("nationality"),
+      orientation: valueOf("orientation"),
+      height: valueOf("height"),
+      availability: valueOf("availability") || "Online Now",
+      verified: checkedOf("verified"),
+      verified_at: checkedOf("verified") ? new Date().toISOString() : null,
+      verification_note: valueOf("verification_note"),
+      featured: checkedOf("featured"),
+      slug: finalSlug,
+      likes_count: numberOf("likes_count"),
+      views_count: numberOf("views_count"),
+      likes: numberOf("likes_count"),
+      views: numberOf("views_count"),
+      approved: true,
+      is_signature: checkedOf("is_signature") || isSignaturePlan(planValue),
+      signature_position: numberOrDefault("signature_position",999),
+      signature_banner_url: valueOf("signature_banner_url") || finalPhotoUrl,
+      homepage_featured: checkedOf("homepage_featured"),
+      homepage_featured_position: numberOrDefault("homepage_featured_position",999),
+      pinned_top: checkedOf("homepage_featured"),
+      revenue_plan_price: numberOrDefault("revenue_plan_price",planAmount(planValue)),
+      created_at: new Date().toISOString()
+    };
+
+    const { error } = await sb.from("profiles").insert(payload);
+
+    if(error){
+      statusBox.textContent = "Database error: " + error.message;
+      return;
+    }
+
+    statusBox.textContent = "Profile saved successfully.";
+    await audit("add_profile","",stageName,"Profile created");
+    clearForm();
+    loadProfiles();
+
+  }catch(error){
+    statusBox.textContent = "Upload error: " + (error && error.message ? error.message : error);
+  }
+}
+
+function clearForm(){
+  [
+    "stage_name","phone","location","age","photo_url","video_url","slug",
+    "availability","languages","nationality","orientation","height",
+    "incall_price","outcall_price","services","bio","about","last_active","plan_started_at","plan_expires_at","signature_banner_url","verification_note"
+  ].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = "";
+  });
+
+  document.getElementById("likes_count").value = 0;
+  document.getElementById("views_count").value = 0;
+  document.getElementById("plan_rank").value = 2;
+  document.getElementById("boost_score").value = 100;
+  document.getElementById("trending_score").value = 0;
+  document.getElementById("image_quality_score").value = 50;
+  document.getElementById("profile_score").value = 0;
+  document.getElementById("signature_position").value = 999;
+  document.getElementById("homepage_featured_position").value = 999;
+  document.getElementById("revenue_plan_price").value = 1000;
+  document.getElementById("plan").value = "featured";
+  document.getElementById("verified").checked = false;
+  document.getElementById("featured").checked = false;
+  document.getElementById("is_expired").checked = false;
+  document.getElementById("is_signature").checked = false;
+  document.getElementById("homepage_featured").checked = false;
+  document.getElementById("payment_status").value = "unpaid";
+  document.getElementById("photoUpload").value = "";
+  document.getElementById("reelUpload").value = "";
+  previewBox.innerHTML = "";
+}
+
+async function loadProfiles(){
+  list.innerHTML = `<div style="color:#ffd54a;font-weight:900">Loading...</div>`;
+
+  const { data,error } = await sb
+    .from("profiles")
+    .select("*")
+    .order("plan_rank",{ascending:false})
+    .order("signature_position",{ascending:true})
+    .order("trending_score",{ascending:false})
+    .order("profile_score",{ascending:false})
+    .order("boost_score",{ascending:false})
+    .order("verified",{ascending:false})
+    .order("created_at",{ascending:false});
+
+  if(error){
+    list.innerHTML = `<div style="color:#ff6b6b">${error.message}</div>`;
+    return;
+  }
+
+  const { data:analyticsRows, error:analyticsError } = await sb
+    .from("profile_analytics_summary")
+    .select("*");
+
+  if(analyticsError){
+    console.log("Analytics summary load error:", analyticsError.message);
+  }
+
+  const analyticsMap = {};
+  (analyticsRows || []).forEach(row=>{
+    analyticsMap[String(row.profile_id)] = row;
+  });
+
+  ALL_PROFILES = (data || []).map(profile => ({
+    ...profile,
+    _analytics: analyticsMap[String(profile.id)] || {}
+  }));
+
+  renderProfiles();
+}
+
+function resetVaultSearch(){
+  const ids = [
+    "vaultSearch",
+    "vaultPlanFilter",
+    "vaultStatusFilter",
+    "vaultApprovalFilter"
+  ];
+
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = "";
+  });
+
+  renderProfiles();
+}
+
+function profileSearchText(p){
+  const services = Array.isArray(p.services)
+    ? p.services.join(" ")
+    : String(p.services || "");
+
+  return `
+    ${p.stage_name || ""}
+    ${p.phone || ""}
+    ${p.whatsapp || ""}
+    ${p.location || ""}
+    ${p.plan || ""}
+    ${p.payment_status || ""}
+    ${p.slug || ""}
+    ${p.bio || ""}
+    ${p.about || ""}
+    ${p.availability || ""}
+    ${p.languages || ""}
+    ${p.nationality || ""}
+    ${p.orientation || ""}
+    ${p.is_signature ? "signature billboard" : ""}
+    ${p.homepage_featured ? "hero billboard" : ""}
+    ${p.pinned_top ? "pinned top boost boosted" : ""}
+    ${Number(p.image_quality_score || 0) >= 70 ? "hd quality high quality" : ""}
+    ${p.signature_banner_url || ""}
+    ${services}
+  `.toLowerCase();
+}
+
+function renderProfiles(){
+  const search = String(document.getElementById("vaultSearch")?.value || "").toLowerCase().trim();
+  const planFilter = String(document.getElementById("vaultPlanFilter")?.value || "").toLowerCase();
+  const statusFilter = String(document.getElementById("vaultStatusFilter")?.value || "").toLowerCase();
+  const approvalFilter = String(document.getElementById("vaultApprovalFilter")?.value || "").toLowerCase();
+  const countBox = document.getElementById("vaultSearchCount");
+
+  let data = [...ALL_PROFILES];
+
+  if(search){
+    data = data.filter(p => profileSearchText(p).includes(search));
+  }
+
+  if(planFilter){
+    data = data.filter(p => String(p.plan || "").toLowerCase() === planFilter);
+  }
+
+  if(statusFilter){
+    data = data.filter(p => String(p.payment_status || "").toLowerCase() === statusFilter);
+  }
+
+  if(approvalFilter === "approved"){
+    data = data.filter(p => p.approved === true);
+  }
+
+  if(approvalFilter === "hidden"){
+    data = data.filter(p => p.approved !== true);
+  }
+
+  if(approvalFilter === "verified"){
+    data = data.filter(p => p.verified === true);
+  }
+
+  if(approvalFilter === "featured"){
+    data = data.filter(p => p.featured === true);
+  }
+
+  if(approvalFilter === "expired"){
+    data = data.filter(p =>
+      p.is_expired === true ||
+      String(p.payment_status || "").toLowerCase() === "expired"
+    );
+  }
+
+  if(countBox){
+    countBox.textContent = `Showing ${data.length.toLocaleString()} of ${ALL_PROFILES.length.toLocaleString()} profiles`;
+  }
+
+  if(!data.length){
+    list.innerHTML = `<div style="color:#ffd54a;font-weight:900">No profiles match your search.</div>`;
+    return;
+  }
+
+  list.innerHTML = data.map(p=>{
+    const video = videoOf(p);
+    const services = Array.isArray(p.services) ? p.services : [];
+    const exp = expiryInfo(p);
+    const stats = p._analytics || {};
+    const statViews = Number(stats.views || 0);
+    const statWhatsApp = Number(stats.whatsapp_clicks || 0);
+    const statCalls = Number(stats.call_clicks || 0);
+    const statShares = Number(stats.share_clicks || 0);
+    const statVideos = Number(stats.video_plays || 0);
+    const lastEvent = stats.last_event_at ? new Date(stats.last_event_at).toLocaleString() : "No events yet";
+
+    return `
+      <article class="card">
+        ${
+          video
+          ? `
+          <div class="media-lock">
+            <video
+              src="${video}"
+              muted
+              loop
+              controls
+              poster="${imageOf(p)}"
+              controlsList="nodownload"
+              disablePictureInPicture
+              oncontextmenu="return false"
+            ></video>
+
+            <div class="ns-watermark">© NAIROBI-SWEETS.COM</div>
+            <div class="ns-watermark-center">© NAIROBI-SWEETS.COM</div>
+          </div>
+          `
+          : `
+          <div class="media-lock">
+            <img
+              src="${imageOf(p)}"
+              draggable="false"
+              oncontextmenu="return false"
+              onerror="this.src='/assets/logo/logo-badge.png'"
+            >
+
+            <div class="ns-watermark">© NAIROBI-SWEETS.COM</div>
+            <div class="ns-watermark-center">© NAIROBI-SWEETS.COM</div>
+          </div>
+          `
+        }
+
+        <div class="body">
+          <div class="name">${p.stage_name || "Verified"}</div>
+
+          <div class="meta">
+            📍 ${p.location || "Nairobi"}<br>
+            📞 ${p.phone || p.whatsapp || "Hidden"}<br>
+            💎 ${p.plan || "featured"}<br>
+            ${p.is_signature ? `<span class="signature-chip">👑 SIGNATURE BILLBOARD #${p.signature_position || 999}</span><br>` : ""}
+            ${p.homepage_featured ? `<span class="hero-chip">🔥 HERO BILLBOARD #${p.homepage_featured_position || 999}</span><br>` : ""}
+            🖼️ Banner: ${p.signature_banner_url ? "Yes" : "No"}<br>
+            💰 Price: KES ${(Number(p.revenue_plan_price || vaultPlanAmount(p.plan))).toLocaleString()}<br>
+            ✅ Approved: ${p.approved ? "Yes" : "No"}<br>
+            ${p.verified ? `<span class="verified-chip">✔ VERIFIED</span><br>` : `<span class="unverified-chip">PENDING VERIFICATION</span><br>`}
+            ${p.verification_note ? `📝 Verification note: ${p.verification_note}<br>` : ""}
+            ${Number(p.image_quality_score || qualityScoreFromProfile(p) || 0) >= 70 ? `<span class="quality-chip">✨ HD QUALITY</span><br>` : `<span class="quality-chip">✨ QUALITY ${Number(p.image_quality_score || qualityScoreFromProfile(p) || 0)}</span><br>`}
+            <span class="score-chip">🏆 SCORE ${Number(p.profile_score || finalProfileScore(p) || 0)}</span><br>
+            ⭐ Featured: ${p.featured ? "Yes" : "No"}<br>
+            🎬 Reel: ${video ? "Yes" : "No"}<br>
+            🔗 Slug: ${p.slug || "none"}<br>
+            🧠 Rank: ${p.plan_rank || 0} · 🚀 Boost: ${p.boost_score || 0}<br>
+            ✨ Image Quality: ${Number(p.image_quality_score || qualityScoreFromProfile(p) || 0)} · 🏆 Final: ${Number(p.profile_score || finalProfileScore(p) || 0)}<br>
+            🔥 Trending: ${p.trending_score || 0}<br>
+            🚀 Boost Score: ${p.boost_score || p.boost || 0}<br>
+            ${Number(p.boost_score || p.boost || 0) > 0 ? `<span class="boost-chip">🚀 BOOSTED +${Number(p.boost_score || p.boost || 0)}</span><br>` : ""}
+            ${p.pinned_top ? `<span class="pinned-chip">👑 PINNED TOP</span><br>` : ""}
+            🕒 Active: ${p.last_active ? new Date(p.last_active).toLocaleString() : "not set"}<br>
+            💳 Payment: ${p.payment_status || "unpaid"}<br>
+            👤 Owner: ${p.user_id || p.owner_id || "not linked"}<br>
+            🚦 Expired: ${p.is_expired ? "Yes" : "No"}<br>
+            ▶ Started: ${p.plan_started_at ? new Date(p.plan_started_at).toLocaleDateString() : "not set"}<br>
+            ⏳ Expires: ${p.plan_expires_at || p.expiry_date ? new Date(p.plan_expires_at || p.expiry_date).toLocaleDateString() : "not set"}<br>
+            <span class="expiry-pill ${exp.klass}">${exp.label}</span><br>
+            ❤️ ${p.likes_count || p.likes || 0} · 👁️ ${p.views_count || p.views || 0}<br>
+            🧾 Last event: ${lastEvent}
+          </div>
+
+          <div class="analytics-strip">
+            <div class="analytics-pill">👁 Views<strong>${statViews}</strong></div>
+            <div class="analytics-pill">💬 WhatsApp<strong>${statWhatsApp}</strong></div>
+            <div class="analytics-pill">☎ Calls<strong>${statCalls}</strong></div>
+            <div class="analytics-pill">🔗 Shares<strong>${statShares}</strong></div>
+            <div class="analytics-pill">🎬 Video Plays<strong>${statVideos}</strong></div>
+            <div class="analytics-pill">🔥 Score<strong>${p.trending_score || 0}</strong></div>
+          </div>
+
+          <div class="tags">
+            ${services.map(s=>`<span>${s}</span>`).join("")}
+          </div>
+
+          <div class="actions">
+            <button class="approve" onclick="approveProfile('${p.id}')">Approve</button>
+            <button class="unapprove" onclick="unapproveProfile('${p.id}')">Hide</button>
+            <button class="verify-btn" onclick="verifyProfile('${p.id}')">✔ Verify</button>
+            <button class="unverify-btn" onclick="unverifyProfile('${p.id}')">✖ Unverify</button>
+            <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
+            <button class="extend-btn" onclick="extendProfileDays('${p.id}',7)">+7 Days</button>
+            <button class="paid-btn" onclick="markProfilePaid('${p.id}')">Mark Paid</button>
+            <button class="expire-btn" onclick="markProfileExpired('${p.id}')">Expire</button>
+          </div>
+
+          <button class="edit-btn" onclick="openEditModal('${p.id}')">✏ Edit Profile</button>
+          <button class="edit-btn" onclick="openEditModal('${p.id}')" style="background:linear-gradient(145deg,#06b6d4,#22d3ee)">📷 Change Picture</button>
+          <button class="edit-btn" onclick="openEditModal('${p.id}')" style="background:linear-gradient(145deg,#a855f7,#ec4899);color:white">🎬 Change Reel</button>
+          <button class="signature-btn" onclick="quickMakeSignature('${p.id}')">👑 Make Signature</button>
+
+          <div class="boost-control-strip">
+            <button class="boost-btn" onclick="boostProfile('${p.id}',100)">🚀 Boost +100</button>
+            <button class="boost-hot-btn" onclick="boostProfile('${p.id}',500)">🔥 Boost +500</button>
+            <button class="pin-top-btn" onclick="pinProfileTop('${p.id}')">👑 Pin Top</button>
+            <button class="reset-boost-btn" onclick="resetProfileBoost('${p.id}')">♻ Reset</button>
+          </div>
+
+          <button class="quality-btn" onclick="recalculateProfileQuality('${p.id}')">✨ Recalculate Quality</button>
+          ${rankingDiagnosticsHTML(p)}
+
+          <button class="renew-btn" onclick="openRenewModal('${p.id}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}')">💰 Renew / Pay Now</button>
+
+          <div class="trial-row">
+            <select id="trial_days_${p.id}">
+              <option value="3">3 Days Trial</option>
+              <option value="7">7 Days Trial</option>
+              <option value="15">15 Days Trial</option>
+              <option value="30">30 Days Trial</option>
+            </select>
+            <button class="trial-btn" onclick="giveTrial('${p.id}')">🎁 Give Trial</button>
+          </div>
+
+          <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.trial_expires_at || p.plan_expires_at || p.expires_at || p.expiry_date || "")}','${p.id}','${escapeAttr(p.slug || "")}')">📲 Send Renewal Reminder</button>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+async function verifyProfile(id){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  const note = prompt("Verification note, optional:", profile.verification_note || "Verified by Nairobi Sweets Admin");
+
+  const updates = {
+    verified:true,
+    verified_at:new Date().toISOString(),
+    verification_note: note || "Verified by Nairobi Sweets Admin",
+    trending_score: trendingFormula(
+      Number(profile.plan_rank || rankFromPlan(profile.plan)),
+      Number(profile.boost_score || boostFromPlan(profile.plan)),
+      Number(profile.views_count || profile.views || 0),
+      Number(profile.likes_count || profile.likes || 0),
+      true,
+      Boolean(profile.featured)
+    )
+  };
+
+  const { error } = await sb
+    .from("profiles")
+    .update(updates)
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("verify_profile",id,profile.stage_name || "","Profile verified");
+  loadProfiles();
+  loadDashboardStats();
+}
+
+async function unverifyProfile(id){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+
+  const ok = confirm("Remove verification from this profile?");
+  if(!ok) return;
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      verified:false,
+      verified_at:null,
+      verification_note:""
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("unverify_profile",id,profile.stage_name || "","Profile verification removed");
+  loadProfiles();
+  loadDashboardStats();
+}
+
+async function openEditModal(id){
+  editingProfileId = id;
+
+  const editPhotoInput = document.getElementById("editPhotoUpload");
+  const editPreview = document.getElementById("editPreview");
+
+  if(editPhotoInput) editPhotoInput.value = "";
+  if(editPreview) editPreview.innerHTML = "";
+
+  const editReelInput = document.getElementById("editReelUpload");
+  const editReelPreview = document.getElementById("editReelPreview");
+
+  if(editReelInput) editReelInput.value = "";
+  if(editReelPreview) editReelPreview.innerHTML = "";
+
+  const { data,error } = await sb.from("profiles").select("*").eq("id",id).single();
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  document.getElementById("edit_stage_name").value = data.stage_name || "";
+  document.getElementById("edit_phone").value = data.phone || data.whatsapp || "";
+  document.getElementById("edit_location").value = data.location || "";
+  document.getElementById("edit_age").value = data.age || "";
+  document.getElementById("edit_photo_url").value = data.photo_url || data.image_url || "";
+  document.getElementById("edit_video_url").value = data.video_url || data.reel_url || data.short_url || "";
+  document.getElementById("edit_slug").value = data.slug || "";
+  document.getElementById("edit_availability").value = data.availability || "";
+  document.getElementById("edit_languages").value = data.languages || "";
+  document.getElementById("edit_nationality").value = data.nationality || "";
+  document.getElementById("edit_orientation").value = data.orientation || "";
+  document.getElementById("edit_height").value = data.height || "";
+  document.getElementById("edit_incall_price").value = data.incall_price || "";
+  document.getElementById("edit_outcall_price").value = data.outcall_price || "";
+  document.getElementById("edit_services").value = servicesToText(data.services);
+  document.getElementById("edit_plan").value = data.plan || "featured";
+  document.getElementById("edit_is_signature").checked = Boolean(data.is_signature) || isSignaturePlan(data.plan);
+  document.getElementById("edit_signature_position").value = data.signature_position ?? 999;
+  document.getElementById("edit_signature_banner_url").value = data.signature_banner_url || data.photo_url || data.image_url || "";
+  document.getElementById("edit_homepage_featured").checked = Boolean(data.homepage_featured);
+  document.getElementById("edit_homepage_featured_position").value = data.homepage_featured_position ?? 999;
+  document.getElementById("edit_revenue_plan_price").value = data.revenue_plan_price ?? planAmount(data.plan || "featured");
+  document.getElementById("edit_likes_count").value = data.likes_count || data.likes || 0;
+  document.getElementById("edit_views_count").value = data.views_count || data.views || 0;
+  document.getElementById("edit_plan_rank").value = data.plan_rank ?? rankFromPlan(data.plan || "featured");
+  document.getElementById("edit_boost_score").value = data.boost_score ?? boostFromPlan(data.plan || "featured");
+  document.getElementById("edit_trending_score").value = data.trending_score ?? trendingFormula(rankFromPlan(data.plan || "featured"),boostFromPlan(data.plan || "featured"),data.views_count || data.views || 0,data.likes_count || data.likes || 0,Boolean(data.verified),Boolean(data.featured));
+  document.getElementById("edit_image_quality_score").value = data.image_quality_score ?? qualityScoreFromProfile(data);
+  document.getElementById("edit_profile_score").value = data.profile_score ?? finalProfileScore(data);
+  document.getElementById("edit_last_active").value = toDatetimeLocal(data.last_active || data.created_at);
+  document.getElementById("edit_plan_started_at").value = toDatetimeLocal(data.plan_started_at || data.paid_at || data.created_at);
+  document.getElementById("edit_plan_expires_at").value = toDatetimeLocal(data.plan_expires_at || data.expiry_date);
+  document.getElementById("edit_payment_status").value = data.payment_status || "unpaid";
+  document.getElementById("edit_is_expired").checked = Boolean(data.is_expired);
+  document.getElementById("edit_verified").checked = Boolean(data.verified);
+  document.getElementById("edit_featured").checked = Boolean(data.featured);
+  document.getElementById("edit_verification_note").value = data.verification_note || "";
+  document.getElementById("edit_bio").value = data.bio || "";
+  document.getElementById("edit_about").value = data.about || "";
+
+  document.getElementById("editModal").style.display = "flex";
+}
+
+function closeEditModal(){
+  document.getElementById("editModal").style.display = "none";
+}
+
+async function saveProfileEdit(){
+  let newPhotoUrl = valueOf("edit_photo_url");
+
+  const newPhotoFile = document.getElementById("editPhotoUpload")?.files?.[0];
+
+  if(newPhotoFile){
+    try{
+      newPhotoUrl = await uploadFile("profile-images", newPhotoFile);
+      document.getElementById("edit_photo_url").value = newPhotoUrl;
+    }catch(error){
+      alert("Photo upload failed: " + error.message);
+      return;
+    }
+  }
+
+  let newVideoUrl = valueOf("edit_video_url");
+
+  const newReelFile = document.getElementById("editReelUpload")?.files?.[0];
+
+  if(newReelFile){
+    try{
+      newVideoUrl = await uploadFile("profile-videos", newReelFile);
+      document.getElementById("edit_video_url").value = newVideoUrl;
+    }catch(error){
+      alert("Reel upload failed: " + error.message);
+      return;
+    }
+  }
+
+  const phoneClean = cleanPhone(valueOf("edit_phone"));
+  const finalSlug = valueOf("edit_slug") || makeSlug(valueOf("edit_stage_name") + "-" + valueOf("edit_location"));
+  const planValue = valueOf("edit_plan") || "featured";
+  const finalPlanRank = numberOrDefault("edit_plan_rank",rankFromPlan(planValue));
+  const finalBoostScore = numberOrDefault("edit_boost_score",boostFromPlan(planValue));
+  const finalTrendingScore = numberOrDefault(
+    "edit_trending_score",
+    trendingFormula(finalPlanRank,finalBoostScore,numberOf("edit_views_count"),numberOf("edit_likes_count"),checkedOf("edit_verified"),checkedOf("edit_featured"))
+  );
+  const finalImageQualityScore = numberOrDefault("edit_image_quality_score",50);
+  const finalProfileScoreValue = numberOrDefault("edit_profile_score",finalProfileScoreFromInputs(finalImageQualityScore,numberOf("edit_likes_count"),numberOf("edit_views_count"),finalBoostScore,checkedOf("edit_verified")));
+
+  const updates = {
+    stage_name: valueOf("edit_stage_name"),
+    phone: phoneClean,
+    whatsapp: phoneClean,
+    location: valueOf("edit_location"),
+    age: valueOf("edit_age"),
+    photo_url: newPhotoUrl,
+    image_url: newPhotoUrl,
+    video_url: newVideoUrl,
+    reel_url: newVideoUrl,
+    short_url: newVideoUrl,
+    slug: finalSlug,
+    availability: valueOf("edit_availability") || "Online Now",
+    languages: valueOf("edit_languages"),
+    nationality: valueOf("edit_nationality"),
+    orientation: valueOf("edit_orientation"),
+    height: valueOf("edit_height"),
+    incall_price: valueOf("edit_incall_price"),
+    outcall_price: valueOf("edit_outcall_price"),
+    services: parseServices(valueOf("edit_services")),
+    plan: planValue,
+    is_signature: checkedOf("edit_is_signature") || isSignaturePlan(planValue),
+    signature_position: numberOrDefault("edit_signature_position",999),
+    signature_banner_url: valueOf("edit_signature_banner_url") || newPhotoUrl,
+    homepage_featured: checkedOf("edit_homepage_featured"),
+    homepage_featured_position: numberOrDefault("edit_homepage_featured_position",999),
+    revenue_plan_price: numberOrDefault("edit_revenue_plan_price",planAmount(planValue)),
+    plan_rank: finalPlanRank,
+    boost_score: finalBoostScore,
+    trending_score: finalTrendingScore,
+    last_active: fromDatetimeLocal(valueOf("edit_last_active")),
+    plan_started_at: fromDatetimeLocal(valueOf("edit_plan_started_at")),
+    plan_expires_at: valueOf("edit_plan_expires_at") ? fromDatetimeLocal(valueOf("edit_plan_expires_at")) : null,
+    expiry_date: valueOf("edit_plan_expires_at") ? fromDatetimeLocal(valueOf("edit_plan_expires_at")) : null,
+    payment_status: valueOf("edit_payment_status") || "unpaid",
+    is_expired: checkedOf("edit_is_expired"),
+    likes_count: numberOf("edit_likes_count"),
+    views_count: numberOf("edit_views_count"),
+    likes: numberOf("edit_likes_count"),
+    views: numberOf("edit_views_count"),
+    verified: checkedOf("edit_verified"),
+    verified_at: checkedOf("edit_verified") ? new Date().toISOString() : null,
+    verification_note: valueOf("edit_verification_note"),
+    featured: checkedOf("edit_featured"),
+    bio: valueOf("edit_bio"),
+    about: valueOf("edit_about")
+  };
+
+  const { error } = await sb.from("profiles").update(updates).eq("id",editingProfileId);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("edit_profile",editingProfileId,valueOf("edit_stage_name"),"Profile updated");
+  closeEditModal();
+  loadProfiles();
+  alert("Profile updated successfully.");
+}
+
+
+async function extendProfileDays(id,days=7){
+  const { data,error } = await sb
+    .from("profiles")
+    .select("plan_expires_at, expiry_date, plan, views_count, likes_count, verified, featured, boost_score, plan_rank")
+    .eq("id",id)
+    .single();
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  const currentExpiry = data.plan_expires_at || data.expiry_date;
+  const base = currentExpiry && new Date(currentExpiry) > new Date() ? currentExpiry : new Date().toISOString();
+  const expiresAt = addDaysISO(base,days);
+
+  const rank = data.plan_rank || rankFromPlan(data.plan);
+  const boost = data.boost_score || boostFromPlan(data.plan);
+  const trending = trendingFormula(rank,boost,data.views_count || 0,data.likes_count || 0,Boolean(data.verified),Boolean(data.featured));
+
+  const { error:updateError } = await sb
+    .from("profiles")
+    .update({
+      approved:true,
+      is_expired:false,
+      payment_status:"paid",
+      plan_started_at:new Date().toISOString(),
+      plan_expires_at:expiresAt,
+      expiry_date:expiresAt,
+      last_active:new Date().toISOString(),
+      trending_score:trending
+    })
+    .eq("id",id);
+
+  if(updateError){
+    alert(updateError.message);
+    return;
+  }
+
+  await audit("extend_profile",id,"",`Profile extended by ${days} days`);
+  loadProfiles();
+  alert(`Profile extended by ${days} days.`);
+}
+
+
+function profileMatchesBulkTrialPlan(profile,plan){
+  if(plan === "all") return true;
+
+  const combined = `
+    ${profile.plan || ""}
+    ${profile.plan_label || ""}
+    ${profile.tier || ""}
+    ${profile.package || ""}
+  `.toLowerCase();
+
+  if(plan === "vip-plus"){
+    return combined.includes("vip+") || combined.includes("vip-plus") || combined.includes("vip plus");
+  }
+
+  if(plan === "vip"){
+    return combined.includes("vip") && !combined.includes("vip+") && !combined.includes("vip-plus") && !combined.includes("vip plus") && !combined.includes("signature") && !combined.includes("vvip");
+  }
+
+  if(plan === "signature"){
+    return combined.includes("signature") || combined.includes("vvip");
+  }
+
+  if(plan === "featured"){
+    return combined.includes("featured") || combined.trim() === "";
+  }
+
+  return false;
+}
+
+async function giveBulkTrial(){
+  const plan = document.getElementById("bulkTrialPlan")?.value || "all";
+  const days = Number(document.getElementById("bulkTrialDays")?.value || 3);
+  const status = document.getElementById("bulkTrialStatus");
+
+  if(status){
+    status.textContent = "Preparing trial activation...";
+    status.style.color = "#ffd54a";
+  }
+
+  const targets = (ALL_PROFILES || []).filter(profile => profileMatchesBulkTrialPlan(profile,plan));
+  const ids = targets.map(profile => profile.id).filter(Boolean);
+
+  if(!ids.length){
+    if(status){
+      status.textContent = "No matching profiles found for this category.";
+      status.style.color = "#ff6b6b";
+    }
+    return;
+  }
+
+  const labelMap = {
+    all:"ALL categories",
+    featured:"Featured",
+    vip:"VIP",
+    "vip-plus":"VIP+",
+    signature:"Signature"
+  };
+
+  const ok = confirm(`Give ${days}-day trial to ${ids.length} ${labelMap[plan] || plan} profile(s)?`);
+  if(!ok){
+    if(status) status.textContent = "Bulk trial cancelled.";
+    return;
+  }
+
+  const now = new Date();
+  const expires = new Date(now);
+  expires.setDate(expires.getDate() + days);
+
+  const updates = {
+    approved:true,
+    is_expired:false,
+    payment_status:"trial",
+
+    trial_active:true,
+    trial_days:days,
+    trial_started_at:now.toISOString(),
+    trial_expires_at:expires.toISOString(),
+
+    plan_started_at:now.toISOString(),
+    plan_expires_at:expires.toISOString(),
+    expiry_date:expires.toISOString(),
+    expires_at:expires.toISOString(),
+
+    last_active:now.toISOString()
+  };
+
+  const { error } = await sb
+    .from("profiles")
+    .update(updates)
+    .in("id",ids);
+
+  if(error){
+    if(status){
+      status.textContent = error.message;
+      status.style.color = "#ff6b6b";
+    }
+    return;
+  }
+
+  if(status){
+    status.textContent = `${days}-day trial activated for ${ids.length} profile(s).`;
+    status.style.color = "#22c55e";
+  }
+
+  await audit("bulk_trial_given","","",`${days}-day trial given to ${ids.length} ${labelMap[plan] || plan} profile(s)`);
+
+  loadProfiles();
+  loadDashboardStats();
+  if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
+}
+
+function setMembershipStatus(text,color){
+  const box = document.getElementById("membershipControlStatus");
+  if(!box) return;
+  box.textContent = text;
+  box.style.color = color || "#ffd54a";
+}
+
+async function giveMembershipControlTrial(){
+  const plan = document.getElementById("membershipTrialPlan")?.value || "all";
+  const days = document.getElementById("membershipTrialDays")?.value || "3";
+
+  const bulkPlan = document.getElementById("bulkTrialPlan");
+  const bulkDays = document.getElementById("bulkTrialDays");
+
+  if(bulkPlan) bulkPlan.value = plan;
+  if(bulkDays) bulkDays.value = days;
+
+  setMembershipStatus("Starting category trial activation...","#ffd54a");
+  await giveBulkTrial();
+  setMembershipStatus(`${days}-day trial command completed for ${plan === "all" ? "all categories" : plan}.`, "#22c55e");
+}
+
+async function approveAllTrialProfiles(){
+  const targets = (ALL_PROFILES || []).filter(p =>
+    p.trial_active === true || String(p.payment_status || "").toLowerCase() === "trial"
+  );
+  const ids = targets.map(p => p.id).filter(Boolean);
+
+  if(!ids.length){
+    setMembershipStatus("No trial profiles found to approve.","#ff6b6b");
+    return;
+  }
+
+  const ok = confirm(`Approve ${ids.length} trial profile(s) and make them visible?`);
+  if(!ok){
+    setMembershipStatus("Approve trials cancelled.","#ffd54a");
+    return;
+  }
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      approved:true,
+      is_expired:false,
+      last_active:new Date().toISOString()
+    })
+    .in("id",ids);
+
+  if(error){
+    setMembershipStatus(error.message,"#ff6b6b");
+    return;
+  }
+
+  await audit("approve_all_trials","","",`${ids.length} trial profile(s) approved`);
+  setMembershipStatus(`${ids.length} trial profile(s) approved successfully.`, "#22c55e");
+  loadProfiles();
+  loadDashboardStats();
+  if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
+}
+
+async function expireEndedTrialProfiles(){
+  const now = Date.now();
+  const targets = (ALL_PROFILES || []).filter(p => {
+    const isTrial = p.trial_active === true || String(p.payment_status || "").toLowerCase() === "trial";
+    const raw = p.trial_expires_at || p.plan_expires_at || p.expiry_date || p.expires_at;
+    if(!isTrial || !raw) return false;
+    const d = new Date(raw);
+    return !Number.isNaN(d.getTime()) && d.getTime() <= now;
+  });
+
+  const ids = targets.map(p => p.id).filter(Boolean);
+
+  if(!ids.length){
+    setMembershipStatus("No ended trials found. The trial garden is still blooming.","#22c55e");
+    return;
+  }
+
+  const ok = confirm(`Expire ${ids.length} trial profile(s) whose trial period has ended?`);
+  if(!ok){
+    setMembershipStatus("Expire ended trials cancelled.","#ffd54a");
+    return;
+  }
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      approved:false,
+      is_expired:true,
+      payment_status:"expired",
+      trial_active:false,
+      boost_score:0,
+      trending_score:0,
+      last_active:new Date().toISOString()
+    })
+    .in("id",ids);
+
+  if(error){
+    setMembershipStatus(error.message,"#ff6b6b");
+    return;
+  }
+
+  await audit("expire_ended_trials","","",`${ids.length} ended trial profile(s) expired`);
+  setMembershipStatus(`${ids.length} ended trial profile(s) expired successfully.`, "#22c55e");
+  loadProfiles();
+  loadDashboardStats();
+  if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
+}
+
+async function giveTrial(id){
+  const select = document.getElementById(`trial_days_${id}`);
+  const days = Number(select?.value || 3);
+
+  const ok = confirm(`Give this profile a ${days}-day free trial?`);
+  if(!ok) return;
+
+  const now = new Date();
+  const expires = new Date(now);
+  expires.setDate(expires.getDate() + days);
+
+  const { data,error } = await sb
+    .from("profiles")
+    .select("plan,views_count,likes_count,verified,featured,boost_score,plan_rank,stage_name")
+    .eq("id",id)
+    .single();
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  const rank = data.plan_rank || rankFromPlan(data.plan);
+  const boost = data.boost_score || boostFromPlan(data.plan);
+  const trending = trendingFormula(
+    rank,
+    boost,
+    data.views_count || 0,
+    data.likes_count || 0,
+    Boolean(data.verified),
+    Boolean(data.featured)
+  );
+
+  const { error:updateError } = await sb
+    .from("profiles")
+    .update({
+      approved:true,
+      is_expired:false,
+      payment_status:"trial",
+
+      trial_active:true,
+      trial_days:days,
+      trial_started_at:now.toISOString(),
+      trial_expires_at:expires.toISOString(),
+
+      plan_started_at:now.toISOString(),
+      plan_expires_at:expires.toISOString(),
+      expiry_date:expires.toISOString(),
+      expires_at:expires.toISOString(),
+
+      last_active:now.toISOString(),
+      trending_score:trending
+    })
+    .eq("id",id);
+
+  if(updateError){
+    alert(updateError.message);
+    return;
+  }
+
+  await audit("trial_given",id,data.stage_name || "",`${days}-day trial activated`);
+  loadProfiles();
+  loadDashboardStats();
+  loadRevenueDashboard();
+  alert(`${days}-day trial activated.`);
+}
+
+async function markProfilePaid(id){
+  await extendProfileDays(id,7);
+}
+
+async function markProfileExpired(id){
+  const ok = confirm("Mark this profile as expired and hide it?");
+  if(!ok) return;
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      approved:false,
+      is_expired:true,
+      payment_status:"expired",
+      trial_active:false,
+      boost_score:0,
+      trending_score:0,
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("expire_profile",id,"","Profile expired and hidden");
+  loadProfiles();
+}
+
+function openRenewModal(id, phone, plan){
+  document.getElementById("renew_profile_id").value = id;
+  document.getElementById("renew_phone").value = cleanPhone(phone || "");
+  document.getElementById("renew_plan").value = String(plan || "vip").toLowerCase();
+  syncRenewAmount();
+  document.getElementById("renewModal").style.display = "flex";
+}
+
+function closeRenewModal(){
+  document.getElementById("renewModal").style.display = "none";
+}
+
+function syncRenewAmount(){
+  document.getElementById("renew_amount").value = planAmount(valueOf("renew_plan"));
+}
+
+async function startRenewPayment(){
+  const profile_id = valueOf("renew_profile_id");
+  const phone = cleanPhone(valueOf("renew_phone"));
+  const plan = valueOf("renew_plan") || "vip";
+  const amount = Number(valueOf("renew_amount") || planAmount(plan));
+
+  if(!profile_id || !phone){
+    alert("Profile ID and phone are required.");
+    return;
+  }
+
+  await audit("renewal_started",profile_id,"",`STK push started for KES ${amount}`);
+
+  const res = await fetch("/.netlify/functions/mpesa-stk-push",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({profile_id,phone,plan,amount})
+  });
+
+  const data = await res.json();
+
+  if(!res.ok){
+    alert("STK failed: " + JSON.stringify(data));
+    return;
+  }
+
+  alert("M-Pesa STK sent. Complete payment on phone.");
+  closeRenewModal();
+}
+
+function sendRenewalReminder(name, phone, plan, expiresAt, profileId, slug){
+  const clean = cleanPhone(phone || "");
+
+  if(!clean){
+    alert("No phone number found for this profile.");
+    return;
+  }
+
+  const expiryText = expiresAt
+    ? new Date(expiresAt).toLocaleDateString()
+    : "soon";
+
+  const amount = planAmount(plan);
+
+  const profileLink = slug
+    ? `https://nairobi-sweets.com/profile/${encodeURIComponent(slug)}`
+    : `https://nairobi-sweets.com/profile/${encodeURIComponent(profileId || "")}`;
+
+  const message = encodeURIComponent(
+`Hi ${name},
+
+Your Nairobi Sweets listing expires on ${expiryText}.
+
+Plan: ${String(plan || "VIP").toUpperCase()}
+Renewal Amount: KES ${amount}
+
+Your profile link:
+${profileLink}
+
+Please renew early so your profile stays live on Nairobi Sweets.
+
+Reply here when ready.`
+  );
+
+  window.open(`https://wa.me/${clean}?text=${message}`,"_blank","noopener");
+}
+
+
+
+async function boostProfile(id,amount){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  const boostAmount = Number(amount || 100);
+  const currentBoost = Number(profile.boost_score || profile.boost || 0);
+  const newBoost = currentBoost + boostAmount;
+
+  const newTrending = trendingFormula(
+    Number(profile.plan_rank || rankFromPlan(profile.plan)),
+    newBoost,
+    Number(profile.views_count || profile.views || 0),
+    Number(profile.likes_count || profile.likes || 0),
+    Boolean(profile.verified),
+    Boolean(profile.featured)
+  );
+
+  const ok = confirm(`Boost ${profile.stage_name || "this profile"} by +${boostAmount}?`);
+  if(!ok) return;
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      boost_score:newBoost,
+      boost:newBoost,
+      trending_score:newTrending,
+      profile_score:finalProfileScore({...profile,boost_score:newBoost,boost:newBoost,trending_score:newTrending}),
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("profile_boosted",id,profile.stage_name || "",`Boosted by +${boostAmount}. New boost score: ${newBoost}`);
+  loadProfiles();
+  loadDashboardStats();
+  loadRevenueDashboard();
+}
+
+async function pinProfileTop(id){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  const ok = confirm(`Pin ${profile.stage_name || "this profile"} to the top?`);
+  if(!ok) return;
+
+  const currentBoost = Number(profile.boost_score || profile.boost || 0);
+  const newBoost = Math.max(currentBoost,5000);
+  const newTrending = trendingFormula(
+    10,
+    newBoost,
+    Number(profile.views_count || profile.views || 0),
+    Number(profile.likes_count || profile.likes || 0),
+    Boolean(profile.verified),
+    true
+  ) + 10000;
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      pinned_top:true,
+      homepage_featured:true,
+      homepage_featured_position:1,
+      featured:true,
+      plan_rank:10,
+      boost_score:newBoost,
+      boost:newBoost,
+      trending_score:newTrending,
+      profile_score:finalProfileScore({...profile,boost_score:newBoost,boost:newBoost,verified:true,featured:true,trending_score:newTrending}),
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("profile_pinned_top",id,profile.stage_name || "","Profile pinned to top with boost engine");
+  loadProfiles();
+  loadDashboardStats();
+  loadRevenueDashboard();
+}
+
+async function resetProfileBoost(id){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  const ok = confirm(`Reset boost for ${profile.stage_name || "this profile"}?`);
+  if(!ok) return;
+
+  const planRank = rankFromPlan(profile.plan);
+  const baseBoost = boostFromPlan(profile.plan);
+  const newTrending = trendingFormula(
+    planRank,
+    baseBoost,
+    Number(profile.views_count || profile.views || 0),
+    Number(profile.likes_count || profile.likes || 0),
+    Boolean(profile.verified),
+    Boolean(profile.featured)
+  );
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      pinned_top:false,
+      boost_score:baseBoost,
+      boost:baseBoost,
+      plan_rank:planRank,
+      trending_score:newTrending,
+      profile_score:finalProfileScore({...profile,boost_score:baseBoost,boost:baseBoost,trending_score:newTrending}),
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("profile_boost_reset",id,profile.stage_name || "","Boost reset to plan default");
+  loadProfiles();
+  loadDashboardStats();
+  loadRevenueDashboard();
+}
+
+
+
+async function recalculateProfileQuality(id){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  if(!profile.id){
+    alert("Profile not found in loaded vault list.");
+    return;
+  }
+
+  const quality = qualityScoreFromProfile({...profile,image_quality_score:0});
+  const profileScore = finalProfileScore({...profile,image_quality_score:quality});
+  const trending = trendingFormula(
+    Number(profile.plan_rank || rankFromPlan(profile.plan)),
+    Number(profile.boost_score || profile.boost || boostFromPlan(profile.plan)),
+    Number(profile.views_count || profile.views || 0),
+    Number(profile.likes_count || profile.likes || 0),
+    Boolean(profile.verified),
+    Boolean(profile.featured)
+  );
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      image_quality_score:quality,
+      profile_score:profileScore,
+      trending_score:trending,
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("quality_recalculated",id,profile.stage_name || "",`Quality ${quality}, final score ${profileScore}`);
+  loadProfiles();
+  loadDashboardStats();
+  alert(`Quality recalculated. Image Quality: ${quality}. Final Score: ${profileScore}.`);
+}
+
+async function recalculateAllQualityScores(){
+  const status = document.getElementById("qualityBulkStatus");
+  const ok = confirm("Recalculate quality scores for all loaded profiles?");
+  if(!ok) return;
+
+  if(status) status.textContent = "Recalculating quality scores...";
+
+  let updated = 0;
+  for(const profile of ALL_PROFILES){
+    const quality = qualityScoreFromProfile({...profile,image_quality_score:0});
+    const profileScore = finalProfileScore({...profile,image_quality_score:quality});
+
+    const { error } = await sb
+      .from("profiles")
+      .update({
+        image_quality_score:quality,
+        profile_score:profileScore
+      })
+      .eq("id",profile.id);
+
+    if(!error) updated++;
+  }
+
+  await audit("bulk_quality_recalculated","","",`Updated ${updated} profiles`);
+  if(status) status.textContent = `Updated ${updated} profile quality scores.`;
+  loadProfiles();
+  loadDashboardStats();
+}
+
+async function quickMakeSignature(id){
+  const current = ALL_PROFILES.find(p => String(p.id) === String(id)) || {};
+  const nextPosition = Number(current.signature_position || 999) === 999
+    ? Math.max(1, ...ALL_PROFILES.filter(p => p.is_signature).map(p => Number(p.signature_position || 0))) + 1
+    : Number(current.signature_position || 1);
+
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      plan:"signature",
+      is_signature:true,
+      signature_position:nextPosition,
+      signature_banner_url:current.signature_banner_url || current.photo_url || current.image_url || "",
+      plan_rank:4,
+      boost_score:600,
+      revenue_plan_price:3000,
+      approved:true,
+      is_expired:false,
+      last_active:new Date().toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await audit("make_signature",id,current.stage_name || "","Profile promoted to Signature Billboard");
+  loadProfiles();
+  loadDashboardStats();
+}
+
+async function approveProfile(id){
+  const { error } = await sb.from("profiles").update({ approved:true }).eq("id",id);
+  if(error) alert(error.message);
+  await audit("approve_profile",id,"","Profile approved");
+  loadProfiles();
+}
+
+async function unapproveProfile(id){
+  const { error } = await sb.from("profiles").update({ approved:false }).eq("id",id);
+  if(error) alert(error.message);
+  await audit("hide_profile",id,"","Profile hidden");
+  loadProfiles();
+}
+
+async function deleteProfile(id){
+  const ok = confirm("Delete this profile?");
+  if(!ok) return;
+
+  const { error } = await sb.from("profiles").delete().eq("id",id);
+  if(error) alert(error.message);
+  await audit("delete_profile",id,"","Profile deleted");
+  loadProfiles();
+}
+
+
+function vaultPlanAmount(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("signature") || p.includes("vvip")) return 10000;
+  if(p.includes("vip-plus") || p.includes("vip+")) return 5000;
+  if(p.includes("vip")) return 4000;
+  if(p.includes("featured")) return 1500;
+  return 0;
+}
+
+function setVaultStat(id,value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value;
+}
+
+async function loadDashboardStats(){
+  try{
+    const { data,error } = await sb
+      .from("profiles")
+      .select("id,stage_name,approved,is_expired,payment_status,plan,plan_label,tier,package,is_signature,homepage_featured,revenue_plan_price,plan_expires_at,expiry_date,expires_at,trial_active,trial_expires_at,created_at,verified,boost_score,boost,pinned_top,image_quality_score,profile_score");
+
+    if(error) throw error;
+
+    const profiles = data || [];
+    const total = profiles.length;
+
+    const active = profiles.filter(p =>
+      p.approved === true && p.is_expired !== true
+    ).length;
+
+    const trial = profiles.filter(p =>
+      p.trial_active === true || String(p.payment_status || "").toLowerCase() === "trial"
+    ).length;
+
+    const pending = profiles.filter(p =>
+      p.approved !== true || ["pending","unpaid",""].includes(String(p.payment_status || "").toLowerCase())
+    ).length;
+
+    const paidProfiles = profiles.filter(p =>
+      String(p.payment_status || "").toLowerCase() === "paid"
+    );
+
+    const paid = paidProfiles.length;
+
+    const expired = profiles.filter(p =>
+      p.is_expired === true ||
+      String(p.payment_status || "").toLowerCase() === "expired"
+    ).length;
+
+    const featured = profiles.filter(p =>
+      String(p.plan || "").toLowerCase().includes("featured")
+    ).length;
+
+    const vip = profiles.filter(p => {
+      const combined = `${p.plan || ""} ${p.plan_label || ""} ${p.tier || ""} ${p.package || ""}`.toLowerCase();
+      return combined.includes("vip") && !combined.includes("vip+") && !combined.includes("vip-plus") && !combined.includes("vip plus") && !combined.includes("vvip") && !combined.includes("signature");
+    }).length;
+
+    const vipPlus = profiles.filter(p => {
+      const combined = `${p.plan || ""} ${p.plan_label || ""} ${p.tier || ""} ${p.package || ""}`.toLowerCase();
+      return combined.includes("vip+") || combined.includes("vip-plus") || combined.includes("vip plus");
+    }).length;
+
+    const signature = profiles.filter(p =>
+      p.is_signature === true ||
+      String(p.plan || "").toLowerCase().includes("signature") ||
+      String(p.plan || "").toLowerCase().includes("vvip")
+    ).length;
+
+    const verifiedCount = profiles.filter(p => p.verified === true).length;
+
+    const boostedCount = profiles.filter(p => Number(p.boost_score || p.boost || 0) > 0).length;
+    const pinnedTopCount = profiles.filter(p => p.pinned_top === true).length;
+    const hdQualityCount = profiles.filter(p => Number(p.image_quality_score || qualityScoreFromProfile(p) || 0) >= 70).length;
+    const avgQuality = profiles.length
+      ? Math.round(profiles.reduce((sum,p)=>sum + Number(p.image_quality_score || qualityScoreFromProfile(p) || 0),0) / profiles.length)
+      : 0;
+
+    const hero = profiles.filter(p => p.homepage_featured === true).length;
+
+    const expiringSoon = profiles.filter(p => {
+      const raw = p.plan_expires_at || p.expiry_date;
+      if(!raw) return false;
+      const d = new Date(raw);
+      if(Number.isNaN(d.getTime())) return false;
+      const days = Math.ceil((d.getTime() - Date.now()) / 86400000);
+      return days >= 0 && days <= 7;
+    }).length;
+
+    const revenue = paidProfiles
+      .reduce((sum,p) => sum + Number(p.revenue_plan_price || vaultPlanAmount(p.plan)),0);
+
+    const weeklyPotential = profiles
+      .filter(p => p.approved === true && p.is_expired !== true)
+      .reduce((sum,p) => sum + Number(p.revenue_plan_price || vaultPlanAmount(p.plan)),0);
+
+    let todayRevenue = 0;
+
+    try{
+      const start = new Date();
+      start.setHours(0,0,0,0);
+
+      const { data:todayRows } = await sb
+        .from("revenue_events")
+        .select("amount,created_at")
+        .gte("created_at",start.toISOString());
+
+      todayRevenue = (todayRows || []).reduce((sum,row)=>sum + Number(row.amount || 0),0);
+    }catch(err){
+      todayRevenue = 0;
+    }
+
+    setVaultStat("statTotal", total.toLocaleString());
+    setVaultStat("statActive", active.toLocaleString());
+    setVaultStat("statTrial", trial.toLocaleString());
+    setVaultStat("statPending", pending.toLocaleString());
+    setVaultStat("statPaid", paid.toLocaleString());
+    setVaultStat("statExpired", expired.toLocaleString());
+    setVaultStat("statRevenue", "KES " + revenue.toLocaleString());
+    setVaultStat("statTodayRevenue", "KES " + todayRevenue.toLocaleString());
+    setVaultStat("statFeatured", featured.toLocaleString());
+    setVaultStat("statVip", vip.toLocaleString());
+    setVaultStat("statVipPlus", vipPlus.toLocaleString());
+    setVaultStat("statSignature", signature.toLocaleString());
+    setVaultStat("statVerified", verifiedCount.toLocaleString());
+    setVaultStat("statBoosted", boostedCount.toLocaleString());
+    setVaultStat("statPinnedTop", pinnedTopCount.toLocaleString());
+    setVaultStat("statHDQuality", hdQualityCount.toLocaleString());
+    setVaultStat("statAvgQuality", avgQuality.toLocaleString());
+    setVaultStat("statHero", hero.toLocaleString());
+    setVaultStat("statExpiringSoon", expiringSoon.toLocaleString());
+    setVaultStat("statWeeklyPotential", "KES " + weeklyPotential.toLocaleString());
+
+  }catch(error){
+    console.log("Dashboard stats error:", error.message);
+  }
+}
+
+function profilePlanBucket(profile){
+  const plan = String(profile.plan || "").toLowerCase();
+  if(profile.homepage_featured === true) return "Hero Billboard";
+  if(profile.is_signature === true || plan.includes("signature") || plan.includes("vvip")) return "Signature";
+  if(plan.includes("vip")) return "VIP";
+  if(plan.includes("featured")) return "Featured";
+  return "Other";
+}
+
+function planLabelPrice(plan){
+  const p = String(plan || "").toLowerCase();
+  if(p.includes("hero")) return 5000;
+  if(p.includes("signature")) return 3000;
+  if(p.includes("vip")) return 1500;
+  if(p.includes("featured")) return 1000;
+  return 0;
+}
+
+function renderRevenueRows(containerId, rows, emptyText){
+  const box = document.getElementById(containerId);
+  if(!box) return;
+
+  if(!rows.length){
+    box.innerHTML = `<div class="revenue-empty">${emptyText}</div>`;
+    return;
+  }
+
+  box.innerHTML = rows.join("");
+}
+
+async function loadRevenueDashboard(){
+  try{
+    const { data,error } = await sb
+      .from("profiles")
+      .select("id,stage_name,location,plan,approved,is_expired,payment_status,revenue_plan_price,homepage_featured,is_signature,total_views,total_whatsapp_clicks,total_call_clicks,views_count,views,plan_expires_at,expiry_date,phone,whatsapp");
+
+    if(error) throw error;
+
+    const profiles = data || [];
+
+    let analyticsMap = {};
+    try{
+      const { data:analyticsRows } = await sb
+        .from("profile_analytics_summary")
+        .select("*");
+
+      (analyticsRows || []).forEach(row=>{
+        analyticsMap[String(row.profile_id)] = row;
+      });
+    }catch(err){
+      analyticsMap = {};
+    }
+
+    const enriched = profiles.map(p => {
+      const stats = analyticsMap[String(p.id)] || {};
+      return {
+        ...p,
+        _views:Number(stats.views || p.total_views || p.views_count || p.views || 0),
+        _whatsapp:Number(stats.whatsapp_clicks || p.total_whatsapp_clicks || 0),
+        _calls:Number(stats.call_clicks || p.total_call_clicks || 0)
+      };
+    });
+
+    const topRows = enriched
+      .slice()
+      .sort((a,b)=>(b._views + b._whatsapp*5 + b._calls*4) - (a._views + a._whatsapp*5 + a._calls*4))
+      .slice(0,8)
+      .map((p,index)=>`
+        <div class="revenue-row">
+          <div class="revenue-rank">#${index + 1}</div>
+          <div>
+            <div class="revenue-title">${p.stage_name || "Verified"}</div>
+            <div class="revenue-sub">📍 ${p.location || "Nairobi"} · 👁 ${p._views} · 💬 ${p._whatsapp} · ☎ ${p._calls}</div>
+          </div>
+          <div class="revenue-amount">KES ${Number(p.revenue_plan_price || vaultPlanAmount(p.plan)).toLocaleString()}</div>
+        </div>
+      `);
+
+    const expiringRows = enriched
+      .filter(p=>{
+        const raw = p.plan_expires_at || p.expiry_date;
+        if(!raw) return false;
+        const d = new Date(raw);
+        if(Number.isNaN(d.getTime())) return false;
+        const days = Math.ceil((d.getTime() - Date.now()) / 86400000);
+        return days >= 0 && days <= 7;
+      })
+      .sort((a,b)=>new Date(a.plan_expires_at || a.expiry_date) - new Date(b.plan_expires_at || b.expiry_date))
+      .slice(0,8)
+      .map((p,index)=>{
+        const raw = p.plan_expires_at || p.expiry_date;
+        const days = Math.ceil((new Date(raw).getTime() - Date.now()) / 86400000);
+        return `
+          <div class="revenue-row">
+            <div class="revenue-rank">${days}d</div>
+            <div>
+              <div class="revenue-title">${p.stage_name || "Verified"}</div>
+              <div class="revenue-sub">📞 ${p.phone || p.whatsapp || "Hidden"} · expires ${new Date(raw).toLocaleDateString()}</div>
+            </div>
+            <div class="revenue-amount">KES ${Number(p.revenue_plan_price || vaultPlanAmount(p.plan)).toLocaleString()}</div>
+          </div>
+        `;
+      });
+
+    const buckets = {};
+
+    enriched.forEach(p=>{
+      const bucket = profilePlanBucket(p);
+      if(!buckets[bucket]){
+        buckets[bucket] = {count:0,paid:0,value:0};
+      }
+      const price = Number(p.revenue_plan_price || vaultPlanAmount(p.plan));
+      buckets[bucket].count += 1;
+      buckets[bucket].value += price;
+      if(String(p.payment_status || "").toLowerCase() === "paid"){
+        buckets[bucket].paid += 1;
+      }
+    });
+
+    const planOrder = ["Hero Billboard","Signature","VIP","Featured","Other"];
+    const planRows = planOrder
+      .filter(name=>buckets[name])
+      .map((name,index)=>{
+        const row = buckets[name];
+        return `
+          <div class="revenue-row">
+            <div class="revenue-rank">${index + 1}</div>
+            <div>
+              <div class="revenue-title">${name}</div>
+              <div class="revenue-sub">${row.count} total · ${row.paid} paid</div>
+            </div>
+            <div class="revenue-amount">KES ${row.value.toLocaleString()}</div>
+          </div>
+        `;
+      });
+
+    renderRevenueRows("topProfilesList",topRows,"No top performer data yet.");
+    renderRevenueRows("expiringProfilesList",expiringRows,"No profiles expiring within 7 days.");
+    renderRevenueRows("planRevenueList",planRows,"No plan revenue data yet.");
+
+  }catch(error){
+    console.log("Revenue dashboard error:", error.message);
+    ["topProfilesList","expiringProfilesList","planRevenueList"].forEach(id=>{
+      const box = document.getElementById(id);
+      if(box) box.innerHTML = `<div class="revenue-empty">Revenue dashboard error: ${error.message}</div>`;
+    });
+  }
+}
+
+async function runAutoRenewNow(){
+  const ok = confirm("Run auto-renew check now?");
+  if(!ok) return;
+
+  try{
+    const res = await fetch("/.netlify/functions/auto-renew-check");
+    const data = await res.json();
+
+    if(!data.ok){
+      alert("Auto-renew failed: " + (data.message || "Unknown error"));
+      return;
+    }
+
+    alert(
+      "Auto-renew complete.\nChecked: " +
+      (data.checked || 0) +
+      "\nAttempts: " +
+      (data.attempted || (data.results ? data.results.length : 0))
+    );
+
+    if(typeof loadProfiles === "function") loadProfiles();
+    loadDashboardStats();
+
+  }catch(error){
+    alert("Auto-renew error: " + error.message);
+  }
+}
+
+
+/* =========================
+STAFF MANAGEMENT
+========================= */
+function adminToken(){
+  return localStorage.getItem("vault_token") ||
+         sessionStorage.getItem("vault_token") ||
+         localStorage.getItem("admin_token") ||
+         sessionStorage.getItem("admin_token") ||
+         "";
+}
+
+async function adminFetch(url, options = {}){
+  const token = adminToken();
+  return fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(options.headers || {})
+    }
+  });
+}
+
+function roleBadge(role){
+  const r = String(role || "staff").toLowerCase();
+  if(r === "owner") return "👑 Owner";
+  if(r === "manager") return "🛡️ Manager";
+  return "👤 Staff";
+}
+
+async function loadStaffUsers(){
+  const box = document.getElementById("staffList");
+  const status = document.getElementById("staffStatus");
+  if(!box) return;
+
+  const token = adminToken();
+  if(!token){
+    box.innerHTML = `<div class="empty">Staff tools require role login token. Login with the new admin login system first.</div>`;
+    return;
+  }
+
+  box.innerHTML = `<div class="loading">Loading staff...</div>`;
+  try{
+    const res = await adminFetch("/.netlify/functions/admin-list-users");
+    const data = await res.json();
+    if(!data.ok){
+      box.innerHTML = `<div class="empty">${data.message || "Could not load staff."}</div>`;
+      return;
+    }
+    const users = data.users || [];
+    if(!users.length){
+      box.innerHTML = `<div class="empty">No staff users found.</div>`;
+      return;
+    }
+    box.innerHTML = users.map(user => `
+      <article class="card">
+        <div class="body">
+          <div class="name">${user.name || "Admin"}</div>
+          <div class="meta">
+            📧 ${user.email || "No email"}<br>
+            🛡️ Role: ${roleBadge(user.role)}<br>
+            🚦 Active: ${user.is_active ? "Yes" : "No"}<br>
+            🕒 Created: ${user.created_at ? new Date(user.created_at).toLocaleString() : "N/A"}
+          </div>
+          <div class="tags">
+            <span>${roleBadge(user.role)}</span>
+            <span>${user.is_active ? "ACTIVE" : "DISABLED"}</span>
+          </div>
+          <div class="actions">
+            <button class="approve" onclick="setStaffRole('${user.id}','staff')">Staff</button>
+            <button class="unapprove" onclick="setStaffRole('${user.id}','manager')">Manager</button>
+            <button class="extend-btn" onclick="setStaffRole('${user.id}','owner')">Owner</button>
+            <button class="paid-btn" onclick="toggleStaff('${user.id}',${!user.is_active})">${user.is_active ? "Disable" : "Enable"}</button>
+            <button class="delete" onclick="deleteStaffUser('${user.id}')">Delete</button>
+          </div>
+        </div>
+      </article>
+    `).join("");
+    if(status) status.textContent = "Staff loaded.";
+  }catch(error){
+    box.innerHTML = `<div class="empty">${error.message}</div>`;
+  }
+}
+
+async function createStaffUser(){
+  const status = document.getElementById("staffStatus");
+  const payload = {
+    name: valueOf("staff_name"),
+    email: valueOf("staff_email"),
+    password: document.getElementById("staff_password")?.value || "",
+    role: valueOf("staff_role") || "staff"
+  };
+  if(!payload.name || !payload.email || !payload.password){
+    if(status) status.textContent = "Name, email, and password are required.";
+    return;
+  }
+  if(payload.password.length < 8){
+    if(status) status.textContent = "Password must be at least 8 characters.";
+    return;
+  }
+  if(status) status.textContent = "Creating staff user...";
+  try{
+    const res = await adminFetch("/.netlify/functions/admin-create-user", { method:"POST", body:JSON.stringify(payload) });
+    const data = await res.json();
+    if(!data.ok){ if(status) status.textContent = data.message || "Could not create staff user."; return; }
+    if(status) status.textContent = "Staff user created.";
+    document.getElementById("staff_name").value = "";
+    document.getElementById("staff_email").value = "";
+    document.getElementById("staff_password").value = "";
+    document.getElementById("staff_role").value = "staff";
+    loadStaffUsers();
+  }catch(error){ if(status) status.textContent = error.message; }
+}
+
+async function setStaffRole(id, role){
+  const ok = confirm(`Change this user role to ${role}?`);
+  if(!ok) return;
+  try{
+    const res = await adminFetch("/.netlify/functions/admin-update-user", { method:"POST", body:JSON.stringify({id,role}) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.message || "Role update failed."); return; }
+    loadStaffUsers();
+  }catch(error){ alert(error.message); }
+}
+
+async function toggleStaff(id, is_active){
+  try{
+    const res = await adminFetch("/.netlify/functions/admin-update-user", { method:"POST", body:JSON.stringify({id,is_active}) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.message || "Status update failed."); return; }
+    loadStaffUsers();
+  }catch(error){ alert(error.message); }
+}
+
+async function deleteStaffUser(id){
+  const ok = confirm("Delete this staff account?");
+  if(!ok) return;
+  try{
+    const res = await adminFetch("/.netlify/functions/admin-delete-user", { method:"POST", body:JSON.stringify({id}) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.message || "Delete failed."); return; }
+    loadStaffUsers();
+  }catch(error){ alert(error.message); }
+}
+
+
+
+/* =========================
+ADMIN CONTACT CENTER
+========================= */
+let SITE_SETTINGS_ID = null;
+
+const DEFAULT_ADMIN_CONTACT = {
+  admin_name: "Nairobi Sweets Admin",
+  admin_phone: "+254143616363",
+  admin_whatsapp: "+254143616363",
+  admin_email: "nairobisweets05@gmail.com"
+};
+
+function normalizePhoneForLink(phone){
+  return String(phone || "").replace(/\D/g,"");
+}
+
+function updateAdminContactPreview(){
+  const phone = normalizePhoneForLink(document.getElementById("adminPhone")?.value || "");
+  const whatsapp = normalizePhoneForLink(document.getElementById("adminWhatsapp")?.value || phone);
+  const email = String(document.getElementById("adminEmail")?.value || "").trim();
+
+  const wa = document.getElementById("adminWhatsappPreview");
+  const call = document.getElementById("adminCallPreview");
+  const mail = document.getElementById("adminEmailPreview");
+
+  if(wa) wa.href = whatsapp ? `https://wa.me/${whatsapp}?text=${encodeURIComponent("Hello Nairobi Sweets Admin")}` : "#";
+  if(call) call.href = phone ? `tel:+${phone}` : "#";
+  if(mail) mail.href = email ? `mailto:${email}` : "#";
+}
+
+async function loadAdminContact(){
+  const status = document.getElementById("adminContactStatus");
+
+  try{
+    const { data, error } = await sb
+      .from("site_settings")
+      .select("id,admin_name,admin_phone,admin_whatsapp,admin_email")
+      .order("id",{ascending:true})
+      .limit(1)
+      .maybeSingle();
+
+    if(error) throw error;
+
+    if(data){
+      SITE_SETTINGS_ID = data.id;
+      document.getElementById("adminName").value = data.admin_name || DEFAULT_ADMIN_CONTACT.admin_name;
+      document.getElementById("adminPhone").value = data.admin_phone || DEFAULT_ADMIN_CONTACT.admin_phone;
+      document.getElementById("adminWhatsapp").value = data.admin_whatsapp || DEFAULT_ADMIN_CONTACT.admin_whatsapp;
+      document.getElementById("adminEmail").value = data.admin_email || DEFAULT_ADMIN_CONTACT.admin_email;
+      updateAdminContactPreview();
+      return;
+    }
+
+    document.getElementById("adminName").value = DEFAULT_ADMIN_CONTACT.admin_name;
+    document.getElementById("adminPhone").value = DEFAULT_ADMIN_CONTACT.admin_phone;
+    document.getElementById("adminWhatsapp").value = DEFAULT_ADMIN_CONTACT.admin_whatsapp;
+    document.getElementById("adminEmail").value = DEFAULT_ADMIN_CONTACT.admin_email;
+    updateAdminContactPreview();
+
+    if(status){
+      status.textContent = "Default admin contact loaded. Click Save Admin Contact to store it.";
+      status.style.color = "#ffd54a";
+    }
+  }catch(error){
+    if(status){
+      status.textContent = "Admin contact load error: " + error.message;
+      status.style.color = "#ff6b6b";
+    }
+  }
+}
+
+async function saveAdminContact(){
+  const status = document.getElementById("adminContactStatus");
+
+  const payload = {
+    admin_name: valueOf("adminName") || "Nairobi Sweets Admin",
+    admin_phone: cleanPhone(valueOf("adminPhone")),
+    admin_whatsapp: cleanPhone(valueOf("adminWhatsapp") || valueOf("adminPhone")),
+    admin_email: valueOf("adminEmail"),
+    updated_at: new Date().toISOString()
+  };
+
+  if(!payload.admin_phone || !payload.admin_whatsapp){
+    if(status){
+      status.textContent = "Phone and WhatsApp are required.";
+      status.style.color = "#ff6b6b";
+    }
+    return;
+  }
+
+  try{
+    let error = null;
+
+    if(SITE_SETTINGS_ID){
+      const res = await sb
+        .from("site_settings")
+        .update(payload)
+        .eq("id",SITE_SETTINGS_ID);
+      error = res.error;
+    }else{
+      const res = await sb
+        .from("site_settings")
+        .insert(payload)
+        .select("id")
+        .single();
+      error = res.error;
+      if(res.data) SITE_SETTINGS_ID = res.data.id;
+    }
+
+    if(error) throw error;
+
+    updateAdminContactPreview();
+    await audit("admin_contact_updated","","",`${payload.admin_name} / ${payload.admin_whatsapp}`);
+
+    if(status){
+      status.textContent = "Admin contact updated successfully.";
+      status.style.color = "#22c55e";
+    }
+  }catch(error){
+    if(status){
+      status.textContent = "Admin contact save error: " + error.message;
+      status.style.color = "#ff6b6b";
+    }
+  }
+}
+
+["adminName","adminPhone","adminWhatsapp","adminEmail"].forEach(id=>{
+  document.addEventListener("input",(event)=>{
+    if(event.target && event.target.id === id) updateAdminContactPreview();
+  });
+});
+
+
+async function copyAdminPhone(){
+  const status = document.getElementById("adminContactStatus");
+  const phone = document.getElementById("adminPhone")?.value || DEFAULT_ADMIN_CONTACT.admin_phone;
+
+  try{
+    await navigator.clipboard.writeText(phone);
+    if(status){
+      status.textContent = "Admin phone copied: " + phone;
+      status.style.color = "#22c55e";
+    }
+  }catch(error){
+    if(status){
+      status.textContent = "Copy failed. Number: " + phone;
+      status.style.color = "#ffd54a";
+    }
+  }
+}
+
+/* =========================
+MEDIA WATERMARK PROTECTION
+========================= */
+document.addEventListener("contextmenu",(e)=>{
+  const tag = e.target && e.target.tagName;
+  if(tag === "IMG" || tag === "VIDEO"){
+    e.preventDefault();
+  }
+});
+
+document.addEventListener("dragstart",(e)=>{
+  const tag = e.target && e.target.tagName;
+  if(tag === "IMG" || tag === "VIDEO"){
+    e.preventDefault();
+  }
+});
+
+document.addEventListener("keydown",(e)=>{
+  const key = String(e.key || "").toUpperCase();
+
+  if(
+    e.key === "F12" ||
+    (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(key)) ||
+    (e.ctrlKey && key === "U")
+  ){
+    e.preventDefault();
+  }
+});
+
+if(typeof loadAdminContact === "function") loadAdminContact();
+if(typeof loadProfiles === "function") loadProfiles();
+if(typeof loadStaffUsers === "function") loadStaffUsers();
+if(typeof loadDashboardStats === "function") loadDashboardStats();
+if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
+</script>
+
+</body>
+</html>
