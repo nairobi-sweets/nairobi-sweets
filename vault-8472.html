@@ -3562,11 +3562,11 @@ Manual WhatsApp Web sender for Nairobi Sweets admin number
 const NS_TRIAL_INVITE_MESSAGE = (name, profileLink) => `
 *NAIROBI SWEETS TRIAL INVITATION*
 
-Hello ${name || "there"},
+Hello ${name || "Member"},
 
 We have activated a FREE trial for your Nairobi Sweets profile.
 
-Your profile:
+Your personal profile:
 ${profileLink}
 
 *BENEFITS*
@@ -3574,21 +3574,21 @@ ${profileLink}
 - Featured visibility
 - More profile views
 - Direct WhatsApp inquiries
-- Higher ranking in search
+- Higher ranking in search results
 
 *NEXT STEPS*
 
 1. Upload your best photos
 2. Update your location
-3. Add WhatsApp number
+3. Add your WhatsApp number
 4. Keep your profile active
 
 Questions?
-Reply directly to this WhatsApp message.
+Reply directly to this WhatsApp message and our team will assist you.
 
 Nairobi Sweets Team
 https://nairobi-sweets.com
-`;
+`.trim();
 
 let nsTrialInviteUsers = [];
 let nsTrialInviteIndex = 0;
@@ -3617,10 +3617,14 @@ function cleanTrialInvitePhone(phone){
 }
 
 function profileTrialInviteLink(user){
-  if(user.slug){
-    return `https://nairobi-sweets.com/profile.html?slug=${encodeURIComponent(user.slug)}`;
+  const slug = String(user.slug || "").trim();
+  const id = String(user.id || "").trim();
+
+  if(slug){
+    return `https://nairobi-sweets.com/profile.html?slug=${encodeURIComponent(slug)}`;
   }
-  return `https://nairobi-sweets.com/profile.html?id=${encodeURIComponent(user.id)}`;
+
+  return `https://nairobi-sweets.com/profile.html?id=${encodeURIComponent(id)}`;
 }
 
 async function startTrialWhatsAppQueue(testMode = true){
@@ -3753,6 +3757,7 @@ async function openNextTrialWhatsApp(){
     Opened <b>${nsTrialInviteIndex}</b> of <b>${nsTrialInviteUsers.length}</b><br>
     Current profile: <b>${user.stage_name || "User"}</b><br>
     Phone: <b>${user.number}</b><br>
+    Exact profile link: <a href="${user.profileLink}" target="_blank" rel="noopener" style="color:#25D366;word-break:break-all;">${user.profileLink}</a><br>
     Remaining: <b>${remaining}</b><br><br>
     <button class="trial-invite-btn next" onclick="openNextTrialWhatsApp()">Open Next WhatsApp</button>
     <div class="trial-invite-warning">Only click next after you have pressed Send in WhatsApp.</div>
