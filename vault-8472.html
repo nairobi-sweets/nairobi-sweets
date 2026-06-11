@@ -711,7 +711,7 @@ WHATSAPP TRIAL INVITE QUEUE
   </div>
 
   <div class="trial-invite-note">
-    First click <b>Test With 3 Users</b>. WhatsApp opens one chat at a time with the trial message already filled. Press Send manually, return here, then click <b>Open Next WhatsApp</b>. After the test works, use <b>Load All 216 Users</b>.
+    First click <b>Test With 3 Users</b>. WhatsApp opens one chat at a time with a clean text-only trial message, so emojis will not corrupt into strange symbols. Press Send manually, return here, then click <b>Open Next WhatsApp</b>. After the test works, use <b>Load All 216 Users</b>.
   </div>
 
   <div id="waQueueStatus" class="trial-invite-status">
@@ -3560,23 +3560,31 @@ WHATSAPP TRIAL INVITATION QUEUE
 Manual WhatsApp Web sender for Nairobi Sweets admin number
 ========================= */
 const NS_TRIAL_INVITE_MESSAGE = (name, profileLink) => `
-🌟 Congratulations!
+*NAIROBI SWEETS TRIAL INVITATION*
 
 Hello ${name || "there"},
 
-Nairobi Sweets is offering you a FREE trial profile to help you reach more visitors and increase your visibility.
+We have activated a FREE trial for your Nairobi Sweets profile.
 
 Your profile:
 ${profileLink}
 
-Benefits of your trial:
+*BENEFITS*
 
-✅ Featured exposure
-✅ More profile views
-✅ Direct WhatsApp inquiries
-✅ Increased visibility on Nairobi Sweets
+- Featured visibility
+- More profile views
+- Direct WhatsApp inquiries
+- Higher ranking in search
 
-Questions? Simply reply to this WhatsApp message.
+*NEXT STEPS*
+
+1. Upload your best photos
+2. Update your location
+3. Add WhatsApp number
+4. Keep your profile active
+
+Questions?
+Reply directly to this WhatsApp message.
 
 Nairobi Sweets Team
 https://nairobi-sweets.com
@@ -3683,7 +3691,41 @@ async function startTrialWhatsAppQueue(testMode = true){
   }
 }
 
-function openNextTrialWhatsApp(){
+function markTrialInviteOpenedLocally(user){
+  try{
+    const raw = localStorage.getItem("ns_trial_invites_opened") || "[]";
+    const list = JSON.parse(raw);
+    const id = String(user.id || "");
+    if(id && !list.includes(id)){
+      list.push(id);
+      localStorage.setItem("ns_trial_invites_opened", JSON.stringify(list));
+    }
+  }catch(error){
+    console.warn("Local invite tracking skipped:", error);
+  }
+}
+
+async function markTrialInviteSentInSupabase(user){
+  try{
+    if(!window.sb || !user || !user.id) return;
+
+    const { error } = await sb
+      .from("profiles")
+      .update({
+        trial_invite_sent: true,
+        trial_invite_sent_at: new Date().toISOString()
+      })
+      .eq("id", user.id);
+
+    if(error){
+      console.warn("Supabase invite tracking skipped. Add trial_invite_sent and trial_invite_sent_at columns if you want DB tracking.", error);
+    }
+  }catch(error){
+    console.warn("Supabase invite tracking skipped:", error);
+  }
+}
+
+async function openNextTrialWhatsApp(){
   if(!nsTrialInviteUsers.length){
     setTrialInviteStatus("Start by clicking <b>Test With 3 Users</b> first.");
     return;
@@ -3699,6 +3741,9 @@ function openNextTrialWhatsApp(){
   const waUrl = `https://wa.me/${user.number}?text=${message}`;
 
   window.open(waUrl,"_blank","noopener,noreferrer");
+
+  markTrialInviteOpenedLocally(user);
+  markTrialInviteSentInSupabase(user);
 
   nsTrialInviteIndex++;
 
