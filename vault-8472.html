@@ -443,6 +443,81 @@ WHATSAPP TRIAL INVITE QUEUE
 }
 .trial-invite-status b{color:#ffd54a}
 .trial-invite-warning{color:#fbbf24;margin-top:8px;font-size:13px}
+
+
+/* =========================
+WHATSAPP CONVERSION DASHBOARD
+========================= */
+.wa-conversion-card{
+  border:1px solid rgba(255,213,74,.28);
+  box-shadow:0 0 34px rgba(255,213,74,.08),0 18px 50px rgba(0,0,0,.35);
+}
+.wa-conversion-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:16px;
+}
+.wa-conversion-stat{
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,213,74,.14);
+  border-radius:20px;
+  padding:20px;
+}
+.wa-conversion-stat h3{
+  color:#aaa;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin-bottom:10px;
+}
+.wa-conversion-stat div{
+  color:#ffd54a;
+  font-size:30px;
+  font-weight:950;
+}
+.wa-conversion-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:16px;
+}
+.wa-conversion-actions button{
+  border:0;
+  border-radius:16px;
+  padding:14px 18px;
+  font-size:14px;
+  font-weight:950;
+  cursor:pointer;
+}
+.wa-refresh-btn{background:linear-gradient(145deg,#06b6d4,#22d3ee);color:#00111f}
+.wa-show-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.wa-conversion-list{
+  margin-top:16px;
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,213,74,.14);
+  border-radius:18px;
+  padding:14px;
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.55;
+  max-height:260px;
+  overflow:auto;
+}
+.wa-conversion-row{
+  display:grid;
+  grid-template-columns:1.2fr 1fr 1.2fr;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.wa-conversion-row:last-child{border-bottom:0}
+.wa-mini-btn{width:100%;margin-top:10px;border-radius:14px;padding:13px;font-size:14px;font-weight:900;border:0;cursor:pointer}
+.wa-replied-btn{background:linear-gradient(145deg,#06b6d4,#22d3ee);color:#00111f}
+.wa-converted-btn{background:linear-gradient(145deg,#22c55e,#84cc16);color:#00111f}
+@media(max-width:1000px){.wa-conversion-grid{grid-template-columns:repeat(2,1fr)}.wa-conversion-row{grid-template-columns:1fr}}
+@media(max-width:650px){.wa-conversion-grid{grid-template-columns:1fr}}
+
 @media(max-width:900px){.trial-invite-actions{grid-template-columns:1fr}}
 </style>
 
@@ -718,6 +793,47 @@ WHATSAPP TRIAL INVITE QUEUE
     Ready. Start with the 3-user test before sending to everyone.
   </div>
 </section>
+
+<section class="panel wa-conversion-card">
+  <h2>📈 WhatsApp Conversion Dashboard</h2>
+
+  <div class="wa-conversion-grid">
+    <div class="wa-conversion-stat">
+      <h3>Invited</h3>
+      <div id="waInvited">0</div>
+    </div>
+    <div class="wa-conversion-stat">
+      <h3>Remaining</h3>
+      <div id="waRemaining">0</div>
+    </div>
+    <div class="wa-conversion-stat">
+      <h3>Replied</h3>
+      <div id="waReplied">0</div>
+    </div>
+    <div class="wa-conversion-stat">
+      <h3>Trial Active</h3>
+      <div id="waTrialActive">0</div>
+    </div>
+    <div class="wa-conversion-stat">
+      <h3>Paid / Revenue</h3>
+      <div id="waPaidRevenue">0</div>
+    </div>
+  </div>
+
+  <div class="wa-conversion-actions">
+    <button class="wa-refresh-btn" onclick="loadWhatsAppConversionStats()">🔄 Refresh WhatsApp Stats</button>
+    <button class="wa-show-btn" onclick="loadRecentTrialInvites()">📋 Show Recent Invites</button>
+  </div>
+
+  <div id="waConversionStatus" class="trial-invite-status">
+    Loading WhatsApp campaign stats...
+  </div>
+
+  <div id="waRecentInvites" class="wa-conversion-list" style="display:none;">
+    Recent invite list will appear here.
+  </div>
+</section>
+
 
 <section class="panel bulk-trial-card">
   <h2>✨ Image Quality Command Center</h2>
@@ -1098,6 +1214,7 @@ async function startVaultAfterAuth(){
     if(typeof loadRevenueDashboard === "function") await loadRevenueDashboard();
     if(typeof loadStaffUsers === "function") await loadStaffUsers();
     if(typeof loadAdminContact === "function") await loadAdminContact();
+    if(typeof loadWhatsAppConversionStats === "function") await loadWhatsAppConversionStats();
 
   }catch(error){
     console.error("Vault auth failed:", error);
@@ -1940,6 +2057,8 @@ function renderProfiles(){
             <button class="delete" onclick="deleteProfile('${p.id}')">Delete</button>
             <button class="extend-btn" onclick="extendProfileDays('${p.id}',7)">+7 Days</button>
             <button class="paid-btn" onclick="markProfilePaid('${p.id}')">Mark Paid</button>
+            <button class="wa-mini-btn wa-replied-btn" onclick="markWhatsAppReplied('${p.id}')">💬 Replied</button>
+            <button class="wa-mini-btn wa-converted-btn" onclick="markWhatsAppConvertedPaid('${p.id}')">💎 Converted</button>
             <button class="expire-btn" onclick="markProfileExpired('${p.id}')">Expire</button>
           </div>
 
@@ -3031,6 +3150,7 @@ async function loadDashboardStats(){
     setVaultStat("statPinnedTop", pinnedTopCount.toLocaleString());
     setVaultStat("statHDQuality", hdQualityCount.toLocaleString());
     setVaultStat("statAvgQuality", avgQuality.toLocaleString());
+    if(typeof loadWhatsAppConversionStats === "function") await loadWhatsAppConversionStats();
     setVaultStat("statHero", hero.toLocaleString());
     setVaultStat("statExpiringSoon", expiringSoon.toLocaleString());
     setVaultStat("statWeeklyPotential", "KES " + weeklyPotential.toLocaleString());
@@ -3559,6 +3679,149 @@ if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
 WHATSAPP TRIAL INVITATION QUEUE
 Manual WhatsApp Web sender for Nairobi Sweets admin number
 ========================= */
+
+
+function setWAStat(id,value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value;
+}
+
+async function loadWhatsAppConversionStats(){
+  try{
+    if(!window.sb) return;
+
+    const { data, error } = await sb
+      .from("profiles")
+      .select("id,stage_name,whatsapp,phone,plan,payment_status,revenue_plan_price,trial_active,trial_invite_sent,trial_invite_sent_at,whatsapp_replied,converted_to_paid");
+
+    if(error) throw error;
+
+    const profiles = data || [];
+    const total = profiles.length;
+    const invited = profiles.filter(p => p.trial_invite_sent === true).length;
+    const remaining = profiles.filter(p => p.trial_invite_sent !== true).length;
+    const replied = profiles.filter(p => p.whatsapp_replied === true).length;
+    const trialActive = profiles.filter(p =>
+      p.trial_active === true || String(p.payment_status || "").toLowerCase() === "trial"
+    ).length;
+    const paidRows = profiles.filter(p =>
+      p.converted_to_paid === true || String(p.payment_status || "").toLowerCase() === "paid"
+    );
+    const paid = paidRows.length;
+    const revenue = paidRows.reduce((sum,p)=>sum + Number(p.revenue_plan_price || vaultPlanAmount(p.plan) || 0),0);
+
+    setWAStat("waInvited", invited.toLocaleString());
+    setWAStat("waRemaining", remaining.toLocaleString());
+    setWAStat("waReplied", replied.toLocaleString());
+    setWAStat("waTrialActive", trialActive.toLocaleString());
+    setWAStat("waPaidRevenue", `${paid.toLocaleString()} / KES ${revenue.toLocaleString()}`);
+
+    const status = document.getElementById("waConversionStatus");
+    if(status){
+      status.innerHTML = `
+        📲 Invited: <b>${invited.toLocaleString()}</b><br>
+        ⏳ Remaining: <b>${remaining.toLocaleString()}</b><br>
+        👥 Total Profiles: <b>${total.toLocaleString()}</b><br>
+        💬 Replied: <b>${replied.toLocaleString()}</b><br>
+        🎁 Trial Active: <b>${trialActive.toLocaleString()}</b><br>
+        💎 Paid / Converted: <b>${paid.toLocaleString()}</b><br>
+        💰 Revenue Estimate: <b>KES ${revenue.toLocaleString()}</b>
+      `;
+    }
+  }catch(error){
+    console.error("WhatsApp conversion stats failed:", error);
+    const status = document.getElementById("waConversionStatus");
+    if(status){
+      status.innerHTML = "❌ Could not load WhatsApp conversion stats. Make sure the new tracking columns exist in Supabase.";
+    }
+  }
+}
+
+async function loadRecentTrialInvites(){
+  const box = document.getElementById("waRecentInvites");
+  if(!box) return;
+
+  box.style.display = "block";
+  box.innerHTML = "Loading recent invitations...";
+
+  try{
+    const { data, error } = await sb
+      .from("profiles")
+      .select("stage_name,whatsapp,phone,trial_invite_sent_at,whatsapp_replied,converted_to_paid,payment_status")
+      .eq("trial_invite_sent", true)
+      .order("trial_invite_sent_at", { ascending:false })
+      .limit(50);
+
+    if(error) throw error;
+
+    const rows = data || [];
+
+    if(!rows.length){
+      box.innerHTML = "No invitations recorded yet.";
+      return;
+    }
+
+    box.innerHTML = rows.map(p=>`
+      <div class="wa-conversion-row">
+        <div><b>${p.stage_name || "Profile"}</b><br>${p.whatsapp || p.phone || "No phone"}</div>
+        <div>${p.trial_invite_sent_at ? new Date(p.trial_invite_sent_at).toLocaleString() : "No time"}</div>
+        <div>
+          ${p.whatsapp_replied ? "💬 Replied" : "No reply marked"}<br>
+          ${p.converted_to_paid || String(p.payment_status || "").toLowerCase() === "paid" ? "💎 Paid" : "Not paid yet"}
+        </div>
+      </div>
+    `).join("");
+  }catch(error){
+    console.error(error);
+    box.innerHTML = "❌ Could not load recent invitations.";
+  }
+}
+
+async function markWhatsAppReplied(id){
+  try{
+    const { error } = await sb
+      .from("profiles")
+      .update({ whatsapp_replied:true, whatsapp_replied_at:new Date().toISOString() })
+      .eq("id", id);
+
+    if(error) throw error;
+
+    await audit("WHATSAPP_REPLIED", id, "", "Marked WhatsApp reply from Vault");
+    await loadProfiles();
+    await loadWhatsAppConversionStats();
+    alert("Marked as replied.");
+  }catch(error){
+    console.error(error);
+    alert("Could not mark replied. Run the WhatsApp conversion SQL columns first.");
+  }
+}
+
+async function markWhatsAppConvertedPaid(id){
+  try{
+    const { error } = await sb
+      .from("profiles")
+      .update({
+        converted_to_paid:true,
+        converted_at:new Date().toISOString(),
+        payment_status:"paid",
+        approved:true,
+        is_expired:false
+      })
+      .eq("id", id);
+
+    if(error) throw error;
+
+    await audit("WHATSAPP_CONVERTED_TO_PAID", id, "", "Marked WhatsApp lead as paid conversion from Vault");
+    await loadProfiles();
+    await loadDashboardStats();
+    await loadWhatsAppConversionStats();
+    alert("Marked as converted to paid.");
+  }catch(error){
+    console.error(error);
+    alert("Could not mark converted. Run the WhatsApp conversion SQL columns first.");
+  }
+}
+
 const NS_TRIAL_INVITE_MESSAGE = (name, profileLink) => `
 *NAIROBI SWEETS TRIAL INVITATION*
 
@@ -3638,7 +3901,7 @@ async function startTrialWhatsAppQueue(testMode = true){
 
     let query = sb
       .from("profiles")
-      .select("id, stage_name, slug, whatsapp, phone, location, plan")
+      .select("id, stage_name, slug, whatsapp, phone, location, plan, payment_status, revenue_plan_price, trial_invite_sent, trial_invite_sent_at, trial_invite_count, whatsapp_replied, converted_to_paid")
       .or("whatsapp.not.is.null,phone.not.is.null");
 
     if(testMode){
@@ -3651,7 +3914,7 @@ async function startTrialWhatsAppQueue(testMode = true){
       console.warn("Primary WhatsApp invite query failed, retrying simple query:", error);
       let retry = sb
         .from("profiles")
-        .select("id, stage_name, slug, whatsapp, phone, location, plan");
+        .select("id, stage_name, slug, whatsapp, phone, location, plan, payment_status, revenue_plan_price, trial_invite_sent, trial_invite_sent_at, trial_invite_count, whatsapp_replied, converted_to_paid");
 
       if(testMode){
         retry = retry.limit(3);
@@ -3668,7 +3931,11 @@ async function startTrialWhatsAppQueue(testMode = true){
       return;
     }
 
-    nsTrialInviteUsers = (data || [])
+    const queueRows = testMode
+      ? (data || [])
+      : (data || []).filter(user => user.trial_invite_sent !== true);
+
+    nsTrialInviteUsers = queueRows
       .map(user => ({
         ...user,
         number: cleanTrialInvitePhone(user.whatsapp || user.phone),
@@ -3717,7 +3984,8 @@ async function markTrialInviteSentInSupabase(user){
       .from("profiles")
       .update({
         trial_invite_sent: true,
-        trial_invite_sent_at: new Date().toISOString()
+        trial_invite_sent_at: new Date().toISOString(),
+        trial_invite_count: Number(user.trial_invite_count || 0) + 1
       })
       .eq("id", user.id);
 
@@ -3747,7 +4015,8 @@ async function openNextTrialWhatsApp(){
   window.open(waUrl,"_blank","noopener,noreferrer");
 
   markTrialInviteOpenedLocally(user);
-  markTrialInviteSentInSupabase(user);
+  await markTrialInviteSentInSupabase(user);
+  if(typeof loadWhatsAppConversionStats === "function") await loadWhatsAppConversionStats();
 
   nsTrialInviteIndex++;
 
