@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Nairobi Sweets Vault</title>
-<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="robots" content="noindex,nofollow">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -397,8 +397,6 @@ REVENUE DASHBOARD UPGRADE
 </head>
 
 <body>
-
-<!-- Vault password overlay removed. Access is now handled by Supabase Auth via /vault-login.html. -->
 
 <header>
   <h1>Nairobi Sweets Vault</h1>
@@ -915,71 +913,110 @@ REVENUE DASHBOARD UPGRADE
 
 <script>
 const VAULT_TIMEOUT = 30 * 60 * 1000;
-let vaultSessionStartedAt = Date.now();
 
-async function requireAdminSession(){
-  try{
-    const { data:{ session }, error: sessionError } = await sb.auth.getSession();
+let CURRENT_ADMIN = null;
 
-    if(sessionError || !session || !session.user){
-      window.location.href = "/vault-login.html";
-      return false;
-    }
-
-    const { data: admin, error: adminError } = await sb
-      .from("admin_users")
-      .select("id,name,email,role,is_active,auth_user_id")
-      .eq("auth_user_id", session.user.id)
-      .eq("is_active", true)
-      .maybeSingle();
-
-    if(adminError || !admin){
-      await sb.auth.signOut();
-      window.location.href = "/vault-login.html";
-      return false;
-    }
-
-    localStorage.setItem("ns_admin_email", admin.email || session.user.email || "");
-    localStorage.setItem("ns_admin_name", admin.name || admin.email || session.user.email || "Admin");
-    localStorage.setItem("ns_admin_role", admin.role || "staff");
-    localStorage.setItem("vault_last_activity", String(Date.now()));
-    vaultSessionStartedAt = Date.now();
-
-    return true;
-  }catch(error){
-    console.error("Vault auth guard failed:", error);
-    window.location.href = "/vault-login.html";
-    return false;
+function updateVaultActivity(){
+  if(localStorage.getItem("ns_admin_email")){
+    localStorage.setItem("vault_last_activity",String(Date.now()));
   }
 }
 
-function updateVaultActivity(){
-  localStorage.setItem("vault_last_activity", String(Date.now()));
-}
-
-async function logoutVault(){
+function clearVaultSession(){
+  sessionStorage.clear();
+  localStorage.removeItem("vault_unlocked");
   localStorage.removeItem("vault_last_activity");
   localStorage.removeItem("ns_admin_email");
   localStorage.removeItem("ns_admin_name");
   localStorage.removeItem("ns_admin_role");
-  await sb.auth.signOut();
-  window.location.href = "/vault-login.html";
 }
 
-async function checkVaultTimeout(){
-  const last = Number(localStorage.getItem("vault_last_activity") || vaultSessionStartedAt || 0);
+async function logoutVault(){
+  try{
+    if(window.sb && window.sb.auth){
+      await window.sb.auth.signOut();
+    }
+  }catch(error){
+    console.warn("Supabase sign out warning:",error.message);
+  }
 
-  if(last && Date.now() - last > VAULT_TIMEOUT){
+  clearVaultSession();
+  window.location.replace("/vault-login.html");
+}
+
+function checkVaultTimeout(){
+  const last = Number(localStorage.getItem("vault_last_activity") || 0);
+  if(!last) return;
+
+  if(Date.now() - last > VAULT_TIMEOUT){
     alert("Vault session expired. Please login again.");
-    await logoutVault();
+    logoutVault();
   }
 }
 
-document.addEventListener("DOMContentLoaded", async()=>{
-  const allowed = await requireAdminSession();
-  if(!allowed) return;
+async function requireVaultAdmin(){
+  const { data:{ session }, error: sessionError } = await sb.auth.getSession();
 
+  if(sessionError || !session || !session.user){
+    clearVaultSession();
+    window.location.replace("/vault-login.html");
+    return null;
+  }
+
+  const userId = session.user.id;
+  const userEmail = String(session.user.email || "").toLowerCase();
+
+  let { data: admin, error: adminError } = await sb
+    .from("admin_users")
+    .select("id,name,email,role,is_active,auth_user_id")
+    .eq("auth_user_id",userId)
+    .eq("is_active",true)
+    .maybeSingle();
+
+  /* Fallback for older rows that may not have auth_user_id populated yet. */
+  if(!admin && userEmail){
+    const fallback = await sb
+      .from("admin_users")
+      .select("id,name,email,role,is_active,auth_user_id")
+      .eq("email",userEmail)
+      .eq("is_active",true)
+      .maybeSingle();
+
+    admin = fallback.data;
+    adminError = fallback.error;
+  }
+
+  if(adminError || !admin){
+    clearVaultSession();
+    await sb.auth.signOut();
+    window.location.replace("/vault-login.html");
+    return null;
+  }
+
+  const role = String(admin.role || "staff").toLowerCase();
+  const allowedRoles = ["owner","admin","manager","staff","moderator"];
+
+  if(!allowedRoles.includes(role)){
+    clearVaultSession();
+    await sb.auth.signOut();
+    window.location.replace("/vault-login.html");
+    return null;
+  }
+
+  CURRENT_ADMIN = admin;
+  localStorage.setItem("ns_admin_email",admin.email || userEmail);
+  localStorage.setItem("ns_admin_name",admin.name || admin.email || userEmail);
+  localStorage.setItem("ns_admin_role",role);
   updateVaultActivity();
+
+  return admin;
+}
+
+async function initVault(){
+  const admin = await requireVaultAdmin();
+  if(!admin) return;
+
+  document.body.style.overflow = "auto";
 
   setTimeout(()=>{
     if(typeof loadProfiles === "function") loadProfiles();
@@ -987,7 +1024,11 @@ document.addEventListener("DOMContentLoaded", async()=>{
     if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
     if(typeof loadStaffUsers === "function") loadStaffUsers();
     if(typeof loadAdminContact === "function") loadAdminContact();
-  },500);
+  },300);
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  initVault();
 });
 
 ["mousemove","keydown","click","touchstart"].forEach(eventName=>{
@@ -1015,7 +1056,7 @@ async function audit(action,profileId="",profileName="",details=""){
 }
 
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
 const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 window.sb = sb;
 
