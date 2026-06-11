@@ -9,7 +9,7 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#000814;color:#fff;font-family:Arial,Helvetica,sans-serif;padding-bottom:40px;visibility:hidden}
+body{background:#000814;color:#fff;font-family:Arial,Helvetica,sans-serif;padding-bottom:40px}
 header{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:26px;background:#000;border-bottom:1px solid rgba(255,213,74,.18);position:sticky;top:0;z-index:50}
 h1{color:#ffd54a;font-size:42px;font-weight:900}
 button{border:none;cursor:pointer;font-weight:900}
@@ -394,9 +394,24 @@ REVENUE DASHBOARD UPGRADE
 @media(max-width:1100px){.grid,.cards{grid-template-columns:repeat(2,1fr)}.dashboard-stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){header{flex-direction:column;align-items:flex-start}h1{font-size:30px}.grid,.cards,.edit-grid,.dashboard-stats{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.dashboard-stats{padding:18px}}
 </style>
+
+<style id="vault-auth-guard-style">
+  body{visibility:hidden;}
+  html.vault-authenticated body{visibility:visible;}
+</style>
 </head>
 
 <body>
+
+<div id="vaultLock" style="position:fixed;inset:0;background:#000814;z-index:9999999;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="width:min(450px,95vw);background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.18);border-radius:28px;padding:30px;box-shadow:0 30px 100px rgba(0,0,0,.75);">
+    <h2 style="color:#ffd54a;text-align:center;margin-bottom:12px;font-size:32px;">🔐 Nairobi Sweets Vault</h2>
+    <p style="color:#ddd;text-align:center;margin-bottom:18px;line-height:1.5;">Enter admin password to unlock the vault.</p>
+    <input id="vaultPassword" type="password" placeholder="Enter Admin Password" autocomplete="current-password" style="width:100%;padding:18px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:#08122f;color:white;margin-bottom:14px;outline:none;font-size:16px;">
+    <button onclick="unlockVault()" style="width:100%;padding:18px;border:none;border-radius:16px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;font-weight:900;font-size:16px;cursor:pointer;">Unlock Vault</button>
+    <div id="vaultError" style="margin-top:14px;color:#ff6b6b;font-weight:700;text-align:center;min-height:20px;"></div>
+  </div>
+</div>
 
 <header>
   <h1>Nairobi Sweets Vault</h1>
@@ -912,33 +927,113 @@ REVENUE DASHBOARD UPGRADE
 </div>
 
 <script>
-const VAULT_TIMEOUT = 30 * 60 * 1000;
-let CURRENT_ADMIN = null;
-let VAULT_READY = false;
-
-function updateVaultActivity(){
-  if(VAULT_READY || localStorage.getItem("ns_admin_email")){
-    localStorage.setItem("vault_last_activity",String(Date.now()));
-  }
-}
+const VAULT_TIMEOUT = 15 * 60 * 1000;
+let VAULT_ADMIN = null;
+let VAULT_AUTH_READY = false;
 
 function clearVaultSession(){
   sessionStorage.clear();
-
   localStorage.removeItem("vault_unlocked");
   localStorage.removeItem("vault_last_activity");
   localStorage.removeItem("ns_admin_email");
   localStorage.removeItem("ns_admin_name");
   localStorage.removeItem("ns_admin_role");
+}
 
-  Object.keys(localStorage).forEach((key)=>{
-    if(
-      key.toLowerCase().includes("supabase") ||
-      key.startsWith("sb-")
-    ){
-      localStorage.removeItem(key);
+function showVaultPage(){
+  document.documentElement.classList.add("vault-authenticated");
+  document.body.style.visibility = "visible";
+  document.body.style.overflow = "auto";
+  const lock = document.getElementById("vaultLock");
+  if(lock) lock.remove();
+}
+
+function hideVaultPage(){
+  document.documentElement.classList.remove("vault-authenticated");
+  document.body.style.visibility = "hidden";
+}
+
+function redirectToVaultLogin(){
+  window.location.replace("/vault-login.html?next=/vault-8472.html&t=" + Date.now());
+}
+
+async function requireVaultAdmin(){
+  const { data:{ session }, error:sessionError } = await sb.auth.getSession();
+
+  if(sessionError || !session || !session.user){
+    return null;
+  }
+
+  const allowedRoles = ["owner","admin","manager"];
+
+  let query = sb
+    .from("admin_users")
+    .select("id,name,email,role,is_active,auth_user_id")
+    .eq("is_active", true)
+    .limit(1);
+
+  let { data:admin, error } = await query.eq("auth_user_id", session.user.id).maybeSingle();
+
+  if((error || !admin) && session.user.email){
+    const fallback = await sb
+      .from("admin_users")
+      .select("id,name,email,role,is_active,auth_user_id")
+      .eq("email", session.user.email.toLowerCase())
+      .eq("is_active", true)
+      .maybeSingle();
+
+    admin = fallback.data;
+    error = fallback.error;
+  }
+
+  if(error || !admin){
+    return null;
+  }
+
+  const role = String(admin.role || "").toLowerCase();
+  if(!allowedRoles.includes(role)){
+    return null;
+  }
+
+  VAULT_ADMIN = admin;
+  localStorage.setItem("ns_admin_email", admin.email || session.user.email || "");
+  localStorage.setItem("ns_admin_name", admin.name || admin.email || "Admin");
+  localStorage.setItem("ns_admin_role", role);
+  localStorage.setItem("vault_last_activity", String(Date.now()));
+
+  return admin;
+}
+
+async function startVaultAfterAuth(){
+  if(VAULT_AUTH_READY) return;
+  VAULT_AUTH_READY = true;
+
+  hideVaultPage();
+
+  try{
+    const admin = await requireVaultAdmin();
+
+    if(!admin){
+      clearVaultSession();
+      try{ await sb.auth.signOut(); }catch(e){}
+      redirectToVaultLogin();
+      return;
     }
-  });
+
+    showVaultPage();
+
+    if(typeof loadProfiles === "function") await loadProfiles();
+    if(typeof loadDashboardStats === "function") await loadDashboardStats();
+    if(typeof loadRevenueDashboard === "function") await loadRevenueDashboard();
+    if(typeof loadStaffUsers === "function") await loadStaffUsers();
+    if(typeof loadAdminContact === "function") await loadAdminContact();
+
+  }catch(error){
+    console.error("Vault auth failed:", error);
+    clearVaultSession();
+    try{ await sb.auth.signOut(); }catch(e){}
+    redirectToVaultLogin();
+  }
 }
 
 async function logoutVault(){
@@ -947,152 +1042,50 @@ async function logoutVault(){
       await window.sb.auth.signOut({ scope:"global" });
     }
   }catch(error){
-    console.warn("Supabase sign out warning:",error && error.message ? error.message : error);
+    console.warn("Logout warning:", error);
   }
 
-  VAULT_READY = false;
-  CURRENT_ADMIN = null;
   clearVaultSession();
+
+  try{
+    document.cookie.split(";").forEach(cookie=>{
+      document.cookie = cookie
+        .replace(/^ +/,"")
+        .replace(/=.*/,"=;expires=" + new Date(0).toUTCString() + ";path=/");
+    });
+  }catch(e){}
 
   window.location.replace("/vault-login.html?logout=" + Date.now());
 }
 
-function checkVaultTimeout(){
-  if(!VAULT_READY) return;
-
+async function checkVaultTimeout(){
   const last = Number(localStorage.getItem("vault_last_activity") || 0);
-
-  if(!last){
-    logoutVault();
-    return;
-  }
+  if(!last) return;
 
   if(Date.now() - last > VAULT_TIMEOUT){
     alert("Vault session expired. Please login again.");
-    logoutVault();
-  }
-}
-
-async function requireVaultAdmin(){
-  const { data:{ session }, error: sessionError } = await window.sb.auth.getSession();
-
-  if(sessionError || !session || !session.user){
-    clearVaultSession();
-    window.location.replace("/vault-login.html");
-    return null;
-  }
-
-  const userId = session.user.id;
-  const userEmail = String(session.user.email || "").toLowerCase();
-
-  let { data: admin, error: adminError } = await window.sb
-    .from("admin_users")
-    .select("id,name,email,role,is_active,auth_user_id")
-    .eq("auth_user_id",userId)
-    .eq("is_active",true)
-    .maybeSingle();
-
-  if((!admin || adminError) && userEmail){
-    const fallback = await window.sb
-      .from("admin_users")
-      .select("id,name,email,role,is_active,auth_user_id")
-      .eq("email",userEmail)
-      .eq("is_active",true)
-      .maybeSingle();
-
-    admin = fallback.data;
-    adminError = fallback.error;
-  }
-
-  if(adminError || !admin){
-    clearVaultSession();
-
-    try{
-      await window.sb.auth.signOut({ scope:"global" });
-    }catch(error){}
-
-    window.location.replace("/vault-login.html");
-    return null;
-  }
-
-  const role = String(admin.role || "staff").toLowerCase();
-  const allowedRoles = ["owner","admin","manager"];
-
-  if(!allowedRoles.includes(role)){
-    clearVaultSession();
-
-    try{
-      await window.sb.auth.signOut({ scope:"global" });
-    }catch(error){}
-
-    window.location.replace("/vault-login.html");
-    return null;
-  }
-
-  CURRENT_ADMIN = admin;
-  VAULT_READY = true;
-
-  localStorage.setItem("ns_admin_email",admin.email || userEmail);
-  localStorage.setItem("ns_admin_name",admin.name || admin.email || userEmail);
-  localStorage.setItem("ns_admin_role",role);
-
-  updateVaultActivity();
-
-  return admin;
-}
-
-async function initVault(){
-  try{
-    const admin = await requireVaultAdmin();
-
-    if(!admin) return;
-
-    document.body.style.visibility = "visible";
-    document.body.style.overflow = "auto";
-
-    if(typeof loadAdminContact === "function") loadAdminContact();
-    if(typeof loadProfiles === "function") loadProfiles();
-    if(typeof loadStaffUsers === "function") loadStaffUsers();
-    if(typeof loadDashboardStats === "function") loadDashboardStats();
-    if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
-
-  }catch(error){
-    console.error("Vault auth error:",error);
-
-    clearVaultSession();
-
-    try{
-      if(window.sb && window.sb.auth){
-        await window.sb.auth.signOut({ scope:"global" });
-      }
-    }catch(signOutError){}
-
-    window.location.replace("/vault-login.html");
+    await logoutVault();
   }
 }
 
 ["mousemove","keydown","click","touchstart"].forEach(eventName=>{
-  document.addEventListener(eventName,updateVaultActivity,{passive:true});
-});
-
-window.addEventListener("pageshow",async ()=>{
-  if(!window.sb || !VAULT_READY) return;
-
-  const { data:{ session } } = await window.sb.auth.getSession();
-
-  if(!session){
-    clearVaultSession();
-    window.location.replace("/vault-login.html");
-  }
-});
-
-window.addEventListener("beforeunload",()=>{
-  if(VAULT_READY){
-    localStorage.setItem("vault_last_activity",String(Date.now()));
-  }
+  document.addEventListener(eventName,()=>{
+    if(VAULT_ADMIN){
+      localStorage.setItem("vault_last_activity",String(Date.now()));
+    }
+  },{passive:true});
 });
 
 setInterval(checkVaultTimeout,60000);
+
+window.addEventListener("pageshow", async ()=>{
+  if(!window.sb || !VAULT_AUTH_READY) return;
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){
+    clearVaultSession();
+    redirectToVaultLogin();
+  }
+});
 
 async function audit(action,profileId="",profileName="",details=""){
   try{
@@ -1113,13 +1106,11 @@ async function audit(action,profileId="",profileName="",details=""){
 }
 
 const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRramx2eXludmd0aWpjY2l0dnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDA4MzIsImV4cCI6MjA5MTExNjgzMn0.6wlZCQPJ2En4egpQUo5LAyQhee2hkCQ_tHGxfxbv1EQ";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 const sb = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 window.sb = sb;
 
-window.addEventListener("load",()=>{
-  initVault();
-});
+window.addEventListener("load", startVaultAfterAuth);
 
 const list = document.getElementById("list");
 const statusBox = document.getElementById("status");
@@ -3483,6 +3474,11 @@ document.addEventListener("keydown",(e)=>{
   }
 });
 
+if(typeof loadAdminContact === "function") loadAdminContact();
+if(typeof loadProfiles === "function") loadProfiles();
+if(typeof loadStaffUsers === "function") loadStaffUsers();
+if(typeof loadDashboardStats === "function") loadDashboardStats();
+if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
 </script>
 
 </body>
