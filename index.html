@@ -2438,10 +2438,13 @@ function bindShortsPauseEvents(){
 function renderShorts(list){
   const shortsSection = document.querySelector(".shorts-section");
 
-  const shorts = list
+  // Randomize homepage video shorts on every refresh.
+  // This keeps Nairobi Shorts fresh while still showing video-only profiles.
+  const videoShortsPool = list
     .filter(hasVideo)
-    .filter(profile => isVideo(getVideo(profile)) || String(getVideo(profile)).startsWith("http"))
-    .slice(0,10);
+    .filter(profile => isVideo(getVideo(profile)) || String(getVideo(profile)).startsWith("http"));
+
+  const shorts = randomizeArray(videoShortsPool).slice(0,10);
 
   if(!shorts.length){
     if(shortsSection) shortsSection.style.display = "none";
@@ -2452,7 +2455,11 @@ function renderShorts(list){
 
   if(shortsSection) shortsSection.style.display = "block";
 
-  const movingShorts = shorts.length > 1 ? [...shorts,...shorts] : shorts;
+  // Duplicate the list for endless left-moving scroll, but shuffle each half
+  // so the first visible short changes from refresh to refresh.
+  const movingShorts = shorts.length > 1
+    ? [...randomizeArray(shorts), ...randomizeArray(shorts)]
+    : shorts;
 
   shortsRow.innerHTML = movingShorts.map(profile=>{
     const media = getVideo(profile);
