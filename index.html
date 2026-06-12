@@ -2172,6 +2172,14 @@ function randomizeArray(list){
   return array;
 }
 
+function isNewProfile(profile, days = 7){
+  const created = new Date(profile.created_at || profile.updated_at || 0).getTime();
+  if(!created) return false;
+
+  const ageMs = Date.now() - created;
+  return ageMs >= 0 && ageMs <= days * 24 * 60 * 60 * 1000;
+}
+
 function smartProfileRotation(list, topLimit = 28){
   const ranked = sortByMarketplaceRank(list);
 
@@ -2182,25 +2190,45 @@ function smartProfileRotation(list, topLimit = 28){
   const pinned = ranked.filter(p => p.pinned_top);
   const notPinned = ranked.filter(p => !p.pinned_top);
 
-  const signature = notPinned.filter(isSignatureProfile);
-  const vip = notPinned.filter(p => getPlan(p).includes("vip") && !isSignatureProfile(p));
-  const featured = notPinned.filter(p => {
+  /* NEW PROFILES FIRST:
+     Fresh approved profiles get a visible homepage boost for 7 days.
+     This makes new profiles appear on index immediately after approval instead of being buried by old VIP/trending profiles. */
+  const newest = notPinned
+    .filter(p => isNewProfile(p, 7))
+    .sort((a,b)=>{
+      const dateA = new Date(a.created_at || a.updated_at || 0).getTime() || 0;
+      const dateB = new Date(b.created_at || b.updated_at || 0).getTime() || 0;
+      return dateB - dateA;
+    })
+    .slice(0, 12);
+
+  const newestIds = new Set(newest.map(p => String(p.id)));
+  const remainingPool = notPinned.filter(p => !newestIds.has(String(p.id)));
+
+  const signature = remainingPool.filter(isSignatureProfile);
+  const vip = remainingPool.filter(p => getPlan(p).includes("vip") && !isSignatureProfile(p));
+  const featured = remainingPool.filter(p => {
     const plan = getPlan(p);
     return !isSignatureProfile(p) && !plan.includes("vip");
   });
 
   const topPool = [
-    ...signature.slice(0, Math.ceil(topLimit * 0.35)),
-    ...vip.slice(0, Math.ceil(topLimit * 0.40)),
-    ...featured.slice(0, Math.ceil(topLimit * 0.25))
+    ...signature.slice(0, Math.ceil(topLimit * 0.30)),
+    ...vip.slice(0, Math.ceil(topLimit * 0.35)),
+    ...featured.slice(0, Math.ceil(topLimit * 0.20))
   ];
 
   const topPoolIds = new Set(topPool.map(p => String(p.id)));
-  const remaining = ranked.filter(p => !topPoolIds.has(String(p.id)) && !p.pinned_top);
+  const remaining = ranked.filter(p =>
+    !topPoolIds.has(String(p.id)) &&
+    !newestIds.has(String(p.id)) &&
+    !p.pinned_top
+  );
 
-  // Pinned profiles remain first, but the main marketplace cards rotate on every refresh.
+  // Pinned profiles stay first, new profiles get immediate visibility, then rotating VIP/Signature pool.
   return [
     ...randomizeArray(pinned),
+    ...newest,
     ...randomizeArray(topPool),
     ...remaining
   ];
@@ -2555,6 +2583,7 @@ function renderProfiles(data){
 
         <div class="card-badge-rail">
           <span class="card-chip online-mini" title="Online Now"></span>
+          ${isNewProfile(profile, 7) ? `<span class="card-chip rank">🆕 NEW</span>` : ""}
           ${profile.pinned_top ? `<span class="card-chip pinned">👑 PINNED</span>` : ``}
           ${index < 3 ? `<span class="card-chip rank">${index === 0 ? '🥇 #1' : index === 1 ? '🥈 #2' : '🥉 #3'}</span>` : ``}
           ${profile.verified ? `<span class="card-chip verified">✔ VERIFIED</span>` : ``}
@@ -2708,13 +2737,14 @@ async function loadProfiles(){
     .select("*")
     .eq("approved",true)
     .or("is_expired.eq.false,is_expired.is.null")
+    /* Fetch newest first so fresh approved profiles are available for homepage boost. */
+    .order("created_at",{ascending:false})
     .order("pinned_top",{ascending:false})
     .order("boost_score",{ascending:false})
     .order("verified",{ascending:false})
     .order("plan_rank",{ascending:false})
     .order("trending_score",{ascending:false})
-    .order("last_active",{ascending:false})
-    .order("created_at",{ascending:false});
+    .order("last_active",{ascending:false});
 
   if(error){
     profilesEl.innerHTML = `<div class="empty" style="color:#ff5b5b;">Supabase error: ${error.message}</div>`;
