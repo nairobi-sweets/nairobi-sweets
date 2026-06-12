@@ -19,13 +19,14 @@ exports.handler = async function () {
 
     const { data: expiredProfiles, error: fetchError } = await supabase
       .from("profiles")
-      .select("id, stage_name, plan_expires_at, payment_status")
+      .select("id, stage_name, expiry_date, payment_status, trial_active")
       .eq("is_expired", false)
-      .not("plan_expires_at", "is", null)
-      .lt("plan_expires_at", now);
+      .not("expiry_date", "is", null)
+      .lt("expiry_date", now);
 
     if (fetchError) {
       console.log("Fetch expired profiles error:", fetchError);
+
       return json(500, {
         success: false,
         error: fetchError.message,
@@ -40,22 +41,29 @@ exports.handler = async function () {
       });
     }
 
-    const ids = expiredProfiles.map((p) => p.id);
+    const ids = expiredProfiles.map((profile) => profile.id);
 
     const { error: updateError } = await supabase
       .from("profiles")
       .update({
         is_expired: true,
         approved: false,
+        online: false,
+
+        trial_active: false,
         payment_status: "expired",
+        plan_status: "expired",
+
         boost_score: 0,
         trending_score: 0,
+
         updated_at: now,
       })
       .in("id", ids);
 
     if (updateError) {
       console.log("Expire update error:", updateError);
+
       return json(500, {
         success: false,
         error: updateError.message,
@@ -68,6 +76,7 @@ exports.handler = async function () {
       expired_count: expiredProfiles.length,
       expired_profiles: expiredProfiles,
     });
+
   } catch (error) {
     console.log("Auto-expire fatal error:", error);
 
