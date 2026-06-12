@@ -519,6 +519,19 @@ WHATSAPP CONVERSION DASHBOARD
 @media(max-width:650px){.wa-conversion-grid{grid-template-columns:1fr}}
 
 @media(max-width:900px){.trial-invite-actions{grid-template-columns:1fr}}
+
+
+/* =========================
+ADMIN CREATE CLIENT LOGIN
+========================= */
+.client-login-card{border:1px solid rgba(34,197,94,.28);box-shadow:0 0 34px rgba(34,197,94,.08),0 18px 50px rgba(0,0,0,.35)}
+.client-login-help{grid-column:1/-1;background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.18);border-radius:16px;padding:14px;color:#86efac;font-size:13px;font-weight:900;line-height:1.5}
+.client-login-message{margin-top:14px;background:rgba(0,0,0,.30);border:1px solid rgba(255,213,74,.16);border-radius:18px;padding:16px;color:#fff;font-size:14px;font-weight:800;line-height:1.65;white-space:pre-wrap;display:none}
+.client-login-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.client-login-actions button,.client-login-actions a{border:0;border-radius:999px;padding:12px 16px;font-size:14px;font-weight:950;text-decoration:none;cursor:pointer}
+.copy-login-btn{background:linear-gradient(145deg,#06b6d4,#22d3ee);color:#00111f}
+.wa-login-btn{background:linear-gradient(145deg,#25D366,#128C7E);color:#fff}
+
 </style>
 
 <style id="vault-auth-guard-style">
@@ -865,6 +878,14 @@ WHATSAPP CONVERSION DASHBOARD
   <input id="outcall_price" placeholder="Outcall price">
   <input id="services" placeholder="Services tags, comma separated">
 
+  <div class="client-login-help">
+    Optional: create a client login at the same time. Fill email, username and temporary password. Leave blank if you only want to create a normal admin-managed profile.
+  </div>
+  <input id="client_email" type="email" placeholder="Client email for login, optional">
+  <input id="client_username" placeholder="Client username, optional">
+  <input id="client_temp_password" type="text" placeholder="Temporary password, optional">
+  <label class="checkrow"><input type="checkbox" id="client_force_password_change" checked> Ask client to change password after login</label>
+
   <select id="plan">
     <option value="featured">Featured</option>
     <option value="vip">VIP</option>
@@ -927,6 +948,11 @@ WHATSAPP CONVERSION DASHBOARD
 <div class="preview" id="preview"></div>
 <button class="add" onclick="addProfile()">Add Profile</button>
 <div class="status" id="status"></div>
+<div id="clientLoginMessage" class="client-login-message"></div>
+<div id="clientLoginActions" class="client-login-actions" style="display:none;">
+  <button class="copy-login-btn" type="button" onclick="copyClientLoginMessage()">📋 Copy Login Message</button>
+  <a id="clientLoginWhatsapp" class="wa-login-btn" href="#" target="_blank" rel="noopener">💬 Send Login On WhatsApp</a>
+</div>
 </section>
 
 <section class="panel">
@@ -1677,6 +1703,102 @@ document.getElementById("edit_likes_count").addEventListener("input",()=>syncRan
 document.getElementById("edit_views_count").addEventListener("input",()=>syncRanking("edit_"));
 document.getElementById("edit_boost_score").addEventListener("input",()=>syncRanking("edit_"));
 
+
+let LAST_CLIENT_LOGIN_MESSAGE = "";
+
+function randomTempPassword(){
+  const stamp = String(Date.now()).slice(-5);
+  return "NS" + new Date().getFullYear() + "#" + stamp;
+}
+
+function ensureClientLoginDefaults(){
+  const name = valueOf("stage_name");
+  const usernameEl = document.getElementById("client_username");
+  const passEl = document.getElementById("client_temp_password");
+
+  if(usernameEl && !usernameEl.value.trim() && name){
+    usernameEl.value = makeSlug(name).replace(/-/g,"").slice(0,20);
+  }
+
+  if(passEl && !passEl.value.trim()){
+    passEl.value = randomTempPassword();
+  }
+}
+
+["stage_name","client_email"].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener("blur",ensureClientLoginDefaults);
+});
+
+function showClientLoginMessage(message, phone){
+  LAST_CLIENT_LOGIN_MESSAGE = message || "";
+  const box = document.getElementById("clientLoginMessage");
+  const actions = document.getElementById("clientLoginActions");
+  const wa = document.getElementById("clientLoginWhatsapp");
+
+  if(box){
+    box.style.display = message ? "block" : "none";
+    box.textContent = message || "";
+  }
+
+  if(actions) actions.style.display = message ? "flex" : "none";
+
+  if(wa){
+    const clean = cleanPhone(phone || valueOf("phone"));
+    wa.href = clean ? `https://wa.me/${clean}?text=${encodeURIComponent(message || "")}` : "#";
+  }
+}
+
+async function copyClientLoginMessage(){
+  if(!LAST_CLIENT_LOGIN_MESSAGE){
+    alert("No login message to copy yet.");
+    return;
+  }
+
+  try{
+    await navigator.clipboard.writeText(LAST_CLIENT_LOGIN_MESSAGE);
+    alert("Client login message copied.");
+  }catch(error){
+    alert("Copy failed. You can select the message and copy manually.");
+  }
+}
+
+async function createClientProfileLogin(profilePayload){
+  const sessionData = await sb.auth.getSession();
+  const token = sessionData?.data?.session?.access_token;
+
+  if(!token){
+    throw new Error("Admin session missing. Please login to the vault again.");
+  }
+
+  const body = {
+    profile: profilePayload,
+    account: {
+      email: valueOf("client_email").toLowerCase(),
+      username: valueOf("client_username").toLowerCase(),
+      password: valueOf("client_temp_password"),
+      force_password_change: checkedOf("client_force_password_change")
+    }
+  };
+
+  const response = await fetch("/.netlify/functions/admin-create-client-login",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer " + token
+    },
+    body:JSON.stringify(body)
+  });
+
+  const result = await response.json().catch(()=>({}));
+
+  if(!response.ok){
+    throw new Error(result.error || "Could not create client login.");
+  }
+
+  return result;
+}
+
 async function addProfile(){
   statusBox.textContent = "Saving profile...";
 
@@ -1766,6 +1888,31 @@ async function addProfile(){
       created_at: new Date().toISOString()
     };
 
+    const wantsClientLogin = valueOf("client_email") || valueOf("client_username") || valueOf("client_temp_password");
+
+    if(wantsClientLogin){
+      ensureClientLoginDefaults();
+
+      if(!valueOf("client_email") || !valueOf("client_username") || !valueOf("client_temp_password")){
+        statusBox.textContent = "To create client login, fill email, username and temporary password.";
+        return;
+      }
+
+      payload.email = valueOf("client_email").toLowerCase();
+      payload.username = valueOf("client_username").toLowerCase();
+      payload.login_username = valueOf("client_username").toLowerCase();
+      payload.must_change_password = checkedOf("client_force_password_change");
+
+      const result = await createClientProfileLogin(payload);
+
+      statusBox.textContent = "Profile and client login created successfully.";
+      showClientLoginMessage(result.whatsapp_message, phoneClean);
+      await audit("add_client_profile_login",result.profile_id || "",stageName,"Profile plus login created");
+      clearForm();
+      loadProfiles();
+      return;
+    }
+
     const { error } = await sb.from("profiles").insert(payload);
 
     if(error){
@@ -1774,6 +1921,7 @@ async function addProfile(){
     }
 
     statusBox.textContent = "Profile saved successfully.";
+    showClientLoginMessage("", "");
     await audit("add_profile","",stageName,"Profile created");
     clearForm();
     loadProfiles();
@@ -1787,7 +1935,7 @@ function clearForm(){
   [
     "stage_name","phone","location","age","photo_url","video_url","slug",
     "availability","languages","nationality","orientation","height",
-    "incall_price","outcall_price","services","bio","about","last_active","plan_started_at","plan_expires_at","signature_banner_url","verification_note"
+    "incall_price","outcall_price","services","client_email","client_username","client_temp_password","bio","about","last_active","plan_started_at","plan_expires_at","signature_banner_url","verification_note"
   ].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value = "";
