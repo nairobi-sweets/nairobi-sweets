@@ -28,7 +28,6 @@ body{
     linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
   font-family:Inter,ui-sans-serif,system-ui,sans-serif;
 }
-
 .glass{
   background:rgba(9,14,28,.78);
   border:1px solid rgba(255,255,255,.09);
@@ -36,7 +35,6 @@ body{
   -webkit-backdrop-filter:blur(18px);
   box-shadow:0 24px 70px rgba(0,0,0,.36);
 }
-
 .input{
   width:100%;
   padding:14px 16px;
@@ -46,39 +44,32 @@ body{
   color:white;
   outline:none;
 }
-
 .input:focus{
   border-color:rgba(250,204,21,.65);
   box-shadow:0 0 0 3px rgba(250,204,21,.10);
 }
-
 .btn{
   border-radius:18px;
   transition:.18s ease;
   font-weight:900;
 }
-
 .btn:hover{
   transform:translateY(-1px);
   filter:brightness(1.05);
 }
-
 .btn-gold{
   background:linear-gradient(135deg,#facc15,#f59e0b);
   color:#111827;
 }
-
 .btn-dark{
   background:rgba(255,255,255,.07);
   border:1px solid rgba(255,255,255,.09);
   color:white;
 }
-
 .btn-pink{
   background:linear-gradient(135deg,#ff5fb1,#e6257f);
   color:white;
 }
-
 .divider{
   display:flex;
   align-items:center;
@@ -86,7 +77,6 @@ body{
   color:#94a3b8;
   font-size:13px;
 }
-
 .divider::before,
 .divider::after{
   content:"";
@@ -126,12 +116,14 @@ body{
       Continue with Google
     </button>
 
-    <div class="divider">or login with email</div>
+    <div class="divider">or login with username</div>
 
-    <input id="email" type="email" placeholder="Email" class="input">
-    <input id="password" type="password" placeholder="Password" class="input">
+    <input id="username" type="text" placeholder="Username" class="input" autocomplete="username">
+    <input id="password" type="password" placeholder="Password" class="input" autocomplete="current-password">
 
-    <a id="forgotPassword" href="#" class="text-yellow-300 text-sm text-center block hover:text-yellow-200">Forgot Password?</a>
+    <a id="forgotPassword" href="#" class="text-yellow-300 text-sm text-center block hover:text-yellow-200">
+      Forgot Password?
+    </a>
 
     <label class="flex items-center gap-2 text-sm text-slate-300 justify-center">
       <input id="rememberMe" type="checkbox" checked class="accent-yellow-300">
@@ -166,7 +158,7 @@ const OWNER_EMAILS = [
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const emailInput = document.getElementById("email");
+const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
 const loginBtn = document.getElementById("loginBtn");
 const googleBtn = document.getElementById("googleBtn");
@@ -186,7 +178,6 @@ function showMsg(text, type = "normal"){
 function isOwner(email){
   return OWNER_EMAILS.includes(String(email || "").toLowerCase());
 }
-
 
 async function logLoginEvent(eventType,email,details=""){
   try{
@@ -257,43 +248,63 @@ async function routeUser(user){
 }
 
 async function login(){
-  const email = emailInput.value.trim();
+  const username = usernameInput.value.trim().toLowerCase();
   const password = passwordInput.value.trim();
 
   showMsg("");
 
-  if(!email || !password){
-    showMsg("Enter your email and password.", "error");
+  if(!username || !password){
+    showMsg("Enter your username and password.", "error");
     return;
   }
 
   loginBtn.disabled = true;
   loginBtn.textContent = "Logging in...";
   localStorage.setItem("nairobi_sweets_remember_login", rememberMe?.checked ? "true" : "false");
-  showMsg("Logging in...");
+  showMsg("Checking username...");
 
-  const { data, error } = await sb.auth.signInWithPassword({
-    email,
-    password
-  });
+  try{
+    const { data: profile, error: profileError } = await sb
+      .from("profiles")
+      .select("email")
+      .eq("username", username)
+      .maybeSingle();
 
-  if(error){
-    await logLoginEvent("login_failed",email,error.message);
-    showMsg(error.message, "error");
+    if(profileError){
+      throw new Error(profileError.message);
+    }
+
+    if(!profile?.email){
+      throw new Error("Username not found.");
+    }
+
+    showMsg("Logging in...");
+
+    const { data, error } = await sb.auth.signInWithPassword({
+      email: profile.email,
+      password
+    });
+
+    if(error){
+      await logLoginEvent("login_failed",profile.email,error.message);
+      throw new Error("Wrong username or password.");
+    }
+
+    await logLoginEvent("login_success",profile.email,"Username login successful");
+    showMsg("Login successful. Redirecting...", "success");
+    await routeUser(data.user);
+
+  }catch(error){
+    showMsg(error.message || "Login failed.", "error");
     loginBtn.disabled = false;
     loginBtn.textContent = "Login";
-    return;
   }
-
-  await logLoginEvent("login_success",email,"Email login successful");
-  showMsg("Login successful. Redirecting...", "success");
-  await routeUser(data.user);
 }
 
 async function loginWithGoogle(){
   showMsg("Opening Google login...");
 
-  await logLoginEvent("google_login_started",emailInput.value.trim(),"Google OAuth started");
+  await logLoginEvent("google_login_started","unknown","Google OAuth started");
 
   const { error } = await sb.auth.signInWithOAuth({
     provider: "google",
@@ -303,7 +314,7 @@ async function loginWithGoogle(){
   });
 
   if(error){
-    await logLoginEvent("login_failed",email,error.message);
+    await logLoginEvent("login_failed","google",error.message);
     showMsg(error.message, "error");
   }
 }
@@ -312,7 +323,6 @@ async function checkExistingSession(){
   const { data, error } = await sb.auth.getSession();
 
   if(error){
-    await logLoginEvent("login_failed",email,error.message);
     showMsg(error.message, "error");
     return;
   }
@@ -323,35 +333,54 @@ async function checkExistingSession(){
   }
 }
 
-
 async function sendPasswordReset(event){
   event.preventDefault();
 
-  const email = emailInput.value.trim();
+  const username = usernameInput.value.trim().toLowerCase();
 
-  if(!email){
-    showMsg("Enter your email first, then tap Forgot Password.","error");
-    emailInput.focus();
+  if(!username){
+    showMsg("Enter your username first, then tap Forgot Password.","error");
+    usernameInput.focus();
     return;
   }
 
   forgotPassword.textContent = "Sending reset link...";
-  showMsg("Sending password reset email...");
+  showMsg("Finding your account...");
 
-  const { error } = await sb.auth.resetPasswordForEmail(email,{
-    redirectTo:`${window.location.origin}/reset-password.html`
-  });
+  try{
+    const { data: profile, error: profileError } = await sb
+      .from("profiles")
+      .select("email")
+      .eq("username", username)
+      .maybeSingle();
 
-  forgotPassword.textContent = "Forgot Password?";
+    if(profileError){
+      throw new Error(profileError.message);
+    }
 
-  if(error){
-    await logLoginEvent("password_reset_failed",email,error.message);
-    showMsg(error.message,"error");
-    return;
+    if(!profile?.email){
+      throw new Error("Username not found.");
+    }
+
+    showMsg("Sending password reset email...");
+
+    const { error } = await sb.auth.resetPasswordForEmail(profile.email,{
+      redirectTo:`${window.location.origin}/reset-password.html`
+    });
+
+    if(error){
+      await logLoginEvent("password_reset_failed",profile.email,error.message);
+      throw error;
+    }
+
+    await logLoginEvent("password_reset_requested",profile.email,"Password reset requested");
+    showMsg("Password reset email sent. Check your inbox.","success");
+
+  }catch(error){
+    showMsg(error.message || "Password reset failed.","error");
+  }finally{
+    forgotPassword.textContent = "Forgot Password?";
   }
-
-  await logLoginEvent("password_reset_requested",email,"Password reset requested");
-  showMsg("Password reset email sent. Check your inbox.","success");
 }
 
 loginBtn.addEventListener("click", login);
@@ -362,7 +391,7 @@ passwordInput.addEventListener("keydown", (e) => {
   if(e.key === "Enter") login();
 });
 
-emailInput.addEventListener("keydown", (e) => {
+usernameInput.addEventListener("keydown", (e) => {
   if(e.key === "Enter") login();
 });
 
