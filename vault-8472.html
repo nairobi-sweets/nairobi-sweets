@@ -569,6 +569,30 @@ CLIENT LOGIN AUTO-CREATOR
   word-break:break-word;
 }
 
+.client-login-details{
+  background:rgba(0,0,0,.24);
+  border:1px solid rgba(37,211,102,.18);
+  border-radius:14px;
+  padding:10px;
+  margin-bottom:10px;
+}
+.client-login-row{
+  display:grid;
+  grid-template-columns:72px 1fr;
+  gap:8px;
+  align-items:start;
+  color:#d8ffe6;
+  font-size:12px;
+  line-height:1.35;
+  font-weight:900;
+  word-break:break-word;
+  margin-bottom:7px;
+}
+.client-login-row:last-child{margin-bottom:0}
+.client-login-row b{color:#25D366}
+.client-login-reset{background:linear-gradient(145deg,#a855f7,#ec4899);color:#fff}
+.client-login-send{background:linear-gradient(145deg,#06b6d4,#22d3ee);color:#00111f}
+
 </style>
 
 <style id="vault-auth-guard-style">
@@ -2139,15 +2163,7 @@ function renderProfiles(){
 
           <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.trial_expires_at || p.plan_expires_at || p.expires_at || p.expiry_date || "")}','${p.id}','${escapeAttr(p.slug || "")}')">📲 Send Renewal Reminder</button>
 
-          <div class="client-login-box">
-            <h4>👤 Client Login</h4>
-            <p>Create username + password automatically, then open WhatsApp with the login message ready.</p>
-            <div class="client-login-actions">
-              <button class="client-login-btn client-login-create" onclick="createClientLoginAndWhatsApp('${p.id}')">👤 Create Login + Open WhatsApp</button>
-              <button class="client-login-btn client-login-copy" onclick="copyLastClientLoginMessage('${p.id}')">📋 Copy Last Login Message</button>
-            </div>
-            <div class="client-login-status" id="client_login_status_${p.id}"></div>
-          </div>
+          ${clientLoginBoxHTML(p)}
         </div>
       </article>
     `;
@@ -2182,6 +2198,43 @@ function setClientLoginStatus(profileId,text,isError=false){
   if(!box) return;
   box.style.color = isError ? "#ff6b6b" : "#25D366";
   box.textContent = text || "";
+}
+
+function clientLoginBoxHTML(p){
+  const hasLogin = Boolean(p.username || p.user_id || (p.email && String(p.email).includes("@clients.nairobi-sweets.com")));
+  const username = escapeAttr(p.username || "Not created yet");
+  const email = escapeAttr(p.email || "Not created yet");
+
+  if(hasLogin){
+    return `
+      <div class="client-login-box">
+        <h4>👤 Client Login</h4>
+        <p>This profile already has a login. Send the login reminder, copy it, or reset the password.</p>
+        <div class="client-login-details">
+          <div class="client-login-row"><b>Username</b><span>${username}</span></div>
+          <div class="client-login-row"><b>Email</b><span>${email}</span></div>
+        </div>
+        <div class="client-login-actions">
+          <button class="client-login-btn client-login-send" onclick="sendExistingClientLogin('${p.id}')">💬 Send Existing Login</button>
+          <button class="client-login-btn client-login-copy" onclick="copyExistingClientLogin('${p.id}')">📋 Copy Login</button>
+          <button class="client-login-btn client-login-reset" onclick="resetClientLoginPassword('${p.id}')">🔑 Reset Password + WhatsApp</button>
+        </div>
+        <div class="client-login-status" id="client_login_status_${p.id}"></div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="client-login-box">
+      <h4>👤 Client Login</h4>
+      <p>Create username + password automatically, then open WhatsApp with the login message ready.</p>
+      <div class="client-login-actions">
+        <button class="client-login-btn client-login-create" onclick="createClientLoginAndWhatsApp('${p.id}')">👤 Create Login + Open WhatsApp</button>
+        <button class="client-login-btn client-login-copy" onclick="copyLastClientLoginMessage('${p.id}')">📋 Copy Last Login Message</button>
+      </div>
+      <div class="client-login-status" id="client_login_status_${p.id}"></div>
+    </div>
+  `;
 }
 
 function makeClientUsername(profile){
@@ -2265,6 +2318,108 @@ async function createClientLoginAndWhatsApp(profileId){
   }catch(error){
     setClientLoginStatus(profileId,error.message || "Login creation failed.",true);
     alert(error.message || "Login creation failed.");
+  }
+}
+
+
+function buildExistingLoginMessage(profile){
+  return `Welcome to Nairobi Sweets
+
+Your account is ready.
+
+Login:
+https://nairobi-sweets.com/login.html
+
+Username: ${profile.username || "your username"}
+
+If you forgot your password, contact Nairobi Sweets admin for reset.`;
+}
+
+async function sendExistingClientLogin(profileId){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(profileId));
+  if(!profile){
+    alert("Profile not found. Refresh Vault and try again.");
+    return;
+  }
+
+  const message = buildExistingLoginMessage(profile);
+  saveClientLoginMessage(profileId,message);
+  setClientLoginStatus(profileId,"Opening WhatsApp with existing login...");
+
+  const phone = cleanPhone(profile.whatsapp || profile.phone || "");
+  if(!phone){
+    await navigator.clipboard?.writeText(message).catch(()=>{});
+    alert("Client phone is missing, so the login message was copied instead.");
+    return;
+  }
+
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`,"_blank","noopener,noreferrer");
+}
+
+async function copyExistingClientLogin(profileId){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(profileId));
+  if(!profile){
+    alert("Profile not found. Refresh Vault and try again.");
+    return;
+  }
+
+  const message = buildExistingLoginMessage(profile);
+  saveClientLoginMessage(profileId,message);
+
+  try{
+    await navigator.clipboard.writeText(message);
+    setClientLoginStatus(profileId,"Existing login copied.");
+  }catch(error){
+    prompt("Copy this login message:",message);
+  }
+}
+
+async function resetClientLoginPassword(profileId){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(profileId));
+  if(!profile){
+    alert("Profile not found. Refresh Vault and try again.");
+    return;
+  }
+
+  const passwordDefault = makeClientPassword();
+  const password = prompt("New temporary password:", passwordDefault);
+  if(!password) return;
+
+  setClientLoginStatus(profileId,"Resetting password...");
+
+  try{
+    const response = await fetch("/.netlify/functions/admin-reset-client-password",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        profileId:Number(profile.id),
+        password:String(password).trim()
+      })
+    });
+
+    const result = await response.json().catch(()=>({}));
+
+    if(!response.ok || result.success !== true){
+      throw new Error(result.message || "Could not reset password.");
+    }
+
+    const message = result.loginMessage || result.login_message || `Welcome to Nairobi Sweets\n\nYour password has been reset.\n\nLogin:\nhttps://nairobi-sweets.com/login.html\n\nUsername: ${profile.username || result.username || "your username"}\nPassword: ${password}\n\nPlease login and change your password.`;
+
+    saveClientLoginMessage(profileId,message);
+    setClientLoginStatus(profileId,"Password reset. Opening WhatsApp...");
+
+    const waUrl = result.whatsappUrl || result.whatsappLink || "";
+    if(waUrl){
+      window.open(waUrl,"_blank","noopener,noreferrer");
+    }else{
+      await navigator.clipboard?.writeText(message).catch(()=>{});
+      alert("Password reset. Client phone is missing, so the message was copied instead.");
+    }
+
+    loadProfiles();
+  }catch(error){
+    setClientLoginStatus(profileId,error.message || "Password reset failed.",true);
+    alert(error.message || "Password reset failed.");
   }
 }
 
