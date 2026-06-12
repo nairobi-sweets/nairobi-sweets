@@ -4374,6 +4374,292 @@ async function openNextTrialWhatsApp(){
     <div class="trial-invite-warning">Only click next after you have pressed Send in WhatsApp.</div>
   `);
 }
+
+
+/* ==========================================================
+   FULL CLIENT ACCOUNT MANAGER OVERRIDE
+   Added: login lookup, resend, copy, reset, disable, enable
+========================================================== */
+function clientAccountSafe(v){
+  return escapeAttr(v || "");
+}
+
+function clientLoginBoxHTML(p){
+  const hasLogin = Boolean(p.username || p.user_id || (p.email && String(p.email).includes("@clients.nairobi-sweets.com")));
+  const username = clientAccountSafe(p.username || "Not created yet");
+  const email = clientAccountSafe(p.email || "Not created yet");
+  const lastLogin = p.last_login_at ? new Date(p.last_login_at).toLocaleString() : "Never / not recorded";
+  const statusText = hasLogin ? "Active or pending check" : "No client login yet";
+
+  return `
+    <div class="client-login-box">
+      <h4>🔐 Client Account Manager</h4>
+      <p>Manage this client's login without opening Supabase. Create, resend, copy, reset, disable or enable the client account.</p>
+
+      <div class="client-login-details" id="client_login_details_${p.id}">
+        <div class="client-login-row"><b>Status</b><span>${statusText}</span></div>
+        <div class="client-login-row"><b>Username</b><span>${username}</span></div>
+        <div class="client-login-row"><b>Email</b><span>${email}</span></div>
+        <div class="client-login-row"><b>Last Login</b><span>${clientAccountSafe(lastLogin)}</span></div>
+      </div>
+
+      <div class="client-login-actions">
+        <button class="client-login-btn client-login-create" onclick="createClientLoginAndWhatsApp('${p.id}')">👤 Create / Send Login</button>
+        <button class="client-login-btn client-login-send" onclick="sendExistingClientLogin('${p.id}')">💬 Send Login</button>
+        <button class="client-login-btn client-login-copy" onclick="copyExistingClientLogin('${p.id}')">📋 Copy Login</button>
+        <button class="client-login-btn client-login-reset" onclick="resetClientLoginPassword('${p.id}')">🔑 Reset Password + WhatsApp</button>
+        <button class="client-login-btn" style="background:linear-gradient(145deg,#ef4444,#f97316);color:#fff" onclick="disableClientLogin('${p.id}')">🚫 Disable Login</button>
+        <button class="client-login-btn" style="background:linear-gradient(145deg,#22c55e,#84cc16);color:#00111f" onclick="enableClientLogin('${p.id}')">✅ Enable Login</button>
+      </div>
+
+      <div class="client-login-status" id="client_login_status_${p.id}"></div>
+    </div>
+  `;
+}
+
+async function fetchClientLogin(profileId){
+  const response = await fetch("/.netlify/functions/admin-get-client-login",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ profileId:Number(profileId) })
+  });
+
+  const result = await response.json().catch(()=>({}));
+  if(!response.ok || result.success !== true){
+    throw new Error(result.message || "Could not load client login.");
+  }
+  return result;
+}
+
+function profileById(profileId){
+  return ALL_PROFILES.find(p => String(p.id) === String(profileId));
+}
+
+function phoneForProfile(profile){
+  return cleanPhone(profile?.whatsapp || profile?.phone || "");
+}
+
+function buildClientLoginMessageFromData(data, profile){
+  return `Welcome to Nairobi Sweets
+
+Your account is ready.
+
+Login:
+https://nairobi-sweets.com/login.html
+
+Username: ${data.username || profile?.username || "your username"}
+
+If you forgot your password, contact Nairobi Sweets admin for reset.`;
+}
+
+async function createClientLoginAndWhatsApp(profileId){
+  const profile = profileById(profileId);
+  if(!profile){
+    alert("Profile not found. Refresh Vault and try again.");
+    return;
+  }
+
+  setClientLoginStatus(profileId,"Creating or loading client login...");
+
+  try{
+    const response = await fetch("/.netlify/functions/admin-create-client-login",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ profileId:Number(profile.id) })
+    });
+
+    const result = await response.json().catch(()=>({}));
+    if(!response.ok || result.success !== true){
+      throw new Error(result.message || "Could not create login.");
+    }
+
+    const message = result.loginMessage || result.whatsapp_message || buildClientLoginMessageFromData(result, profile);
+    saveClientLoginMessage(profileId,message);
+
+    setClientLoginStatus(profileId,result.alreadyExists ? "Existing login loaded. Opening WhatsApp..." : "New login created. Opening WhatsApp...");
+    await audit(result.alreadyExists ? "send_existing_client_login" : "create_client_login",profileId,profile.stage_name || "",`Username ${result.username || profile.username || ""}`);
+
+    const waUrl = result.whatsappUrl || result.whatsappLink || "";
+    if(waUrl){
+      window.open(waUrl,"_blank","noopener,noreferrer");
+    }else{
+      await navigator.clipboard?.writeText(message).catch(()=>{});
+      alert("Client phone is missing, so the login message was copied instead.");
+    }
+
+    loadProfiles();
+  }catch(error){
+    setClientLoginStatus(profileId,error.message || "Login creation failed.",true);
+    alert(error.message || "Login creation failed.");
+  }
+}
+
+async function sendExistingClientLogin(profileId){
+  const profile = profileById(profileId);
+  if(!profile){
+    alert("Profile not found. Refresh Vault and try again.");
+    return;
+  }
+
+  setClientLoginStatus(profileId,"Loading existing login...");
+
+  try{
+    const data = await fetchClientLogin(profileId);
+    if(!data.exists){
+      setClientLoginStatus(profileId,"No login exists yet. Click Create / Send Login first.",true);
+      alert("No login exists yet. Click Create / Send Login first.");
+      return;
+    }
+
+    const message = buildClientLoginMessageFromData(data, profile);
+    saveClientLoginMessage(profileId,message);
+    setClientLoginStatus(profileId,"Opening WhatsApp with login reminder...");
+
+    const phone = phoneForProfile(profile);
+    if(!phone){
+      await navigator.clipboard?.writeText(message).catch(()=>{});
+      alert("Client phone is missing, so the login message was copied instead.");
+      return;
+    }
+
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`,"_blank","noopener,noreferrer");
+    await audit("send_existing_client_login",profileId,profile.stage_name || "",`Username ${data.username || ""}`);
+  }catch(error){
+    setClientLoginStatus(profileId,error.message || "Could not send login.",true);
+    alert(error.message || "Could not send login.");
+  }
+}
+
+async function copyExistingClientLogin(profileId){
+  const profile = profileById(profileId);
+  if(!profile){
+    alert("Profile not found. Refresh Vault and try again.");
+    return;
+  }
+
+  try{
+    let message = getClientLoginMessage(profileId);
+    if(!message){
+      const data = await fetchClientLogin(profileId);
+      if(!data.exists){
+        alert("No login exists yet. Click Create / Send Login first.");
+        return;
+      }
+      message = buildClientLoginMessageFromData(data, profile);
+    }
+
+    await navigator.clipboard.writeText(message);
+    setClientLoginStatus(profileId,"Login message copied.");
+  }catch(error){
+    const fallback = getClientLoginMessage(profileId) || buildExistingLoginMessage(profile);
+    prompt("Copy this login message:",fallback);
+  }
+}
+
+async function resetClientLoginPassword(profileId){
+  const profile = profileById(profileId);
+  if(!profile){
+    alert("Profile not found. Refresh Vault and try again.");
+    return;
+  }
+
+  if(!confirm("Reset this client's password and open WhatsApp with the new password?")) return;
+
+  setClientLoginStatus(profileId,"Resetting password...");
+
+  try{
+    const response = await fetch("/.netlify/functions/admin-reset-client-password",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        profileId:Number(profile.id),
+        whatsapp:profile.whatsapp || "",
+        phone:profile.phone || ""
+      })
+    });
+
+    const result = await response.json().catch(()=>({}));
+    if(!response.ok || result.success !== true){
+      throw new Error(result.message || "Could not reset password.");
+    }
+
+    const message = result.loginMessage || result.login_message || "Password reset successfully.";
+    saveClientLoginMessage(profileId,message);
+    setClientLoginStatus(profileId,"Password reset. Opening WhatsApp...");
+
+    if(result.whatsappUrl || result.whatsappLink){
+      window.open(result.whatsappUrl || result.whatsappLink,"_blank","noopener,noreferrer");
+    }else{
+      await navigator.clipboard?.writeText(message).catch(()=>{});
+      alert(`Password reset successfully. New password: ${result.password || "created"}. Message copied.`);
+    }
+
+    await audit("reset_client_password",profileId,profile.stage_name || "",`Username ${result.username || profile.username || ""}`);
+    loadProfiles();
+  }catch(error){
+    setClientLoginStatus(profileId,error.message || "Password reset failed.",true);
+    alert(error.message || "Password reset failed.");
+  }
+}
+
+async function disableClientLogin(profileId){
+  const profile = profileById(profileId);
+  if(!profile){
+    alert("Profile not found. Refresh Vault and try again.");
+    return;
+  }
+
+  if(!confirm("Disable this client's login? They will not be able to access the dashboard until enabled again.")) return;
+
+  setClientLoginStatus(profileId,"Disabling login...");
+
+  try{
+    const response = await fetch("/.netlify/functions/admin-disable-client-login",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ profileId:Number(profile.id) })
+    });
+    const result = await response.json().catch(()=>({}));
+    if(!response.ok || result.success !== true){
+      throw new Error(result.message || "Could not disable login.");
+    }
+    setClientLoginStatus(profileId,"Login disabled.");
+    await audit("disable_client_login",profileId,profile.stage_name || "",`Username ${result.username || profile.username || ""}`);
+    loadProfiles();
+  }catch(error){
+    setClientLoginStatus(profileId,error.message || "Could not disable login.",true);
+    alert(error.message || "Could not disable login.");
+  }
+}
+
+async function enableClientLogin(profileId){
+  const profile = profileById(profileId);
+  if(!profile){
+    alert("Profile not found. Refresh Vault and try again.");
+    return;
+  }
+
+  setClientLoginStatus(profileId,"Enabling login...");
+
+  try{
+    const response = await fetch("/.netlify/functions/admin-enable-client-login",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ profileId:Number(profile.id) })
+    });
+    const result = await response.json().catch(()=>({}));
+    if(!response.ok || result.success !== true){
+      throw new Error(result.message || "Could not enable login.");
+    }
+    setClientLoginStatus(profileId,"Login enabled.");
+    await audit("enable_client_login",profileId,profile.stage_name || "",`Username ${result.username || profile.username || ""}`);
+    loadProfiles();
+  }catch(error){
+    setClientLoginStatus(profileId,error.message || "Could not enable login.",true);
+    alert(error.message || "Could not enable login.");
+  }
+}
+
 </script>
 
 </body>
