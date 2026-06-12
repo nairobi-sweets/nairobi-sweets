@@ -126,9 +126,9 @@ body{
       Continue with Google
     </button>
 
-    <div class="divider">or login with username</div>
+    <div class="divider">or login with username / email</div>
 
-    <input id="username" type="text" placeholder="Username" class="input" autocomplete="username">
+    <input id="username" type="text" placeholder="Username or Email" class="input" autocomplete="username">
     <input id="password" type="password" placeholder="Password" class="input" autocomplete="current-password">
 
     <a id="forgotPassword" href="/forgot-password.html" class="text-yellow-300 text-sm text-center block hover:text-yellow-200">
@@ -276,36 +276,42 @@ async function login(){
     rememberMe?.checked ? "true" : "false"
   );
 
-  showMsg("Checking username...");
+  showMsg(username.includes("@") ? "Checking email..." : "Checking username...");
 
   try{
-    const { data: profile, error: profileError } = await sb
-      .from("profiles")
-      .select("email")
-      .eq("username", username)
-      .maybeSingle();
+    let loginEmail = username;
 
-    if(profileError){
-      throw new Error(profileError.message);
-    }
+    if(!username.includes("@")){
+      const { data: profile, error: profileError } = await sb
+        .from("profiles")
+        .select("email")
+        .eq("username", username)
+        .maybeSingle();
 
-    if(!profile?.email){
-      throw new Error("Username not found.");
+      if(profileError){
+        throw new Error(profileError.message);
+      }
+
+      if(!profile?.email){
+        throw new Error("Username not found.");
+      }
+
+      loginEmail = profile.email;
     }
 
     showMsg("Logging in...");
 
     const { data, error } = await sb.auth.signInWithPassword({
-      email: profile.email,
+      email: loginEmail,
       password
     });
 
     if(error){
-      await logLoginEvent("login_failed", profile.email, error.message);
+      await logLoginEvent("login_failed", loginEmail, error.message);
       throw new Error("Wrong username or password.");
     }
 
-    await logLoginEvent("login_success", profile.email, "Username login successful");
+    await logLoginEvent("login_success", loginEmail, "Username/email login successful");
     showMsg("Login successful. Redirecting...", "success");
 
     await routeUser(data.user);
