@@ -520,17 +520,54 @@ WHATSAPP CONVERSION DASHBOARD
 
 @media(max-width:900px){.trial-invite-actions{grid-template-columns:1fr}}
 
-
 /* =========================
-ADMIN CREATE CLIENT LOGIN
+CLIENT LOGIN AUTO-CREATOR
 ========================= */
-.client-login-card{border:1px solid rgba(34,197,94,.28);box-shadow:0 0 34px rgba(34,197,94,.08),0 18px 50px rgba(0,0,0,.35)}
-.client-login-help{grid-column:1/-1;background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.18);border-radius:16px;padding:14px;color:#86efac;font-size:13px;font-weight:900;line-height:1.5}
-.client-login-message{margin-top:14px;background:rgba(0,0,0,.30);border:1px solid rgba(255,213,74,.16);border-radius:18px;padding:16px;color:#fff;font-size:14px;font-weight:800;line-height:1.65;white-space:pre-wrap;display:none}
-.client-login-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
-.client-login-actions button,.client-login-actions a{border:0;border-radius:999px;padding:12px 16px;font-size:14px;font-weight:950;text-decoration:none;cursor:pointer}
-.copy-login-btn{background:linear-gradient(145deg,#06b6d4,#22d3ee);color:#00111f}
-.wa-login-btn{background:linear-gradient(145deg,#25D366,#128C7E);color:#fff}
+.client-login-box{
+  margin-top:14px;
+  background:rgba(37,211,102,.08);
+  border:1px solid rgba(37,211,102,.22);
+  border-radius:18px;
+  padding:14px;
+}
+.client-login-box h4{
+  margin:0 0 8px;
+  color:#25D366;
+  font-size:15px;
+  font-weight:950;
+}
+.client-login-box p{
+  margin:0 0 10px;
+  color:#d8ffe6;
+  font-size:12px;
+  line-height:1.5;
+  font-weight:800;
+}
+.client-login-actions{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:9px;
+}
+.client-login-btn{
+  width:100%;
+  border-radius:14px;
+  padding:13px;
+  font-size:14px;
+  font-weight:950;
+  border:0;
+  cursor:pointer;
+}
+.client-login-create{background:linear-gradient(145deg,#25D366,#128C7E);color:#fff}
+.client-login-copy{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.client-login-status{
+  margin-top:10px;
+  min-height:20px;
+  color:#25D366;
+  font-size:12px;
+  font-weight:900;
+  line-height:1.45;
+  word-break:break-word;
+}
 
 </style>
 
@@ -878,14 +915,6 @@ ADMIN CREATE CLIENT LOGIN
   <input id="outcall_price" placeholder="Outcall price">
   <input id="services" placeholder="Services tags, comma separated">
 
-  <div class="client-login-help">
-    Optional: create a client login at the same time. Fill email, username and temporary password. Leave blank if you only want to create a normal admin-managed profile.
-  </div>
-  <input id="client_email" type="email" placeholder="Client email for login, optional">
-  <input id="client_username" placeholder="Client username, optional">
-  <input id="client_temp_password" type="text" placeholder="Temporary password, optional">
-  <label class="checkrow"><input type="checkbox" id="client_force_password_change" checked> Ask client to change password after login</label>
-
   <select id="plan">
     <option value="featured">Featured</option>
     <option value="vip">VIP</option>
@@ -948,11 +977,6 @@ ADMIN CREATE CLIENT LOGIN
 <div class="preview" id="preview"></div>
 <button class="add" onclick="addProfile()">Add Profile</button>
 <div class="status" id="status"></div>
-<div id="clientLoginMessage" class="client-login-message"></div>
-<div id="clientLoginActions" class="client-login-actions" style="display:none;">
-  <button class="copy-login-btn" type="button" onclick="copyClientLoginMessage()">📋 Copy Login Message</button>
-  <a id="clientLoginWhatsapp" class="wa-login-btn" href="#" target="_blank" rel="noopener">💬 Send Login On WhatsApp</a>
-</div>
 </section>
 
 <section class="panel">
@@ -1703,102 +1727,6 @@ document.getElementById("edit_likes_count").addEventListener("input",()=>syncRan
 document.getElementById("edit_views_count").addEventListener("input",()=>syncRanking("edit_"));
 document.getElementById("edit_boost_score").addEventListener("input",()=>syncRanking("edit_"));
 
-
-let LAST_CLIENT_LOGIN_MESSAGE = "";
-
-function randomTempPassword(){
-  const stamp = String(Date.now()).slice(-5);
-  return "NS" + new Date().getFullYear() + "#" + stamp;
-}
-
-function ensureClientLoginDefaults(){
-  const name = valueOf("stage_name");
-  const usernameEl = document.getElementById("client_username");
-  const passEl = document.getElementById("client_temp_password");
-
-  if(usernameEl && !usernameEl.value.trim() && name){
-    usernameEl.value = makeSlug(name).replace(/-/g,"").slice(0,20);
-  }
-
-  if(passEl && !passEl.value.trim()){
-    passEl.value = randomTempPassword();
-  }
-}
-
-["stage_name","client_email"].forEach(id=>{
-  const el = document.getElementById(id);
-  if(el) el.addEventListener("blur",ensureClientLoginDefaults);
-});
-
-function showClientLoginMessage(message, phone){
-  LAST_CLIENT_LOGIN_MESSAGE = message || "";
-  const box = document.getElementById("clientLoginMessage");
-  const actions = document.getElementById("clientLoginActions");
-  const wa = document.getElementById("clientLoginWhatsapp");
-
-  if(box){
-    box.style.display = message ? "block" : "none";
-    box.textContent = message || "";
-  }
-
-  if(actions) actions.style.display = message ? "flex" : "none";
-
-  if(wa){
-    const clean = cleanPhone(phone || valueOf("phone"));
-    wa.href = clean ? `https://wa.me/${clean}?text=${encodeURIComponent(message || "")}` : "#";
-  }
-}
-
-async function copyClientLoginMessage(){
-  if(!LAST_CLIENT_LOGIN_MESSAGE){
-    alert("No login message to copy yet.");
-    return;
-  }
-
-  try{
-    await navigator.clipboard.writeText(LAST_CLIENT_LOGIN_MESSAGE);
-    alert("Client login message copied.");
-  }catch(error){
-    alert("Copy failed. You can select the message and copy manually.");
-  }
-}
-
-async function createClientProfileLogin(profilePayload){
-  const sessionData = await sb.auth.getSession();
-  const token = sessionData?.data?.session?.access_token;
-
-  if(!token){
-    throw new Error("Admin session missing. Please login to the vault again.");
-  }
-
-  const body = {
-    profile: profilePayload,
-    account: {
-      email: valueOf("client_email").toLowerCase(),
-      username: valueOf("client_username").toLowerCase(),
-      password: valueOf("client_temp_password"),
-      force_password_change: checkedOf("client_force_password_change")
-    }
-  };
-
-  const response = await fetch("/.netlify/functions/admin-create-client-login",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization":"Bearer " + token
-    },
-    body:JSON.stringify(body)
-  });
-
-  const result = await response.json().catch(()=>({}));
-
-  if(!response.ok){
-    throw new Error(result.error || "Could not create client login.");
-  }
-
-  return result;
-}
-
 async function addProfile(){
   statusBox.textContent = "Saving profile...";
 
@@ -1888,31 +1816,6 @@ async function addProfile(){
       created_at: new Date().toISOString()
     };
 
-    const wantsClientLogin = valueOf("client_email") || valueOf("client_username") || valueOf("client_temp_password");
-
-    if(wantsClientLogin){
-      ensureClientLoginDefaults();
-
-      if(!valueOf("client_email") || !valueOf("client_username") || !valueOf("client_temp_password")){
-        statusBox.textContent = "To create client login, fill email, username and temporary password.";
-        return;
-      }
-
-      payload.email = valueOf("client_email").toLowerCase();
-      payload.username = valueOf("client_username").toLowerCase();
-      payload.login_username = valueOf("client_username").toLowerCase();
-      payload.must_change_password = checkedOf("client_force_password_change");
-
-      const result = await createClientProfileLogin(payload);
-
-      statusBox.textContent = "Profile and client login created successfully.";
-      showClientLoginMessage(result.whatsapp_message, phoneClean);
-      await audit("add_client_profile_login",result.profile_id || "",stageName,"Profile plus login created");
-      clearForm();
-      loadProfiles();
-      return;
-    }
-
     const { error } = await sb.from("profiles").insert(payload);
 
     if(error){
@@ -1921,7 +1824,6 @@ async function addProfile(){
     }
 
     statusBox.textContent = "Profile saved successfully.";
-    showClientLoginMessage("", "");
     await audit("add_profile","",stageName,"Profile created");
     clearForm();
     loadProfiles();
@@ -1935,7 +1837,7 @@ function clearForm(){
   [
     "stage_name","phone","location","age","photo_url","video_url","slug",
     "availability","languages","nationality","orientation","height",
-    "incall_price","outcall_price","services","client_email","client_username","client_temp_password","bio","about","last_active","plan_started_at","plan_expires_at","signature_banner_url","verification_note"
+    "incall_price","outcall_price","services","bio","about","last_active","plan_started_at","plan_expires_at","signature_banner_url","verification_note"
   ].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value = "";
@@ -2236,10 +2138,149 @@ function renderProfiles(){
           </div>
 
           <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.trial_expires_at || p.plan_expires_at || p.expires_at || p.expiry_date || "")}','${p.id}','${escapeAttr(p.slug || "")}')">📲 Send Renewal Reminder</button>
+
+          <div class="client-login-box">
+            <h4>👤 Client Login</h4>
+            <p>Create username + password automatically, then open WhatsApp with the login message ready.</p>
+            <div class="client-login-actions">
+              <button class="client-login-btn client-login-create" onclick="createClientLoginAndWhatsApp('${p.id}')">👤 Create Login + Open WhatsApp</button>
+              <button class="client-login-btn client-login-copy" onclick="copyLastClientLoginMessage('${p.id}')">📋 Copy Last Login Message</button>
+            </div>
+            <div class="client-login-status" id="client_login_status_${p.id}"></div>
+          </div>
         </div>
       </article>
     `;
   }).join("");
+}
+
+
+
+const CLIENT_LOGIN_CACHE_KEY = "nairobi_sweets_last_client_login_messages";
+
+function getClientLoginCache(){
+  try{
+    return JSON.parse(localStorage.getItem(CLIENT_LOGIN_CACHE_KEY) || "{}");
+  }catch(error){
+    return {};
+  }
+}
+
+function saveClientLoginMessage(profileId,message){
+  const cache = getClientLoginCache();
+  cache[String(profileId)] = message;
+  localStorage.setItem(CLIENT_LOGIN_CACHE_KEY,JSON.stringify(cache));
+}
+
+function getClientLoginMessage(profileId){
+  const cache = getClientLoginCache();
+  return cache[String(profileId)] || "";
+}
+
+function setClientLoginStatus(profileId,text,isError=false){
+  const box = document.getElementById(`client_login_status_${profileId}`);
+  if(!box) return;
+  box.style.color = isError ? "#ff6b6b" : "#25D366";
+  box.textContent = text || "";
+}
+
+function makeClientUsername(profile){
+  const base = makeSlug(profile.username || profile.slug || profile.stage_name || `client-${profile.id}`) || `client-${profile.id}`;
+  return `${base}`.replace(/-/g,"").slice(0,22) + String(profile.id || "").slice(-4);
+}
+
+function makeClientEmail(profile,username){
+  const existing = String(profile.email || "").trim().toLowerCase();
+  if(existing && existing.includes("@")) return existing;
+  return `${username}@clients.nairobi-sweets.com`;
+}
+
+function makeClientPassword(){
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+  let token = "";
+  for(let i=0;i<8;i++){
+    token += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return `NS${new Date().getFullYear()}#${token}`;
+}
+
+async function createClientLoginAndWhatsApp(profileId){
+  const profile = ALL_PROFILES.find(p => String(p.id) === String(profileId));
+  if(!profile){
+    alert("Profile not found. Refresh Vault and try again.");
+    return;
+  }
+
+  const usernameDefault = makeClientUsername(profile);
+  const username = prompt("Client username:", usernameDefault);
+  if(!username) return;
+
+  const emailDefault = makeClientEmail(profile,username);
+  const email = prompt("Client login email. You can keep the generated one if client has no email:", emailDefault);
+  if(!email) return;
+
+  const passwordDefault = makeClientPassword();
+  const password = prompt("Temporary password:", passwordDefault);
+  if(!password) return;
+
+  setClientLoginStatus(profileId,"Creating login...");
+
+  try{
+    const response = await fetch("/.netlify/functions/admin-create-client-login",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        profileId:Number(profile.id),
+        username:String(username).trim().toLowerCase(),
+        email:String(email).trim().toLowerCase(),
+        password:String(password).trim()
+      })
+    });
+
+    const result = await response.json().catch(()=>({}));
+
+    if(!response.ok || result.success !== true){
+      throw new Error(result.message || "Could not create login.");
+    }
+
+    const message = result.whatsapp_message || `Welcome to Nairobi Sweets\n\nYour account has been created.\n\nLogin:\nhttps://nairobi-sweets.com/login.html\n\nUsername: ${username}\nPassword: ${password}\n\nPlease login and change your password.`;
+
+    saveClientLoginMessage(profileId,message);
+    setClientLoginStatus(profileId,`Login ready: ${username}. Opening WhatsApp...`);
+
+    await audit("create_client_login",profileId,profile.stage_name || "",`Created login username ${username}`);
+
+    const phone = cleanPhone(profile.whatsapp || profile.phone || "");
+    if(!phone){
+      await navigator.clipboard?.writeText(message).catch(()=>{});
+      alert("Login created. Client phone is missing, so the message was copied instead.");
+      loadProfiles();
+      return;
+    }
+
+    const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl,"_blank","noopener,noreferrer");
+    loadProfiles();
+
+  }catch(error){
+    setClientLoginStatus(profileId,error.message || "Login creation failed.",true);
+    alert(error.message || "Login creation failed.");
+  }
+}
+
+async function copyLastClientLoginMessage(profileId){
+  const message = getClientLoginMessage(profileId);
+  if(!message){
+    alert("No saved login message yet. Click Create Login + Open WhatsApp first.");
+    return;
+  }
+
+  try{
+    await navigator.clipboard.writeText(message);
+    setClientLoginStatus(profileId,"Login message copied.");
+  }catch(error){
+    prompt("Copy this login message:",message);
+  }
 }
 
 async function verifyProfile(id){
