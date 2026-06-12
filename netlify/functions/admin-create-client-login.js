@@ -1,148 +1,163 @@
 const { createClient } = require("@supabase/supabase-js");
 
+exports.handler = async (event) => {
+try {
+if (event.httpMethod !== "POST") {
+return {
+statusCode: 405,
+body: JSON.stringify({
+success: false,
+message: "Method not allowed"
+})
+};
+}
+
+```
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-exports.handler = async (event) => {
-  try {
-    if (event.httpMethod !== "POST") {
-      return {
-        statusCode: 405,
-        body: JSON.stringify({
-          success: false,
-          message: "Method not allowed"
-        })
-      };
-    }
+const {
+  profileId,
+  stageName,
+  phone,
+  whatsapp
+} = JSON.parse(event.body || "{}");
 
-    const {
-      profileId,
-      username,
-      email,
-      password
-    } = JSON.parse(event.body || "{}");
+if (!profileId) {
+  return {
+    statusCode: 400,
+    body: JSON.stringify({
+      success: false,
+      message: "Profile ID is required"
+    })
+  };
+}
 
-    if (!profileId || !username || !email || !password) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          message: "Missing required fields"
-        })
-      };
-    }
+// Generate username
+const baseUsername =
+  (stageName || "user")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .substring(0, 12);
 
-    // Check username already exists
-    const { data: existingUser } = await supabase
-      .from("profile_users")
-      .select("id")
-      .eq("username", username)
-      .maybeSingle();
+const randomNumber = Math.floor(1000 + Math.random() * 9000);
 
-    if (existingUser) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          message: "Username already exists"
-        })
-      };
-    }
+const username = `${baseUsername}${randomNumber}`;
 
-    // Create Supabase Auth user
-    const { data: authUser, error: authError } =
-      await supabase.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true
-      });
+// Generate temporary password
+const password =
+  "NS" +
+  Math.floor(100000 + Math.random() * 900000);
 
-    if (authError) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          message: authError.message
-        })
-      };
-    }
+const email = `${username}@nairobi-sweets.com`;
 
-    const userId = authUser.user.id;
+// Create Supabase Auth User
+const { data: authData, error: authError } =
+  await supabase.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true
+  });
 
-    // Link profile to auth user
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .update({
-        user_id: userId,
-        username,
-        email
-      })
-      .eq("id", profileId);
+if (authError) {
+  return {
+    statusCode: 500,
+    body: JSON.stringify({
+      success: false,
+      message: authError.message
+    })
+  };
+}
 
-    if (profileError) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          message: profileError.message
-        })
-      };
-    }
+const userId = authData.user.id;
 
-    // Save login record
-    const { error: loginError } = await supabase
-      .from("profile_users")
-      .insert({
-        profile_id: profileId,
-        user_id: userId,
-        username,
-        email,
-        active: true,
-        created_at: new Date().toISOString()
-      });
+// Update profile
+const { error: profileError } = await supabase
+  .from("profiles")
+  .update({
+    user_id: userId,
+    username,
+    email,
+    last_login_at: null
+  })
+  .eq("id", profileId);
 
-    if (loginError) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          success: false,
-          message: loginError.message
-        })
-      };
-    }
+if (profileError) {
+  return {
+    statusCode: 500,
+    body: JSON.stringify({
+      success: false,
+      message: profileError.message
+    })
+  };
+}
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        user_id: userId,
-        username,
-        email,
-        login_url: "https://nairobi-sweets.com/login.html",
-        whatsapp_message:
+// Save login mapping
+await supabase
+  .from("profile_users")
+  .insert({
+    profile_id: profileId,
+    user_id: userId,
+    username,
+    email,
+    active: true
+  });
+
+const loginUrl =
+  "https://nairobi-sweets.com/login.html";
+
+const whatsappMessage =
+```
+
 `Welcome to Nairobi Sweets
 
 Your account has been created.
 
 Login:
-https://nairobi-sweets.com/login.html
+${loginUrl}
 
 Username: ${username}
 Password: ${password}
 
-Please login and change your password.`
-      })
-    };
+Please login and change your password immediately.`;
 
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        success: false,
-        message: error.message
-      })
-    };
-  }
+```
+const whatsappNumber =
+  (whatsapp || phone || "")
+    .replace(/\D/g, "");
+
+let whatsappLink = "";
+
+if (whatsappNumber) {
+  whatsappLink =
+    `https://wa.me/${whatsappNumber}?text=` +
+    encodeURIComponent(whatsappMessage);
+}
+
+return {
+  statusCode: 200,
+  body: JSON.stringify({
+    success: true,
+    profileId,
+    userId,
+    username,
+    password,
+    email,
+    whatsappLink,
+    whatsappMessage
+  })
+};
+```
+
+} catch (error) {
+return {
+statusCode: 500,
+body: JSON.stringify({
+success: false,
+message: error.message
+})
+};
+}
 };
