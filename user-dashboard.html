@@ -333,6 +333,9 @@ MEMBERSHIP STATUS PANEL
   grid-template-columns:repeat(5,1fr);
   gap:12px;
 }
+.analytics-grid{
+  grid-template-columns:repeat(4,1fr);
+}
 .membership-stat{
   background:rgba(255,255,255,.06);
   border:1px solid var(--line);
@@ -629,7 +632,56 @@ LIVE LOCATION SHARE PANEL
       <a class="member-action-btn member-renew-btn" href="/join.html?from=dashboard">💳 Renew Now</a>
       <a class="member-action-btn member-vip-btn" href="/public-signup-payment-page.html?plan=vip-plus&from=dashboard">🚀 Upgrade To VIP+</a>
       <a class="member-action-btn member-signature-btn" href="/public-signup-payment-page.html?plan=signature&from=dashboard">👑 Upgrade To Signature</a>
+      <a id="viewProfileBtn" class="member-action-btn member-admin-btn" href="/profile.html" target="_blank" rel="noopener">👀 View Public Profile</a>
       <a id="memberAdminWhatsappBtn" class="member-action-btn member-admin-btn" href="https://wa.me/254143616363" target="_blank" rel="noopener">💬 Contact Admin</a>
+    </div>
+  </section>
+
+
+
+  <section id="analyticsPanel" class="membership-panel" style="display:none;">
+    <h2>📊 My Statistics</h2>
+
+    <div class="membership-grid analytics-grid">
+      <div class="membership-stat">
+        <small>👁 Profile Views</small>
+        <strong id="statViews">0</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>❤️ Likes</small>
+        <strong id="statLikes">0</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>📲 WhatsApp Clicks</small>
+        <strong id="statWhatsapp">0</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>📞 Call Clicks</small>
+        <strong id="statCalls">0</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>📤 Shares</small>
+        <strong id="statShares">0</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>🎥 Video Plays</small>
+        <strong id="statVideo">0</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>🔥 Trending Score</small>
+        <strong id="statTrending">0</strong>
+      </div>
+
+      <div class="membership-stat">
+        <small>⭐ Profile Score</small>
+        <strong id="statScore">0</strong>
+      </div>
     </div>
   </section>
 
@@ -852,6 +904,7 @@ const msg = document.getElementById("msg");
 const saveBtn = document.getElementById("saveBtn");
 const statusBadges = document.getElementById("statusBadges");
 const membershipPanel = document.getElementById("membershipPanel");
+const analyticsPanel = document.getElementById("analyticsPanel");
 
 function cleanPhone(phone){
   let p = String(phone || "").replace(/\D/g,"");
@@ -1018,7 +1071,9 @@ function daysRemaining(value){
 
 function paymentText(status){
   const s = String(status || "pending").toLowerCase();
+  if(s === "trial") return "🎁 Trial";
   if(s === "paid" || s === "success") return "✅ Paid";
+  if(s === "expired") return "⛔ Expired";
   if(s === "failed") return "❌ Failed";
   return "💳 Pending";
 }
@@ -1029,16 +1084,43 @@ function profileStatusText(profile){
   return "⏳ Pending";
 }
 
+function getProfileExpiry(profile){
+  return profile?.expiry_date || profile?.expires_at || profile?.plan_expires_at || profile?.trial_expires_at || profile?.expiry || null;
+}
+
 function renderMembershipPanel(){
   if(!currentProfile || !membershipPanel) return;
 
-  document.getElementById("memberPlan").innerText = planBadge(currentProfile.plan_label || currentProfile.tier || currentProfile.plan || currentProfile.package);
-  document.getElementById("memberDaysLeft").innerText = daysRemaining(currentProfile.expires_at || currentProfile.expiry || currentProfile.trial_expires_at);
-  document.getElementById("memberExpiry").innerText = formatDate(currentProfile.expires_at || currentProfile.expiry || currentProfile.trial_expires_at);
+  const expiry = getProfileExpiry(currentProfile);
+  const publicSlug = currentProfile.slug || currentProfile.id || "";
+  const viewProfileBtn = document.getElementById("viewProfileBtn");
+
+  document.getElementById("memberPlan").innerText = currentProfile.trial_active ? "🎁 30 Day Trial" : planBadge(currentProfile.plan_label || currentProfile.tier || currentProfile.plan || currentProfile.package);
+  document.getElementById("memberDaysLeft").innerText = daysRemaining(expiry);
+  document.getElementById("memberExpiry").innerText = formatDate(expiry);
   document.getElementById("memberPayment").innerText = paymentText(currentProfile.payment_status);
   document.getElementById("memberProfileStatus").innerText = profileStatusText(currentProfile);
 
+  if(viewProfileBtn){
+    viewProfileBtn.href = currentProfile.slug ? `/profile.html?slug=${encodeURIComponent(currentProfile.slug)}` : `/profile.html?id=${encodeURIComponent(publicSlug)}`;
+  }
+
   membershipPanel.style.display = "block";
+}
+
+function renderAnalyticsPanel(){
+  if(!currentProfile || !analyticsPanel) return;
+
+  document.getElementById("statViews").innerText = Number(currentProfile.views_count || currentProfile.views || 0).toLocaleString("en-KE");
+  document.getElementById("statLikes").innerText = Number(currentProfile.likes_count || currentProfile.likes || currentProfile.favorites || 0).toLocaleString("en-KE");
+  document.getElementById("statWhatsapp").innerText = Number(currentProfile.whatsapp_clicks || 0).toLocaleString("en-KE");
+  document.getElementById("statCalls").innerText = Number(currentProfile.call_clicks || 0).toLocaleString("en-KE");
+  document.getElementById("statShares").innerText = Number(currentProfile.profile_shares || 0).toLocaleString("en-KE");
+  document.getElementById("statVideo").innerText = Number(currentProfile.video_plays || 0).toLocaleString("en-KE");
+  document.getElementById("statTrending").innerText = Number(currentProfile.trending_score || 0).toLocaleString("en-KE");
+  document.getElementById("statScore").innerText = Number(currentProfile.profile_score || 0).toLocaleString("en-KE");
+
+  analyticsPanel.style.display = "block";
 }
 
 async function loadAdminContact(){
@@ -1076,12 +1158,10 @@ function renderStatus(){
   if(!currentProfile) return;
 
   const approved = currentProfile.approved ? "✅ Approved" : "⏳ Pending Approval";
-  const paid = currentProfile.payment_status === "paid" ? "✅ Paid" : "💳 Payment Pending";
-  const plan = planBadge(currentProfile.plan_label || currentProfile.tier || currentProfile.plan);
-
-  const expiry = currentProfile.expires_at
-    ? "Expires: " + new Date(currentProfile.expires_at).toLocaleDateString()
-    : "Expiry not set";
+  const paid = paymentText(currentProfile.payment_status);
+  const plan = currentProfile.trial_active ? "🎁 30 Day Trial" : planBadge(currentProfile.plan_label || currentProfile.tier || currentProfile.plan);
+  const expiryValue = getProfileExpiry(currentProfile);
+  const expiry = expiryValue ? "Expires: " + new Date(expiryValue).toLocaleDateString("en-KE") : "Expiry not set";
 
   statusBadges.innerHTML = `
     <span class="badge gold">${plan}</span>
@@ -1090,6 +1170,10 @@ function renderStatus(){
     <span class="badge">${expiry}</span>
     <span class="badge">📸 Quality: ${Number(currentProfile.image_quality_score || 0)}</span>
   `;
+
+  if(currentProfile.trial_active){
+    statusBadges.innerHTML += `<span class="badge">🎁 Trial: ${daysRemaining(expiryValue)}</span>`;
+  }
 }
 
 function fillForm(){
@@ -1128,6 +1212,7 @@ function fillForm(){
 
   renderStatus();
   renderMembershipPanel();
+  renderAnalyticsPanel();
 }
 
 async function loadDashboard(){
