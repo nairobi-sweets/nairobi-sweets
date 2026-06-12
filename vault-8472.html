@@ -1821,13 +1821,11 @@ async function loadProfiles(){
   const { data,error } = await sb
     .from("profiles")
     .select("*")
-    .order("plan_rank",{ascending:false})
-    .order("signature_position",{ascending:true})
-    .order("trending_score",{ascending:false})
-    .order("profile_score",{ascending:false})
-    .order("boost_score",{ascending:false})
-    .order("verified",{ascending:false})
-    .order("created_at",{ascending:false});
+    /* NEW PROFILES FIRST:
+       Vault must show the newest registrations immediately, including pending/unapproved profiles.
+       Ranking fields still load on the card, but admin review starts from the latest profile. */
+    .order("created_at",{ascending:false})
+    .order("updated_at",{ascending:false});
 
   if(error){
     list.innerHTML = `<div style="color:#ff6b6b">${error.message}</div>`;
