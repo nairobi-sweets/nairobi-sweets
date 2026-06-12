@@ -634,9 +634,19 @@ SIGNATURE PROFILES BANNER
   gap:16px;
   overflow-x:auto;
   scrollbar-width:none;
+  scroll-behavior:auto;
+  -webkit-overflow-scrolling:touch;
 }
 
 .shorts-row::-webkit-scrollbar{display:none}
+
+.shorts-row.auto-moving{
+  cursor:grab;
+}
+
+.shorts-row.auto-moving:hover{
+  scroll-behavior:smooth;
+}
 
 .short-card{
   position:relative;
@@ -2307,6 +2317,64 @@ function renderSignatureProfiles(list){
   setTimeout(startSignatureAutoSlide, 500);
 }
 
+let shortsAutoScrollFrame = null;
+let shortsAutoScrollPaused = false;
+
+function stopShortsAutoScroll(){
+  if(shortsAutoScrollFrame){
+    cancelAnimationFrame(shortsAutoScrollFrame);
+    shortsAutoScrollFrame = null;
+  }
+}
+
+function startShortsAutoScroll(){
+  const row = document.getElementById("shortsRow");
+  if(!row) return;
+
+  stopShortsAutoScroll();
+  row.classList.add("auto-moving");
+
+  const speed = window.innerWidth < 650 ? 0.45 : 0.65;
+
+  function moveShorts(){
+    if(!shortsAutoScrollPaused && row.scrollWidth > row.clientWidth){
+      row.scrollLeft += speed;
+
+      const halfWidth = row.scrollWidth / 2;
+      if(row.scrollLeft >= halfWidth){
+        row.scrollLeft = 0;
+      }
+    }
+
+    shortsAutoScrollFrame = requestAnimationFrame(moveShorts);
+  }
+
+  moveShorts();
+}
+
+function bindShortsPauseEvents(){
+  const row = document.getElementById("shortsRow");
+  if(!row || row.dataset.pauseReady === "yes") return;
+
+  row.dataset.pauseReady = "yes";
+
+  row.addEventListener("mouseenter",()=>{
+    shortsAutoScrollPaused = true;
+  });
+
+  row.addEventListener("mouseleave",()=>{
+    shortsAutoScrollPaused = false;
+  });
+
+  row.addEventListener("touchstart",()=>{
+    shortsAutoScrollPaused = true;
+  },{passive:true});
+
+  row.addEventListener("touchend",()=>{
+    setTimeout(()=>{ shortsAutoScrollPaused = false; },1200);
+  },{passive:true});
+}
+
 function renderShorts(list){
   const shortsSection = document.querySelector(".shorts-section");
 
@@ -2318,12 +2386,15 @@ function renderShorts(list){
   if(!shorts.length){
     if(shortsSection) shortsSection.style.display = "none";
     shortsRow.innerHTML = "";
+    stopShortsAutoScroll();
     return;
   }
 
   if(shortsSection) shortsSection.style.display = "block";
 
-  shortsRow.innerHTML = shorts.map(profile=>{
+  const movingShorts = shorts.length > 1 ? [...shorts,...shorts] : shorts;
+
+  shortsRow.innerHTML = movingShorts.map(profile=>{
     const media = getVideo(profile);
 
     return `
@@ -2348,6 +2419,9 @@ function renderShorts(list){
       </div>
     `;
   }).join("");
+
+  bindShortsPauseEvents();
+  setTimeout(startShortsAutoScroll,500);
 }
 
 
