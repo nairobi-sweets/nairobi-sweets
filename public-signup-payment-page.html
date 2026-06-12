@@ -537,9 +537,9 @@ footer{text-align:center;color:var(--muted);padding:34px}
       </label>
     </div>
 
-    <button id="payBtn" class="main-btn" type="submit">Create Account, Profile & Pay</button>
-    <button id="trialBtn" class="trial-btn" type="button">🎁 Start 30 Days Free Trial</button>
-    <p class="trial-note">Trial activates your profile free for 30 days. After expiry, payment is required to continue appearing on Nairobi Sweets.</p>
+    <button id="payBtn" class="trial-btn" type="submit">🎁 Create Profile & Start 30 Days Free Trial</button>
+    <button id="trialBtn" class="trial-btn" type="button" style="display:none">🎁 Start 30 Days Free Trial</button>
+    <p class="trial-note">Every new signup is activated free for 30 days. After expiry, payment is required to continue appearing on Nairobi Sweets.</p>
     <div id="msg" class="msg"></div>
   </form>
 </main>
@@ -899,14 +899,14 @@ async function signupWithGoogle(){
   }
 }
 
-async function processSignup(mode = "paid"){
-  const isTrial = mode === "trial";
+async function processSignup(mode = "trial"){
+  const isTrial = true;
 
-  showMsg(isTrial ? "Creating your 30-day free trial profile..." : "Creating account...");
+  showMsg("Creating your 30-day free trial profile...");
   payBtn.disabled = true;
   trialBtn.disabled = true;
-  payBtn.innerText = isTrial ? "Please wait..." : "Processing...";
-  trialBtn.innerText = isTrial ? "Activating Trial..." : "Please wait...";
+  payBtn.innerText = "Activating Trial...";
+  trialBtn.innerText = "Activating Trial...";
 
   try{
     const email = emailInput.value.trim();
@@ -947,9 +947,9 @@ async function processSignup(mode = "paid"){
 
     const plan = packageSelect.value;
     const planLabel = PLAN_LABELS[plan];
-    const durationDays = Number(durationSelect.value);
+    const durationDays = 30;
     const paidAmount = getAmount();
-    const amount = isTrial ? 0 : paidAmount;
+    const amount = 0;
 
     if(!stageName || !phone || !gender || !age || !town || !location || !meetingPlace || !preference || !bodyType || !services){
       throw new Error("Please fill all required fields marked with (*).");
@@ -1022,9 +1022,9 @@ async function processSignup(mode = "paid"){
     showMsg("Saving profile...");
 
     const now = new Date().toISOString();
-    const expiryDate = isTrial ? addDays(now,30) : addDays(now,durationDays);
-    const trialStartedAt = isTrial ? now : null;
-    const trialExpiresAt = isTrial ? expiryDate : null;
+    const expiryDate = addDays(now,30);
+    const trialStartedAt = now;
+    const trialExpiresAt = expiryDate;
     const profileSlug = `${slugify(stageName)}-${Date.now()}`;
 
     const profilePayload = {
@@ -1067,17 +1067,18 @@ async function processSignup(mode = "paid"){
       tier:planLabel,
       plan,
       plan_label:planLabel,
-      duration_days:isTrial ? 30 : durationDays,
-      amount_paid:amount,
-      expected_amount:isTrial ? 0 : paidAmount,
+      duration_days:30,
+      amount_paid:0,
+      expected_amount:0,
       expires_at:expiryDate,
       expiry_date:expiryDate,
       trial_started_at:trialStartedAt,
       trial_expires_at:trialExpiresAt,
 
-      payment_status:isTrial ? "trial" : "pending",
-      plan_status:isTrial ? "trial" : "pending",
-      approved:isTrial ? true : false,
+      payment_status:"trial",
+      plan_status:"trial",
+      trial_active:true,
+      approved:true,
       is_expired:false,
       online:true,
 
@@ -1104,17 +1105,15 @@ async function processSignup(mode = "paid"){
 
     if(profileError) throw profileError;
 
-    if(isTrial){
-      showMsg("🎉 Your 30-day free trial is active. Your profile is now live.", "success");
-      payBtn.innerText = "Trial Activated";
-      trialBtn.innerText = "Trial Active";
+    showMsg("🎉 Your 30-day free trial is active. Your profile is now live.", "success");
+    payBtn.innerText = "Trial Activated";
+    trialBtn.innerText = "Trial Active";
 
-      setTimeout(()=>{
-        window.location.href = "/user-dashboard.html";
-      }, 2500);
+    setTimeout(()=>{
+      window.location.href = "/user-dashboard.html";
+    }, 2500);
 
-      return;
-    }
+    return;
 
     showMsg("Sending M-Pesa prompt...");
 
@@ -1159,17 +1158,13 @@ async function processSignup(mode = "paid"){
 
     payBtn.disabled = false;
     trialBtn.disabled = false;
-    payBtn.innerText = "Create Account, Profile & Pay";
+    payBtn.innerText = "🎁 Create Profile & Start 30 Days Free Trial";
     trialBtn.innerText = "🎁 Start 30 Days Free Trial";
   }
 }
 
 form.addEventListener("submit",async(e)=>{
   e.preventDefault();
-  await processSignup("paid");
-});
-
-trialBtn.addEventListener("click",async()=>{
   if(!form.reportValidity()) return;
   await processSignup("trial");
 });
