@@ -7,7 +7,7 @@ return {
 statusCode: 405,
 body: JSON.stringify({
 success: false,
-message: "Method not allowed"
+error: "Method not allowed"
 })
 };
 }
@@ -18,42 +18,41 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+const body = JSON.parse(event.body || "{}");
+
 const {
   profileId,
   stageName,
   phone,
   whatsapp
-} = JSON.parse(event.body || "{}");
+} = body;
 
 if (!profileId) {
   return {
     statusCode: 400,
     body: JSON.stringify({
       success: false,
-      message: "Profile ID is required"
+      error: "Missing profileId"
     })
   };
 }
 
-// Generate username
-const baseUsername =
-  (stageName || "user")
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "")
-    .substring(0, 12);
+const cleanName = String(stageName || "user")
+  .toLowerCase()
+  .replace(/[^a-z0-9]/g, "");
 
-const randomNumber = Math.floor(1000 + Math.random() * 9000);
+const username =
+  cleanName +
+  Math.floor(1000 + Math.random() * 9000);
 
-const username = `${baseUsername}${randomNumber}`;
-
-// Generate temporary password
 const password =
   "NS" +
   Math.floor(100000 + Math.random() * 900000);
 
-const email = `${username}@nairobi-sweets.com`;
+const email =
+  `${username}@nairobi-sweets.com`;
 
-// Create Supabase Auth User
+// Create Auth User
 const { data: authData, error: authError } =
   await supabase.auth.admin.createUser({
     email,
@@ -66,7 +65,8 @@ if (authError) {
     statusCode: 500,
     body: JSON.stringify({
       success: false,
-      message: authError.message
+      step: "create_auth_user",
+      error: authError.message
     })
   };
 }
@@ -79,8 +79,7 @@ const { error: profileError } = await supabase
   .update({
     user_id: userId,
     username,
-    email,
-    last_login_at: null
+    email
   })
   .eq("id", profileId);
 
@@ -89,26 +88,36 @@ if (profileError) {
     statusCode: 500,
     body: JSON.stringify({
       success: false,
-      message: profileError.message
+      step: "update_profile",
+      error: profileError.message
     })
   };
 }
 
-// Save login mapping
-await supabase
-  .from("profile_users")
-  .insert({
-    profile_id: profileId,
-    user_id: userId,
-    username,
-    email,
-    active: true
-  });
+// Save mapping
+const { error: mappingError } =
+  await supabase
+    .from("profile_users")
+    .insert({
+      profile_id: profileId,
+      user_id: userId,
+      username,
+      email,
+      active: true
+    });
 
-const loginUrl =
-  "https://nairobi-sweets.com/login.html";
+if (mappingError) {
+  return {
+    statusCode: 500,
+    body: JSON.stringify({
+      success: false,
+      step: "save_mapping",
+      error: mappingError.message
+    })
+  };
+}
 
-const whatsappMessage =
+const loginMessage =
 ```
 
 `Welcome to Nairobi Sweets
@@ -116,47 +125,44 @@ const whatsappMessage =
 Your account has been created.
 
 Login:
-${loginUrl}
+https://nairobi-sweets.com/login.html
 
 Username: ${username}
 Password: ${password}
 
-Please login and change your password immediately.`;
+Please login and change your password.`;
 
 ```
-const whatsappNumber =
-  (whatsapp || phone || "")
+const number =
+  String(whatsapp || phone || "")
     .replace(/\D/g, "");
 
-let whatsappLink = "";
-
-if (whatsappNumber) {
-  whatsappLink =
-    `https://wa.me/${whatsappNumber}?text=` +
-    encodeURIComponent(whatsappMessage);
-}
+const whatsappUrl =
+  number
+    ? `https://wa.me/${number}?text=${encodeURIComponent(loginMessage)}`
+    : "";
 
 return {
   statusCode: 200,
   body: JSON.stringify({
     success: true,
-    profileId,
-    userId,
     username,
     password,
     email,
-    whatsappLink,
-    whatsappMessage
+    whatsappUrl,
+    loginMessage
   })
 };
 ```
 
-} catch (error) {
+} catch (err) {
 return {
 statusCode: 500,
 body: JSON.stringify({
 success: false,
-message: error.message
+step: "catch",
+error: err.message,
+stack: err.stack
 })
 };
 }
