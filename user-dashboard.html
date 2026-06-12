@@ -561,6 +561,22 @@ LIVE LOCATION SHARE PANEL
   }
 }
 
+
+
+/* =========================
+ACCOUNT SETTINGS
+========================= */
+.account-panel{margin:22px 0;background:linear-gradient(135deg,#07145f,#02083d,#160024);border:1px solid rgba(255,216,75,.14);border-radius:30px;padding:28px;box-shadow:0 24px 70px rgba(0,0,0,.42);display:none}
+.account-panel h2{margin:0 0 14px;color:var(--gold);font-size:30px;font-weight:950}
+.account-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.account-note{margin-top:14px;color:var(--muted);font-size:13px;line-height:1.6;font-weight:800}
+.account-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.account-actions button{border:none;border-radius:999px;padding:16px;font-size:15px;font-weight:950;cursor:pointer}
+.account-save{background:linear-gradient(180deg,#ffe46b,#ffbf00);color:#111}
+.account-password{background:linear-gradient(180deg,#22c55e,#16a34a);color:white}
+.account-msg{margin-top:14px;font-weight:900;text-align:center;min-height:22px}
+@media(max-width:850px){.account-grid,.account-actions{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -721,6 +737,43 @@ LIVE LOCATION SHARE PANEL
     <div class="location-note">
       Note: this shares your current location once. Continuous live tracking is not enabled.
     </div>
+  </section>
+
+  <section id="accountPanel" class="account-panel">
+    <h2>🔐 Account Settings</h2>
+
+    <div class="account-grid">
+      <div class="field">
+        <label>Username</label>
+        <input id="accountUsername" placeholder="username">
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input id="accountEmail" type="email" placeholder="email@example.com" disabled>
+      </div>
+
+      <div class="field">
+        <label>New Password</label>
+        <input id="newPassword" type="password" placeholder="Leave blank unless changing">
+      </div>
+
+      <div class="field">
+        <label>Confirm New Password</label>
+        <input id="confirmPassword" type="password" placeholder="Repeat new password">
+      </div>
+    </div>
+
+    <div class="account-note">
+      You can change your username here. Password changes apply immediately, so use the new password next time you login.
+    </div>
+
+    <div class="account-actions">
+      <button class="account-save" type="button" onclick="saveAccountSettings()">💾 Save Username</button>
+      <button class="account-password" type="button" onclick="changeAccountPassword()">🔑 Change Password</button>
+    </div>
+
+    <div id="accountMsg" class="account-msg"></div>
   </section>
 
   <form id="dashboardForm" class="card" style="display:none;">
@@ -897,6 +950,8 @@ let currentUser = null;
 let currentProfile = null;
 let adminWhatsappClean = "254143616363";
 let latestLocationLink = "";
+const accountPanel = document.getElementById("accountPanel");
+const accountMsg = document.getElementById("accountMsg");
 
 const loading = document.getElementById("loading");
 const form = document.getElementById("dashboardForm");
@@ -1176,9 +1231,105 @@ function renderStatus(){
   }
 }
 
+
+function setAccountMsg(text,type="normal"){
+  if(!accountMsg) return;
+  accountMsg.textContent = text || "";
+  accountMsg.style.color = type === "error" ? "var(--red)" : type === "success" ? "var(--green)" : "var(--gold)";
+}
+
+function renderAccountPanel(){
+  if(!currentUser || !currentProfile || !accountPanel) return;
+  setValue("accountUsername", currentProfile.username || currentProfile.login_username || "");
+  setValue("accountEmail", currentProfile.email || currentUser.email || "");
+  accountPanel.style.display = "block";
+}
+
+function validUsername(username){
+  return /^[a-z0-9._-]{3,30}$/.test(String(username || ""));
+}
+
+async function saveAccountSettings(){
+  try{
+    if(!currentUser || !currentProfile) throw new Error("Profile not loaded.");
+
+    const username = String(document.getElementById("accountUsername").value || "").trim().toLowerCase();
+
+    if(!validUsername(username)){
+      throw new Error("Username must be 3-30 characters. Use letters, numbers, dot, dash or underscore only.");
+    }
+
+    setAccountMsg("Saving username...");
+
+    const { data: existing, error: existingError } = await sb
+      .from("profiles")
+      .select("id")
+      .eq("username", username)
+      .neq("id", currentProfile.id)
+      .limit(1)
+      .maybeSingle();
+
+    if(existingError) throw existingError;
+    if(existing?.id) throw new Error("That username is already taken.");
+
+    const { data, error } = await sb
+      .from("profiles")
+      .update({
+        username,
+        login_username: username,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", currentProfile.id)
+      .eq("user_id", currentUser.id)
+      .select()
+      .single();
+
+    if(error) throw error;
+
+    currentProfile = data;
+    setAccountMsg("Username saved successfully.","success");
+  }catch(error){
+    setAccountMsg(error.message || "Could not save username.","error");
+  }
+}
+
+async function changeAccountPassword(){
+  try{
+    const pass = String(document.getElementById("newPassword").value || "").trim();
+    const confirm = String(document.getElementById("confirmPassword").value || "").trim();
+
+    if(!pass || !confirm) throw new Error("Enter and confirm the new password.");
+    if(pass.length < 8) throw new Error("Password must be at least 8 characters.");
+    if(pass !== confirm) throw new Error("Passwords do not match.");
+
+    setAccountMsg("Changing password...");
+
+    const { error } = await sb.auth.updateUser({ password: pass });
+    if(error) throw error;
+
+    document.getElementById("newPassword").value = "";
+    document.getElementById("confirmPassword").value = "";
+
+    await sb
+      .from("profiles")
+      .update({
+        must_change_password:false,
+        password_changed_at:new Date().toISOString(),
+        updated_at:new Date().toISOString()
+      })
+      .eq("id", currentProfile.id)
+      .eq("user_id", currentUser.id);
+
+    setAccountMsg("Password changed successfully.","success");
+  }catch(error){
+    setAccountMsg(error.message || "Could not change password.","error");
+  }
+}
+
 function fillForm(){
   setValue("stageName", currentProfile.stage_name || currentProfile.name);
   setValue("email", currentProfile.email || currentUser.email);
+  renderAccountPanel();
   setValue("phone", currentProfile.phone);
   setValue("whatsapp", currentProfile.whatsapp);
   setValue("town", currentProfile.town);
