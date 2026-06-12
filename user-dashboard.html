@@ -446,6 +446,118 @@ footer{
     padding:14px 0;
   }
 }
+
+
+/* =========================
+LIVE LOCATION SHARE PANEL
+========================= */
+.live-location-panel{
+  margin:22px 0;
+  background:linear-gradient(135deg,#052e2b,#07145f,#160024);
+  border:1px solid rgba(34,197,94,.24);
+  border-radius:30px;
+  padding:26px;
+  box-shadow:0 24px 70px rgba(0,0,0,.42);
+}
+
+.live-location-panel h2{
+  margin:0 0 12px;
+  color:var(--gold);
+  font-size:30px;
+  font-weight:950;
+}
+
+.live-location-panel p{
+  color:#d8ddf4;
+  line-height:1.75;
+  margin:0 0 18px;
+}
+
+.location-consent{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  color:#e9edff;
+  font-size:14px;
+  line-height:1.6;
+  margin-bottom:16px;
+}
+
+.location-consent input{
+  width:auto;
+  margin-top:4px;
+  transform:scale(1.2);
+}
+
+.location-actions{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.location-btn{
+  min-height:54px;
+  border:none;
+  border-radius:999px;
+  padding:14px 18px;
+  font-weight:950;
+  cursor:pointer;
+  color:white;
+  font-size:15px;
+}
+
+.location-btn.share{
+  background:linear-gradient(180deg,#22c55e,#16a34a);
+}
+
+.location-btn.copy{
+  background:linear-gradient(180deg,#38bdf8,#06b6d4);
+  color:#06101a;
+}
+
+.location-btn.maps{
+  background:linear-gradient(180deg,#ffe46b,#ffbf00);
+  color:#111;
+}
+
+.location-btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.location-result{
+  display:none;
+  margin-top:18px;
+  background:rgba(0,0,0,.22);
+  border:1px solid rgba(34,197,94,.22);
+  border-radius:20px;
+  padding:16px;
+  color:#e9edff;
+  line-height:1.7;
+  word-break:break-word;
+}
+
+.location-result strong{
+  color:var(--gold);
+}
+
+.location-note{
+  margin-top:14px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+
+@media(max-width:850px){
+  .location-actions{
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 </head>
 
@@ -518,6 +630,44 @@ footer{
       <a class="member-action-btn member-vip-btn" href="/public-signup-payment-page.html?plan=vip-plus&from=dashboard">🚀 Upgrade To VIP+</a>
       <a class="member-action-btn member-signature-btn" href="/public-signup-payment-page.html?plan=signature&from=dashboard">👑 Upgrade To Signature</a>
       <a id="memberAdminWhatsappBtn" class="member-action-btn member-admin-btn" href="https://wa.me/254143616363" target="_blank" rel="noopener">💬 Contact Admin</a>
+    </div>
+  </section>
+
+
+
+  <section id="liveLocationPanel" class="live-location-panel" style="display:none;">
+    <h2>📍 Share Live Location</h2>
+    <p>
+      Share your current location with Nairobi Sweets Admin through WhatsApp.
+      Your browser will ask for permission first.
+    </p>
+
+    <label class="location-consent">
+      <input type="checkbox" id="locationConsent">
+      <span>
+        I agree to share my current location with Nairobi Sweets Admin for support,
+        verification, profile assistance, or location updates.
+      </span>
+    </label>
+
+    <div class="location-actions">
+      <button type="button" class="location-btn share" onclick="shareLiveLocationToAdmin()">
+        📍 Share To WhatsApp
+      </button>
+
+      <button type="button" class="location-btn copy" onclick="copyLiveLocationLink()">
+        🔗 Copy Location Link
+      </button>
+
+      <button type="button" class="location-btn maps" onclick="openLiveLocationMap()">
+        🗺️ Open In Maps
+      </button>
+    </div>
+
+    <div id="locationResult" class="location-result"></div>
+
+    <div class="location-note">
+      Note: this shares your current location once. Continuous live tracking is not enabled.
     </div>
   </section>
 
@@ -693,6 +843,8 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
 let currentProfile = null;
+let adminWhatsappClean = "254143616363";
+let latestLocationLink = "";
 
 const loading = document.getElementById("loading");
 const form = document.getElementById("dashboardForm");
@@ -902,6 +1054,7 @@ async function loadAdminContact(){
     const whatsapp = data?.admin_whatsapp || phone;
     const email = data?.admin_email || "nairobisweets05@gmail.com";
     const waClean = cleanPhone(whatsapp);
+    adminWhatsappClean = waClean || "254143616363";
 
     const callBtn = document.getElementById("adminCallBtn");
     const waBtn = document.getElementById("adminWhatsappBtn");
@@ -1012,6 +1165,8 @@ async function loadDashboard(){
 
   loading.style.display = "none";
   form.style.display = "block";
+  const liveLocationPanel = document.getElementById("liveLocationPanel");
+  if(liveLocationPanel) liveLocationPanel.style.display = "block";
 }
 
 function previewReplace(inputId,imgId){
@@ -1166,6 +1321,174 @@ form.addEventListener("submit",async(e)=>{
     saveBtn.innerText = "Save Profile Updates";
   }
 });
+
+
+
+/* =========================
+LIVE LOCATION SHARING
+========================= */
+function requireLocationConsent(){
+  const consent = document.getElementById("locationConsent");
+
+  if(!consent || !consent.checked){
+    alert("Please tick the consent box before sharing your location.");
+    return false;
+  }
+
+  return true;
+}
+
+function setLocationResult(html,type="info"){
+  const box = document.getElementById("locationResult");
+  if(!box) return;
+
+  box.style.display = "block";
+  box.innerHTML = html;
+
+  if(type === "error"){
+    box.style.borderColor = "rgba(255,79,134,.45)";
+  }else{
+    box.style.borderColor = "rgba(34,197,94,.22)";
+  }
+}
+
+function getCurrentBrowserLocation(){
+  return new Promise((resolve,reject)=>{
+    if(!navigator.geolocation){
+      reject(new Error("Location sharing is not supported on this device or browser."));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      position => resolve(position),
+      error => {
+        let message = "Could not get your location.";
+
+        if(error.code === 1){
+          message = "Location permission was denied. Please allow location access and try again.";
+        }
+
+        if(error.code === 2){
+          message = "Your location is unavailable. Please check GPS/location settings.";
+        }
+
+        if(error.code === 3){
+          message = "Location request timed out. Please try again.";
+        }
+
+        reject(new Error(message));
+      },
+      {
+        enableHighAccuracy:true,
+        timeout:20000,
+        maximumAge:0
+      }
+    );
+  });
+}
+
+async function saveLocationToProfile(lat,lng,mapLink){
+  if(!currentUser || !currentProfile) return;
+
+  const updates = {
+    live_location_lat:lat,
+    live_location_lng:lng,
+    live_location_url:mapLink,
+    live_location_updated_at:new Date().toISOString()
+  };
+
+  try{
+    await sb
+      .from("profiles")
+      .update(updates)
+      .eq("id",currentProfile.id)
+      .eq("user_id",currentUser.id);
+  }catch(error){
+    console.log("Location save skipped:", error);
+  }
+}
+
+async function buildLiveLocationLink(){
+  if(!requireLocationConsent()) return "";
+
+  setLocationResult("📡 Getting your location... please wait.");
+
+  const position = await getCurrentBrowserLocation();
+
+  const lat = position.coords.latitude;
+  const lng = position.coords.longitude;
+  const accuracy = Math.round(position.coords.accuracy || 0);
+
+  const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
+  latestLocationLink = mapLink;
+
+  await saveLocationToProfile(lat,lng,mapLink);
+
+  setLocationResult(`
+    <strong>Location ready.</strong><br>
+    Accuracy: about ${accuracy} meters<br>
+    <a href="${mapLink}" target="_blank" rel="noopener">${mapLink}</a>
+  `);
+
+  return mapLink;
+}
+
+async function shareLiveLocationToAdmin(){
+  try{
+    const mapLink = await buildLiveLocationLink();
+    if(!mapLink) return;
+
+    const name = currentProfile
+      ? (currentProfile.stage_name || currentProfile.name || currentUser?.email || "Nairobi Sweets User")
+      : "Nairobi Sweets User";
+
+    const message = encodeURIComponent(
+`📍 Nairobi Sweets Live Location
+
+Name: ${name}
+Profile ID: ${currentProfile?.id || "Not available"}
+
+My current location:
+${mapLink}
+
+Shared from my Nairobi Sweets dashboard.`
+    );
+
+    window.open(`https://wa.me/${adminWhatsappClean}?text=${message}`,"_blank","noopener");
+  }catch(error){
+    setLocationResult(error.message || "Could not share location.","error");
+    alert(error.message || "Could not share location.");
+  }
+}
+
+async function copyLiveLocationLink(){
+  try{
+    const mapLink = latestLocationLink || await buildLiveLocationLink();
+    if(!mapLink) return;
+
+    await navigator.clipboard.writeText(mapLink);
+
+    setLocationResult(`
+      <strong>Location copied.</strong><br>
+      ${mapLink}
+    `);
+  }catch(error){
+    setLocationResult(error.message || "Could not copy location link.","error");
+    alert(error.message || "Could not copy location link.");
+  }
+}
+
+async function openLiveLocationMap(){
+  try{
+    const mapLink = latestLocationLink || await buildLiveLocationLink();
+    if(!mapLink) return;
+
+    window.open(mapLink,"_blank","noopener");
+  }catch(error){
+    setLocationResult(error.message || "Could not open map.","error");
+    alert(error.message || "Could not open map.");
+  }
+}
 
 async function logout(){
   await sb.auth.signOut();
