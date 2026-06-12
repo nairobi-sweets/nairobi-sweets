@@ -28,6 +28,7 @@ body{
     linear-gradient(180deg, #060812, #0b1020 55%, #070a12);
   font-family:Inter,ui-sans-serif,system-ui,sans-serif;
 }
+
 .glass{
   background:rgba(9,14,28,.78);
   border:1px solid rgba(255,255,255,.09);
@@ -35,6 +36,7 @@ body{
   -webkit-backdrop-filter:blur(18px);
   box-shadow:0 24px 70px rgba(0,0,0,.36);
 }
+
 .input{
   width:100%;
   padding:14px 16px;
@@ -44,32 +46,39 @@ body{
   color:white;
   outline:none;
 }
+
 .input:focus{
   border-color:rgba(250,204,21,.65);
   box-shadow:0 0 0 3px rgba(250,204,21,.10);
 }
+
 .btn{
   border-radius:18px;
   transition:.18s ease;
   font-weight:900;
 }
+
 .btn:hover{
   transform:translateY(-1px);
   filter:brightness(1.05);
 }
+
 .btn-gold{
   background:linear-gradient(135deg,#facc15,#f59e0b);
   color:#111827;
 }
+
 .btn-dark{
   background:rgba(255,255,255,.07);
   border:1px solid rgba(255,255,255,.09);
   color:white;
 }
+
 .btn-pink{
   background:linear-gradient(135deg,#ff5fb1,#e6257f);
   color:white;
 }
+
 .divider{
   display:flex;
   align-items:center;
@@ -77,6 +86,7 @@ body{
   color:#94a3b8;
   font-size:13px;
 }
+
 .divider::before,
 .divider::after{
   content:"";
@@ -121,7 +131,7 @@ body{
     <input id="username" type="text" placeholder="Username" class="input" autocomplete="username">
     <input id="password" type="password" placeholder="Password" class="input" autocomplete="current-password">
 
-    <a id="forgotPassword" href="#" class="text-yellow-300 text-sm text-center block hover:text-yellow-200">
+    <a id="forgotPassword" href="/forgot-password.html" class="text-yellow-300 text-sm text-center block hover:text-yellow-200">
       Forgot Password?
     </a>
 
@@ -162,7 +172,6 @@ const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
 const loginBtn = document.getElementById("loginBtn");
 const googleBtn = document.getElementById("googleBtn");
-const forgotPassword = document.getElementById("forgotPassword");
 const rememberMe = document.getElementById("rememberMe");
 const msg = document.getElementById("msg");
 
@@ -179,14 +188,14 @@ function isOwner(email){
   return OWNER_EMAILS.includes(String(email || "").toLowerCase());
 }
 
-async function logLoginEvent(eventType,email,details=""){
+async function logLoginEvent(eventType, email, details = ""){
   try{
     await sb.from("auth_events").insert({
-      event_type:eventType,
-      email:String(email || "").toLowerCase(),
+      event_type: eventType,
+      email: String(email || "").toLowerCase(),
       details,
-      source_page:"login.html",
-      created_at:new Date().toISOString()
+      source_page: "login.html",
+      created_at: new Date().toISOString()
     });
   }catch(error){
     console.log("Login analytics skipped:", error.message || error);
@@ -200,9 +209,9 @@ async function updateLastLogin(user){
     await sb
       .from("profiles")
       .update({
-        last_login_at:new Date().toISOString()
+        last_login_at: new Date().toISOString()
       })
-      .eq("user_id",user.id);
+      .eq("user_id", user.id);
   }catch(error){
     console.log("Last login update skipped:", error.message || error);
   }
@@ -219,7 +228,9 @@ async function routeUser(user){
   if(isOwner(email)){
     showMsg("🔐 Admin account detected. Opening Vault...", "success");
     await updateLastLogin(user);
-    setTimeout(()=>{ window.location.href = "/vault-8472.html"; }, 650);
+    setTimeout(() => {
+      window.location.href = "/vault-8472.html";
+    }, 650);
     return;
   }
 
@@ -233,7 +244,7 @@ async function routeUser(user){
     .maybeSingle();
 
   if(error){
-    await logLoginEvent("login_failed",email,error.message);
+    await logLoginEvent("login_failed", email, error.message);
     showMsg(error.message, "error");
     return;
   }
@@ -260,7 +271,11 @@ async function login(){
 
   loginBtn.disabled = true;
   loginBtn.textContent = "Logging in...";
-  localStorage.setItem("nairobi_sweets_remember_login", rememberMe?.checked ? "true" : "false");
+  localStorage.setItem(
+    "nairobi_sweets_remember_login",
+    rememberMe?.checked ? "true" : "false"
+  );
+
   showMsg("Checking username...");
 
   try{
@@ -286,12 +301,13 @@ async function login(){
     });
 
     if(error){
-      await logLoginEvent("login_failed",profile.email,error.message);
+      await logLoginEvent("login_failed", profile.email, error.message);
       throw new Error("Wrong username or password.");
     }
 
-    await logLoginEvent("login_success",profile.email,"Username login successful");
+    await logLoginEvent("login_success", profile.email, "Username login successful");
     showMsg("Login successful. Redirecting...", "success");
+
     await routeUser(data.user);
 
   }catch(error){
@@ -304,7 +320,7 @@ async function login(){
 async function loginWithGoogle(){
   showMsg("Opening Google login...");
 
-  await logLoginEvent("google_login_started","unknown","Google OAuth started");
+  await logLoginEvent("google_login_started", "unknown", "Google OAuth started");
 
   const { error } = await sb.auth.signInWithOAuth({
     provider: "google",
@@ -314,7 +330,7 @@ async function loginWithGoogle(){
   });
 
   if(error){
-    await logLoginEvent("login_failed","google",error.message);
+    await logLoginEvent("login_failed", "google", error.message);
     showMsg(error.message, "error");
   }
 }
@@ -333,59 +349,8 @@ async function checkExistingSession(){
   }
 }
 
-async function sendPasswordReset(event){
-  event.preventDefault();
-
-  const username = usernameInput.value.trim().toLowerCase();
-
-  if(!username){
-    showMsg("Enter your username first, then tap Forgot Password.","error");
-    usernameInput.focus();
-    return;
-  }
-
-  forgotPassword.textContent = "Sending reset link...";
-  showMsg("Finding your account...");
-
-  try{
-    const { data: profile, error: profileError } = await sb
-      .from("profiles")
-      .select("email")
-      .eq("username", username)
-      .maybeSingle();
-
-    if(profileError){
-      throw new Error(profileError.message);
-    }
-
-    if(!profile?.email){
-      throw new Error("Username not found.");
-    }
-
-    showMsg("Sending password reset email...");
-
-    const { error } = await sb.auth.resetPasswordForEmail(profile.email,{
-      redirectTo:`${window.location.origin}/reset-password.html`
-    });
-
-    if(error){
-      await logLoginEvent("password_reset_failed",profile.email,error.message);
-      throw error;
-    }
-
-    await logLoginEvent("password_reset_requested",profile.email,"Password reset requested");
-    showMsg("Password reset email sent. Check your inbox.","success");
-
-  }catch(error){
-    showMsg(error.message || "Password reset failed.","error");
-  }finally{
-    forgotPassword.textContent = "Forgot Password?";
-  }
-}
-
 loginBtn.addEventListener("click", login);
 googleBtn.addEventListener("click", loginWithGoogle);
-forgotPassword.addEventListener("click", sendPasswordReset);
 
 passwordInput.addEventListener("keydown", (e) => {
   if(e.key === "Enter") login();
@@ -402,10 +367,10 @@ if(localStorage.getItem("nairobi_sweets_remember_login") === "false" && remember
 checkExistingSession();
 
 if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{
+  window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/sw.js")
-      .catch(err=>console.error("PWA error:",err));
+      .catch(err => console.error("PWA error:", err));
   });
 }
 </script>
