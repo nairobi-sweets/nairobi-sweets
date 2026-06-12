@@ -2157,6 +2157,69 @@ function sortByMarketplaceRank(list){
   });
 }
 
+/* =========================
+SMART HOMEPAGE ROTATION
+Keeps paid/ranked profiles strong, but changes the visible top cards on refresh.
+========================= */
+function randomizeArray(list){
+  const array = [...list];
+
+  for(let i = array.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
+}
+
+function smartProfileRotation(list, topLimit = 28){
+  const ranked = sortByMarketplaceRank(list);
+
+  if(ranked.length <= 2){
+    return ranked;
+  }
+
+  const pinned = ranked.filter(p => p.pinned_top);
+  const notPinned = ranked.filter(p => !p.pinned_top);
+
+  const signature = notPinned.filter(isSignatureProfile);
+  const vip = notPinned.filter(p => getPlan(p).includes("vip") && !isSignatureProfile(p));
+  const featured = notPinned.filter(p => {
+    const plan = getPlan(p);
+    return !isSignatureProfile(p) && !plan.includes("vip");
+  });
+
+  const topPool = [
+    ...signature.slice(0, Math.ceil(topLimit * 0.35)),
+    ...vip.slice(0, Math.ceil(topLimit * 0.40)),
+    ...featured.slice(0, Math.ceil(topLimit * 0.25))
+  ];
+
+  const topPoolIds = new Set(topPool.map(p => String(p.id)));
+  const remaining = ranked.filter(p => !topPoolIds.has(String(p.id)) && !p.pinned_top);
+
+  // Pinned profiles remain first, but the main marketplace cards rotate on every refresh.
+  return [
+    ...randomizeArray(pinned),
+    ...randomizeArray(topPool),
+    ...remaining
+  ];
+}
+
+function smartSignatureRotation(list){
+  const signatures = list
+    .filter(isSignatureProfile)
+    .sort((a,b)=>(Number(a.signature_position || 999) - Number(b.signature_position || 999)));
+
+  const pinnedSignatures = signatures.filter(p => p.pinned_top || Number(p.signature_position || 999) <= 3);
+  const normalSignatures = signatures.filter(p => !pinnedSignatures.some(x => String(x.id) === String(p.id)));
+
+  return [
+    ...randomizeArray(pinnedSignatures),
+    ...randomizeArray(normalSignatures)
+  ];
+}
+
 function markPosterImage(img){
   try{
     if(img.naturalWidth && img.naturalHeight && (img.naturalWidth / img.naturalHeight) > 1.2){
@@ -2283,10 +2346,7 @@ function renderSignatureProfiles(list){
   const container = document.getElementById("signatureProfiles");
   if(!container) return;
 
-  const signatures = list
-    .filter(isSignatureProfile)
-    .sort((a,b)=>(Number(a.signature_position || 999) - Number(b.signature_position || 999)))
-    .slice(0,8);
+  const signatures = smartSignatureRotation(list).slice(0,8);
 
   if(!signatures.length){
     container.innerHTML = `
@@ -2565,7 +2625,7 @@ function applyFilters(){
     list = list.filter(p=>profileSearchText(p).includes(q));
   }
 
-  list = sortByMarketplaceRank(list);
+  list = smartProfileRotation(list, 28);
 
   const signatureProfiles = list.filter(isSignatureProfile);
   const normalProfiles = list.filter(p => !isSignatureProfile(p));
