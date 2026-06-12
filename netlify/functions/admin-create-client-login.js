@@ -1,13 +1,41 @@
 const { createClient } = require("@supabase/supabase-js");
 
+const LOGIN_URL = "https://nairobi-sweets.com/login.html";
+
+function json(statusCode, payload) {
+  return {
+    statusCode,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  };
+}
+
+function cleanPhone(value) {
+  return String(value || "").replace(/\D/g, "");
+}
+
+function cleanUsername(value) {
+  return String(value || "client")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .slice(0, 18) || "client";
+}
+
+function makePassword() {
+  return `NS2026#${Math.random().toString(36).slice(2, 10)}`;
+}
+
 exports.handler = async (event) => {
   try {
     if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: JSON.stringify({ success:false, message:"Method not allowed" }) };
+      return json(405, { success: false, message: "Method not allowed" });
     }
 
     if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return { statusCode: 500, body: JSON.stringify({ success:false, message:"Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in Netlify." }) };
+      return json(500, {
+        success: false,
+        message: "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in Netlify."
+      });
     }
 
     const supabase = createClient(
@@ -16,70 +44,98 @@ exports.handler = async (event) => {
     );
 
     const body = JSON.parse(event.body || "{}");
-
     const profileId = body.profileId || body.id;
-    const stageName = body.stageName || body.stage_name || "client";
-    const phone = body.phone || "";
-    const whatsapp = body.whatsapp || "";
-    const inputUsername = body.username || "";
-    const inputPassword = body.password || body.tempPassword || "";
-    const inputEmail = body.email || "";
 
     if (!profileId) {
-      return { statusCode: 400, body: JSON.stringify({ success:false, message:"Missing profileId." }) };
+      return json(400, { success: false, message: "Missing profileId." });
     }
 
-    const cleanBase = String(stageName)
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "")
-      .slice(0, 20) || "client";
-
-    const username = String(inputUsername || `${cleanBase}${Math.floor(1000 + Math.random() * 9000)}`)
-      .toLowerCase()
-      .replace(/[^a-z0-9_]/g, "");
-
-    const password = inputPassword || `NS2026#${Math.random().toString(36).slice(2, 10)}`;
-
-    const email = String(inputEmail || `${username}@clients.nairobi-sweets.com`).toLowerCase();
-
-    const { data: existingProfile } = await supabase
+    const { data: profile, error: profileFetchError } = await supabase
       .from("profiles")
-      .select("id,user_id,username,email")
+      .select("id,stage_name,phone,whatsapp,username,email,user_id")
       .eq("id", profileId)
       .maybeSingle();
 
-    if (!existingProfile) {
-      return { statusCode: 404, body: JSON.stringify({ success:false, message:`Profile ID ${profileId} not found.` }) };
+    if (profileFetchError) {
+      return json(500, {
+        success: false,
+        step: "fetch_profile",
+        message: profileFetchError.message
+      });
+    }
+
+    if (!profile) {
+      return json(404, {
+        success: false,
+        message: `Profile ID ${profileId} not found.`
+      });
     }
 
     const { data: existingLogin } = await supabase
       .from("profile_users")
       .select("id,username,email")
-      .or(`username.eq.${username},email.eq.${email}`)
+      .eq("profile_id", Number(profileId))
       .maybeSingle();
 
     if (existingLogin) {
-      return { statusCode: 409, body: JSON.stringify({ success:false, message:"Username or email already exists. Try another username/email." }) };
+      const message =
+`Welcome to Nairobi Sweets
+
+Your account already exists.
+
+Login:
+${LOGIN_URL}
+
+Username: ${existingLogin.username}
+
+If you forgot your password, contact admin for reset.`;
+
+      const number = cleanPhone(profile.whatsapp || profile.phone);
+      const whatsappUrl = number
+        ? `https://wa.me/${number}?text=${encodeURIComponent(message)}`
+        : "";
+
+      return json(200, {
+        success: true,
+        alreadyExists: true,
+        message: "This profile already has a login.",
+        username: existingLogin.username,
+        email: existingLogin.email,
+        loginMessage: message,
+        whatsappUrl,
+        whatsappLink: whatsappUrl
+      });
     }
 
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        username,
-        profile_id: profileId,
-        stage_name: stageName
-      }
-    });
+    const base = cleanUsername(body.username || profile.stage_name);
+    const unique = Date.now().toString().slice(-6);
+    const username = `${base}${unique}`;
+    const email = `${username}@clients.nairobi-sweets.com`;
+    const password = body.password || makePassword();
+
+    const { data: authData, error: authError } =
+      await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: {
+          username,
+          profile_id: profileId,
+          stage_name: profile.stage_name || ""
+        }
+      });
 
     if (authError) {
-      return { statusCode: 500, body: JSON.stringify({ success:false, step:"create_auth_user", message:authError.message }) };
+      return json(500, {
+        success: false,
+        step: "create_auth_user",
+        message: authError.message
+      });
     }
 
     const userId = authData.user.id;
 
-    const { error: profileError } = await supabase
+    const { error: profileUpdateError } = await supabase
       .from("profiles")
       .update({
         user_id: userId,
@@ -88,8 +144,12 @@ exports.handler = async (event) => {
       })
       .eq("id", profileId);
 
-    if (profileError) {
-      return { statusCode: 500, body: JSON.stringify({ success:false, step:"update_profile", message:profileError.message }) };
+    if (profileUpdateError) {
+      return json(500, {
+        success: false,
+        step: "update_profile",
+        message: profileUpdateError.message
+      });
     }
 
     const { error: mappingError } = await supabase
@@ -103,10 +163,12 @@ exports.handler = async (event) => {
       });
 
     if (mappingError) {
-      return { statusCode: 500, body: JSON.stringify({ success:false, step:"save_mapping", message:mappingError.message }) };
+      return json(500, {
+        success: false,
+        step: "save_mapping",
+        message: mappingError.message
+      });
     }
-
-    const loginUrl = "https://nairobi-sweets.com/login.html";
 
     const loginMessage =
 `Welcome to Nairobi Sweets
@@ -114,40 +176,37 @@ exports.handler = async (event) => {
 Your account has been created.
 
 Login:
-${loginUrl}
+${LOGIN_URL}
 
 Username: ${username}
 Password: ${password}
 
 Please login and change your password.`;
 
-    const number = String(whatsapp || phone || "").replace(/\D/g, "");
-    const whatsappUrl = number ? `https://wa.me/${number}?text=${encodeURIComponent(loginMessage)}` : "";
+    const number = cleanPhone(profile.whatsapp || profile.phone || body.whatsapp || body.phone);
+    const whatsappUrl = number
+      ? `https://wa.me/${number}?text=${encodeURIComponent(loginMessage)}`
+      : "";
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        message: "Login created successfully.",
-        profileId,
-        userId,
-        username,
-        password,
-        email,
-        loginMessage,
-        whatsappUrl,
-        whatsappLink: whatsappUrl
-      })
-    };
+    return json(200, {
+      success: true,
+      alreadyExists: false,
+      message: "Login created successfully.",
+      profileId,
+      userId,
+      username,
+      password,
+      email,
+      loginMessage,
+      whatsappUrl,
+      whatsappLink: whatsappUrl
+    });
 
   } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        success:false,
-        step:"catch",
-        message:error.message
-      })
-    };
+    return json(500, {
+      success: false,
+      step: "catch",
+      message: error.message
+    });
   }
 };
