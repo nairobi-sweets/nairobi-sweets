@@ -79,6 +79,85 @@ to = "/.netlify/functions/auto-renew-check"
 status = 200
 force = true
 
+
+# =====================================
+# LEGACY ROOT LOCATION REDIRECTS
+# Keeps old URLs like /roysambu.html working
+# =====================================
+
+[[redirects]]
+from = "/nairobi.html"
+to = "/seo/locations/nairobi.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/roysambu.html"
+to = "/seo/locations/roysambu.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/kasarani.html"
+to = "/seo/locations/kasarani.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/ruiru.html"
+to = "/seo/locations/ruiru.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/kiambu.html"
+to = "/seo/locations/kiambu.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/westlands.html"
+to = "/seo/locations/westlands.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/kilimani.html"
+to = "/seo/locations/kilimani.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/ruaka.html"
+to = "/seo/locations/ruaka.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/trm.html"
+to = "/seo/locations/trm.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/mirema.html"
+to = "/seo/locations/mirema.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/zimmerman.html"
+to = "/seo/locations/zimmerman.html"
+status = 301
+force = true
+
+[[redirects]]
+from = "/garden-city.html"
+to = "/seo/locations/garden-city.html"
+status = 301
+force = true
+
+
 # =====================================
 # SEO LOCATION ENGINE
 # =====================================
