@@ -1676,6 +1676,44 @@ body{padding-bottom:155px !important;}
   .sweet-ai{bottom:86px !important;}
 }
 
+
+/* =========================
+SHORTS AUTOPLAY FIX PATCH
+Makes homepage shorts load and start muted playback instead of staying black.
+========================= */
+.short-card{
+  background:linear-gradient(180deg,#05091f,#01030d) !important;
+}
+.short-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background:linear-gradient(110deg,rgba(255,255,255,.03),rgba(255,213,74,.08),rgba(255,255,255,.03));
+  animation:shortLoadGlow 1.8s infinite linear;
+}
+.short-card video{
+  position:relative;
+  z-index:1;
+  display:block !important;
+  opacity:1 !important;
+}
+.short-overlay{z-index:2}
+.short-card.video-error::after{
+  content:"Video unavailable";
+  position:absolute;
+  inset:auto 12px 74px 12px;
+  z-index:3;
+  text-align:center;
+  color:#ffd54a;
+  font-size:12px;
+  font-weight:950;
+}
+@keyframes shortLoadGlow{
+  0%{transform:translateX(-40%)}
+  100%{transform:translateX(40%)}
+}
+
 </style>
 </head>
 
@@ -2667,12 +2705,17 @@ function renderShorts(list){
       <div class="short-card" onclick="window.location.href='/reel.html'">
         <video
           muted
+          autoplay
           loop
           playsinline
-          preload="none"
+          webkit-playsinline
+          preload="metadata"
           controlsList="nodownload"
           disablePictureInPicture
           oncontextmenu="return false"
+          onloadedmetadata="this.play().catch(()=>{})"
+          oncanplay="this.play().catch(()=>{})"
+          onerror="this.closest('.short-card').classList.add('video-error')"
         >
           <source src="${media}" type="video/mp4">
         </video>
@@ -2686,7 +2729,29 @@ function renderShorts(list){
   }).join("");
 
   bindShortsPauseEvents();
+  playHomepageShorts();
+  setTimeout(playHomepageShorts,700);
   if(!isMobilePhone()) setTimeout(startShortsAutoScroll,500);
+}
+
+function playHomepageShorts(){
+  const videos = document.querySelectorAll("#shortsRow video");
+
+  videos.forEach(video=>{
+    try{
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.setAttribute("muted","");
+      video.setAttribute("playsinline","");
+      video.setAttribute("webkit-playsinline","");
+
+      const playPromise = video.play();
+      if(playPromise && typeof playPromise.catch === "function"){
+        playPromise.catch(()=>{});
+      }
+    }catch(error){}
+  });
 }
 
 
