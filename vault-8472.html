@@ -983,9 +983,9 @@ CLIENT LOGIN AUTO-CREATOR
   <div class="verification-note">Verification Center: tick Verified for trusted profiles. Verified profiles get a trust badge and ranking boost.</div>
 
   <div class="filebox">
-    <label>Upload Profile Photo</label>
-    <input type="file" id="photoUpload" accept="image/*">
-    <div class="small">Bucket: profile-images</div>
+    <label>Upload Profile Photos</label>
+    <input type="file" id="photoUpload" accept="image/*" multiple>
+    <div class="small">Bucket: profile-images. You can select many pictures at once. First picture becomes the main photo.</div>
   </div>
 
   <div class="filebox">
@@ -1078,9 +1078,9 @@ CLIENT LOGIN AUTO-CREATOR
       <input id="edit_photo_url" placeholder="Photo URL">
 
       <div class="filebox">
-        <label>Change Profile Picture</label>
-        <input type="file" id="editPhotoUpload" accept="image/*">
-        <div class="small">Uploads to profile-images bucket</div>
+        <label>Add / Change Profile Pictures</label>
+        <input type="file" id="editPhotoUpload" accept="image/*" multiple>
+        <div class="small">Uploads to profile-images bucket. Select many pictures. First new picture becomes the main photo; all are saved in gallery_images.</div>
       </div>
 
       <div class="preview" id="editPreview"></div>
@@ -1379,6 +1379,7 @@ const statusBox = document.getElementById("status");
 const previewBox = document.getElementById("preview");
 
 let editingProfileId = null;
+let EDITING_PROFILE_DATA = null;
 let ALL_PROFILES = [];
 
 function valueOf(id){
@@ -1655,8 +1656,33 @@ function servicesToText(services){
   return "";
 }
 
+function normaliseImageArray(value){
+  if(Array.isArray(value)) return value.filter(Boolean);
+  if(typeof value === "string" && value.trim()){
+    try{
+      const parsed = JSON.parse(value);
+      if(Array.isArray(parsed)) return parsed.filter(Boolean);
+    }catch(e){}
+    return value.split(",").map(x => x.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+function galleryOf(p){
+  return [
+    ...normaliseImageArray(p.gallery_images),
+    ...normaliseImageArray(p.gallery),
+    p.photo_url,
+    p.image_url,
+    p.profile_photo,
+    p.main_photo,
+    p.photo,
+    p.image
+  ].filter(Boolean).filter((url,index,arr)=>arr.indexOf(url) === index);
+}
+
 function imageOf(p){
-  return p.photo_url || p.image_url || p.profile_photo || p.main_photo || p.photo || p.image || "/assets/logo/logo-badge.png";
+  return p.photo_url || p.image_url || galleryOf(p)[0] || p.profile_photo || p.main_photo || p.photo || p.image || "/assets/logo/logo-badge.png";
 }
 
 function videoOf(p){
@@ -1679,17 +1705,29 @@ async function uploadFile(bucket,file){
   return data.publicUrl;
 }
 
+async function uploadFiles(bucket,files){
+  const selected = Array.from(files || []).filter(Boolean);
+  const urls = [];
+
+  for(const file of selected){
+    const url = await uploadFile(bucket,file);
+    if(url) urls.push(url);
+  }
+
+  return urls;
+}
+
 function previewFiles(){
   previewBox.innerHTML = "";
 
-  const imageFile = document.getElementById("photoUpload").files[0];
+  const imageFiles = Array.from(document.getElementById("photoUpload").files || []);
   const reelFile = document.getElementById("reelUpload").files[0];
 
-  if(imageFile){
+  imageFiles.forEach((imageFile)=>{
     const img = document.createElement("img");
     img.src = URL.createObjectURL(imageFile);
     previewBox.appendChild(img);
-  }
+  });
 
   if(reelFile){
     const video = document.createElement("video");
@@ -1727,13 +1765,15 @@ document.getElementById("editPhotoUpload").addEventListener("change",()=>{
 
   box.innerHTML = "";
 
-  const file = document.getElementById("editPhotoUpload").files[0];
+  const files = Array.from(document.getElementById("editPhotoUpload").files || []);
 
-  if(!file) return;
+  if(!files.length) return;
 
-  const img = document.createElement("img");
-  img.src = URL.createObjectURL(file);
-  box.appendChild(img);
+  files.forEach((file)=>{
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    box.appendChild(img);
+  });
 });
 
 document.getElementById("plan").addEventListener("change",()=>syncRanking(""));
@@ -1755,13 +1795,15 @@ async function addProfile(){
   statusBox.textContent = "Saving profile...";
 
   try{
-    const photoFile = document.getElementById("photoUpload").files[0] || null;
+    const photoFiles = document.getElementById("photoUpload").files || [];
     const reelFile = document.getElementById("reelUpload").files[0] || null;
 
-    const uploadedPhotoUrl = await uploadFile("profile-images",photoFile);
+    const uploadedPhotoUrls = await uploadFiles("profile-images",photoFiles);
     const uploadedReelUrl = await uploadFile("profile-videos",reelFile);
 
-    const finalPhotoUrl = uploadedPhotoUrl || valueOf("photo_url");
+    const typedPhotoUrl = valueOf("photo_url");
+    const finalGalleryImages = [...uploadedPhotoUrls, typedPhotoUrl].filter(Boolean).filter((url,index,arr)=>arr.indexOf(url) === index);
+    const finalPhotoUrl = finalGalleryImages[0] || "";
     const finalVideoUrl = uploadedReelUrl || valueOf("video_url");
 
     const stageName = valueOf("stage_name");
@@ -1797,6 +1839,7 @@ async function addProfile(){
       about: valueOf("about"),
       photo_url: finalPhotoUrl,
       image_url: finalPhotoUrl,
+      gallery_images: finalGalleryImages,
       video_url: finalVideoUrl,
       reel_url: finalVideoUrl,
       short_url: finalVideoUrl,
@@ -2499,6 +2542,8 @@ async function unverifyProfile(id){
 async function openEditModal(id){
   editingProfileId = id;
 
+  EDITING_PROFILE_DATA = null;
+
   const editPhotoInput = document.getElementById("editPhotoUpload");
   const editPreview = document.getElementById("editPreview");
 
@@ -2517,6 +2562,8 @@ async function openEditModal(id){
     alert(error.message);
     return;
   }
+
+  EDITING_PROFILE_DATA = data;
 
   document.getElementById("edit_stage_name").value = data.stage_name || "";
   document.getElementById("edit_phone").value = data.phone || data.whatsapp || "";
@@ -2567,17 +2614,28 @@ function closeEditModal(){
 
 async function saveProfileEdit(){
   let newPhotoUrl = valueOf("edit_photo_url");
+  let finalGalleryImages = galleryOf(EDITING_PROFILE_DATA || {});
 
-  const newPhotoFile = document.getElementById("editPhotoUpload")?.files?.[0];
+  const newPhotoFiles = document.getElementById("editPhotoUpload")?.files || [];
 
-  if(newPhotoFile){
+  if(newPhotoFiles.length){
     try{
-      newPhotoUrl = await uploadFile("profile-images", newPhotoFile);
-      document.getElementById("edit_photo_url").value = newPhotoUrl;
+      const uploadedPhotoUrls = await uploadFiles("profile-images", newPhotoFiles);
+      if(uploadedPhotoUrls.length){
+        newPhotoUrl = uploadedPhotoUrls[0];
+        finalGalleryImages = [newPhotoUrl, ...finalGalleryImages, ...uploadedPhotoUrls]
+          .filter(Boolean)
+          .filter((url,index,arr)=>arr.indexOf(url) === index);
+        document.getElementById("edit_photo_url").value = newPhotoUrl;
+      }
     }catch(error){
       alert("Photo upload failed: " + error.message);
       return;
     }
+  }else if(newPhotoUrl){
+    finalGalleryImages = [newPhotoUrl, ...finalGalleryImages]
+      .filter(Boolean)
+      .filter((url,index,arr)=>arr.indexOf(url) === index);
   }
 
   let newVideoUrl = valueOf("edit_video_url");
@@ -2614,6 +2672,7 @@ async function saveProfileEdit(){
     age: valueOf("edit_age"),
     photo_url: newPhotoUrl,
     image_url: newPhotoUrl,
+    gallery_images: finalGalleryImages,
     video_url: newVideoUrl,
     reel_url: newVideoUrl,
     short_url: newVideoUrl,
