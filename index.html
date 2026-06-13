@@ -1152,6 +1152,49 @@ SIGNATURE PROFILES BANNER
   text-align:center;
 }
 
+.load-more-wrap{
+  grid-column:1/-1;
+  display:flex;
+  justify-content:center;
+  padding:10px 0 30px;
+}
+
+.load-more-btn{
+  border:none;
+  border-radius:999px;
+  padding:15px 26px;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  font-size:14px;
+  font-weight:950;
+  cursor:pointer;
+  box-shadow:0 12px 26px rgba(255,180,0,.18);
+}
+
+.mobile-map-load{
+  width:100%;
+  min-height:180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:12px;
+  background:linear-gradient(180deg,#020617,#010633);
+  color:#fff;
+  padding:24px;
+  text-align:center;
+}
+
+.mobile-map-load button{
+  border:none;
+  border-radius:999px;
+  padding:13px 22px;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  color:#000;
+  font-weight:950;
+  cursor:pointer;
+}
+
 @media(min-width:1100px){
   .hero,
   .filters,
@@ -1538,11 +1581,17 @@ Keeps image clear: no badges cover faces/photos
   display:none !important;
 }
 
-/* Mobile order guard: do not let mobile CSS reshuffle sections */
-.hero,.signature-wrap,.shorts-section,.stats-wrap,.filters,.profiles,.join-pricing-wrap,.seo-locations,.map-wrap,.admin-help-section,.disclaimer{
-  order:initial;
+/* =========================
+MOBILE CRASH-SAFE PATCH
+Keeps the same section order as desktop, but loads lighter on phones.
+========================= */
+@media(max-width:700px){
+  html{scroll-behavior:auto}
+  .hero,.signature-wrap,.shorts-section,.stats-wrap,.filters,.profiles,.join-pricing-wrap,.seo-locations,.map-wrap,.admin-help-section,.disclaimer{order:initial}
+  .card,.hero-box,.signature-box,.join-pricing-box,.seo-locations-box,.map-card,.admin-help-box,.disclaimer-box{box-shadow:none}
+  .sweet-ai{animation:none}
+  .short-card video{background:#020617}
 }
-
 </style>
 </head>
 
@@ -1804,11 +1853,11 @@ AGE GATE
       <p>Explore active areas across Nairobi and nearby towns.</p>
     </div>
 
-    <iframe
-      src="https://maps.google.com/maps?q=Nairobi&t=&z=11&ie=UTF8&iwloc=&output=embed"
-      loading="lazy"
-      allowfullscreen>
-    </iframe>
+    <div class="mobile-map-load" id="mapLoader">
+      <strong>🗺️ Nairobi Coverage Map</strong>
+      <span>Tap to load the map. This keeps phones fast and prevents Chrome crashes.</span>
+      <button onclick="loadCoverageMap()">Open Map</button>
+    </div>
   </div>
 </section>
 
@@ -1939,6 +1988,38 @@ const profileCount = document.getElementById("profileCount");
 
 let ALL_PROFILES = [];
 let ACTIVE_FILTER = "home";
+let CURRENT_PROFILE_RESULTS = [];
+let PROFILE_VISIBLE_LIMIT = getInitialProfileLimit();
+
+function isMobilePhone(){
+  return window.innerWidth <= 700;
+}
+
+function getInitialProfileLimit(){
+  return isMobilePhone() ? 8 : 40;
+}
+
+function resetProfileLimit(){
+  PROFILE_VISIBLE_LIMIT = getInitialProfileLimit();
+}
+
+function loadMoreProfiles(){
+  PROFILE_VISIBLE_LIMIT += isMobilePhone() ? 8 : 24;
+  renderProfiles(CURRENT_PROFILE_RESULTS.length ? CURRENT_PROFILE_RESULTS : []);
+}
+
+function loadCoverageMap(){
+  const holder = document.getElementById("mapLoader");
+  if(!holder || holder.dataset.loaded === "yes") return;
+  holder.dataset.loaded = "yes";
+  holder.outerHTML = `
+    <iframe
+      src="https://maps.google.com/maps?q=Nairobi&t=&z=11&ie=UTF8&iwloc=&output=embed"
+      loading="lazy"
+      allowfullscreen>
+    </iframe>
+  `;
+}
 
 function toggleMenu(){
   document.getElementById("mobileMenu").classList.toggle("active");
@@ -2380,7 +2461,7 @@ function renderSignatureProfiles(list){
   const container = document.getElementById("signatureProfiles");
   if(!container) return;
 
-  const signatures = smartSignatureRotation(list).slice(0,8);
+  const signatures = smartSignatureRotation(list).slice(0, isMobilePhone() ? 3 : 8);
 
   if(!signatures.length){
     container.innerHTML = `
@@ -2408,7 +2489,7 @@ function renderSignatureProfiles(list){
     </div>
   `).join("");
 
-  setTimeout(startSignatureAutoSlide, 500);
+  if(!isMobilePhone()) setTimeout(startSignatureAutoSlide, 500);
 }
 
 let shortsAutoScrollFrame = null;
@@ -2478,7 +2559,7 @@ function renderShorts(list){
     .filter(hasVideo)
     .filter(profile => isVideo(getVideo(profile)) || String(getVideo(profile)).startsWith("http"));
 
-  const shorts = randomizeArray(videoShortsPool).slice(0,10);
+  const shorts = randomizeArray(videoShortsPool).slice(0, isMobilePhone() ? 4 : 10);
 
   if(!shorts.length){
     if(shortsSection) shortsSection.style.display = "none";
@@ -2491,7 +2572,7 @@ function renderShorts(list){
 
   // Duplicate the list for endless left-moving scroll, but shuffle each half
   // so the first visible short changes from refresh to refresh.
-  const movingShorts = shorts.length > 1
+  const movingShorts = (!isMobilePhone() && shorts.length > 1)
     ? [...randomizeArray(shorts), ...randomizeArray(shorts)]
     : shorts;
 
@@ -2501,11 +2582,10 @@ function renderShorts(list){
     return `
       <div class="short-card" onclick="window.location.href='/reel.html'">
         <video
-          autoplay
           muted
           loop
           playsinline
-          preload="metadata"
+          preload="none"
           controlsList="nodownload"
           disablePictureInPicture
           oncontextmenu="return false"
@@ -2522,7 +2602,7 @@ function renderShorts(list){
   }).join("");
 
   bindShortsPauseEvents();
-  setTimeout(startShortsAutoScroll,500);
+  if(!isMobilePhone()) setTimeout(startShortsAutoScroll,500);
 }
 
 
@@ -2543,7 +2623,8 @@ function trendRankBadge(index){
 }
 
 function renderProfiles(data){
-  profileCount.textContent = data.length.toLocaleString();
+  CURRENT_PROFILE_RESULTS = Array.isArray(data) ? data : [];
+  profileCount.textContent = CURRENT_PROFILE_RESULTS.length.toLocaleString();
 
   const verifiedCountEl = document.getElementById("verifiedCount");
   const vipCountEl = document.getElementById("vipCount");
@@ -2561,12 +2642,14 @@ function renderProfiles(data){
     signatureCountEl.textContent = data.filter(isSignatureProfile).length.toLocaleString();
   }
 
-  if(!data.length){
+  if(!CURRENT_PROFILE_RESULTS.length){
     profilesEl.innerHTML = `<div class="empty">No profiles found.</div>`;
     return;
   }
 
-  profilesEl.innerHTML = data.map((profile,index)=>{
+  const visibleProfiles = CURRENT_PROFILE_RESULTS.slice(0, PROFILE_VISIBLE_LIMIT);
+
+  profilesEl.innerHTML = visibleProfiles.map((profile,index)=>{
     const phone = safePhone(profile.phone || profile.whatsapp);
     const boostValue = Number(profile.boost_score || profile.boost || 0);
     const qualityValue = Math.round(derivedImageQuality(profile));
@@ -2648,9 +2731,18 @@ function renderProfiles(data){
       </article>
     `;
   }).join("");
+
+  if(CURRENT_PROFILE_RESULTS.length > visibleProfiles.length){
+    profilesEl.innerHTML += `
+      <div class="load-more-wrap">
+        <button class="load-more-btn" onclick="loadMoreProfiles()">Load More Profiles</button>
+      </div>
+    `;
+  }
 }
 
-function applyFilters(){
+function applyFilters(resetLimit = false){
+  if(resetLimit) resetProfileLimit();
   let list = [...ALL_PROFILES];
   const q = searchInput.value.toLowerCase().trim();
 
@@ -2681,11 +2773,11 @@ document.querySelectorAll(".filters button").forEach(button=>{
     document.querySelectorAll(".filters button").forEach(btn=>btn.classList.remove("active"));
     button.classList.add("active");
     ACTIVE_FILTER = button.dataset.filter || "home";
-    applyFilters();
+    applyFilters(true);
   });
 });
 
-searchInput.addEventListener("input",applyFilters);
+searchInput.addEventListener("input",()=>applyFilters(true));
 
 async function askSweet(){
   const input = document.getElementById("sweetInput");
@@ -2750,7 +2842,8 @@ async function loadProfiles(){
     .order("verified",{ascending:false})
     .order("plan_rank",{ascending:false})
     .order("trending_score",{ascending:false})
-    .order("last_active",{ascending:false});
+    .order("last_active",{ascending:false})
+    .limit(160);
 
   if(error){
     profilesEl.innerHTML = `<div class="empty" style="color:#ff5b5b;">Supabase error: ${error.message}</div>`;
@@ -2902,50 +2995,6 @@ async function loadAdminContact(){
 
 loadAdminContact();
 loadProfiles();
-</script>
-
-
-<script>
-/* =========================
-LAYOUT ORDER LOCK
-Keeps mobile section order exactly the same as desktop order.
-========================= */
-(function(){
-  function lockNairobiSweetsOrder(){
-    const flow = [
-      '.topbar',
-      '#mobileMenu',
-      '.hero',
-      '.signature-wrap',
-      '.shorts-section',
-      '.stats-wrap',
-      '.filters',
-      '#profiles',
-      '.join-pricing-wrap',
-      '.seo-locations',
-      '.map-wrap',
-      '.admin-help-section',
-      '.disclaimer'
-    ];
-
-    const fixedStart = document.body.firstElementChild;
-    const anchor = document.querySelector('.sweet-ai') || document.querySelector('.bottom-nav');
-
-    flow.forEach(selector => {
-      const el = document.querySelector(selector);
-      if(el && anchor && el !== anchor){
-        document.body.insertBefore(el, anchor);
-      }
-    });
-
-    if(fixedStart && fixedStart.classList && fixedStart.classList.contains('age-gate')){
-      document.body.insertBefore(fixedStart, document.body.firstElementChild);
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', lockNairobiSweetsOrder);
-  window.addEventListener('resize', lockNairobiSweetsOrder);
-})();
 </script>
 
 </body>
