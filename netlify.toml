@@ -95,6 +95,29 @@ to = "/seo-location.html?location=:location"
 status = 200
 force = true
 
+
+# =====================================
+# SEO CATEGORY ENGINE
+# =====================================
+
+[[redirects]]
+from = "/seo-category/:category"
+to = "/seo-category.html?category=:category"
+status = 200
+force = true
+
+[[redirects]]
+from = "/seo/categories/:category"
+to = "/seo-category.html?category=:category"
+status = 200
+force = true
+
+[[redirects]]
+from = "/seo/categories/:category.html"
+to = "/seo-category.html?category=:category"
+status = 200
+force = true
+
 # =====================================
 # PROFILE ROUTES
 # =====================================
