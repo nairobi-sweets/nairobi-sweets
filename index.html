@@ -1537,6 +1537,12 @@ Keeps image clear: no badges cover faces/photos
 .card .trend-rank-badge{
   display:none !important;
 }
+
+/* Mobile order guard: do not let mobile CSS reshuffle sections */
+.hero,.signature-wrap,.shorts-section,.stats-wrap,.filters,.profiles,.join-pricing-wrap,.seo-locations,.map-wrap,.admin-help-section,.disclaimer{
+  order:initial;
+}
+
 </style>
 </head>
 
@@ -2896,6 +2902,50 @@ async function loadAdminContact(){
 
 loadAdminContact();
 loadProfiles();
+</script>
+
+
+<script>
+/* =========================
+LAYOUT ORDER LOCK
+Keeps mobile section order exactly the same as desktop order.
+========================= */
+(function(){
+  function lockNairobiSweetsOrder(){
+    const flow = [
+      '.topbar',
+      '#mobileMenu',
+      '.hero',
+      '.signature-wrap',
+      '.shorts-section',
+      '.stats-wrap',
+      '.filters',
+      '#profiles',
+      '.join-pricing-wrap',
+      '.seo-locations',
+      '.map-wrap',
+      '.admin-help-section',
+      '.disclaimer'
+    ];
+
+    const fixedStart = document.body.firstElementChild;
+    const anchor = document.querySelector('.sweet-ai') || document.querySelector('.bottom-nav');
+
+    flow.forEach(selector => {
+      const el = document.querySelector(selector);
+      if(el && anchor && el !== anchor){
+        document.body.insertBefore(el, anchor);
+      }
+    });
+
+    if(fixedStart && fixedStart.classList && fixedStart.classList.contains('age-gate')){
+      document.body.insertBefore(fixedStart, document.body.firstElementChild);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', lockNairobiSweetsOrder);
+  window.addEventListener('resize', lockNairobiSweetsOrder);
+})();
 </script>
 
 </body>
