@@ -1238,7 +1238,7 @@ SIGNATURE PROFILES BANNER
 
 /* =========================
 SWEET GALLERY SCROLL 🍬
-Horizontal Supabase profile gallery
+Continuous Supabase profile gallery
 ========================= */
 .sweet-gallery-wrap{
   padding:0 18px 26px;
@@ -1275,19 +1275,51 @@ Horizontal Supabase profile gallery
 }
 
 .sweet-gallery-scroll{
-  display:flex;
-  gap:16px;
-  overflow-x:auto;
-  overflow-y:hidden;
+  position:relative;
+  overflow:hidden;
   padding:0 22px 22px;
-  scrollbar-width:none;
-  scroll-behavior:smooth;
-  -webkit-overflow-scrolling:touch;
-  scroll-snap-type:x mandatory;
 }
 
-.sweet-gallery-scroll::-webkit-scrollbar{
-  display:none;
+.sweet-gallery-scroll::before,
+.sweet-gallery-scroll::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:22px;
+  width:70px;
+  z-index:4;
+  pointer-events:none;
+}
+
+.sweet-gallery-scroll::before{
+  left:0;
+  background:linear-gradient(to right,#07145f,rgba(7,20,95,0));
+}
+
+.sweet-gallery-scroll::after{
+  right:0;
+  background:linear-gradient(to left,#140022,rgba(20,0,34,0));
+}
+
+.sweet-gallery-track{
+  display:flex;
+  gap:16px;
+  width:max-content;
+  will-change:transform;
+  animation:sweetGallerySlide 58s linear infinite;
+}
+
+.sweet-gallery-scroll:hover .sweet-gallery-track{
+  animation-play-state:paused;
+}
+
+@keyframes sweetGallerySlide{
+  0%{
+    transform:translate3d(0,0,0);
+  }
+  100%{
+    transform:translate3d(-50%,0,0);
+  }
 }
 
 .sweet-gallery-card{
@@ -1299,7 +1331,6 @@ Horizontal Supabase profile gallery
   background:#020617;
   border:1px solid rgba(255,255,255,.08);
   flex-shrink:0;
-  scroll-snap-align:start;
   box-shadow:0 16px 38px rgba(0,0,0,.35);
 }
 
@@ -1382,7 +1413,17 @@ Horizontal Supabase profile gallery
 
   .sweet-gallery-scroll{
     padding:0 18px 18px;
+  }
+
+  .sweet-gallery-scroll::before,
+  .sweet-gallery-scroll::after{
+    bottom:18px;
+    width:36px;
+  }
+
+  .sweet-gallery-track{
     gap:14px;
+    animation-duration:46s;
   }
 
   .sweet-gallery-card{
@@ -1393,6 +1434,17 @@ Horizontal Supabase profile gallery
 
   .sweet-gallery-card img{
     height:300px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .sweet-gallery-track{
+    animation:none;
+    overflow-x:auto;
+  }
+
+  .sweet-gallery-scroll{
+    overflow-x:auto;
   }
 }
 
@@ -2799,8 +2851,8 @@ function renderSweetGallery(list){
       const image = getImage(profile);
       return image && !String(image).includes("logo-badge.png");
     }),
-    24
-  ).slice(0, isMobilePhone() ? 10 : 24);
+    30
+  ).slice(0, isMobilePhone() ? 12 : 30);
 
   if(!galleryProfiles.length){
     if(gallerySection) gallerySection.style.display = "none";
@@ -2810,14 +2862,14 @@ function renderSweetGallery(list){
 
   if(gallerySection) gallerySection.style.display = "block";
 
-  gallery.innerHTML = galleryProfiles.map((profile,index)=>`
+  const galleryCards = galleryProfiles.map((profile,index)=>`
     <a
       href="${getProfileUrl(profile)}"
       class="sweet-gallery-card"
       onclick="event.stopPropagation(); trackEvent('profile_opens','${profile.id}','${getName(profile)}')"
       title="Open ${getName(profile)}"
     >
-      ${index < 3 ? `<div class="sweet-gallery-pill">🍬 Featured</div>` : ``}
+      ${index < 4 ? `<div class="sweet-gallery-pill">🍬 Featured</div>` : ``}
       <img
         src="${getImage(profile)}"
         alt="${getName(profile)}"
@@ -2833,6 +2885,13 @@ function renderSweetGallery(list){
       </div>
     </a>
   `).join("");
+
+  gallery.innerHTML = `
+    <div class="sweet-gallery-track" aria-label="Continuous Sweet Gallery Scroll">
+      ${galleryCards}
+      ${galleryCards}
+    </div>
+  `;
 }
 
 let shortsAutoScrollFrame = null;
