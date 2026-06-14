@@ -1929,6 +1929,25 @@ Makes homepage shorts load and start muted playback instead of staying black.
   100%{transform:translateX(40%)}
 }
 
+
+/* =========================
+MOBILE STABILITY PATCH
+Stops phone Chrome from crashing by avoiding heavy continuous animation and autoplay video loading.
+========================= */
+@media(max-width:700px){
+  .sweet-gallery-track{
+    animation:none !important;
+    transform:none !important;
+  }
+  .sweet-gallery-scroll{
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch;
+  }
+  .short-card::before{
+    animation:none !important;
+  }
+}
+
 </style>
 </head>
 
@@ -2852,7 +2871,7 @@ function renderSweetGallery(list){
       return image && !String(image).includes("logo-badge.png");
     }),
     30
-  ).slice(0, isMobilePhone() ? 12 : 30);
+  ).slice(0, isMobilePhone() ? 6 : 24);
 
   if(!galleryProfiles.length){
     if(gallerySection) gallerySection.style.display = "none";
@@ -2889,7 +2908,7 @@ function renderSweetGallery(list){
   gallery.innerHTML = `
     <div class="sweet-gallery-track" aria-label="Continuous Sweet Gallery Scroll">
       ${galleryCards}
-      ${galleryCards}
+      ${isMobilePhone() ? "" : galleryCards}
     </div>
   `;
 }
@@ -2961,7 +2980,7 @@ function renderShorts(list){
     .filter(hasVideo)
     .filter(profile => isVideo(getVideo(profile)) || String(getVideo(profile)).startsWith("http"));
 
-  const shorts = randomizeArray(videoShortsPool).slice(0, isMobilePhone() ? 4 : 10);
+  const shorts = randomizeArray(videoShortsPool).slice(0, isMobilePhone() ? 2 : 8);
 
   if(!shorts.length){
     if(shortsSection) shortsSection.style.display = "none";
@@ -2985,16 +3004,15 @@ function renderShorts(list){
       <div class="short-card" onclick="window.location.href='/reel.html'">
         <video
           muted
-          autoplay
-          loop
+          ${isMobilePhone() ? "controls" : "autoplay loop"}
           playsinline
           webkit-playsinline
-          preload="metadata"
+          preload="${isMobilePhone() ? "none" : "metadata"}"
+          poster="/assets/logo/logo-badge.png"
           controlsList="nodownload"
           disablePictureInPicture
           oncontextmenu="return false"
-          onloadedmetadata="this.play().catch(()=>{})"
-          oncanplay="this.play().catch(()=>{})"
+          ${isMobilePhone() ? "" : "onloadedmetadata=\"this.play().catch(()=>{})\" oncanplay=\"this.play().catch(()=>{})\""}
           onerror="this.closest('.short-card').classList.add('video-error')"
         >
           <source src="${media}" type="video/mp4">
@@ -3015,6 +3033,7 @@ function renderShorts(list){
 }
 
 function playHomepageShorts(){
+  if(isMobilePhone()) return;
   const videos = document.querySelectorAll("#shortsRow video");
 
   videos.forEach(video=>{
@@ -3270,7 +3289,7 @@ async function loadProfiles(){
     .order("plan_rank",{ascending:false})
     .order("trending_score",{ascending:false})
     .order("last_active",{ascending:false})
-    .limit(160);
+    .limit(isMobilePhone() ? 60 : 120);
 
   if(error){
     profilesEl.innerHTML = `<div class="empty" style="color:#ff5b5b;">Supabase error: ${error.message}</div>`;
@@ -3279,9 +3298,20 @@ async function loadProfiles(){
 
   ALL_PROFILES = sortByMarketplaceRank(data || []);
   renderSignatureProfiles(ALL_PROFILES);
-  renderSweetGallery(ALL_PROFILES);
-  renderShorts(ALL_PROFILES);
   applyFilters();
+
+  // Load heavier media sections after the profile grid paints. This prevents mobile Chrome
+  // from receiving one giant image/video meal and falling over with “Aw, Snap!”.
+  const loadMediaSections = () => {
+    renderSweetGallery(ALL_PROFILES);
+    renderShorts(ALL_PROFILES);
+  };
+
+  if("requestIdleCallback" in window){
+    requestIdleCallback(loadMediaSections,{timeout:1800});
+  }else{
+    setTimeout(loadMediaSections,900);
+  }
 }
 
 
