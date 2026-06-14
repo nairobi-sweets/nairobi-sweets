@@ -1200,6 +1200,7 @@ SIGNATURE PROFILES BANNER
   .filters,
   .stats-wrap,
   .signature-wrap,
+  .sweet-gallery-wrap,
   .shorts-section,
   .profiles,
   .map-wrap,
@@ -1233,6 +1234,168 @@ SIGNATURE PROFILES BANNER
 @media(max-width:900px){
   .profiles{grid-template-columns:1fr}
 }
+
+
+/* =========================
+SWEET GALLERY SCROLL 🍬
+Horizontal Supabase profile gallery
+========================= */
+.sweet-gallery-wrap{
+  padding:0 18px 26px;
+}
+
+.sweet-gallery-box{
+  background:linear-gradient(135deg,#07145f,#02083d,#140022);
+  border-radius:30px;
+  border:1px solid rgba(255,213,74,.18);
+  overflow:hidden;
+  box-shadow:0 0 40px rgba(255,213,74,.10),0 25px 90px rgba(0,0,0,.45);
+}
+
+.sweet-gallery-header{
+  padding:22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.sweet-gallery-header h2{
+  color:#ffd54a;
+  font-size:28px;
+  font-weight:900;
+  line-height:1.05;
+}
+
+.sweet-gallery-header span{
+  color:#e6d7ff;
+  font-size:13px;
+  font-weight:800;
+}
+
+.sweet-gallery-scroll{
+  display:flex;
+  gap:16px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding:0 22px 22px;
+  scrollbar-width:none;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;
+}
+
+.sweet-gallery-scroll::-webkit-scrollbar{
+  display:none;
+}
+
+.sweet-gallery-card{
+  position:relative;
+  min-width:260px;
+  width:260px;
+  border-radius:24px;
+  overflow:hidden;
+  background:#020617;
+  border:1px solid rgba(255,255,255,.08);
+  flex-shrink:0;
+  scroll-snap-align:start;
+  box-shadow:0 16px 38px rgba(0,0,0,.35);
+}
+
+.sweet-gallery-card img{
+  width:100%;
+  height:340px;
+  object-fit:cover;
+  display:block;
+  background:#020617;
+  image-rendering:auto;
+  backface-visibility:hidden;
+  transform:translateZ(0);
+  filter:contrast(1.03) saturate(1.04);
+}
+
+.sweet-gallery-info{
+  padding:14px;
+  background:linear-gradient(180deg,#020a56,#010633);
+}
+
+.sweet-gallery-name{
+  color:#fff;
+  font-size:15px;
+  font-weight:950;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.sweet-gallery-location{
+  color:#cfcfcf;
+  font-size:12px;
+  margin-top:6px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.sweet-gallery-pill{
+  position:absolute;
+  left:12px;
+  top:12px;
+  z-index:3;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:10px;
+  font-weight:950;
+  color:#000;
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+  box-shadow:0 0 20px rgba(255,213,74,.28);
+}
+
+.sweet-gallery-loading,
+.sweet-gallery-empty{
+  min-width:260px;
+  color:#ffd54a;
+  font-weight:950;
+  padding:22px;
+}
+
+@media(min-width:1100px){
+  .sweet-gallery-wrap{
+    padding-left:90px;
+    padding-right:90px;
+  }
+}
+
+@media(max-width:650px){
+  .sweet-gallery-wrap{
+    padding:0 14px 22px;
+  }
+
+  .sweet-gallery-header{
+    padding:18px;
+  }
+
+  .sweet-gallery-header h2{
+    font-size:24px;
+  }
+
+  .sweet-gallery-scroll{
+    padding:0 18px 18px;
+    gap:14px;
+  }
+
+  .sweet-gallery-card{
+    min-width:220px;
+    width:220px;
+    border-radius:22px;
+  }
+
+  .sweet-gallery-card img{
+    height:300px;
+  }
+}
+
 
 /* =========================
 AGE GATE
@@ -1518,7 +1681,7 @@ MOBILE UX CLEANUP PATCH
   .profiles{padding:10px 14px 34px}
   .card-name{font-size:20px}
   .card-image{aspect-ratio:4/5;object-fit:cover}
-  .seo-locations,.join-pricing-wrap,.signature-wrap,.shorts-section,.map-wrap,.admin-help-section,.disclaimer,.stats-wrap{padding-left:14px;padding-right:14px}
+  .seo-locations,.join-pricing-wrap,.signature-wrap,.sweet-gallery-wrap,.shorts-section,.map-wrap,.admin-help-section,.disclaimer,.stats-wrap{padding-left:14px;padding-right:14px}
   .seo-locations{padding-top:8px}
   .seo-keyword-intro h1{font-size:36px}
   .seo-keyword-intro p,.seo-locations-box p{font-size:15px;line-height:1.75}
@@ -1587,7 +1750,7 @@ Keeps the same section order as desktop, but loads lighter on phones.
 ========================= */
 @media(max-width:700px){
   html{scroll-behavior:auto}
-  .hero,.signature-wrap,.shorts-section,.stats-wrap,.filters,.profiles,.join-pricing-wrap,.seo-locations,.map-wrap,.admin-help-section,.disclaimer{order:initial}
+  .hero,.signature-wrap,.sweet-gallery-wrap,.shorts-section,.stats-wrap,.filters,.profiles,.join-pricing-wrap,.seo-locations,.map-wrap,.admin-help-section,.disclaimer{order:initial}
   .card,.hero-box,.signature-box,.join-pricing-box,.seo-locations-box,.map-card,.admin-help-box,.disclaimer-box{box-shadow:none}
   .sweet-ai{animation:none}
   .short-card video{background:#020617}
@@ -1831,6 +1994,19 @@ AGE GATE
     </div>
 
     <div class="signature-row" id="signatureProfiles"></div>
+  </div>
+</section>
+
+<section class="sweet-gallery-wrap" id="sweet-gallery-scroll" aria-label="Sweet Gallery Scroll">
+  <div class="sweet-gallery-box">
+    <div class="sweet-gallery-header">
+      <h2>🍬 Sweet Gallery Scroll</h2>
+      <span>Featured Nairobi Sweets Profiles</span>
+    </div>
+
+    <div class="sweet-gallery-scroll" id="sweetGalleryScroll">
+      <div class="sweet-gallery-loading">Loading sweet gallery...</div>
+    </div>
   </div>
 </section>
 
@@ -2611,6 +2787,54 @@ function renderSignatureProfiles(list){
   if(!isMobilePhone()) setTimeout(startSignatureAutoSlide, 500);
 }
 
+
+function renderSweetGallery(list){
+  const gallery = document.getElementById("sweetGalleryScroll");
+  const gallerySection = document.querySelector(".sweet-gallery-wrap");
+  if(!gallery) return;
+
+  const source = Array.isArray(list) ? list : [];
+  const galleryProfiles = smartProfileRotation(
+    source.filter(profile => {
+      const image = getImage(profile);
+      return image && !String(image).includes("logo-badge.png");
+    }),
+    24
+  ).slice(0, isMobilePhone() ? 10 : 24);
+
+  if(!galleryProfiles.length){
+    if(gallerySection) gallerySection.style.display = "none";
+    gallery.innerHTML = `<div class="sweet-gallery-empty">No Sweet Gallery photos yet.</div>`;
+    return;
+  }
+
+  if(gallerySection) gallerySection.style.display = "block";
+
+  gallery.innerHTML = galleryProfiles.map((profile,index)=>`
+    <a
+      href="${getProfileUrl(profile)}"
+      class="sweet-gallery-card"
+      onclick="event.stopPropagation(); trackEvent('profile_opens','${profile.id}','${getName(profile)}')"
+      title="Open ${getName(profile)}"
+    >
+      ${index < 3 ? `<div class="sweet-gallery-pill">🍬 Featured</div>` : ``}
+      <img
+        src="${getImage(profile)}"
+        alt="${getName(profile)}"
+        loading="lazy"
+        decoding="async"
+        referrerpolicy="no-referrer"
+        onerror="this.src='/assets/logo/logo-badge.png'"
+      >
+
+      <div class="sweet-gallery-info">
+        <div class="sweet-gallery-name">${getName(profile)}</div>
+        <div class="sweet-gallery-location">📍 ${getLocation(profile)}</div>
+      </div>
+    </a>
+  `).join("");
+}
+
 let shortsAutoScrollFrame = null;
 let shortsAutoScrollPaused = false;
 
@@ -2908,6 +3132,7 @@ function applyFilters(resetLimit = false){
   const normalProfiles = list.filter(p => !isSignatureProfile(p));
 
   renderSignatureProfiles(signatureProfiles);
+  renderSweetGallery(list);
   renderProfiles(normalProfiles);
 }
 
@@ -2995,6 +3220,7 @@ async function loadProfiles(){
 
   ALL_PROFILES = sortByMarketplaceRank(data || []);
   renderSignatureProfiles(ALL_PROFILES);
+  renderSweetGallery(ALL_PROFILES);
   renderShorts(ALL_PROFILES);
   applyFilters();
 }
