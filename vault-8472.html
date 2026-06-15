@@ -2339,7 +2339,11 @@ async function createClientLoginAndWhatsApp(profileId){
       throw new Error(result.message || "Could not create login.");
     }
 
-    const message = result.whatsapp_message || `Welcome to Nairobi Sweets\n\nYour account has been created.\n\nLogin:\nhttps://nairobi-sweets.com/login.html\n\nUsername: ${username}\nPassword: ${password}\n\nPlease login and change your password.`;
+    const message = result.whatsapp_message || `Welcome to Nairobi Sweets\n\nYour account has been created.\n\nLogin:\nhttps://nairobi-sweets.com/login.html\n\nUsername: ${username}\nPassword: ${password}\n\nPlease login and change your password.
+
+Forgot your password?
+Reset it here:
+https://nairobi-sweets.com/forgot-password.html`;
 
     saveClientLoginMessage(profileId,message);
     setClientLoginStatus(profileId,`Login ready: ${username}. Opening WhatsApp...`);
@@ -2375,7 +2379,9 @@ https://nairobi-sweets.com/login.html
 
 Username: ${profile.username || "your username"}
 
-If you forgot your password, contact Nairobi Sweets admin for reset.`;
+Forgot your password?
+Reset it here:
+https://nairobi-sweets.com/forgot-password.html`;
 }
 
 async function sendExistingClientLogin(profileId){
@@ -2436,6 +2442,10 @@ async function resetClientLoginPassword(profileId){
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
         profileId:Number(profile.id),
+        user_id:profile.user_id || null,
+        username:profile.username || "",
+        whatsapp:profile.whatsapp || "",
+        phone:profile.phone || "",
         password:String(password).trim()
       })
     });
@@ -2446,7 +2456,11 @@ async function resetClientLoginPassword(profileId){
       throw new Error(result.message || "Could not reset password.");
     }
 
-    const message = result.loginMessage || result.login_message || `Welcome to Nairobi Sweets\n\nYour password has been reset.\n\nLogin:\nhttps://nairobi-sweets.com/login.html\n\nUsername: ${profile.username || result.username || "your username"}\nPassword: ${password}\n\nPlease login and change your password.`;
+    const message = result.loginMessage || result.login_message || `Welcome to Nairobi Sweets\n\nYour password has been reset.\n\nLogin:\nhttps://nairobi-sweets.com/login.html\n\nUsername: ${profile.username || result.username || "your username"}\nPassword: ${password}\n\nPlease login and change your password.
+
+Forgot your password?
+Reset it here:
+https://nairobi-sweets.com/forgot-password.html`;
 
     saveClientLoginMessage(profileId,message);
     setClientLoginStatus(profileId,"Password reset. Opening WhatsApp...");
@@ -4508,7 +4522,9 @@ https://nairobi-sweets.com/login.html
 
 Username: ${data.username || profile?.username || "your username"}
 
-If you forgot your password, contact Nairobi Sweets admin for reset.`;
+Forgot your password?
+Reset it here:
+https://nairobi-sweets.com/forgot-password.html`;
 }
 
 async function createClientLoginAndWhatsApp(profileId){
@@ -4632,6 +4648,8 @@ async function resetClientLoginPassword(profileId){
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
         profileId:Number(profile.id),
+        user_id:profile.user_id || null,
+        username:profile.username || "",
         whatsapp:profile.whatsapp || "",
         phone:profile.phone || ""
       })
