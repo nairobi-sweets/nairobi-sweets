@@ -1,7 +1,7 @@
 const { createClient } = require("@supabase/supabase-js");
 
 const SITE_URL = "https://nairobi-sweets.com";
-const VERSION = "profiles-fixed-v4-existing-pages-only";
+const VERSION = "profiles-fixed-v5-latest-trending-hubs";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -166,7 +166,14 @@ function staticSitemap() {
     urlTag(`${SITE_URL}/trending.html`, "0.95", "hourly"),
     urlTag(`${SITE_URL}/shorts.html`, "0.95", "hourly"),
     urlTag(`${SITE_URL}/reel.html`, "0.95", "hourly"),
-    urlTag(`${SITE_URL}/profile.html`, "0.85", "daily")
+    urlTag(`${SITE_URL}/profile.html`, "0.85", "daily"),
+
+    /*
+      SEO crawl hubs.
+      These pages help Google discover active profile URLs faster.
+    */
+    urlTag(`${SITE_URL}/seo/latest-profiles.html`, "0.95", "hourly"),
+    urlTag(`${SITE_URL}/seo/trending-profiles.html`, "0.95", "hourly")
   ]);
 }
 
