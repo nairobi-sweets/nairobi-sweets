@@ -446,6 +446,28 @@ TRUST CENTER + ADMIN HELP
   .trust-row,.admin-buttons{display:grid;grid-template-columns:1fr}
 }
 
+
+.live-location-card{
+  margin:20px 0;
+  background:linear-gradient(135deg,rgba(34,197,94,.16),rgba(7,16,106,.55));
+  border:1px solid rgba(34,197,94,.34);
+  border-radius:20px;
+  padding:18px;
+}
+.live-location-card h2{margin:0 0 10px;color:#86efac}
+.live-location-card p{margin:0 0 14px;color:#d1fae5;line-height:1.6}
+.live-location-profile-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:46px;
+  padding:12px 18px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#22c55e,#16a34a);
+  color:#fff;
+  font-weight:950;
+}
+
 .quality-pill{
   background:linear-gradient(135deg,rgba(34,197,94,.20),rgba(14,165,233,.16));
   border-color:rgba(34,197,94,.32);
@@ -770,6 +792,33 @@ function badgeHTML(p){
   return html;
 }
 
+
+function isLiveLocationActive(profile){
+  if(!profile || !profile.live_location_enabled) return false;
+  if(profile.live_location_expires_at && new Date(profile.live_location_expires_at).getTime() < Date.now()) return false;
+  return Boolean(profile.live_location_url || (profile.live_lat && profile.live_lng));
+}
+
+function getLiveLocationUrl(profile){
+  if(!isLiveLocationActive(profile)) return "";
+  if(profile.live_location_url) return profile.live_location_url;
+  return `https://www.google.com/maps?q=${profile.live_lat},${profile.live_lng}`;
+}
+
+function liveLocationHTML(profile){
+  if(!isLiveLocationActive(profile)) return "";
+  const mapUrl = getLiveLocationUrl(profile);
+  const updated = profile.live_location_updated_at ? new Date(profile.live_location_updated_at).toLocaleString("en-KE") : "Recently";
+  const accuracy = profile.live_accuracy ? `Accuracy: about ${Math.round(Number(profile.live_accuracy))} meters · ` : "";
+  return `
+    <div class="live-location-card">
+      <h2>📍 Accurate Live Location</h2>
+      <p>${accuracy}Updated: ${updated}. Open the verified Google Maps location shared from this profile dashboard.</p>
+      <a class="live-location-profile-btn" href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener">📍 View Live Location On Maps</a>
+    </div>
+  `;
+}
+
 function renderServices(raw){
   let services = safeArray(raw);
   if(!services.length) services = ["Professional Massage"];
@@ -1086,6 +1135,7 @@ function renderProfile(p){
               ${p.verified ? '<span class="trust-pill verified">✔ Verified by Nairobi Sweets</span>' : '<span class="trust-pill">⏳ Verification Pending</span>'}
               <span class="trust-pill">💎 ${plan}</span>
               <span class="trust-pill">📍 ${loc}</span>
+              ${isLiveLocationActive(p) ? `<span class="trust-pill verified">📍 Live Location Shared</span>` : ``}
               <span class="trust-pill quality-pill">📸 HD Score ${qualityScore(p)}</span>
               <span class="trust-pill">🏆 Rank Score ${rankScore(p)}</span>
               <span class="trust-pill">🔥 Engagement ${score(p)}</span>
@@ -1106,6 +1156,8 @@ function renderProfile(p){
             <span class="stat">❤️ <span id="favorites">${Number(p.favorites || 0)}</span> Favorites</span>
             <span class="stat">🔗 <span id="profile_shares">${Number(p.profile_shares || 0)}</span> Shares</span>
           </div>
+
+          ${liveLocationHTML(p)}
 
           <div class="signup-content-grid">
             <div class="signup-content-box"><strong>Age</strong>🎂 ${escapeHTML(p.age || "N/A")}</div>
