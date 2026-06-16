@@ -1313,22 +1313,34 @@ async function findProfileBySlug(slug){
 
   const wanted = makeSlug(slug);
 
+  /*
+    SEO Soft 404 fix:
+    The dynamic profile sitemap creates URLs like:
+    profile.html?slug=stage-name-location-id
+
+    Older profile pages only matched stage-name-location, so Google could open
+    a real sitemap URL and still see "Profile not found". This matcher now
+    supports slug, profile_slug, seo_slug, username, ID and the sitemap format.
+  */
   const {data,error} = await sb
     .from("profiles")
     .select("*")
-    .limit(1500);
+    .limit(5000);
 
   if(error) return null;
 
   return (data || []).find(p => {
     const possible = [
       p.slug,
+      p.profile_slug,
+      p.seo_slug,
       p.username,
       p.stage_name,
       p.name,
       p.full_name,
       p.id,
-      `${p.stage_name || p.name || "profile"}-${p.location || ""}`
+      `${p.stage_name || p.name || "profile"}-${p.location || ""}`,
+      `${p.stage_name || p.name || "profile"}-${p.location || ""}-${p.id}`
     ].map(makeSlug);
 
     return possible.includes(wanted);
@@ -1367,7 +1379,7 @@ async function loadProfile(){
   const idParam = getIdParam();
 
   if(!slug && !idParam){
-    app.innerHTML = `<div class="error">Profile identifier missing.</div>`;
+    window.location.replace("/404.html");
     return;
   }
 
@@ -1386,7 +1398,7 @@ async function loadProfile(){
   }
 
   if(!data){
-    app.innerHTML = `<div class="error">Profile not found.</div>`;
+    window.location.replace("/404.html");
     return;
   }
 
