@@ -377,6 +377,58 @@ h2{color:var(--gold);font-size:27px;line-height:1.08;margin:28px 0 14px}
   .profile-nav{grid-template-columns:1fr}
 }
 
+
+/* =========================
+LIVE LOCATION ACTIVE INDICATOR
+========================= */
+.live-location-profile-indicator{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(0,0,0,.72);
+  border:1px solid rgba(34,197,94,.46);
+  color:#86efac;
+  border-radius:999px;
+  padding:9px 13px;
+  font-size:13px;
+  font-weight:950;
+  box-shadow:0 0 22px rgba(34,197,94,.28);
+  backdrop-filter:blur(10px);
+}
+.live-location-profile-indicator span{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 12px #22c55e;
+  animation:profileLiveLocationPulse 1.35s infinite ease-out;
+}
+@keyframes profileLiveLocationPulse{
+  0%{transform:scale(1);opacity:1}
+  70%{transform:scale(1.9);opacity:.2}
+  100%{transform:scale(1);opacity:1}
+}
+.live-location-card{
+  margin:20px 0;
+  background:linear-gradient(135deg,rgba(34,197,94,.16),rgba(7,16,106,.62));
+  border:1px solid rgba(34,197,94,.34);
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 0 30px rgba(34,197,94,.12);
+}
+.live-location-card h2{margin-top:0}
+.live-location-profile-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:12px;
+  padding:13px 18px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#22c55e,#16a34a);
+  color:#fff;
+  font-weight:950;
+}
+
 /* =========================
 TRUST CENTER + ADMIN HELP
 ========================= */
@@ -1114,6 +1166,7 @@ function renderProfile(p){
           <img class="hero-img" src="${escapeHTML(gallery[0] || FALLBACK_IMAGE)}" alt="${name}" onerror="this.src='${FALLBACK_IMAGE}'">
           <div class="hero-row">
             <div class="score-row">
+              ${isLiveLocationActive(p) ? `<span class="live-location-profile-indicator"><span></span> Live Location Active</span>` : ``}
               <span class="hero-pill">🔥 Score <span id="hero_score">${score(p)}</span></span>
               <span class="hero-pill">👁 <span id="hero_views">${Number(p.views || 0)}</span> Views</span>
             </div>
