@@ -1519,6 +1519,81 @@ Continuous Supabase profile gallery
 }
 
 
+
+/* =========================
+SEO CRAWL BOOST PATCH
+Adds top internal links so Google discovers and crawls profile URLs faster.
+========================= */
+.top-location-links,
+.latest-profiles-seo{
+  padding:0 18px 24px;
+}
+.latest-profiles-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+.latest-profile-link{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:54px;
+  padding:10px 12px;
+  border-radius:18px;
+  background:linear-gradient(145deg,#1d243f,#08114f);
+  border:1px solid rgba(255,213,74,.14);
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  line-height:1.2;
+}
+.latest-profile-link img{
+  width:42px;
+  height:42px;
+  min-width:42px;
+  border-radius:12px;
+  object-fit:cover;
+  background:#020617;
+}
+.latest-profile-link strong{
+  display:block;
+  color:#ffd54a;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.latest-profile-link span{
+  display:block;
+  color:#d8d8d8;
+  font-size:10px;
+  margin-top:3px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.seo-mini-note{
+  color:#bfc3d9;
+  font-size:12px;
+  line-height:1.6;
+  margin-top:12px;
+}
+@media(min-width:1100px){
+  .top-location-links,
+  .latest-profiles-seo{
+    padding-left:90px;
+    padding-right:90px;
+  }
+}
+@media(max-width:900px){
+  .latest-profiles-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:650px){
+  .top-location-links,
+  .latest-profiles-seo{padding-left:14px;padding-right:14px;}
+  .latest-profiles-grid{grid-template-columns:1fr;}
+}
+
 /* =========================
 AGE GATE
 ========================= */
@@ -2359,6 +2434,35 @@ AGE GATE
   </div>
 </section>
 
+<section class="top-location-links" aria-label="Popular Nairobi Sweets location links">
+  <div class="seo-locations-box">
+    <h2>📍 Popular Nairobi Locations</h2>
+    <p>Quick links to active Nairobi Sweets location pages. These links help visitors and Google discover profiles faster.</p>
+    <div class="seo-location-links">
+      <a href="/seo/locations/kilimani.html" class="primary-location">Kilimani Profiles</a>
+      <a href="/seo/locations/westlands.html">Westlands Profiles</a>
+      <a href="/seo/locations/kasarani.html">Kasarani Profiles</a>
+      <a href="/seo/locations/roysambu.html">Roysambu Profiles</a>
+      <a href="/seo/locations/ruiru.html">Ruiru Profiles</a>
+      <a href="/seo/locations/kiambu.html">Kiambu Profiles</a>
+      <a href="/seo/locations/ruaka.html">Ruaka Profiles</a>
+      <a href="/seo/locations/kahawa-sukari.html">Kahawa Sukari Profiles</a>
+    </div>
+  </div>
+</section>
+
+<section class="latest-profiles-seo" aria-label="Latest Nairobi Sweets profile links">
+  <div class="seo-locations-box">
+    <h2>🆕 Latest Nairobi Sweets Profiles</h2>
+    <p>Fresh profile links from the homepage give Google a stronger path to crawl newly approved Nairobi Sweets pages.</p>
+    <div class="latest-profiles-grid" id="latestProfilesLinks">
+      <a class="latest-profile-link" href="/profile.html">Loading latest profiles...</a>
+    </div>
+    <div class="seo-mini-note">Updated from approved live profiles. If a profile expires, its page will now load a real 404 instead of a Soft 404.</div>
+  </div>
+</section>
+
+
 <div class="filters">
   <button class="active" data-filter="home">HOME</button>
   <button data-filter="vip">VIP</button>
@@ -2823,16 +2927,36 @@ function isSignatureProfile(profile){
   return Boolean(profile.is_signature) || plan.includes("signature") || plan.includes("vvip");
 }
 
-function getProfileUrl(profile){
-  const slug = String(profile.slug || profile.username || "").trim();
+function seoSlug(value = ""){
+  return String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/&/g," and ")
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
+}
 
-  if(
-    slug &&
-    slug.toLowerCase() !== "null" &&
-    slug.toLowerCase() !== "undefined" &&
-    slug.toLowerCase() !== "nan"
-  ){
-    return `/profile.html?slug=${encodeURIComponent(slug)}`;
+function escapeHTML(value = ""){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function getProfileUrl(profile){
+  const existingSlug = String(profile.slug || profile.profile_slug || profile.seo_slug || profile.username || "").trim();
+  const cleanedExistingSlug = seoSlug(existingSlug);
+
+  if(cleanedExistingSlug){
+    return `/profile.html?slug=${encodeURIComponent(cleanedExistingSlug)}`;
+  }
+
+  const sitemapStyleSlug = seoSlug(`${getName(profile)}-${getLocation(profile)}-${profile.id || ""}`);
+
+  if(sitemapStyleSlug){
+    return `/profile.html?slug=${encodeURIComponent(sitemapStyleSlug)}`;
   }
 
   return `/profile.html?id=${encodeURIComponent(profile.id)}`;
@@ -3628,15 +3752,41 @@ async function fetchApprovedProfiles(){
     .order("plan_rank",{ascending:false})
     .order("trending_score",{ascending:false})
     .order("last_active",{ascending:false})
-    .limit(isMobilePhone() ? 48 : 120);
+    .limit(isMobilePhone() ? 60 : 240);
 
   if(error) throw error;
   return data || [];
 }
 
+function renderLatestProfileSeoLinks(list){
+  const latestBox = document.getElementById("latestProfilesLinks");
+  if(!latestBox) return;
+
+  const latest = [...(list || [])]
+    .filter(p => p && p.id)
+    .sort((a,b) => new Date(b.created_at || b.updated_at || 0) - new Date(a.created_at || a.updated_at || 0))
+    .slice(0,24);
+
+  if(!latest.length){
+    latestBox.innerHTML = `<a class="latest-profile-link" href="/join.html">No latest profiles yet. Join Nairobi Sweets.</a>`;
+    return;
+  }
+
+  latestBox.innerHTML = latest.map(profile => `
+    <a class="latest-profile-link" href="${getProfileUrl(profile)}">
+      <img src="${escapeHTML(getImage(profile))}" alt="${escapeHTML(getName(profile))}" loading="lazy" decoding="async" onerror="this.src='/assets/logo/logo-badge.png'">
+      <div>
+        <strong>${escapeHTML(getName(profile))}</strong>
+        <span>📍 ${escapeHTML(getLocation(profile))} · ${escapeHTML(getBadge(profile).replace(/[✔🔥👑✨]/g,'').trim() || 'Featured')}</span>
+      </div>
+    </a>
+  `).join("");
+}
+
 function paintProfilesFromList(list){
   ALL_PROFILES = sortByMarketplaceRank(list || []);
   FIRST_PROFILE_PAINT_DONE = true;
+  renderLatestProfileSeoLinks(ALL_PROFILES);
   applyFilters(true);
 }
 
