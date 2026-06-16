@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Latest Profiles | Nairobi Sweets</title>
+
+<meta name="description" content="Browse the latest profiles added to Nairobi Sweets. Discover new Featured, VIP, VIP+ and Signature profiles across Nairobi, Kiambu, Ruiru, Roysambu, Kasarani, Kilimani, Westlands and more.">
+
+<meta name="keywords" content="latest profiles Nairobi, new Nairobi profiles, VIP profiles Nairobi, Signature profiles Nairobi, Nairobi Sweets latest">
+
+<meta name="robots" content="index,follow,max-image-preview:large">
+
+<link rel="canonical" href="https://nairobi-sweets.com/seo/latest-profiles.html">
+
+<meta property="og:title" content="Latest Profiles | Nairobi Sweets">
+<meta property="og:description" content="Discover the newest profiles added to Nairobi Sweets.">
+<meta property="og:url" content="https://nairobi-sweets.com/seo/latest-profiles.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"CollectionPage",
+ "name":"Latest Profiles",
+ "description":"Newest profiles added to Nairobi Sweets.",
+ "url":"https://nairobi-sweets.com/seo/latest-profiles.html"
+}
+</script>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:
+radial-gradient(circle at top,#0c1148,#000 48%);
+color:#fff;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+a{
+text-decoration:none;
+color:inherit;
+}
+
+.header{
+position:sticky;
+top:0;
+z-index:999;
+background:rgba(0,0,0,.95);
+backdrop-filter:blur(15px);
+border-bottom:1px solid rgba(255,213,74,.15);
+padding:16px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.logo img{
+width:58px;
+height:58px;
+border-radius:16px;
+}
+
+.logo strong{
+color:#ffd54a;
+font-size:24px;
+font-weight:900;
+}
+
+.join-btn{
+background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+color:#000;
+padding:12px 18px;
+border-radius:999px;
+font-weight:900;
+}
+
+.hero{
+padding:60px 20px 30px;
+text-align:center;
+}
+
+.hero h1{
+font-size:clamp(40px,8vw,72px);
+color:#ffd54a;
+margin-bottom:15px;
+font-weight:950;
+}
+
+.hero p{
+max-width:900px;
+margin:auto;
+line-height:1.8;
+color:#ddd;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+max-width:1200px;
+margin:30px auto;
+padding:0 20px;
+}
+
+.stat{
+background:linear-gradient(180deg,#020a56,#010633);
+border:1px solid rgba(255,213,74,.15);
+border-radius:22px;
+padding:20px;
+text-align:center;
+}
+
+.stat strong{
+display:block;
+font-size:30px;
+color:#ffd54a;
+margin-bottom:8px;
+}
+
+.stat span{
+color:#ddd;
+font-size:13px;
+}
+
+.section-title{
+max-width:1400px;
+margin:auto;
+padding:20px;
+font-size:32px;
+font-weight:900;
+color:#ffd54a;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(4,minmax(220px,1fr));
+gap:22px;
+max-width:1400px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:linear-gradient(180deg,#020a56,#010633);
+border:1px solid rgba(255,213,74,.12);
+border-radius:26px;
+overflow:hidden;
+box-shadow:0 18px 50px rgba(0,0,0,.4);
+}
+
+.card img{
+width:100%;
+aspect-ratio:4/4.5;
+object-fit:cover;
+display:block;
+}
+
+.body{
+padding:15px;
+}
+
+.badge{
+display:inline-block;
+padding:6px 10px;
+border-radius:999px;
+background:#ffd54a;
+color:#000;
+font-size:11px;
+font-weight:900;
+margin-bottom:10px;
+}
+
+.name{
+font-size:16px;
+font-weight:900;
+margin-bottom:8px;
+}
+
+.meta{
+font-size:12px;
+color:#ccc;
+margin-bottom:10px;
+}
+
+.view{
+display:block;
+padding:12px;
+text-align:center;
+border-radius:14px;
+background:linear-gradient(145deg,#ffd54a,#ff9f1c);
+color:#000;
+font-weight:900;
+}
+
+.loading{
+text-align:center;
+padding:80px;
+color:#ffd54a;
+font-weight:900;
+grid-column:1/-1;
+}
+
+.profile-links{
+max-width:1200px;
+margin:40px auto;
+padding:20px;
+}
+
+.profile-links h2{
+color:#ffd54a;
+margin-bottom:20px;
+}
+
+.profile-links ul{
+columns:3;
+list-style:none;
+}
+
+.profile-links li{
+margin-bottom:10px;
+}
+
+.profile-links a{
+color:#ddd;
+}
+
+.profile-links a:hover{
+color:#ffd54a;
+}
+
+.footer{
+margin-top:50px;
+padding:35px;
+text-align:center;
+background:#050505;
+color:#aaa;
+}
+
+.footer a{
+color:#ffd54a;
+font-weight:900;
+}
+
+@media(max-width:1100px){
+.grid{
+grid-template-columns:repeat(2,1fr);
+}
+.stats{
+grid-template-columns:repeat(2,1fr);
+}
+}
+
+@media(max-width:700px){
+.grid{
+grid-template-columns:1fr;
+}
+.stats{
+grid-template-columns:1fr;
+}
+.profile-links ul{
+columns:1;
+}
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+<div class="logo">
+<img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets">
+<strong>Nairobi Sweets</strong>
+</div>
+
+<a href="/join.html" class="join-btn">
+Join Now
+</a>
+</header>
+
+<section class="hero">
+<h1>Latest Profiles</h1>
+
+<p>
+Browse the newest Featured, VIP, VIP+ and Signature profiles added to Nairobi Sweets across Nairobi, Kiambu, Ruiru, Roysambu, Kasarani, Kilimani, Westlands and surrounding locations.
+</p>
+</section>
+
+<div class="stats" id="stats">
+<div class="stat"><strong>--</strong><span>Total Profiles</span></div>
+<div class="stat"><strong>--</strong><span>VIP Profiles</span></div>
+<div class="stat"><strong>--</strong><span>Signature Profiles</span></div>
+<div class="stat"><strong>--</strong><span>Locations</span></div>
+</div>
+
+<h2 class="section-title">
+🆕 Newest Nairobi Sweets Profiles
+</h2>
+
+<section class="grid" id="profiles">
+<div class="loading">
+Loading latest profiles...
+</div>
+</section>
+
+<section class="profile-links">
+<h2>All Latest Profile Links</h2>
+
+<ul id="profileLinks">
+<li>Loading profile links...</li>
+</ul>
+</section>
+
+<footer class="footer">
+© 2026 Nairobi Sweets ·
+<a href="/">Home</a> ·
+<a href="/seo/">SEO Hub</a> ·
+<a href="/join.html">Join</a> ·
+<a href="/sitemap.xml">Sitemap</a>
+</footer>
+
+<script>
+const SUPABASE_URL="https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY="YOUR_SUPABASE_ANON_KEY";
+
+const sb=supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+const profilesEl=document.getElementById("profiles");
+const profileLinks=document.getElementById("profileLinks");
+
+function profileUrl(p){
+if(p.slug){
+return "/profile.html?slug="+encodeURIComponent(p.slug);
+}
+return "/profile.html?id="+p.id;
+}
+
+function badge(p){
+const plan=String(p.plan||"Featured").toLowerCase();
+
+if(plan.includes("signature")) return "👑 Signature";
+if(plan.includes("vip")) return "✨ VIP";
+return "🔥 Featured";
+}
+
+async function loadProfiles(){
+
+const {data,error}=await sb
+.from("active_profiles_view")
+.select("*")
+.order("created_at",{ascending:false})
+.limit(100);
+
+if(error){
+profilesEl.innerHTML=
+'<div class="loading">'+error.message+'</div>';
+return;
+}
+
+profilesEl.innerHTML=data.map(p=>`
+
+<article class="card">
+
+<img
+src="${p.profile_image_url||p.image_url||'/assets/logo/logo-badge.png'}"
+loading="lazy"
+>
+
+<div class="body">
+
+<div class="badge">${badge(p)}</div>
+
+<div class="name">
+${p.stage_name||p.name||'Profile'}
+</div>
+
+<div class="meta">
+📍 ${p.location||'Nairobi'}
+</div>
+
+<a
+class="view"
+href="${profileUrl(p)}">
+View Profile
+</a>
+
+</div>
+</article>
+
+`).join("");
+
+profileLinks.innerHTML=data.map(p=>`
+
+<li>
+<a href="${profileUrl(p)}">
+${p.stage_name||p.name||'Profile'}
+(${p.location||'Nairobi'})
+</a>
+</li>
+
+`).join("");
+
+const locations=
+new Set(
+data.map(p=>p.location).filter(Boolean)
+);
+
+const vip=
+data.filter(p=>
+String(p.plan||'')
+.toLowerCase()
+.includes('vip')
+).length;
+
+const sig=
+data.filter(p=>
+String(p.plan||'')
+.toLowerCase()
+.includes('signature')
+).length;
+
+document.getElementById("stats").innerHTML=`
+<div class="stat"><strong>${data.length}</strong><span>Total Profiles</span></div>
+<div class="stat"><strong>${vip}</strong><span>VIP Profiles</span></div>
+<div class="stat"><strong>${sig}</strong><span>Signature Profiles</span></div>
+<div class="stat"><strong>${locations.size}</strong><span>Locations</span></div>
+`;
+}
+
+loadProfiles();
+</script>
+
+</body>
+</html>
