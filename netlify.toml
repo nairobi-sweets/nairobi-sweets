@@ -79,6 +79,12 @@ to = "/.netlify/functions/auto-renew-check"
 status = 200
 force = true
 
+[[redirects]]
+from = "/api/expire-live-locations"
+to = "/.netlify/functions/expire-live-locations"
+status = 200
+force = true
+
 
 # =====================================
 # LEGACY ROOT LOCATION REDIRECTS
@@ -264,3 +270,6 @@ schedule = "@hourly"
 
 [functions."auto-renew-check"]
 schedule = "@daily"
+
+[functions."expire-live-locations"]
+schedule = "*/30 * * * *"
