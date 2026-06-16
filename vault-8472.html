@@ -215,6 +215,32 @@ textarea{grid-column:1/-1;min-height:120px}
   text-decoration:none;
 }
 
+.stat-card{cursor:pointer;position:relative;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+.stat-card:hover{transform:translateY(-4px);border-color:rgba(255,213,74,.45);box-shadow:0 0 28px rgba(255,213,74,.16),0 18px 50px rgba(0,0,0,.45);}
+.stat-card:after{content:"Click for details";position:absolute;right:16px;bottom:12px;color:rgba(255,213,74,.58);font-size:10px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;opacity:0;transition:opacity .18s ease;}
+.stat-card:hover:after{opacity:1;}
+.stat-detail-modal{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:999999;display:none;align-items:center;justify-content:center;padding:20px;}
+.stat-detail-box{width:min(1180px,96vw);max-height:88vh;overflow:auto;background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.22);border-radius:28px;padding:22px;box-shadow:0 30px 110px rgba(0,0,0,.8);}
+.stat-detail-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:16px;}
+.stat-detail-top h2{color:#ffd54a;margin:0;font-size:28px;line-height:1.1;}
+.stat-detail-top p{color:#cbd5e1;margin-top:6px;font-size:13px;font-weight:800;}
+.stat-detail-close{background:#ef4444;color:#fff;border-radius:14px;padding:12px 16px;font-size:16px;}
+.stat-detail-tools{display:grid;grid-template-columns:2fr 1fr auto;gap:12px;margin:14px 0 16px;}
+.stat-detail-tools input,.stat-detail-tools select{padding:14px;border-radius:14px;}
+.stat-detail-copy{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:14px;padding:14px 18px;font-weight:950;}
+.stat-detail-table-wrap{overflow:auto;border:1px solid rgba(255,213,74,.14);border-radius:18px;background:rgba(0,0,0,.22);}
+.stat-detail-table{width:100%;border-collapse:collapse;min-width:980px;}
+.stat-detail-table th,.stat-detail-table td{padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:13px;vertical-align:top;}
+.stat-detail-table th{color:#ffd54a;background:rgba(0,0,0,.34);position:sticky;top:0;z-index:1;text-transform:uppercase;letter-spacing:.5px;font-size:12px;}
+.stat-detail-table td{color:#f8fafc;font-weight:800;}
+.stat-detail-pill{display:inline-block;border-radius:999px;padding:6px 9px;background:rgba(255,213,74,.12);color:#ffd54a;font-weight:950;font-size:12px;}
+.stat-detail-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.stat-detail-actions button,.stat-detail-actions a{border:0;border-radius:999px;padding:8px 10px;font-size:12px;font-weight:950;text-decoration:none;cursor:pointer;}
+.stat-view{background:#06b6d4;color:#00111f;}
+.stat-edit{background:#ffd54a;color:#000;}
+.stat-whatsapp{background:#25D366;color:#fff;}
+.stat-empty{padding:22px;color:#ffd54a;font-weight:950;background:rgba(255,213,74,.08);border-radius:16px;}
+@media(max-width:800px){.stat-detail-tools{grid-template-columns:1fr}.stat-detail-box{padding:16px}.stat-detail-top h2{font-size:22px}}
 
 
 .media-lock{
@@ -624,101 +650,101 @@ CLIENT LOGIN AUTO-CREATOR
 </header>
 
 <section class="dashboard-stats revenue-dashboard-grid" id="dashboardStats">
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="total" onclick="openStatDetails('total')" onkeydown="statCardKeyOpen(event,'total')">
     <h3>Total Profiles</h3>
     <div id="statTotal">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="active" onclick="openStatDetails('active')" onkeydown="statCardKeyOpen(event,'active')">
     <h3>Active Profiles</h3>
     <div id="statActive">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="trial" onclick="openStatDetails('trial')" onkeydown="statCardKeyOpen(event,'trial')">
     <h3>Trial Profiles</h3>
     <div id="statTrial">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="pending" onclick="openStatDetails('pending')" onkeydown="statCardKeyOpen(event,'pending')">
     <h3>Pending Profiles</h3>
     <div id="statPending">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="paid" onclick="openStatDetails('paid')" onkeydown="statCardKeyOpen(event,'paid')">
     <h3>Paid Profiles</h3>
     <div id="statPaid">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="expired" onclick="openStatDetails('expired')" onkeydown="statCardKeyOpen(event,'expired')">
     <h3>Expired Profiles</h3>
     <div id="statExpired">0</div>
   </div>
 
-  <div class="stat-card revenue-gold">
+  <div class="stat-card revenue-gold" role="button" tabindex="0" data-detail="revenue" onclick="openStatDetails('revenue')" onkeydown="statCardKeyOpen(event,'revenue')">
     <h3>Total Revenue Estimate</h3>
     <div id="statRevenue">KES 0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="todayRevenue" onclick="openStatDetails('todayRevenue')" onkeydown="statCardKeyOpen(event,'todayRevenue')">
     <h3>Today's Revenue</h3>
     <div id="statTodayRevenue">KES 0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="featured" onclick="openStatDetails('featured')" onkeydown="statCardKeyOpen(event,'featured')">
     <h3>Featured</h3>
     <div id="statFeatured">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="vip" onclick="openStatDetails('vip')" onkeydown="statCardKeyOpen(event,'vip')">
     <h3>VIP</h3>
     <div id="statVip">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="vipPlus" onclick="openStatDetails('vipPlus')" onkeydown="statCardKeyOpen(event,'vipPlus')">
     <h3>VIP+</h3>
     <div id="statVipPlus">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="signature" onclick="openStatDetails('signature')" onkeydown="statCardKeyOpen(event,'signature')">
     <h3>Signature</h3>
     <div id="statSignature">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="verified" onclick="openStatDetails('verified')" onkeydown="statCardKeyOpen(event,'verified')">
     <h3>Verified Profiles</h3>
     <div id="statVerified">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="hero" onclick="openStatDetails('hero')" onkeydown="statCardKeyOpen(event,'hero')">
     <h3>Hero Billboards</h3>
     <div id="statHero">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="expiringSoon" onclick="openStatDetails('expiringSoon')" onkeydown="statCardKeyOpen(event,'expiringSoon')">
     <h3>Expiring Soon</h3>
     <div id="statExpiringSoon">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="weeklyPotential" onclick="openStatDetails('weeklyPotential')" onkeydown="statCardKeyOpen(event,'weeklyPotential')">
     <h3>Weekly Potential</h3>
     <div id="statWeeklyPotential">KES 0</div>
   </div>
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="boosted" onclick="openStatDetails('boosted')" onkeydown="statCardKeyOpen(event,'boosted')">
     <h3>Boosted Profiles</h3>
     <div id="statBoosted">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="pinnedTop" onclick="openStatDetails('pinnedTop')" onkeydown="statCardKeyOpen(event,'pinnedTop')">
     <h3>Pinned Top</h3>
     <div id="statPinnedTop">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="hdQuality" onclick="openStatDetails('hdQuality')" onkeydown="statCardKeyOpen(event,'hdQuality')">
     <h3>HD Quality Profiles</h3>
     <div id="statHDQuality">0</div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card" role="button" tabindex="0" data-detail="avgQuality" onclick="openStatDetails('avgQuality')" onkeydown="statCardKeyOpen(event,'avgQuality')">
     <h3>Avg Quality Score</h3>
     <div id="statAvgQuality">0</div>
   </div>
@@ -1061,6 +1087,33 @@ CLIENT LOGIN AUTO-CREATOR
 </section>
 
 
+</div>
+
+
+<div class="stat-detail-modal" id="statDetailModal" onclick="closeStatDetails(event)">
+  <div class="stat-detail-box" onclick="event.stopPropagation()">
+    <div class="stat-detail-top">
+      <div>
+        <h2 id="statDetailTitle">Vault Details</h2>
+        <p id="statDetailSubtitle">Click any dashboard card to inspect matching profiles.</p>
+      </div>
+      <button class="stat-detail-close" onclick="closeStatDetails()">✕ Close</button>
+    </div>
+
+    <div class="stat-detail-tools">
+      <input id="statDetailSearch" placeholder="Search inside these details..." oninput="renderStatDetailRows()">
+      <select id="statDetailSort" onchange="renderStatDetailRows()">
+        <option value="newest">Newest first</option>
+        <option value="name">Name A-Z</option>
+        <option value="expiry">Expiry soonest</option>
+        <option value="score">Highest score</option>
+        <option value="views">Most views</option>
+      </select>
+      <button class="stat-detail-copy" onclick="copyStatDetailPhones()">📋 Copy Phones</button>
+    </div>
+
+    <div id="statDetailContent" class="stat-detail-table-wrap"></div>
+  </div>
 </div>
 
 <div class="edit-modal" id="editModal">
@@ -2213,6 +2266,219 @@ function renderProfiles(){
   }).join("");
 }
 
+
+
+let CURRENT_STAT_DETAIL = { key:"", rows:[], title:"" };
+
+function statCardKeyOpen(event,key){
+  if(event.key === "Enter" || event.key === " "){
+    event.preventDefault();
+    openStatDetails(key);
+  }
+}
+
+function statText(value){
+  return String(value ?? "").toLowerCase();
+}
+
+function statDateValue(value){
+  if(!value) return 0;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? 0 : d.getTime();
+}
+
+function statExpiryRaw(profile){
+  return profile.plan_expires_at || profile.trial_expires_at || profile.expires_at || profile.expiry_date || "";
+}
+
+function statIsActive(profile){
+  return profile.approved === true && profile.is_expired !== true && String(profile.payment_status || "").toLowerCase() !== "expired";
+}
+
+function statIsTrial(profile){
+  return profile.trial_active === true || String(profile.payment_status || "").toLowerCase() === "trial";
+}
+
+function statIsExpired(profile){
+  return profile.is_expired === true || String(profile.payment_status || "").toLowerCase() === "expired";
+}
+
+function statPlanText(profile){
+  return `${profile.plan || ""} ${profile.plan_label || ""} ${profile.tier || ""} ${profile.package || ""}`.toLowerCase();
+}
+
+function statMatches(key,profile){
+  const plan = statPlanText(profile);
+  const payment = String(profile.payment_status || "").toLowerCase();
+  const expiry = statExpiryRaw(profile);
+  const expiryTime = statDateValue(expiry);
+  const daysLeft = expiryTime ? Math.ceil((expiryTime - Date.now()) / 86400000) : 999999;
+
+  switch(key){
+    case "total": return true;
+    case "active": return statIsActive(profile);
+    case "trial": return statIsTrial(profile);
+    case "pending": return profile.approved !== true || ["pending","unpaid",""] .includes(payment);
+    case "paid": return payment === "paid";
+    case "expired": return statIsExpired(profile);
+    case "revenue": return payment === "paid";
+    case "todayRevenue": {
+      const raw = profile.paid_at || profile.updated_at || profile.created_at;
+      const d = new Date(raw || 0);
+      const start = new Date(); start.setHours(0,0,0,0);
+      return payment === "paid" && !Number.isNaN(d.getTime()) && d >= start;
+    }
+    case "featured": return plan.includes("featured");
+    case "vip": return plan.includes("vip") && !plan.includes("vip+") && !plan.includes("vip-plus") && !plan.includes("vip plus") && !plan.includes("vvip") && !plan.includes("signature");
+    case "vipPlus": return plan.includes("vip+") || plan.includes("vip-plus") || plan.includes("vip plus");
+    case "signature": return profile.is_signature === true || plan.includes("signature") || plan.includes("vvip");
+    case "verified": return profile.verified === true;
+    case "hero": return profile.homepage_featured === true;
+    case "expiringSoon": return expiryTime && daysLeft >= 0 && daysLeft <= 7;
+    case "weeklyPotential": return statIsActive(profile);
+    case "boosted": return Number(profile.boost_score || profile.boost || 0) > 0;
+    case "pinnedTop": return profile.pinned_top === true;
+    case "hdQuality": return Number(profile.image_quality_score || qualityScoreFromProfile(profile) || 0) >= 70;
+    case "avgQuality": return true;
+    default: return true;
+  }
+}
+
+function statTitle(key){
+  const titles = {
+    total:"Total Profiles", active:"Active Profiles", trial:"Trial Profiles", pending:"Pending Profiles", paid:"Paid Profiles", expired:"Expired Profiles",
+    revenue:"Total Revenue Profiles", todayRevenue:"Today's Paid Profiles", featured:"Featured Profiles", vip:"VIP Profiles", vipPlus:"VIP+ Profiles",
+    signature:"Signature Profiles", verified:"Verified Profiles", hero:"Hero Billboards", expiringSoon:"Expiring Soon",
+    weeklyPotential:"Weekly Potential Profiles", boosted:"Boosted Profiles", pinnedTop:"Pinned Top Profiles", hdQuality:"HD Quality Profiles", avgQuality:"All Profiles Quality Details"
+  };
+  return titles[key] || "Vault Details";
+}
+
+async function openStatDetails(key){
+  if(!ALL_PROFILES.length && typeof loadProfiles === "function"){
+    await loadProfiles();
+  }
+
+  const rows = ALL_PROFILES.filter(profile => statMatches(key,profile));
+  CURRENT_STAT_DETAIL = { key, rows, title:statTitle(key) };
+
+  const search = document.getElementById("statDetailSearch");
+  const sort = document.getElementById("statDetailSort");
+  if(search) search.value = "";
+  if(sort) sort.value = key === "expiringSoon" ? "expiry" : "newest";
+
+  const title = document.getElementById("statDetailTitle");
+  const subtitle = document.getElementById("statDetailSubtitle");
+  if(title) title.textContent = statTitle(key);
+  if(subtitle){
+    const totalAmount = rows.reduce((sum,p)=>sum + Number(p.revenue_plan_price || vaultPlanAmount(p.plan) || 0),0);
+    subtitle.textContent = `${rows.length.toLocaleString()} matching profiles · Estimated value KES ${totalAmount.toLocaleString()}`;
+  }
+
+  const modal = document.getElementById("statDetailModal");
+  if(modal) modal.style.display = "flex";
+  renderStatDetailRows();
+}
+
+function closeStatDetails(event){
+  if(event && event.target && event.target.id !== "statDetailModal") return;
+  const modal = document.getElementById("statDetailModal");
+  if(modal) modal.style.display = "none";
+}
+
+function renderStatDetailRows(){
+  const box = document.getElementById("statDetailContent");
+  if(!box) return;
+
+  const query = String(document.getElementById("statDetailSearch")?.value || "").toLowerCase().trim();
+  const sort = String(document.getElementById("statDetailSort")?.value || "newest");
+
+  let rows = [...(CURRENT_STAT_DETAIL.rows || [])];
+
+  if(query){
+    rows = rows.filter(p => profileSearchText(p).includes(query));
+  }
+
+  rows.sort((a,b)=>{
+    if(sort === "name") return String(a.stage_name || "").localeCompare(String(b.stage_name || ""));
+    if(sort === "expiry") return (statDateValue(statExpiryRaw(a)) || 9999999999999) - (statDateValue(statExpiryRaw(b)) || 9999999999999);
+    if(sort === "score") return Number(b.profile_score || finalProfileScore(b) || 0) - Number(a.profile_score || finalProfileScore(a) || 0);
+    if(sort === "views") return Number(b.views_count || b.views || b._analytics?.views || 0) - Number(a.views_count || a.views || a._analytics?.views || 0);
+    return statDateValue(b.created_at || b.updated_at) - statDateValue(a.created_at || a.updated_at);
+  });
+
+  if(!rows.length){
+    box.innerHTML = `<div class="stat-empty">No matching profiles in this section.</div>`;
+    return;
+  }
+
+  box.innerHTML = `
+    <table class="stat-detail-table">
+      <thead>
+        <tr>
+          <th>Name</th><th>Phone / WhatsApp</th><th>Location</th><th>Plan</th><th>Status</th><th>Expiry</th><th>Score</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(p=>{
+          const payment = p.payment_status || "unpaid";
+          const expiry = statExpiryRaw(p);
+          const score = Number(p.profile_score || finalProfileScore(p) || 0);
+          const phone = p.whatsapp || p.phone || "";
+          const viewHref = p.slug ? `/profile.html?slug=${encodeURIComponent(p.slug)}` : `/profile.html?id=${encodeURIComponent(p.id)}`;
+          return `
+            <tr>
+              <td><b style="color:#ffd54a">${escapeHTML(p.stage_name || "Unnamed")}</b><br><span class="stat-detail-pill">ID: ${escapeHTML(String(p.id || "").slice(0,8))}</span></td>
+              <td>${escapeHTML(p.phone || "No phone")}<br>${escapeHTML(p.whatsapp || "No WhatsApp")}</td>
+              <td>${escapeHTML(p.location || "Nairobi")}</td>
+              <td>${escapeHTML(p.plan || "featured")}<br>KES ${Number(p.revenue_plan_price || vaultPlanAmount(p.plan) || 0).toLocaleString()}</td>
+              <td>${p.approved ? "✅ Approved" : "🕒 Pending"}<br>💳 ${escapeHTML(payment)}${p.verified ? "<br>✔ Verified" : ""}${p.is_expired ? "<br>⛔ Expired" : ""}</td>
+              <td>${expiry ? escapeHTML(new Date(expiry).toLocaleDateString()) : "Not set"}</td>
+              <td>🏆 ${score}<br>👁 ${Number(p.views_count || p.views || p._analytics?.views || 0).toLocaleString()}<br>🚀 ${Number(p.boost_score || p.boost || 0).toLocaleString()}</td>
+              <td>
+                <div class="stat-detail-actions">
+                  <a class="stat-view" href="${viewHref}" target="_blank" rel="noopener">View</a>
+                  <button class="stat-edit" onclick="closeStatDetails();openEditModal('${p.id}')">Edit</button>
+                  ${phone ? `<a class="stat-whatsapp" href="https://wa.me/${cleanPhoneForWhatsApp(phone)}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+                  <button class="stat-edit" onclick="closeStatDetails();openRenewModal('${p.id}','${escapeAttr(p.phone || p.whatsapp || "")}', '${escapeAttr(p.plan || "vip")}')">Renew</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function copyStatDetailPhones(){
+  const phones = (CURRENT_STAT_DETAIL.rows || [])
+    .map(p => p.whatsapp || p.phone || "")
+    .map(cleanPhoneForWhatsApp)
+    .filter(Boolean);
+
+  const unique = [...new Set(phones)];
+  if(!unique.length){
+    alert("No phone numbers found in this section.");
+    return;
+  }
+
+  navigator.clipboard.writeText(unique.join("\n"))
+    .then(()=>alert(`Copied ${unique.length} phone numbers.`))
+    .catch(()=>alert(unique.join("\n")));
+}
+
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char]));
+}
+
+function cleanPhoneForWhatsApp(phone){
+  let value = String(phone || "").replace(/[^0-9]/g,"");
+  if(value.startsWith("0")) value = "254" + value.slice(1);
+  if(value.startsWith("7")) value = "254" + value;
+  if(value.startsWith("1") && value.length === 9) value = "254" + value;
+  return value;
+}
 
 
 const CLIENT_LOGIN_CACHE_KEY = "nairobi_sweets_last_client_login_messages";
