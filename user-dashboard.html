@@ -555,6 +555,21 @@ LIVE LOCATION SHARE PANEL
   line-height:1.6;
 }
 
+
+.location-btn.stop{
+  background:linear-gradient(180deg,#ff5b5b,#dc2626);
+  color:#fff;
+}
+.location-btn.whatsapp{
+  background:linear-gradient(180deg,#25d366,#128c4a);
+  color:#fff;
+}
+.live-map-link{
+  color:var(--gold);
+  font-weight:950;
+  text-decoration:underline;
+}
+
 @media(max-width:850px){
   .location-actions{
     grid-template-columns:1fr;
@@ -760,23 +775,22 @@ CHANGE PASSWORD PANEL
 
 
   <section id="liveLocationPanel" class="live-location-panel" style="display:none;">
-    <h2>📍 Share Live Location</h2>
+    <h2>📍 Accurate Profile Location</h2>
     <p>
-      Share your current location with Nairobi Sweets Admin through WhatsApp.
-      Your browser will ask for permission first.
+      Share your current GPS location to your Nairobi Sweets profile. This creates a Google Maps button on your public profile and homepage card.
+      The location expires automatically after 24 hours.
     </p>
 
     <label class="location-consent">
       <input type="checkbox" id="locationConsent">
       <span>
-        I agree to share my current location with Nairobi Sweets Admin for support,
-        verification, profile assistance, or location updates.
+        I agree to share my current location with Nairobi Sweets. I understand this may be visible as a Maps button on my profile until I stop sharing or it expires.
       </span>
     </label>
 
     <div class="location-actions">
-      <button type="button" class="location-btn share" onclick="shareLiveLocationToAdmin()">
-        📍 Share To WhatsApp
+      <button type="button" class="location-btn share" onclick="shareLiveLocationToProfile()">
+        📍 Save To My Profile
       </button>
 
       <button type="button" class="location-btn copy" onclick="copyLiveLocationLink()">
@@ -786,12 +800,20 @@ CHANGE PASSWORD PANEL
       <button type="button" class="location-btn maps" onclick="openLiveLocationMap()">
         🗺️ Open In Maps
       </button>
+
+      <button type="button" class="location-btn stop" onclick="stopLiveLocationSharing()">
+        🛑 Stop Sharing
+      </button>
+
+      <button type="button" class="location-btn whatsapp" onclick="shareLiveLocationToAdmin()">
+        💬 Send To Admin
+      </button>
     </div>
 
     <div id="locationResult" class="location-result"></div>
 
     <div class="location-note">
-      Note: this shares your current location once. Continuous live tracking is not enabled.
+      Safety: this is not background tracking. It saves one accurate location point only after you tap the button and grant permission.
     </div>
   </section>
 
@@ -1533,6 +1555,23 @@ function requireLocationConsent(){
   return true;
 }
 
+function liveLocationIsFresh(profile){
+  if(!profile) return false;
+  if(!profile.live_location_enabled) return false;
+  const expiry = profile.live_location_expires_at;
+  if(expiry && new Date(expiry).getTime() < Date.now()) return false;
+  return Boolean(profile.live_location_url || (profile.live_lat && profile.live_lng) || (profile.live_location_lat && profile.live_location_lng));
+}
+
+function getProfileLiveMapUrl(profile){
+  if(!profile) return "";
+  if(profile.live_location_url) return profile.live_location_url;
+  const lat = profile.live_lat ?? profile.live_location_lat;
+  const lng = profile.live_lng ?? profile.live_location_lng;
+  if(lat && lng) return `https://www.google.com/maps?q=${lat},${lng}`;
+  return "";
+}
+
 function setLocationResult(html,type="info"){
   const box = document.getElementById("locationResult");
   if(!box) return;
@@ -1545,6 +1584,35 @@ function setLocationResult(html,type="info"){
   }else{
     box.style.borderColor = "rgba(34,197,94,.22)";
   }
+}
+
+function renderCurrentLiveLocation(){
+  if(!currentProfile) return;
+  const mapLink = getProfileLiveMapUrl(currentProfile);
+  latestLocationLink = liveLocationIsFresh(currentProfile) ? mapLink : "";
+
+  if(!latestLocationLink){
+    setLocationResult("📍 No active live location is saved on this profile yet.");
+    return;
+  }
+
+  const updated = currentProfile.live_location_updated_at
+    ? new Date(currentProfile.live_location_updated_at).toLocaleString("en-KE")
+    : "Unknown";
+
+  const expires = currentProfile.live_location_expires_at
+    ? new Date(currentProfile.live_location_expires_at).toLocaleString("en-KE")
+    : "Not set";
+
+  const accuracy = currentProfile.live_accuracy || currentProfile.live_location_accuracy;
+
+  setLocationResult(`
+    <strong>Active profile location saved.</strong><br>
+    ${accuracy ? `Accuracy: about ${Math.round(Number(accuracy))} meters<br>` : ""}
+    Updated: ${updated}<br>
+    Expires: ${expires}<br>
+    <a class="live-map-link" href="${latestLocationLink}" target="_blank" rel="noopener">${latestLocationLink}</a>
+  `);
 }
 
 function getCurrentBrowserLocation(){
@@ -1582,55 +1650,82 @@ function getCurrentBrowserLocation(){
   });
 }
 
-async function saveLocationToProfile(lat,lng,mapLink){
-  if(!currentUser || !currentProfile) return;
+async function saveLocationToProfile(lat,lng,accuracy,mapLink){
+  if(!currentUser || !currentProfile){
+    throw new Error("Profile session not found. Please login again.");
+  }
+
+  const now = new Date();
+  const expires = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
   const updates = {
-    live_location_lat:lat,
-    live_location_lng:lng,
+    live_lat:lat,
+    live_lng:lng,
+    live_accuracy:accuracy,
     live_location_url:mapLink,
-    live_location_updated_at:new Date().toISOString()
+    live_location_enabled:true,
+    live_location_updated_at:now.toISOString(),
+    live_location_expires_at:expires.toISOString()
   };
 
-  try{
-    await sb
-      .from("profiles")
-      .update(updates)
-      .eq("id",currentProfile.id)
-      .eq("user_id",currentUser.id);
-  }catch(error){
-    console.log("Location save skipped:", error);
+  const { error } = await sb
+    .from("profiles")
+    .update(updates)
+    .eq("id",currentProfile.id)
+    .eq("user_id",currentUser.id);
+
+  if(error){
+    throw new Error(error.message || "Could not save location to your profile.");
   }
+
+  Object.assign(currentProfile, updates);
+  latestLocationLink = mapLink;
+  return updates;
 }
 
-async function buildLiveLocationLink(){
+async function buildLiveLocationLink(saveToProfile=true){
   if(!requireLocationConsent()) return "";
 
-  setLocationResult("📡 Getting your location... please wait.");
+  setLocationResult("📡 Getting your accurate GPS location... please wait.");
 
   const position = await getCurrentBrowserLocation();
 
   const lat = position.coords.latitude;
   const lng = position.coords.longitude;
   const accuracy = Math.round(position.coords.accuracy || 0);
-
   const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
-  latestLocationLink = mapLink;
 
-  await saveLocationToProfile(lat,lng,mapLink);
+  if(saveToProfile){
+    await saveLocationToProfile(lat,lng,accuracy,mapLink);
+  }else{
+    latestLocationLink = mapLink;
+  }
+
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString("en-KE");
 
   setLocationResult(`
-    <strong>Location ready.</strong><br>
+    <strong>Location saved successfully.</strong><br>
     Accuracy: about ${accuracy} meters<br>
-    <a href="${mapLink}" target="_blank" rel="noopener">${mapLink}</a>
+    Expires: ${expires}<br>
+    <a class="live-map-link" href="${mapLink}" target="_blank" rel="noopener">${mapLink}</a>
   `);
 
   return mapLink;
 }
 
+async function shareLiveLocationToProfile(){
+  try{
+    await buildLiveLocationLink(true);
+    alert("Live location saved to your profile for 24 hours.");
+  }catch(error){
+    setLocationResult(error.message || "Could not save location.","error");
+    alert(error.message || "Could not save location.");
+  }
+}
+
 async function shareLiveLocationToAdmin(){
   try{
-    const mapLink = await buildLiveLocationLink();
+    const mapLink = latestLocationLink || await buildLiveLocationLink(true);
     if(!mapLink) return;
 
     const name = currentProfile
@@ -1658,7 +1753,7 @@ Shared from my Nairobi Sweets dashboard.`
 
 async function copyLiveLocationLink(){
   try{
-    const mapLink = latestLocationLink || await buildLiveLocationLink();
+    const mapLink = latestLocationLink || getProfileLiveMapUrl(currentProfile) || await buildLiveLocationLink(true);
     if(!mapLink) return;
 
     await navigator.clipboard.writeText(mapLink);
@@ -1675,13 +1770,49 @@ async function copyLiveLocationLink(){
 
 async function openLiveLocationMap(){
   try{
-    const mapLink = latestLocationLink || await buildLiveLocationLink();
+    const mapLink = latestLocationLink || getProfileLiveMapUrl(currentProfile) || await buildLiveLocationLink(true);
     if(!mapLink) return;
 
     window.open(mapLink,"_blank","noopener");
   }catch(error){
     setLocationResult(error.message || "Could not open map.","error");
     alert(error.message || "Could not open map.");
+  }
+}
+
+async function stopLiveLocationSharing(){
+  try{
+    if(!currentUser || !currentProfile){
+      alert("Profile session not found. Please login again.");
+      return;
+    }
+
+    const updates = {
+      live_lat:null,
+      live_lng:null,
+      live_accuracy:null,
+      live_location_url:null,
+      live_location_enabled:false,
+      live_location_updated_at:null,
+      live_location_expires_at:null
+    };
+
+    const { error } = await sb
+      .from("profiles")
+      .update(updates)
+      .eq("id",currentProfile.id)
+      .eq("user_id",currentUser.id);
+
+    if(error){
+      throw new Error(error.message || "Could not stop location sharing.");
+    }
+
+    Object.assign(currentProfile, updates);
+    latestLocationLink = "";
+    setLocationResult("🛑 Live location sharing has been stopped.");
+  }catch(error){
+    setLocationResult(error.message || "Could not stop location sharing.","error");
+    alert(error.message || "Could not stop location sharing.");
   }
 }
 
