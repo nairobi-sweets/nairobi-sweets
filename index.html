@@ -30,6 +30,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
 <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://dkjlvyynvgtijccitvvd.supabase.co" crossorigin>
+<link rel="preload" as="image" href="/assets/logo/logo-badge.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script type="application/ld+json">
@@ -2082,6 +2085,109 @@ Stops phone Chrome from crashing by avoiding heavy continuous animation and auto
   }
 }
 
+
+/* =========================
+FINAL MOBILE SPEED PATCH
+Keeps the current Nairobi Sweets design, but makes phones breathe.
+========================= */
+@media(max-width:700px){
+  *{
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  body{
+    background:#050611 !important;
+  }
+
+  .hero-box,
+  .signature-box,
+  .sweet-gallery-box,
+  .join-pricing-box,
+  .seo-locations-box,
+  .map-card,
+  .admin-help-box,
+  .disclaimer-box,
+  .card,
+  .short-card,
+  .stat-mini{
+    box-shadow:none !important;
+  }
+
+  .hero-box{
+    padding:22px 18px !important;
+  }
+
+  .hero-box h2{
+    font-size:56px !important;
+  }
+
+  .signature-row,
+  .shorts-row,
+  .filters,
+  .sweet-gallery-scroll{
+    contain:layout paint;
+  }
+
+  .signature-card img,
+  .sweet-gallery-card img,
+  .card-image{
+    content-visibility:auto;
+  }
+
+  .shorts-section{
+    min-height:0;
+  }
+
+  .short-card{
+    min-width:150px !important;
+    width:150px !important;
+    height:260px !important;
+    border-radius:22px !important;
+  }
+
+  .short-card video{
+    object-fit:cover;
+  }
+
+  .sweet-gallery-card{
+    min-width:180px !important;
+    width:180px !important;
+  }
+
+  .sweet-gallery-card img{
+    height:240px !important;
+  }
+
+  .join-price-card p{
+    min-height:auto !important;
+  }
+
+  .seo-keyword-intro{
+    display:none;
+  }
+}
+
+.profile-skeleton-card{
+  min-height:420px;
+  border-radius:28px;
+  background:linear-gradient(110deg,rgba(255,255,255,.035),rgba(255,213,74,.10),rgba(255,255,255,.035));
+  background-size:220% 100%;
+  border:1px solid rgba(255,213,74,.08);
+  animation:profileSkeletonGlow 1.5s linear infinite;
+}
+
+@keyframes profileSkeletonGlow{
+  0%{background-position:0 0}
+  100%{background-position:-220% 0}
+}
+
+@media(max-width:700px){
+  .profile-skeleton-card{
+    min-height:390px;
+    animation:none;
+  }
+}
+
 </style>
 </head>
 
@@ -2438,6 +2544,7 @@ SIGNATURE AUTO SLIDER
 let signatureAutoSlideTimer = null;
 
 function startSignatureAutoSlide(){
+  if(typeof isMobilePhone === "function" && isMobilePhone()) return;
   const track = document.getElementById("signatureProfiles");
   if(!track) return;
 
@@ -2497,12 +2604,19 @@ let ACTIVE_FILTER = "home";
 let CURRENT_PROFILE_RESULTS = [];
 let PROFILE_VISIBLE_LIMIT = getInitialProfileLimit();
 
+const PROFILE_CACHE_KEY = "nairobi_sweets_fast_profiles_v3";
+const PROFILE_CACHE_TIME_KEY = "nairobi_sweets_fast_profiles_time_v3";
+const PROFILE_CACHE_MAX_AGE = 1000 * 60 * 3;
+let HOME_MEDIA_RENDER_TIMER = null;
+let LAST_MEDIA_SOURCE = [];
+let FIRST_PROFILE_PAINT_DONE = false;
+
 function isMobilePhone(){
   return window.innerWidth <= 700;
 }
 
 function getInitialProfileLimit(){
-  return isMobilePhone() ? 8 : 40;
+  return isMobilePhone() ? 8 : 24;
 }
 
 function resetProfileLimit(){
@@ -2510,8 +2624,54 @@ function resetProfileLimit(){
 }
 
 function loadMoreProfiles(){
-  PROFILE_VISIBLE_LIMIT += isMobilePhone() ? 8 : 24;
+  PROFILE_VISIBLE_LIMIT += isMobilePhone() ? 8 : 16;
   renderProfiles(CURRENT_PROFILE_RESULTS.length ? CURRENT_PROFILE_RESULTS : []);
+}
+
+function profileSkeletons(count = 4){
+  const skeletonCount = isMobilePhone() ? Math.min(count, 3) : Math.min(count, 8);
+  return Array.from({length:skeletonCount}).map(()=>`<div class="profile-skeleton-card"></div>`).join("");
+}
+
+function readProfilesCache(){
+  try{
+    const cachedAt = Number(localStorage.getItem(PROFILE_CACHE_TIME_KEY) || 0);
+    const raw = localStorage.getItem(PROFILE_CACHE_KEY);
+    if(!raw) return null;
+    if(Date.now() - cachedAt > PROFILE_CACHE_MAX_AGE) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : null;
+  }catch(error){
+    return null;
+  }
+}
+
+function writeProfilesCache(list){
+  try{
+    if(!Array.isArray(list)) return;
+    localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(list));
+    localStorage.setItem(PROFILE_CACHE_TIME_KEY, String(Date.now()));
+  }catch(error){}
+}
+
+function scheduleHomeMediaRender(list, delay = null){
+  LAST_MEDIA_SOURCE = Array.isArray(list) ? list : [];
+  clearTimeout(HOME_MEDIA_RENDER_TIMER);
+
+  const run = () => {
+    const renderNow = () => {
+      renderSweetGallery(LAST_MEDIA_SOURCE);
+      renderShorts(LAST_MEDIA_SOURCE);
+    };
+
+    if("requestIdleCallback" in window){
+      requestIdleCallback(renderNow,{timeout:isMobilePhone() ? 2200 : 1300});
+    }else{
+      setTimeout(renderNow,isMobilePhone() ? 1200 : 450);
+    }
+  };
+
+  HOME_MEDIA_RENDER_TIMER = setTimeout(run, delay ?? (isMobilePhone() ? 900 : 220));
 }
 
 function loadCoverageMap(){
@@ -3225,7 +3385,7 @@ function getLiveLocationUrl(profile){
 
 function renderProfiles(data){
   CURRENT_PROFILE_RESULTS = Array.isArray(data) ? data : [];
-  profileCount.textContent = CURRENT_PROFILE_RESULTS.length.toLocaleString();
+  if(profileCount) profileCount.textContent = CURRENT_PROFILE_RESULTS.length.toLocaleString();
 
   const verifiedCountEl = document.getElementById("verifiedCount");
   const vipCountEl = document.getElementById("vipCount");
@@ -3233,19 +3393,19 @@ function renderProfiles(data){
   const liveLocationCountEl = document.getElementById("liveLocationCount");
 
   if(liveLocationCountEl){
-    liveLocationCountEl.textContent = data.filter(isLiveLocationActive).length.toLocaleString();
+    liveLocationCountEl.textContent = CURRENT_PROFILE_RESULTS.filter(isLiveLocationActive).length.toLocaleString();
   }
 
   if(verifiedCountEl){
-    verifiedCountEl.textContent = data.filter(p => p.verified).length.toLocaleString();
+    verifiedCountEl.textContent = CURRENT_PROFILE_RESULTS.filter(p => p.verified).length.toLocaleString();
   }
 
   if(vipCountEl){
-    vipCountEl.textContent = data.filter(p => getPlan(p).includes("vip")).length.toLocaleString();
+    vipCountEl.textContent = CURRENT_PROFILE_RESULTS.filter(p => getPlan(p).includes("vip")).length.toLocaleString();
   }
 
   if(signatureCountEl){
-    signatureCountEl.textContent = data.filter(isSignatureProfile).length.toLocaleString();
+    signatureCountEl.textContent = CURRENT_PROFILE_RESULTS.filter(isSignatureProfile).length.toLocaleString();
   }
 
   if(!CURRENT_PROFILE_RESULTS.length){
@@ -3268,9 +3428,9 @@ function renderProfiles(data){
           srcset="${getImageSrcSet(profile)}"
           sizes="(min-width:1100px) 25vw, (min-width:901px) 33vw, 100vw"
           class="card-image"
-          loading="${index < 4 ? 'eager' : 'lazy'}"
+          loading="${index < (isMobilePhone() ? 1 : 4) ? 'eager' : 'lazy'}"
           decoding="async"
-          fetchpriority="${index < 4 ? 'high' : 'auto'}"
+          fetchpriority="${index < (isMobilePhone() ? 1 : 4) ? 'high' : 'auto'}"
           referrerpolicy="no-referrer"
           alt="${getName(profile)}"
           onload="markPosterImage(this)"
@@ -3385,8 +3545,11 @@ function applyFilters(resetLimit = false){
   const normalProfiles = list.filter(p => !isSignatureProfile(p));
 
   renderSignatureProfiles(signatureProfiles);
-  renderSweetGallery(list);
   renderProfiles(normalProfiles);
+
+  // Gallery and Shorts are heavier than cards. Render them after the grid,
+  // and debounce them during typing/filter changes so mobile does not choke.
+  scheduleHomeMediaRender(list, resetLimit ? 650 : 1100);
 }
 
 document.querySelectorAll(".filters button").forEach(button=>{
@@ -3398,7 +3561,11 @@ document.querySelectorAll(".filters button").forEach(button=>{
   });
 });
 
-searchInput.addEventListener("input",()=>applyFilters(true));
+let SEARCH_DEBOUNCE_TIMER = null;
+searchInput.addEventListener("input",()=>{
+  clearTimeout(SEARCH_DEBOUNCE_TIMER);
+  SEARCH_DEBOUNCE_TIMER = setTimeout(()=>applyFilters(true),180);
+});
 
 async function askSweet(){
   const input = document.getElementById("sweetInput");
@@ -3448,15 +3615,12 @@ async function askSweet(){
   }
 }
 
-async function loadProfiles(){
-  profilesEl.innerHTML = `<div class="loading">Loading profiles...</div>`;
-
+async function fetchApprovedProfiles(){
   const {data,error} = await sb
     .from("profiles")
     .select("*")
     .eq("approved",true)
     .or("is_expired.eq.false,is_expired.is.null")
-    /* Fetch newest first so fresh approved profiles are available for homepage boost. */
     .order("created_at",{ascending:false})
     .order("pinned_top",{ascending:false})
     .order("boost_score",{ascending:false})
@@ -3464,28 +3628,46 @@ async function loadProfiles(){
     .order("plan_rank",{ascending:false})
     .order("trending_score",{ascending:false})
     .order("last_active",{ascending:false})
-    .limit(isMobilePhone() ? 60 : 120);
+    .limit(isMobilePhone() ? 48 : 120);
 
-  if(error){
-    profilesEl.innerHTML = `<div class="empty" style="color:#ff5b5b;">Supabase error: ${error.message}</div>`;
+  if(error) throw error;
+  return data || [];
+}
+
+function paintProfilesFromList(list){
+  ALL_PROFILES = sortByMarketplaceRank(list || []);
+  FIRST_PROFILE_PAINT_DONE = true;
+  applyFilters(true);
+}
+
+async function loadProfiles(){
+  profilesEl.innerHTML = profileSkeletons(isMobilePhone() ? 3 : 8);
+
+  const cachedProfiles = readProfilesCache();
+
+  if(cachedProfiles && cachedProfiles.length){
+    paintProfilesFromList(cachedProfiles);
+
+    // Quiet refresh keeps newly approved profiles appearing without making
+    // mobile users wait on a blank homepage.
+    fetchApprovedProfiles()
+      .then(freshProfiles=>{
+        writeProfilesCache(freshProfiles);
+        paintProfilesFromList(freshProfiles);
+      })
+      .catch(error=>{
+        console.warn("Quiet profile refresh failed:", error.message || error);
+      });
+
     return;
   }
 
-  ALL_PROFILES = sortByMarketplaceRank(data || []);
-  renderSignatureProfiles(ALL_PROFILES);
-  applyFilters();
-
-  // Load heavier media sections after the profile grid paints. This prevents mobile Chrome
-  // from receiving one giant image/video meal and falling over with “Aw, Snap!”.
-  const loadMediaSections = () => {
-    renderSweetGallery(ALL_PROFILES);
-    renderShorts(ALL_PROFILES);
-  };
-
-  if("requestIdleCallback" in window){
-    requestIdleCallback(loadMediaSections,{timeout:1800});
-  }else{
-    setTimeout(loadMediaSections,900);
+  try{
+    const freshProfiles = await fetchApprovedProfiles();
+    writeProfilesCache(freshProfiles);
+    paintProfilesFromList(freshProfiles);
+  }catch(error){
+    profilesEl.innerHTML = `<div class="empty" style="color:#ff5b5b;">Supabase error: ${error.message}</div>`;
   }
 }
 
