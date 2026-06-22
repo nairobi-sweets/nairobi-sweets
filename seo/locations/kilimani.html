@@ -523,9 +523,9 @@ Keeps Spa & Massage at the very top, then clearly starts the normal Kilimani fee
 
 
 /* =========================
-SPA TOP NOT-CUT PATCH
-Makes the Spa & Massage top section behave like the main page banner:
-wide cards, horizontal scroll, contain images, no crop, no sticky-header cover.
+SPA TOP 2-PER-ROW FULL BANNER PATCH
+Spa section behaves like the main page, but shows 2 cards per row and full banners.
+Regular Kilimani profiles below remain 4 per row.
 ========================= */
 html{
   scroll-padding-top:120px;
@@ -536,38 +536,30 @@ html{
 .section-shell-inner{
   overflow:hidden;
 }
+
+/* SPA ONLY: 2 per row */
 .section-shell .grid{
-  display:flex !important;
-  grid-template-columns:none !important;
-  gap:18px !important;
-  max-width:none !important;
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:24px !important;
+  max-width:1380px !important;
   width:100% !important;
-  margin:0 !important;
-  padding:0 26px 28px !important;
-  overflow-x:auto !important;
-  overflow-y:hidden !important;
-  scroll-snap-type:x mandatory;
-  scroll-padding:26px;
-  -webkit-overflow-scrolling:touch;
+  margin:0 auto !important;
+  padding:0 26px 32px !important;
+  overflow:visible !important;
 }
-.section-shell .grid::-webkit-scrollbar{
-  height:10px;
-}
-.section-shell .grid::-webkit-scrollbar-track{
-  background:rgba(255,255,255,.06);
-  border-radius:999px;
-}
-.section-shell .grid::-webkit-scrollbar-thumb{
-  background:linear-gradient(90deg,#ffd54a,#ff9f1c);
-  border-radius:999px;
-}
+
+/* SPA cards */
 .section-shell .card{
-  min-width:min(560px,86vw) !important;
-  width:min(560px,86vw) !important;
-  flex:0 0 auto !important;
-  scroll-snap-align:start;
+  width:100% !important;
+  min-width:0 !important;
   border-radius:28px !important;
+  background:linear-gradient(180deg,#020a56,#010633) !important;
+  border:1px solid rgba(255,213,74,.20) !important;
+  box-shadow:0 18px 50px rgba(0,0,0,.45) !important;
 }
+
+/* SHOW FULL SPA BANNER */
 .section-shell .card img{
   width:100% !important;
   height:auto !important;
@@ -575,15 +567,18 @@ html{
   object-fit:contain !important;
   object-position:center center !important;
   background:#020617 !important;
+  display:block !important;
   padding:0 !important;
 }
+
 .section-shell .body{
   padding:18px 22px 22px !important;
 }
 .section-shell .name{
-  font-size:26px !important;
+  font-size:28px !important;
   line-height:1.1 !important;
   color:#fff !important;
+  font-weight:950 !important;
 }
 .section-shell .meta,
 .section-shell .bio{
@@ -599,16 +594,21 @@ html{
 .feed-divider{
   clear:both;
 }
+
+@media(max-width:900px){
+  .section-shell .grid{
+    grid-template-columns:1fr !important;
+    padding:0 18px 28px !important;
+  }
+}
+
 @media(max-width:650px){
   html{scroll-padding-top:92px;}
   .section-shell{scroll-margin-top:92px;}
   .section-shell .grid{
-    padding:0 14px 22px !important;
-    scroll-padding:14px;
-  }
-  .section-shell .card{
-    min-width:92vw !important;
-    width:92vw !important;
+    grid-template-columns:1fr !important;
+    padding:0 14px 24px !important;
+    gap:18px !important;
   }
   .section-shell .card img{
     aspect-ratio:16/9 !important;
