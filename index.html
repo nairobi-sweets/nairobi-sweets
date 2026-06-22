@@ -1594,6 +1594,27 @@ Adds top internal links so Google discovers and crawls profile URLs faster.
   .latest-profiles-grid{grid-template-columns:1fr;}
 }
 
+
+/* =========================
+LATEST PROFILES LIMIT PATCH
+Homepage shows 8 latest profiles plus one View All button.
+========================= */
+.latest-view-all-link{
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c) !important;
+  color:#000 !important;
+  justify-content:center !important;
+  text-align:center !important;
+  border-color:rgba(255,213,74,.42) !important;
+  box-shadow:0 10px 24px rgba(255,180,0,.16);
+}
+.latest-view-all-link strong{
+  color:#000 !important;
+}
+.latest-view-all-link span{
+  color:#171717 !important;
+}
+
+
 /* =========================
 AGE GATE
 ========================= */
@@ -3765,7 +3786,7 @@ function renderLatestProfileSeoLinks(list){
   const latest = [...(list || [])]
     .filter(p => p && p.id)
     .sort((a,b) => new Date(b.created_at || b.updated_at || 0) - new Date(a.created_at || a.updated_at || 0))
-    .slice(0,24);
+    .slice(0,8);
 
   if(!latest.length){
     latestBox.innerHTML = `<a class="latest-profile-link" href="/join.html">No latest profiles yet. Join Nairobi Sweets.</a>`;
@@ -3780,7 +3801,14 @@ function renderLatestProfileSeoLinks(list){
         <span>📍 ${escapeHTML(getLocation(profile))} · ${escapeHTML(getBadge(profile).replace(/[✔🔥👑✨]/g,'').trim() || 'Featured')}</span>
       </div>
     </a>
-  `).join("");
+  `).join("") + `
+    <a class="latest-profile-link latest-view-all-link" href="/latest-profiles.html">
+      <div>
+        <strong>View All Latest Profiles →</strong>
+        <span>Open the full latest profiles page</span>
+      </div>
+    </a>
+  `;
 }
 
 function paintProfilesFromList(list){
