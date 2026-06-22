@@ -2780,8 +2780,8 @@ let ACTIVE_FILTER = "home";
 let CURRENT_PROFILE_RESULTS = [];
 let PROFILE_VISIBLE_LIMIT = getInitialProfileLimit();
 
-const PROFILE_CACHE_KEY = "nairobi_sweets_fast_profiles_v3";
-const PROFILE_CACHE_TIME_KEY = "nairobi_sweets_fast_profiles_time_v3";
+const PROFILE_CACHE_KEY = "nairobi_sweets_fast_profiles_v4";
+const PROFILE_CACHE_TIME_KEY = "nairobi_sweets_fast_profiles_time_v4";
 const PROFILE_CACHE_MAX_AGE = 1000 * 60 * 3;
 let HOME_MEDIA_RENDER_TIMER = null;
 let LAST_MEDIA_SOURCE = [];
@@ -3869,22 +3869,62 @@ async function askSweet(){
 }
 
 async function fetchApprovedProfiles(){
-  const {data,error} = await sb
-    .from("profiles")
-    .select("*")
-    .eq("approved",true)
-    .or("is_expired.eq.false,is_expired.is.null")
-    .order("created_at",{ascending:false})
-    .order("pinned_top",{ascending:false})
-    .order("boost_score",{ascending:false})
-    .order("verified",{ascending:false})
-    .order("plan_rank",{ascending:false})
-    .order("trending_score",{ascending:false})
-    .order("last_active",{ascending:false})
-    .limit(isMobilePhone() ? 60 : 240);
+  const limit = isMobilePhone() ? 80 : 260;
 
-  if(error) throw error;
-  return data || [];
+  async function tryQuery(label, builder){
+    const { data, error } = await builder();
+    if(error){
+      console.warn(`Profile load fallback failed (${label}):`, error.message || error);
+      return null;
+    }
+    return Array.isArray(data) ? data : [];
+  }
+
+  // First choice: use the active view if it exists.
+  // Second choice: use profiles with approved=true.
+  // Third choice: use profiles then filter in the browser.
+  // This prevents the homepage from freezing when Supabase columns/views differ.
+  let rows = await tryQuery("active_profiles_view", () =>
+    sb.from("active_profiles_view")
+      .select("*")
+      .order("created_at", { ascending:false })
+      .limit(limit)
+  );
+
+  if(!rows){
+    rows = await tryQuery("profiles approved", () =>
+      sb.from("profiles")
+        .select("*")
+        .eq("approved", true)
+        .order("created_at", { ascending:false })
+        .limit(limit)
+    );
+  }
+
+  if(!rows){
+    rows = await tryQuery("profiles basic", () =>
+      sb.from("profiles")
+        .select("*")
+        .order("created_at", { ascending:false })
+        .limit(limit)
+    );
+  }
+
+  if(!rows){
+    throw new Error("Unable to load profiles from Supabase. Check RLS SELECT policy and table name.");
+  }
+
+  return rows
+    .filter(p => p && p.id)
+    .filter(p => p.approved !== false)
+    .filter(p => p.is_expired !== true)
+    .sort((a,b)=>{
+      const pinned = Number(Boolean(b.pinned_top)) - Number(Boolean(a.pinned_top));
+      if(pinned) return pinned;
+      const boost = Number(b.boost_score || 0) - Number(a.boost_score || 0);
+      if(boost) return boost;
+      return new Date(b.created_at || b.updated_at || 0) - new Date(a.created_at || a.updated_at || 0);
+    });
 }
 
 function renderLatestProfileSeoLinks(list){
