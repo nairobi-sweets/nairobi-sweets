@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <title>Nairobi Escorts Directory | Verified VIP & Signature Escorts Nairobi</title>
 <meta name="description" content="Nairobi Sweets is a Nairobi escorts directory for verified escorts Nairobi, VIP escorts Nairobi and Signature escorts Nairobi across Roysambu, Kasarani, Ruiru, Kiambu, Westlands, Kilimani and Ruaka.">
@@ -23,13 +23,25 @@
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
 
-<!-- PWA APP SUPPORT -->
+<!-- PWA APP SUPPORT: Android + iPhone/iPad -->
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#ffd84b">
+<meta name="theme-color" content="#ffd54a">
+<meta name="background-color" content="#000814">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Nairobi Sweets">
+
+<!-- iOS Safari PWA support -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
-<link rel="apple-touch-icon" href="/assets/pwa/icon-192.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/pwa/icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/assets/pwa/icon-152.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/assets/pwa/icon-144.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/assets/pwa/icon-128.png">
+
+<!-- Android/Chrome icons -->
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/pwa/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/assets/pwa/icon-512.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://dkjlvyynvgtijccitvvd.supabase.co" crossorigin>
 <link rel="preload" as="image" href="/assets/logo/logo-badge.png">
@@ -3005,6 +3017,14 @@ function escapeHTML(value = ""){
     .replaceAll("'","&#039;");
 }
 
+function jsString(value = ""){
+  return JSON.stringify(String(value ?? ""));
+}
+
+function jsValue(value = ""){
+  return String(value ?? "").replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\n/g," ");
+}
+
 function getProfileUrl(profile){
   const existingSlug = String(profile.slug || profile.profile_slug || profile.seo_slug || profile.username || "").trim();
   const cleanedExistingSlug = seoSlug(existingSlug);
@@ -3223,61 +3243,101 @@ I found your profile on Nairobi Sweets.
 }
 
 
-async function trackEvent(eventType, profileId, profileName = ""){
-  const analyticsPayload = {
-    profile_id: profileId,
-    profile_name: profileName || "",
-    event_name: eventType,
-    source_page: window.location.pathname,
-    created_at: new Date().toISOString()
-  };
-
-  const profileEventsPayload = {
-    profile_id: profileId,
-    profile_name: profileName || "",
-    event_type: eventType,
-    source_page: window.location.pathname,
-    created_at: new Date().toISOString()
-  };
-
-  try{
-    const { error } = await sb.from("analytics_events").insert(analyticsPayload);
-    if(!error) return true;
-    console.log("analytics_events insert failed:", error.message);
-  }catch(err){
-    console.log("analytics_events error:", err);
-  }
-
-  try{
-    const { error } = await sb.from("profile_events").insert(profileEventsPayload);
-    if(!error) return true;
-    console.log("profile_events insert failed:", error.message);
-  }catch(err){
-    console.log("profile_events error:", err);
-  }
-
-  try{
-    const tableMap = {
-      profile_views: "profile_views",
-      profile_opens: "profile_views",
-      whatsapp_clicks: "whatsapp_clicks",
-      call_clicks: "call_clicks"
-    };
-    const table = tableMap[eventType];
-    if(table){
-      await sb.from(table).insert({ profile_id: profileId });
+function getContactValueFromUrl(url){
+  const text = String(url || "");
+  if(text.startsWith("tel:")) return text.replace(/^tel:/i, "");
+  if(text.includes("wa.me/")){
+    try{
+      const cleanUrl = text.split("?")[0];
+      return cleanUrl.split("wa.me/")[1] || "";
+    }catch(error){
+      return "";
     }
-  }catch(err){
-    console.log("fallback analytics error:", err);
   }
-
-  return false;
+  return text;
 }
 
-async function handleTrackedLink(event,eventType,profileId,url,newTab=false){
+async function trackEvent(eventType, profileId, profileName = "", contactValue = ""){
+  const now = new Date().toISOString();
+
+  /*
+    CONTACT TRACKING PATCH
+    Supabase can store profile IDs as bigint, uuid, or text depending on your project.
+    To avoid uuid/bigint errors, we always save the tracked profile_id as TEXT.
+    The Vault joins using s.profile_id::text = p.id::text.
+  */
+  const safeProfileId = String(profileId || "").trim() || null;
+  const safeProfileName = String(profileName || "").trim();
+  const pageUrl = window.location.href;
+
+  const contactEvents = [
+    "whatsapp_clicks",
+    "call_clicks",
+    "live_location_clicks",
+    "profile_opens"
+  ];
+
+  let saved = false;
+
+  if(contactEvents.includes(eventType)){
+    const contactPayload = {
+      profile_id: safeProfileId,
+      profile_name: safeProfileName,
+      event_type: eventType,
+      contact_value: String(contactValue || ""),
+      page_url: pageUrl,
+      user_agent: navigator.userAgent || "",
+      created_at: now
+    };
+
+    try{
+      const { error } = await sb.from("profile_contact_events").insert(contactPayload);
+      if(error){
+        console.warn("profile_contact_events insert failed:", error.message || error);
+      }else{
+        saved = true;
+      }
+    }catch(err){
+      console.warn("profile_contact_events error:", err);
+    }
+  }
+
+  /*
+    Optional legacy analytics tables. These are intentionally best-effort only.
+    If any table does not exist, the real contact tracking above still works.
+  */
+  try{
+    await sb.from("analytics_events").insert({
+      profile_id: safeProfileId,
+      profile_name: safeProfileName,
+      event_name: eventType,
+      source_page: window.location.pathname,
+      page_url: pageUrl,
+      user_agent: navigator.userAgent || "",
+      created_at: now
+    });
+  }catch(err){}
+
+  try{
+    await sb.from("profile_events").insert({
+      profile_id: safeProfileId,
+      profile_name: safeProfileName,
+      event_type: eventType,
+      source_page: window.location.pathname,
+      page_url: pageUrl,
+      user_agent: navigator.userAgent || "",
+      created_at: now
+    });
+  }catch(err){}
+
+  return saved;
+}
+
+async function handleTrackedLinkasync function handleTrackedLink(event,eventType,profileId,url,newTab=false,profileName="",contactValue=""){
   event.preventDefault();
   event.stopPropagation();
-  await trackEvent(eventType,profileId);
+  const value = contactValue || getContactValueFromUrl(url);
+  await trackEvent(eventType,profileId,profileName,value);
   if(newTab){
     window.open(url,"_blank","noopener");
   }else{
@@ -3601,22 +3661,26 @@ function renderProfiles(data){
 
   profilesEl.innerHTML = visibleProfiles.map((profile,index)=>{
     const phone = safePhone(profile.phone || profile.whatsapp);
-    const boostValue = Number(profile.boost_score || profile.boost || 0);
-    const qualityValue = Math.round(derivedImageQuality(profile));
+    const profileId = String(profile.id || "");
+    const profileName = getName(profile);
+    const profileUrl = getProfileUrl(profile);
+    const liveUrl = getLiveLocationUrl(profile);
+    const waUrl = phone ? `https://wa.me/${phone}?text=${whatsappMessage(profile)}` : "";
+    const rankLabel = index === 0 ? "🏆 #1" : index === 1 ? "🏆 #2" : "🏆 #3";
 
     return `
-      <article class="card" onclick="openProfileCard('${profile.id}')">
+      <article class="card" onclick="openProfileCard(${jsString(profileId)})">
         ${isLiveLocationActive(profile) ? `<div class="live-location-ribbon"><span></span> LIVE LOCATION ON</div>` : ``}
         <img
-          src="${getImage(profile)}"
-          srcset="${getImageSrcSet(profile)}"
+          src="${escapeHTML(getImage(profile))}"
+          srcset="${escapeHTML(getImageSrcSet(profile))}"
           sizes="(min-width:1100px) 25vw, (min-width:901px) 33vw, 100vw"
           class="card-image"
           loading="${index < (isMobilePhone() ? 1 : 4) ? 'eager' : 'lazy'}"
           decoding="async"
           fetchpriority="${index < (isMobilePhone() ? 1 : 4) ? 'high' : 'auto'}"
           referrerpolicy="no-referrer"
-          alt="${getName(profile)}"
+          alt="${escapeHTML(profileName)}"
           onload="markPosterImage(this)"
           onerror="this.src='/assets/logo/logo-badge.png'"
         >
@@ -3624,21 +3688,21 @@ function renderProfiles(data){
         <div class="card-badge-rail">
           <span class="card-chip online-mini" title="Online Now"></span>
           ${isNewProfile(profile, 7) ? `<span class="card-chip new">🆕 NEW</span>` : ""}
-          ${profile.pinned_top ? `<span class="card-chip pinned">👑 PINNED</span>` : index < 3 ? `<span class="card-chip rank">${index === 0 ? '🏆 #1' : index === 1 ? '🏆 #2' : '🏆 #3'}</span>` : ``}
+          ${profile.pinned_top ? `<span class="card-chip pinned">👑 PINNED</span>` : index < 3 ? `<span class="card-chip rank">${rankLabel}</span>` : ``}
           ${profile.verified ? `<span class="card-chip verified">✔ VERIFIED</span>` : ``}
           ${isLiveLocationActive(profile) ? `<span class="card-chip live-location-mini">📍 LIVE LOCATION</span>` : ``}
-          <span class="card-chip plan">${getBadge(profile)}</span>
+          <span class="card-chip plan">${escapeHTML(getBadge(profile))}</span>
         </div>
 
         <div class="card-body">
           <div class="card-name">
-            ${getName(profile)}
+            ${escapeHTML(profileName)}
             ${profile.verified ? `<span class="verified-inline">✓</span>` : ``}
           </div>
           <div class="online">Online Now</div>
-          <div class="location">📍 ${getLocation(profile)}</div>
-          <div class="phone">📞 ${phone || "Hidden"}</div>
-          <div class="bio">${compact(getBio(profile))}</div>
+          <div class="location">📍 ${escapeHTML(getLocation(profile))}</div>
+          <div class="phone">📞 ${escapeHTML(phone || "Hidden")}</div>
+          <div class="bio">${escapeHTML(compact(getBio(profile)))}</div>
 
           <div class="engagement">
             <span class="ranking-score">🏆 ${rankingScore(profile).toLocaleString()} Quality Rank</span>
@@ -3653,39 +3717,44 @@ function renderProfiles(data){
             ${
               phone
               ? `
-                <a class="call-btn" href="tel:${phone}" onclick="return handleTrackedLink(event,'call_clicks','${profile.id}','tel:${phone}',false)">☎ CALL</a>
+                <a
+                  class="call-btn"
+                  href="tel:${escapeHTML(phone)}"
+                  onclick="return handleTrackedLink(event,'call_clicks',${jsString(profileId)},'tel:${escapeHTML(phone)}',false,${jsString(profileName)},${jsString(phone)})"
+                >☎ CALL</a>
 
                 <a
                   class="wa-btn"
-                  href="https://wa.me/${phone}?text=${whatsappMessage(profile)}"
+                  href="${escapeHTML(waUrl)}"
                   target="_blank"
                   rel="noopener"
-                  onclick="return handleTrackedLink(event,'whatsapp_clicks','${profile.id}','https://wa.me/${phone}?text=${whatsappMessage(profile)}',true)"
+                  onclick="return handleTrackedLink(event,'whatsapp_clicks',${jsString(profileId)},${jsString(waUrl)},true,${jsString(profileName)},${jsString(phone)})"
                 >
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="">
                   WHATSAPP
                 </a>
               `
-              : `<button class="disabled-contact">CONTACT HIDDEN</button>`
+              : `<button class="disabled-contact" onclick="event.stopPropagation()">CONTACT HIDDEN</button>`
             }
 
             ${
               isLiveLocationActive(profile)
               ? `<a
                   class="live-location-btn"
-                  href="${getLiveLocationUrl(profile)}"
+                  href="${escapeHTML(liveUrl)}"
                   target="_blank"
                   rel="noopener"
-                  onclick="event.stopPropagation()"
+                  onclick="return handleTrackedLink(event,'live_location_clicks',${jsString(profileId)},${jsString(liveUrl)},true,${jsString(profileName)},${jsString(liveUrl)})"
                 >
                   📍 LIVE LOCATION
                 </a>`
               : ``
             }
+
             <a
               class="view-profile-btn"
-              href="${getProfileUrl(profile)}"
-              onclick="event.stopPropagation(); trackEvent('profile_opens','${profile.id}','${getName(profile)}')"
+              href="${escapeHTML(profileUrl)}"
+              onclick="return handleTrackedLink(event,'profile_opens',${jsString(profileId)},${jsString(profileUrl)},false,${jsString(profileName)},${jsString(profileUrl)})"
             >
               👤 VIEW PROFILE
             </a>
@@ -3704,7 +3773,7 @@ function renderProfiles(data){
   }
 }
 
-function applyFilters(resetLimit = false){
+function applyFiltersfunction applyFilters(resetLimit = false){
   if(resetLimit) resetProfileLimit();
   let list = [...ALL_PROFILES];
   const q = searchInput.value.toLowerCase().trim();
@@ -3937,6 +4006,35 @@ function leaveSite(){
 document.addEventListener("DOMContentLoaded", showAgeGate);
 
 
+
+/* =========================
+ANDROID + IOS PWA HELPERS
+========================= */
+function isIOSDevice(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function isStandalonePWA(){
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+
+function updateInstallButtonForPlatform(){
+  const installBtn = document.getElementById("installAppBtn");
+  if(!installBtn) return;
+
+  if(isStandalonePWA()){
+    installBtn.style.display = "none";
+    return;
+  }
+
+  if(isIOSDevice()){
+    installBtn.style.display = "block";
+    installBtn.textContent = "📲 Add to iPhone Home Screen";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", updateInstallButtonForPlatform);
+
 /* =========================
 PWA INSTALL BUTTON
 ========================= */
@@ -3957,7 +4055,7 @@ const installAppBtn = document.getElementById("installAppBtn");
 if(installAppBtn){
   installAppBtn.addEventListener("click", async () => {
     if(!deferredInstallPrompt){
-      alert("Use your browser menu and tap Install App or Add to Home Screen.");
+      alert(isIOSDevice() ? "On iPhone/iPad: tap Safari Share button, then tap Add to Home Screen." : "Use your browser menu and tap Install App or Add to Home Screen.");
       return;
     }
 
@@ -3986,8 +4084,8 @@ PWA SERVICE WORKER
 if("serviceWorker" in navigator){
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("/sw.js")
-      .then(() => console.log("Nairobi Sweets PWA ready"))
+      .register("/sw.js", { scope: "/" })
+      .then(reg => { console.log("Nairobi Sweets PWA ready"); reg.update && reg.update(); })
       .catch(err => console.error("PWA error:", err));
   });
 }
