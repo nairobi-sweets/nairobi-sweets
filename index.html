@@ -3460,26 +3460,30 @@ function profileSearchText(profile){
 
 
 function isSpaOrMassageProfile(profile){
-  const text = `
+  /*
+    STRICT TOP PLACEMENT RULE:
+    The premium top carousel must show ONLY spa / massage BUSINESS profiles.
+    Do NOT use bio, services, location, or plan here because normal profiles can mention
+    massage in their services and then sneak into the top banner. Tiny gatekeeper goblin defeated.
+  */
+  const nameText = `
     ${profile.stage_name || ""}
     ${profile.name || ""}
     ${profile.full_name || ""}
-    ${profile.category || ""}
-    ${profile.plan || ""}
-    ${profile.services || ""}
-    ${profile.service || ""}
-    ${profile.bio || ""}
-    ${profile.about || ""}
-    ${profile.location || ""}
+    ${profile.business_name || ""}
     ${profile.slug || ""}
   `.toLowerCase();
 
-  return (
-    text.includes("spa") ||
-    text.includes("massage") ||
-    text.includes("masseuse") ||
-    text.includes("massag")
-  );
+  const categoryText = `
+    ${profile.category || ""}
+    ${profile.profile_type || ""}
+    ${profile.type || ""}
+  `.toLowerCase();
+
+  const nameLooksSpa = /\b(spa|massage|massages|masseuse|wellness|beauty\s*spa)\b/i.test(nameText);
+  const categoryLooksSpa = /\b(spa|massage|massage_spa|spa_massage)\b/i.test(categoryText);
+
+  return Boolean(nameLooksSpa || categoryLooksSpa);
 }
 
 function renderSignatureProfiles(list){
