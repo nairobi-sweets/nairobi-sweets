@@ -178,7 +178,7 @@ force = true
 from = "/seo/locations/:location.html"
 to = "/seo-location.html?location=:location"
 status = 200
-force = true
+force = false
 
 
 # =====================================
