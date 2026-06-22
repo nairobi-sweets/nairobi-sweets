@@ -1533,14 +1533,11 @@ Adds top internal links so Google discovers and crawls profile URLs faster.
   grid-template-columns:repeat(4,minmax(0,1fr));
   gap:10px;
   margin-top:14px;
-  width:100%;
 }
 .latest-profile-link{
   display:flex;
   align-items:center;
   gap:10px;
-  min-width:0;
-  width:100%;
   min-height:54px;
   padding:10px 12px;
   border-radius:18px;
@@ -1550,7 +1547,6 @@ Adds top internal links so Google discovers and crawls profile URLs faster.
   font-size:12px;
   font-weight:900;
   line-height:1.2;
-  overflow:hidden;
 }
 .latest-profile-link img{
   width:42px;
@@ -1560,14 +1556,8 @@ Adds top internal links so Google discovers and crawls profile URLs faster.
   object-fit:cover;
   background:#020617;
 }
-.latest-profile-link > div{
-  min-width:0;
-  max-width:100%;
-  overflow:hidden;
-}
 .latest-profile-link strong{
   display:block;
-  max-width:100%;
   color:#ffd54a;
   white-space:nowrap;
   overflow:hidden;
@@ -1575,26 +1565,12 @@ Adds top internal links so Google discovers and crawls profile URLs faster.
 }
 .latest-profile-link span{
   display:block;
-  max-width:100%;
   color:#d8d8d8;
   font-size:10px;
   margin-top:3px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-}
-.latest-view-all-link{
-  background:linear-gradient(145deg,#ffd54a,#ff9f1c) !important;
-  color:#000 !important;
-  justify-content:center;
-  text-align:center;
-  box-shadow:0 12px 24px rgba(255,180,0,.18);
-}
-.latest-view-all-link strong{
-  color:#000 !important;
-}
-.latest-view-all-link span{
-  color:#271800 !important;
 }
 .seo-mini-note{
   color:#bfc3d9;
@@ -1617,27 +1593,6 @@ Adds top internal links so Google discovers and crawls profile URLs faster.
   .latest-profiles-seo{padding-left:14px;padding-right:14px;}
   .latest-profiles-grid{grid-template-columns:1fr;}
 }
-
-
-/* =========================
-LATEST PROFILES LIMIT PATCH
-Homepage shows 8 latest profiles plus one View All button.
-========================= */
-.latest-view-all-link{
-  background:linear-gradient(145deg,#ffd54a,#ff9f1c) !important;
-  color:#000 !important;
-  justify-content:center !important;
-  text-align:center !important;
-  border-color:rgba(255,213,74,.42) !important;
-  box-shadow:0 10px 24px rgba(255,180,0,.16);
-}
-.latest-view-all-link strong{
-  color:#000 !important;
-}
-.latest-view-all-link span{
-  color:#171717 !important;
-}
-
 
 /* =========================
 AGE GATE
@@ -2309,20 +2264,51 @@ Keeps the current Nairobi Sweets design, but makes phones breathe.
 }
 
 
-/* PATCH: keep latest profile text inside the cards */
-.seo-locations-box{
-  overflow:hidden;
+
+/* =========================
+CONTACT TRACKING + LATEST PROFILE FIX
+Keeps latest cards neat and makes every lead click visible inside Vault.
+========================= */
+.latest-profiles-grid{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:12px !important;
+  margin-top:18px !important;
+  align-items:stretch !important;
+}
+.latest-profile-link{
+  min-width:0 !important;
+  width:100% !important;
+  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+}
+.latest-profile-link div{
+  min-width:0 !important;
+  overflow:hidden !important;
+}
+.latest-profile-link strong,
+.latest-profile-link span{
+  max-width:100% !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+.latest-view-all-link{
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c) !important;
+  color:#000 !important;
+  justify-content:center !important;
+  text-align:center !important;
+  box-shadow:0 12px 28px rgba(255,180,0,.24) !important;
+}
+.latest-view-all-link strong,
+.latest-view-all-link span{color:#000 !important;}
+@media(max-width:900px){
+  .latest-profiles-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
 }
 @media(max-width:650px){
-  .latest-profile-link{
-    font-size:11px;
-    padding:10px;
-  }
-  .latest-profile-link span{
-    font-size:9px;
-  }
+  .latest-profiles-grid{grid-template-columns:1fr !important;}
 }
-
 </style>
 </head>
 
@@ -3223,132 +3209,121 @@ I found your profile on Nairobi Sweets.
 }
 
 
-function getContactValueFromUrl(url){
-  const text = String(url || "");
-  if(text.startsWith("tel:")) return text.replace(/^tel:/i, "");
-  if(text.includes("wa.me/")){
-    try{
-      const cleanUrl = text.split("?")[0];
-      return cleanUrl.split("wa.me/")[1] || "";
-    }catch(error){
-      return "";
-    }
-  }
-  return text;
+function normalizeContactEventName(eventType){
+  const raw = String(eventType || "").toLowerCase().trim();
+  const map = {
+    whatsapp_clicks: "whatsapp_click",
+    whatsapp_click: "whatsapp_click",
+    call_clicks: "call_click",
+    call_click: "call_click",
+    profile_opens: "profile_view_click",
+    profile_open: "profile_view_click",
+    profile_view: "profile_view_click",
+    profile_view_click: "profile_view_click",
+    live_location: "live_location_click",
+    live_location_click: "live_location_click"
+  };
+  return map[raw] || raw || "unknown_click";
+}
+
+function findProfileById(profileId){
+  return (ALL_PROFILES || []).find(p => String(p.id) === String(profileId)) || {};
 }
 
 async function trackEvent(eventType, profileId, profileName = "", contactValue = ""){
-  const now = new Date().toISOString();
-  const safeProfileId = profileId || null;
-  const safeProfileName = profileName || "";
-  const pageUrl = window.location.href;
-  const sourcePage = window.location.pathname;
-  const contactEvents = [
-    "whatsapp_clicks",
-    "call_clicks",
-    "live_location_clicks",
-    "profile_opens"
-  ];
+  const profile = findProfileById(profileId);
+  const cleanEventType = normalizeContactEventName(eventType);
+  const cleanProfileName = profileName || getName(profile) || "";
+  const cleanContactValue = contactValue || profile.phone || profile.whatsapp || "";
 
-  const analyticsPayload = {
-    profile_id: safeProfileId,
-    profile_name: safeProfileName,
-    event_name: eventType,
-    source_page: sourcePage,
-    page_url: pageUrl,
-    user_agent: navigator.userAgent || "",
-    created_at: now
-  };
+  /* PRIMARY LEAD TRACKER
+     This is the table your patched Vault reads.
+     It records real visitor intent: WhatsApp, Call, View Profile, Live Location. */
+  try{
+    const { error } = await sb.from("profile_contact_events").insert({
+      profile_id: String(profileId || ""),
+      profile_name: String(cleanProfileName || ""),
+      event_type: cleanEventType,
+      contact_value: String(cleanContactValue || ""),
+      page_url: window.location.href,
+      user_agent: navigator.userAgent,
+      created_at: new Date().toISOString()
+    });
 
-  const profileEventsPayload = {
-    profile_id: safeProfileId,
-    profile_name: safeProfileName,
-    event_type: eventType,
-    source_page: sourcePage,
-    page_url: pageUrl,
-    user_agent: navigator.userAgent || "",
-    created_at: now
-  };
-
-  const contactPayload = {
-    profile_id: safeProfileId,
-    profile_name: safeProfileName,
-    event_type: eventType,
-    contact_value: contactValue || "",
-    page_url: pageUrl,
-    source_page: sourcePage,
-    referrer: document.referrer || "",
-    user_agent: navigator.userAgent || "",
-    created_at: now
-  };
-
-  let saved = false;
-
-  if(contactEvents.includes(eventType)){
-    try{
-      const { error } = await sb.from("profile_contact_events").insert(contactPayload);
-      if(!error) saved = true;
-      else console.log("profile_contact_events insert failed:", error.message);
-    }catch(err){
-      console.log("profile_contact_events error:", err);
+    if(error){
+      console.warn("profile_contact_events insert failed:", error.message || error);
     }
+  }catch(err){
+    console.warn("profile_contact_events error:", err);
   }
 
-  try{
-    const { error } = await sb.from("analytics_events").insert(analyticsPayload);
-    if(!error) saved = true;
-    else console.log("analytics_events insert failed:", error.message);
-  }catch(err){
-    console.log("analytics_events error:", err);
-  }
+  /* COMPATIBILITY: keep old analytics alive if those tables exist. */
+  const analyticsPayload = {
+    profile_id: String(profileId || ""),
+    profile_name: String(cleanProfileName || ""),
+    event_name: cleanEventType,
+    source_page: window.location.pathname,
+    created_at: new Date().toISOString()
+  };
 
   try{
-    const { error } = await sb.from("profile_events").insert(profileEventsPayload);
-    if(!error) saved = true;
-    else console.log("profile_events insert failed:", error.message);
-  }catch(err){
-    console.log("profile_events error:", err);
-  }
+    await sb.from("analytics_events").insert(analyticsPayload);
+  }catch(err){}
+
+  try{
+    await sb.from("profile_events").insert({
+      profile_id: String(profileId || ""),
+      profile_name: String(cleanProfileName || ""),
+      event_type: cleanEventType,
+      source_page: window.location.pathname,
+      created_at: new Date().toISOString()
+    });
+  }catch(err){}
 
   try{
     const tableMap = {
-      profile_views: "profile_views",
-      profile_opens: "profile_views",
-      whatsapp_clicks: "whatsapp_clicks",
-      call_clicks: "call_clicks",
-      live_location_clicks: "profile_events"
+      profile_view_click: "profile_views",
+      whatsapp_click: "whatsapp_clicks",
+      call_click: "call_clicks"
     };
-    const table = tableMap[eventType];
-    if(table && table !== "profile_events"){
-      await sb.from(table).insert({ profile_id: safeProfileId, created_at: now });
-      saved = true;
+    const table = tableMap[cleanEventType];
+    if(table){
+      await sb.from(table).insert({ profile_id: String(profileId || "") });
     }
-  }catch(err){
-    console.log("fallback analytics error:", err);
-  }
+  }catch(err){}
 
-  return saved;
+  return true;
 }
 
-async function handleTrackedLink(event,eventType,profileId,url,newTab=false,profileName="",contactValue=""){
-  event.preventDefault();
-  event.stopPropagation();
-  const value = contactValue || getContactValueFromUrl(url);
-  await trackEvent(eventType,profileId,profileName,value);
+async function handleTrackedLink(event,eventType,profileId,url,newTab=false,contactValue=""){
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  let openedTab = null;
   if(newTab){
-    window.open(url,"_blank","noopener");
+    openedTab = window.open("about:blank","_blank","noopener");
+  }
+
+  await trackEvent(eventType,profileId,"",contactValue);
+
+  if(newTab){
+    if(openedTab){
+      openedTab.location.href = url;
+    }else{
+      window.open(url,"_blank","noopener");
+    }
   }else{
     window.location.href = url;
   }
+
   return false;
 }
 
 async function openProfileCard(profileId){
-  const profile = ALL_PROFILES.find(p => String(p.id) === String(profileId)) || {};
-  const profileName = getName(profile);
-
-  await trackEvent("profile_opens", profileId, profileName);
-
+  const profile = findProfileById(profileId);
+  await trackEvent("profile_view_click", profileId, getName(profile), getProfileUrl(profile));
   window.location.href = getProfileUrl(profile);
 }
 
@@ -3426,7 +3401,7 @@ function renderSweetGallery(list){
     <a
       href="${getProfileUrl(profile)}"
       class="sweet-gallery-card"
-      onclick="event.stopPropagation(); trackEvent('profile_opens','${profile.id}','${getName(profile)}')"
+      onclick="return handleTrackedLink(event,'profile_view_click','${profile.id}','${getProfileUrl(profile)}',false,'${getProfileUrl(profile)}')"
       title="Open ${getName(profile)}"
     >
       ${index < 4 ? `<div class="sweet-gallery-pill">🍬 Featured</div>` : ``}
@@ -3710,14 +3685,14 @@ function renderProfiles(data){
             ${
               phone
               ? `
-                <a class="call-btn" href="tel:${phone}" onclick="return handleTrackedLink(event,'call_clicks','${profile.id}','tel:${phone}',false,'${getName(profile)}','${phone}')">☎ CALL</a>
+                <a class="call-btn" href="tel:${phone}" onclick="return handleTrackedLink(event,'call_click','${profile.id}','tel:${phone}',false,'${phone}')">☎ CALL</a>
 
                 <a
                   class="wa-btn"
                   href="https://wa.me/${phone}?text=${whatsappMessage(profile)}"
                   target="_blank"
                   rel="noopener"
-                  onclick="return handleTrackedLink(event,'whatsapp_clicks','${profile.id}','https://wa.me/${phone}?text=${whatsappMessage(profile)}',true,'${getName(profile)}','${phone}')"
+                  onclick="return handleTrackedLink(event,'whatsapp_click','${profile.id}','https://wa.me/${phone}?text=${whatsappMessage(profile)}',true,'${phone}')"
                 >
                   <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
                   WHATSAPP
@@ -3733,7 +3708,7 @@ function renderProfiles(data){
                   href="${getLiveLocationUrl(profile)}"
                   target="_blank"
                   rel="noopener"
-                  onclick="return handleTrackedLink(event,'live_location_clicks','${profile.id}','${getLiveLocationUrl(profile)}',true,'${getName(profile)}','${getLiveLocationUrl(profile)}')"
+                  onclick="return handleTrackedLink(event,'live_location_click','${profile.id}','${getLiveLocationUrl(profile)}',true,'${getLiveLocationUrl(profile)}')"
                 >
                   📍 LIVE LOCATION
                 </a>`
@@ -3742,7 +3717,7 @@ function renderProfiles(data){
             <a
               class="view-profile-btn"
               href="${getProfileUrl(profile)}"
-              onclick="event.stopPropagation(); trackEvent('profile_opens','${profile.id}','${getName(profile)}')"
+              onclick="return handleTrackedLink(event,'profile_view_click','${profile.id}','${getProfileUrl(profile)}',false,'${getProfileUrl(profile)}')"
             >
               👤 VIEW PROFILE
             </a>
@@ -3890,7 +3865,7 @@ function renderLatestProfileSeoLinks(list){
   }
 
   latestBox.innerHTML = latest.map(profile => `
-    <a class="latest-profile-link" href="${getProfileUrl(profile)}">
+    <a class="latest-profile-link" href="${getProfileUrl(profile)}" onclick="event.stopPropagation(); trackEvent('profile_view_click','${profile.id}','','${getProfileUrl(profile)}')">
       <img src="${escapeHTML(getImage(profile))}" alt="${escapeHTML(getName(profile))}" loading="lazy" decoding="async" onerror="this.src='/assets/logo/logo-badge.png'">
       <div>
         <strong>${escapeHTML(getName(profile))}</strong>
