@@ -2780,8 +2780,22 @@ let ACTIVE_FILTER = "home";
 let CURRENT_PROFILE_RESULTS = [];
 let PROFILE_VISIBLE_LIMIT = getInitialProfileLimit();
 
-const PROFILE_CACHE_KEY = "nairobi_sweets_fast_profiles_v4";
-const PROFILE_CACHE_TIME_KEY = "nairobi_sweets_fast_profiles_time_v4";
+
+/* =========================
+PROFILE LOADING SAFETY PATCH
+Clears old cached profile data and old service worker caches after uploads.
+========================= */
+try{
+  [
+    "nairobi_sweets_fast_profiles_v4",
+    "nairobi_sweets_fast_profiles_time_v4",
+    "nairobi_sweets_fast_profiles_v5",
+    "nairobi_sweets_fast_profiles_time_v5"
+  ].forEach(key => localStorage.removeItem(key));
+}catch(error){}
+
+const PROFILE_CACHE_KEY = "nairobi_sweets_fast_profiles_v6";
+const PROFILE_CACHE_TIME_KEY = "nairobi_sweets_fast_profiles_time_v6";
 const PROFILE_CACHE_MAX_AGE = 1000 * 60 * 3;
 let HOME_MEDIA_RENDER_TIMER = null;
 let LAST_MEDIA_SOURCE = [];
@@ -2916,18 +2930,71 @@ function cleanImageUrl(url){
   }
 }
 
-function getImage(profile){
-  const rawImage = (
-    profile.photo_url ||
-    profile.image_url ||
-    profile.profile_photo ||
-    profile.main_photo ||
-    profile.photo ||
-    profile.image ||
-    "/assets/logo/logo-badge.png"
-  );
+function normaliseImageArray(value){
+  if(!value) return [];
+  if(Array.isArray(value)){
+    return value
+      .flatMap(item => normaliseImageArray(item))
+      .filter(Boolean);
+  }
 
-  return cleanImageUrl(rawImage);
+  if(typeof value === "object"){
+    return [
+      value.url,
+      value.publicUrl,
+      value.public_url,
+      value.src,
+      value.path,
+      value.image_url,
+      value.photo_url
+    ].filter(Boolean);
+  }
+
+  const text = String(value || "").trim();
+  if(!text || text === "null" || text === "undefined") return [];
+
+  try{
+    const parsed = JSON.parse(text);
+    if(parsed && parsed !== text){
+      return normaliseImageArray(parsed);
+    }
+  }catch(error){}
+
+  return text
+    .split(/[,\n|]+/)
+    .map(item => item.trim())
+    .filter(Boolean);
+}
+
+function firstUsableImageUrl(profile){
+  const candidates = [
+    profile.photo_url,
+    profile.image_url,
+    profile.main_image,
+    profile.main_photo,
+    profile.profile_photo,
+    profile.avatar_url,
+    profile.cover_url,
+    profile.photo,
+    profile.image,
+    profile.picture,
+    ...normaliseImageArray(profile.gallery_images),
+    ...normaliseImageArray(profile.gallery),
+    ...normaliseImageArray(profile.images),
+    ...normaliseImageArray(profile.photos),
+    ...normaliseImageArray(profile.image_urls),
+    ...normaliseImageArray(profile.photo_urls)
+  ].filter(Boolean);
+
+  const cleanCandidates = candidates
+    .map(url => cleanImageUrl(url))
+    .filter(url => url && !String(url).includes("undefined") && !String(url).includes("null"));
+
+  return cleanCandidates.find(url => !String(url).includes("/assets/logo/logo-badge.png")) || cleanCandidates[0] || "/assets/logo/logo-badge.png";
+}
+
+function getImage(profile){
+  return firstUsableImageUrl(profile || {});
 }
 
 function getImageSrcSet(profile){
@@ -2994,9 +3061,33 @@ function getBadge(profile){
 }
 
 
+function truthyFlag(value){
+  if(value === true) return true;
+  const text = String(value || "").trim().toLowerCase();
+  return ["true","yes","1","on","active"].includes(text);
+}
+
 function isSignatureProfile(profile){
-  const plan = getPlan(profile);
-  return Boolean(profile.is_signature) || plan.includes("signature") || plan.includes("vvip");
+  const planText = [
+    profile.plan,
+    profile.plan_name,
+    profile.package,
+    profile.tier,
+    profile.category,
+    profile.profile_type,
+    profile.membership,
+    profile.badge
+  ].map(v => String(v || "").toLowerCase()).join(" ");
+
+  return Boolean(
+    truthyFlag(profile.is_signature) ||
+    truthyFlag(profile.signature) ||
+    truthyFlag(profile.signature_profile) ||
+    truthyFlag(profile.homepage_featured) ||
+    truthyFlag(profile.is_vvip) ||
+    planText.includes("signature") ||
+    planText.includes("vvip")
+  );
 }
 
 function seoSlug(value = ""){
@@ -3627,9 +3718,10 @@ function getLiveLocationUrl(profile){
   return `https://www.google.com/maps?q=${profile.live_lat},${profile.live_lng}`;
 }
 
-function renderProfiles(data){
+function renderProfiles(data, statsData = data){
   CURRENT_PROFILE_RESULTS = Array.isArray(data) ? data : [];
-  if(profileCount) profileCount.textContent = CURRENT_PROFILE_RESULTS.length.toLocaleString();
+  const STATS_PROFILE_RESULTS = Array.isArray(statsData) ? statsData : CURRENT_PROFILE_RESULTS;
+  if(profileCount) profileCount.textContent = STATS_PROFILE_RESULTS.length.toLocaleString();
 
   const verifiedCountEl = document.getElementById("verifiedCount");
   const vipCountEl = document.getElementById("vipCount");
@@ -3637,19 +3729,19 @@ function renderProfiles(data){
   const liveLocationCountEl = document.getElementById("liveLocationCount");
 
   if(liveLocationCountEl){
-    liveLocationCountEl.textContent = CURRENT_PROFILE_RESULTS.filter(isLiveLocationActive).length.toLocaleString();
+    liveLocationCountEl.textContent = STATS_PROFILE_RESULTS.filter(isLiveLocationActive).length.toLocaleString();
   }
 
   if(verifiedCountEl){
-    verifiedCountEl.textContent = CURRENT_PROFILE_RESULTS.filter(p => p.verified).length.toLocaleString();
+    verifiedCountEl.textContent = STATS_PROFILE_RESULTS.filter(p => p.verified || p.is_verified).length.toLocaleString();
   }
 
   if(vipCountEl){
-    vipCountEl.textContent = CURRENT_PROFILE_RESULTS.filter(p => getPlan(p).includes("vip")).length.toLocaleString();
+    vipCountEl.textContent = STATS_PROFILE_RESULTS.filter(p => getPlan(p).includes("vip") || p.is_vip || p.vip).length.toLocaleString();
   }
 
   if(signatureCountEl){
-    signatureCountEl.textContent = CURRENT_PROFILE_RESULTS.filter(isSignatureProfile).length.toLocaleString();
+    signatureCountEl.textContent = STATS_PROFILE_RESULTS.filter(isSignatureProfile).length.toLocaleString();
   }
 
   if(!CURRENT_PROFILE_RESULTS.length){
@@ -3796,9 +3888,10 @@ function applyFilters(resetLimit = false){
 
   const signatureProfiles = list.filter(isSignatureProfile);
   const normalProfiles = list.filter(p => !isSignatureProfile(p));
+  const mainProfiles = normalProfiles.length ? normalProfiles : list;
 
   renderSignatureProfiles(signatureProfiles);
-  renderProfiles(normalProfiles);
+  renderProfiles(mainProfiles, list);
 
   // Gallery and Shorts are heavier than cards. Render them after the grid,
   // and debounce them during typing/filter changes so mobile does not choke.
@@ -3967,6 +4060,7 @@ function paintProfilesFromList(list){
 }
 
 async function loadProfiles(){
+  if(!profilesEl) return;
   profilesEl.innerHTML = profileSkeletons(isMobilePhone() ? 3 : 8);
 
   const cachedProfiles = readProfilesCache();
