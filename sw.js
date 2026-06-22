@@ -1,5 +1,5 @@
 /* Nairobi Sweets PWA Service Worker - Android + iOS safe */
-const CACHE_VERSION = "nairobi-sweets-pwa-v2026-06-22-1";
+const CACHE_VERSION = "nairobi-sweets-pwa-v2026-06-22-2";
 const APP_SHELL = [
   "/",
   "/index.html",
