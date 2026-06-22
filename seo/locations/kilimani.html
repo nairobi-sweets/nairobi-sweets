@@ -498,9 +498,15 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<h2 class="section-title">Featured Kilimani Profiles</h2>
+<h2 class="section-title">💆 Spa & Massage Profiles</h2>
 
-<section class="grid" id="profiles">
+<section class="grid" id="spaProfiles">
+  <div class="loading">Loading spa profiles...</div>
+</section>
+
+<h2 class="section-title">⭐ Featured Kilimani Profiles</h2>
+
+<section class="grid" id="regularProfiles">
   <div class="loading">Loading Kilimani profiles...</div>
 </section>
 
@@ -592,7 +598,8 @@ const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const SITE_URL = "https://nairobi-sweets.com";
-const container = document.getElementById("profiles");
+const spaContainer = document.getElementById("spaProfiles");
+const regularContainer = document.getElementById("regularProfiles");
 
 function clean(value,fallback=""){
   return String(value || fallback).replace(/[<>]/g,"");
@@ -610,6 +617,23 @@ function getName(p){return p.stage_name || p.name || p.full_name || "Verified Pr
 function getLocation(p){return p.location || p.town || p.area || "Kilimani"}
 function getBio(p){return p.bio || p.description || p.about || "Active Kilimani profile on Nairobi Sweets."}
 function getPlan(p){return String(p.plan || p.plan_name || p.package || p.tier || "Featured")}
+
+function isSpaProfile(p){
+  const strongText = `
+    ${p.stage_name || ""}
+    ${p.name || ""}
+    ${p.full_name || ""}
+    ${p.slug || ""}
+    ${p.category || ""}
+    ${p.business_name || ""}
+    ${p.plan || ""}
+  `.toLowerCase();
+
+  return (
+    strongText.includes("spa") ||
+    strongText.includes("massage")
+  );
+}
 
 function getImage(p){
   return (
@@ -655,59 +679,75 @@ function waMessage(p){
 }
 
 async function loadProfiles(){
-  container.innerHTML = `<div class="loading">Loading Kilimani profiles...</div>`;
+  spaContainer.innerHTML = `<div class="loading">Loading spa profiles...</div>`;
+  regularContainer.innerHTML = `<div class="loading">Loading Kilimani profiles...</div>`;
 
   const {data,error} = await sb
     .from("active_profiles_view")
     .select("*")
     .or("location.ilike.%Kilimani%,location.ilike.%kilimani%,location.ilike.%Yaya%,location.ilike.%Yaya Centre%,location.ilike.%Yaya-Centre%,location.ilike.%Hurlingham%,location.ilike.%Lavington%,location.ilike.%Kileleshwa%,location.ilike.%Adams Arcade%,location.ilike.%Adams-Arcade%,location.ilike.%Dennis Pritt%,location.ilike.%Dennis-Pritt%")
     .order("created_at",{ascending:false})
-    .limit(40);
+    .limit(100);
 
   if(error){
-    container.innerHTML = `<div class="empty">Unable to load profiles: ${clean(error.message)}</div>`;
+    spaContainer.innerHTML = `<div class="empty">Unable to load spa profiles: ${clean(error.message)}</div>`;
+    regularContainer.innerHTML = `<div class="empty">Unable to load profiles: ${clean(error.message)}</div>`;
     return;
   }
 
   if(!data || !data.length){
-    container.innerHTML = `<div class="empty">No Kilimani profiles found yet.</div>`;
+    spaContainer.innerHTML = `<div class="empty">No spa profiles found yet.</div>`;
+    regularContainer.innerHTML = `<div class="empty">No Kilimani profiles found yet.</div>`;
     return;
   }
 
-  container.innerHTML = data.map(p=>{
-    const phone = safePhone(p.phone || p.whatsapp || p.whatsapp_number);
+  const spaProfiles = data.filter(isSpaProfile);
+  const regularProfiles = data.filter(p => !isSpaProfile(p));
 
-    return `
-      <article class="card">
-        <img
-          src="${getImage(p)}"
-          alt="${clean(getName(p))} Kilimani profile"
-          loading="lazy"
-          onerror="this.src='/assets/logo/logo-badge.png'"
-        >
+  function renderCards(items){
+    return items.map(p=>{
+      const phone = safePhone(p.phone || p.whatsapp || p.whatsapp_number);
 
-        <div class="body">
-          <span class="badge">${badge(p)}</span>
-          <div class="name">${clean(getName(p))}</div>
-          <div class="meta">📍 ${clean(getLocation(p))}</div>
-          <div class="bio">${clean(shortBio(getBio(p)))}</div>
+      return `
+        <article class="card">
+          <img
+            src="${getImage(p)}"
+            alt="${clean(getName(p))} Kilimani profile"
+            loading="lazy"
+            onerror="this.src='/assets/logo/logo-badge.png'"
+          >
 
-          <div class="actions">
-            ${
-              phone
-              ? `
-                <a class="call" href="tel:+${phone}">☎ Call</a>
-                <a class="wa" href="https://wa.me/${phone}?text=${waMessage(p)}" target="_blank" rel="noopener">WhatsApp</a>
-              `
-              : ""
-            }
+          <div class="body">
+            <span class="badge">${badge(p)}</span>
+            <div class="name">${clean(getName(p))}</div>
+            <div class="meta">📍 ${clean(getLocation(p))}</div>
+            <div class="bio">${clean(shortBio(getBio(p)))}</div>
 
-            <a class="view" href="${getProfileUrl(p)}">View Profile</a>
+            <div class="actions">
+              ${
+                phone
+                ? `
+                  <a class="call" href="tel:+${phone}">☎ Call</a>
+                  <a class="wa" href="https://wa.me/${phone}?text=${waMessage(p)}" target="_blank" rel="noopener">WhatsApp</a>
+                `
+                : ""
+              }
+
+              <a class="view" href="${getProfileUrl(p)}">View Profile</a>
+            </div>
           </div>
-        </div>
-      </article>
-    `;
-  }).join("");
+        </article>
+      `;
+    }).join("");
+  }
+
+  spaContainer.innerHTML = spaProfiles.length
+    ? renderCards(spaProfiles)
+    : `<div class="empty">No spa profiles found yet.</div>`;
+
+  regularContainer.innerHTML = regularProfiles.length
+    ? renderCards(regularProfiles)
+    : `<div class="empty">No regular Kilimani profiles found yet.</div>`;
 }
 
 loadProfiles();
