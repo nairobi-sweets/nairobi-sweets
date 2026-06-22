@@ -520,6 +520,105 @@ Keeps Spa & Massage at the very top, then clearly starts the normal Kilimani fee
   .section-shell{margin-top:18px}
 }
 
+
+
+/* =========================
+SPA TOP NOT-CUT PATCH
+Makes the Spa & Massage top section behave like the main page banner:
+wide cards, horizontal scroll, contain images, no crop, no sticky-header cover.
+========================= */
+html{
+  scroll-padding-top:120px;
+}
+.section-shell{
+  scroll-margin-top:120px;
+}
+.section-shell-inner{
+  overflow:hidden;
+}
+.section-shell .grid{
+  display:flex !important;
+  grid-template-columns:none !important;
+  gap:18px !important;
+  max-width:none !important;
+  width:100% !important;
+  margin:0 !important;
+  padding:0 26px 28px !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  scroll-snap-type:x mandatory;
+  scroll-padding:26px;
+  -webkit-overflow-scrolling:touch;
+}
+.section-shell .grid::-webkit-scrollbar{
+  height:10px;
+}
+.section-shell .grid::-webkit-scrollbar-track{
+  background:rgba(255,255,255,.06);
+  border-radius:999px;
+}
+.section-shell .grid::-webkit-scrollbar-thumb{
+  background:linear-gradient(90deg,#ffd54a,#ff9f1c);
+  border-radius:999px;
+}
+.section-shell .card{
+  min-width:min(560px,86vw) !important;
+  width:min(560px,86vw) !important;
+  flex:0 0 auto !important;
+  scroll-snap-align:start;
+  border-radius:28px !important;
+}
+.section-shell .card img{
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:16/9 !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  background:#020617 !important;
+  padding:0 !important;
+}
+.section-shell .body{
+  padding:18px 22px 22px !important;
+}
+.section-shell .name{
+  font-size:26px !important;
+  line-height:1.1 !important;
+  color:#fff !important;
+}
+.section-shell .meta,
+.section-shell .bio{
+  font-size:14px !important;
+}
+.section-shell .actions a{
+  min-height:46px !important;
+  font-size:14px !important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.feed-divider{
+  clear:both;
+}
+@media(max-width:650px){
+  html{scroll-padding-top:92px;}
+  .section-shell{scroll-margin-top:92px;}
+  .section-shell .grid{
+    padding:0 14px 22px !important;
+    scroll-padding:14px;
+  }
+  .section-shell .card{
+    min-width:92vw !important;
+    width:92vw !important;
+  }
+  .section-shell .card img{
+    aspect-ratio:16/9 !important;
+    object-fit:contain !important;
+  }
+  .section-shell .name{
+    font-size:22px !important;
+  }
+}
+
 </style>
 </head>
 
