@@ -26,6 +26,7 @@
 <!-- PWA APP SUPPORT: Android + iPhone/iPad -->
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#ffd54a">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="background-color" content="#000814">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="Nairobi Sweets">
@@ -2961,7 +2962,8 @@ function normaliseImageArray(value){
   }catch(error){}
 
   return text
-    .split(/[,\n|]+/)
+    .split(/[,,
+|]+/)
     .map(item => item.trim())
     .filter(Boolean);
 }
@@ -3424,7 +3426,7 @@ async function trackEvent(eventType, profileId, profileName = "", contactValue =
   return saved;
 }
 
-async function handleTrackedLink(event,eventType,profileId,url,newTab=false,profileName="",contactValue=""){
+async function handleTrackedLinkasync function handleTrackedLink(event,eventType,profileId,url,newTab=false,profileName="",contactValue=""){
   event.preventDefault();
   event.stopPropagation();
   const value = contactValue || getContactValueFromUrl(url);
@@ -3964,28 +3966,77 @@ async function askSweet(){
 async function fetchApprovedProfiles(){
   const limit = isMobilePhone() ? 80 : 260;
 
-  async function tryQuery(label, builder){
-    const { data, error } = await builder();
-    if(error){
-      console.warn(`Profile load fallback failed (${label}):`, error.message || error);
+  async function restQuery(label, table, params){
+    try{
+      const query = new URLSearchParams(params || {});
+      const url = `${SUPABASE_URL}/rest/v1/${table}?${query.toString()}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          Accept: "application/json",
+          "Cache-Control": "no-cache"
+        }
+      });
+
+      if(!response.ok){
+        const msg = await response.text().catch(()=>"");
+        console.warn(`Profile REST fallback failed (${label}):`, response.status, msg);
+        return null;
+      }
+
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    }catch(error){
+      console.warn(`Profile REST fallback failed (${label}):`, error && (error.message || error.name) ? `${error.name || "Error"}: ${error.message || error}` : error);
       return null;
     }
-    return Array.isArray(data) ? data : [];
   }
 
-  // First choice: use the active view if it exists.
-  // Second choice: use profiles with approved=true.
-  // Third choice: use profiles then filter in the browser.
-  // This prevents the homepage from freezing when Supabase columns/views differ.
-  let rows = await tryQuery("active_profiles_view", () =>
-    sb.from("active_profiles_view")
-      .select("*")
-      .order("created_at", { ascending:false })
-      .limit(limit)
-  );
+  async function supabaseQuery(label, builder){
+    try{
+      const { data, error } = await builder();
+      if(error){
+        console.warn(`Profile Supabase query failed (${label}):`, error.message || error);
+        return null;
+      }
+      return Array.isArray(data) ? data : [];
+    }catch(error){
+      console.warn(`Profile Supabase query failed (${label}):`, error && (error.message || error.name) ? `${error.name || "Error"}: ${error.message || error}` : error);
+      return null;
+    }
+  }
+
+  // REST first: it avoids the AbortError loop some browsers/PWA caches trigger with supabase-js.
+  let rows = await restQuery("profiles approved REST", "profiles", {
+    select: "*",
+    approved: "eq.true",
+    order: "created_at.desc",
+    limit: String(limit)
+  });
 
   if(!rows){
-    rows = await tryQuery("profiles approved", () =>
+    rows = await restQuery("active profiles view REST", "active_profiles_view", {
+      select: "*",
+      order: "created_at.desc",
+      limit: String(limit)
+    });
+  }
+
+  if(!rows){
+    rows = await restQuery("profiles basic REST", "profiles", {
+      select: "*",
+      order: "created_at.desc",
+      limit: String(limit)
+    });
+  }
+
+  // Last fallback: supabase-js. This keeps compatibility if REST policies differ.
+  if(!rows && window.sb){
+    rows = await supabaseQuery("profiles approved JS", () =>
       sb.from("profiles")
         .select("*")
         .eq("approved", true)
@@ -3994,8 +4045,17 @@ async function fetchApprovedProfiles(){
     );
   }
 
-  if(!rows){
-    rows = await tryQuery("profiles basic", () =>
+  if(!rows && window.sb){
+    rows = await supabaseQuery("active profiles view JS", () =>
+      sb.from("active_profiles_view")
+        .select("*")
+        .order("created_at", { ascending:false })
+        .limit(limit)
+    );
+  }
+
+  if(!rows && window.sb){
+    rows = await supabaseQuery("profiles basic JS", () =>
       sb.from("profiles")
         .select("*")
         .order("created_at", { ascending:false })
@@ -4004,7 +4064,7 @@ async function fetchApprovedProfiles(){
   }
 
   if(!rows){
-    throw new Error("Unable to load profiles from Supabase. Check RLS SELECT policy and table name.");
+    throw new Error("Unable to load profiles. Check Supabase public SELECT policy for profiles.");
   }
 
   return rows
@@ -4019,7 +4079,6 @@ async function fetchApprovedProfiles(){
       return new Date(b.created_at || b.updated_at || 0) - new Date(a.created_at || a.updated_at || 0);
     });
 }
-
 function renderLatestProfileSeoLinks(list){
   const latestBox = document.getElementById("latestProfilesLinks");
   if(!latestBox) return;
@@ -4087,7 +4146,13 @@ async function loadProfiles(){
     writeProfilesCache(freshProfiles);
     paintProfilesFromList(freshProfiles);
   }catch(error){
-    profilesEl.innerHTML = `<div class="empty" style="color:#ff5b5b;">Supabase error: ${error.message}</div>`;
+    console.error("Profile load failed:", error);
+    const backupProfiles = readProfilesCache();
+    if(backupProfiles && backupProfiles.length){
+      paintProfilesFromList(backupProfiles);
+      return;
+    }
+    profilesEl.innerHTML = `<div class="empty" style="color:#ff5b5b;">Supabase error: ${escapeHTML(error.message || error.name || "Profiles could not load")}. Refresh once after clearing site cache.</div>`;
   }
 }
 
