@@ -1,54 +1,72 @@
-const CACHE_NAME = "nairobi-sweets-v4";
-
-const FILES_TO_CACHE = [
+/* Nairobi Sweets PWA Service Worker - Android + iOS safe */
+const CACHE_VERSION = "nairobi-sweets-pwa-v2026-06-22-1";
+const APP_SHELL = [
   "/",
   "/index.html",
-  "/profile.html",
-  "/login.html",
-  "/join.html",
-  "/public-signup-payment-page.html",
-  "/trending.html",
-  "/reel.html",
-  "/shorts.html",
+  "/offline.html",
+  "/manifest.webmanifest",
   "/assets/logo/logo-badge.png",
-  "/assets/logo/logo-navbar.png"
+  "/assets/pwa/icon-192.png",
+  "/assets/pwa/icon-512.png"
 ];
 
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
+    caches.open(CACHE_VERSION)
+      .then(cache => cache.addAll(APP_SHELL.map(url => new Request(url, { cache: "reload" }))))
+      .then(() => self.skipWaiting())
+      .catch(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.map(key => {
-        if (key !== CACHE_NAME) return caches.delete(key);
-      }))
-    )
+    caches.keys()
+      .then(keys => Promise.all(keys.map(key => key !== CACHE_VERSION ? caches.delete(key) : null)))
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
+function isNavigationRequest(request){
+  return request.mode === "navigate" || (request.headers.get("accept") || "").includes("text/html");
+}
+
 self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") return;
+  const request = event.request;
+  const url = new URL(request.url);
 
-  const url = new URL(event.request.url);
+  if(request.method !== "GET") return;
 
-  if (
-    url.pathname.endsWith(".xml") ||
-    url.pathname.endsWith(".txt") ||
-    url.pathname === "/robots.txt" ||
-    url.pathname === "/manifest.webmanifest" ||
-    url.pathname.startsWith("/.netlify/functions/") ||
-    url.pathname.startsWith("/api/")
-  ) {
+  if(url.origin !== self.location.origin){
+    return;
+  }
+
+  if(url.pathname.includes("/api/") || url.pathname.includes("/.netlify/functions/")){
+    return;
+  }
+
+  if(isNavigationRequest(request)){
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          const copy = response.clone();
+          caches.open(CACHE_VERSION).then(cache => cache.put(request, copy));
+          return response;
+        })
+        .catch(() => caches.match(request).then(cached => cached || caches.match("/offline.html")))
+    );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request))
+    caches.match(request).then(cached => {
+      if(cached) return cached;
+      return fetch(request).then(response => {
+        if(!response || response.status !== 200) return response;
+        const copy = response.clone();
+        caches.open(CACHE_VERSION).then(cache => cache.put(request, copy));
+        return response;
+      }).catch(() => cached);
+    })
   );
 });
