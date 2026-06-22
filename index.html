@@ -2448,8 +2448,8 @@ AGE GATE
 <section class="signature-wrap">
   <div class="signature-box">
     <div class="signature-header">
-      <h2>👑 Signature Profiles</h2>
-      <span>Premium Luxury Placement</span>
+      <h2>💆 Spa & Massage Profiles</h2>
+      <span>Spa Only • Premium Top Placement</span>
     </div>
 
     <div class="signature-row" id="signatureProfiles"></div>
@@ -3459,16 +3459,42 @@ function profileSearchText(profile){
 }
 
 
+function isSpaOrMassageProfile(profile){
+  const text = `
+    ${profile.stage_name || ""}
+    ${profile.name || ""}
+    ${profile.full_name || ""}
+    ${profile.category || ""}
+    ${profile.plan || ""}
+    ${profile.services || ""}
+    ${profile.service || ""}
+    ${profile.bio || ""}
+    ${profile.about || ""}
+    ${profile.location || ""}
+    ${profile.slug || ""}
+  `.toLowerCase();
+
+  return (
+    text.includes("spa") ||
+    text.includes("massage") ||
+    text.includes("masseuse") ||
+    text.includes("massag")
+  );
+}
+
 function renderSignatureProfiles(list){
   const container = document.getElementById("signatureProfiles");
   if(!container) return;
 
-  const signatures = smartSignatureRotation(list).slice(0, isMobilePhone() ? 3 : 8);
+  const spaOnlyTopProfiles = (Array.isArray(list) ? list : [])
+    .filter(profile => isSignatureProfile(profile) && isSpaOrMassageProfile(profile));
+
+  const signatures = smartSignatureRotation(spaOnlyTopProfiles).slice(0, isMobilePhone() ? 3 : 8);
 
   if(!signatures.length){
     container.innerHTML = `
       <div style="padding:20px;color:#ffd54a;font-weight:900;">
-        No Signature Profiles Yet
+        No Spa & Massage Profiles Yet
       </div>
     `;
     return;
