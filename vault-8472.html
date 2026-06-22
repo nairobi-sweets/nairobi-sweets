@@ -619,6 +619,63 @@ CLIENT LOGIN AUTO-CREATOR
 .client-login-reset{background:linear-gradient(145deg,#a855f7,#ec4899);color:#fff}
 .client-login-send{background:linear-gradient(145deg,#06b6d4,#22d3ee);color:#00111f}
 
+
+
+/* =========================
+CONTACT INTELLIGENCE DASHBOARD
+Tracks if users are actually trying to contact profiles.
+========================= */
+.contact-intel-card{
+  border:1px solid rgba(125,255,207,.28);
+  box-shadow:0 0 34px rgba(125,255,207,.08),0 18px 50px rgba(0,0,0,.35);
+}
+.contact-intel-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.contact-intel-head h2{color:#ffd54a;margin:0;font-size:28px;line-height:1.1}
+.contact-intel-head p{color:#cbd5e1;font-size:13px;font-weight:800;line-height:1.55;max-width:820px;margin-top:8px}
+.contact-intel-actions{display:flex;gap:10px;flex-wrap:wrap}
+.contact-intel-actions button{
+  border:0;border-radius:16px;padding:14px 18px;font-size:14px;font-weight:950;cursor:pointer;
+}
+.contact-refresh{background:linear-gradient(145deg,#7dffcf,#22d3ee);color:#00111f}
+.contact-copy{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.contact-export{background:linear-gradient(145deg,#a855f7,#ec4899);color:#fff}
+.contact-intel-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:12px;margin-bottom:16px}
+.contact-intel-stat{
+  background:rgba(0,0,0,.28);border:1px solid rgba(125,255,207,.14);border-radius:18px;padding:16px;min-height:96px;
+}
+.contact-intel-stat h3{color:#9ca3af;font-size:11px;text-transform:uppercase;letter-spacing:.7px;margin-bottom:9px}
+.contact-intel-stat div{color:#7dffcf;font-size:26px;font-weight:950;line-height:1}
+.contact-intel-stat small{display:block;color:#cbd5e1;font-size:11px;font-weight:800;margin-top:8px;line-height:1.35}
+.contact-intel-tools{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:12px;margin:16px 0}
+.contact-intel-tools input,.contact-intel-tools select{padding:14px;border-radius:14px;font-size:14px}
+.contact-intel-table-wrap{overflow:auto;border:1px solid rgba(125,255,207,.14);border-radius:18px;background:rgba(0,0,0,.22);max-height:460px}
+.contact-intel-table{width:100%;border-collapse:collapse;min-width:1080px}
+.contact-intel-table th,.contact-intel-table td{padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:13px;vertical-align:top}
+.contact-intel-table th{color:#7dffcf;background:rgba(0,0,0,.36);position:sticky;top:0;z-index:2;text-transform:uppercase;letter-spacing:.5px;font-size:12px}
+.contact-intel-table td{color:#f8fafc;font-weight:800;line-height:1.45}
+.contact-event-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;border:1px solid rgba(255,255,255,.12)}
+.contact-event-pill.whatsapp{background:rgba(37,211,102,.16);color:#86efac;border-color:rgba(37,211,102,.28)}
+.contact-event-pill.call{background:rgba(6,182,212,.16);color:#67e8f9;border-color:rgba(6,182,212,.28)}
+.contact-event-pill.view{background:rgba(255,213,74,.14);color:#ffd54a;border-color:rgba(255,213,74,.28)}
+.contact-event-pill.live{background:rgba(168,85,247,.16);color:#d8b4fe;border-color:rgba(168,85,247,.28)}
+.contact-event-pill.other{background:rgba(148,163,184,.16);color:#cbd5e1;border-color:rgba(148,163,184,.28)}
+.contact-profile-link{color:#ffd54a;text-decoration:none;font-weight:950}
+.contact-profile-link:hover{text-decoration:underline}
+.contact-mini-actions{display:flex;gap:8px;flex-wrap:wrap}
+.contact-mini-actions button,.contact-mini-actions a{border:0;border-radius:999px;padding:8px 10px;font-size:12px;font-weight:950;text-decoration:none;cursor:pointer}
+.contact-wa{background:#25D366;color:#fff}.contact-call{background:#06b6d4;color:#00111f}.contact-replied{background:#ffd54a;color:#000}.contact-paid{background:#22c55e;color:#00111f}
+.contact-empty{padding:20px;color:#ffd54a;font-weight:950;background:rgba(255,213,74,.08);border-radius:16px}
+.contact-warning{margin-top:12px;color:#fbbf24;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.16);border-radius:16px;padding:14px;font-size:13px;font-weight:900;line-height:1.55}
+@media(max-width:1250px){.contact-intel-grid{grid-template-columns:repeat(4,1fr)}.contact-intel-tools{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.contact-intel-grid{grid-template-columns:1fr}.contact-intel-tools{grid-template-columns:1fr}.contact-intel-head h2{font-size:23px}}
+
 </style>
 
 <style id="vault-auth-guard-style">
@@ -643,7 +700,7 @@ CLIENT LOGIN AUTO-CREATOR
   <h1>Nairobi Sweets Vault</h1>
   <div class="header-actions">
     <a class="header-link" href="/vault-analytics.html">📊 Analytics</a>
-    <button class="refresh" onclick="loadProfiles();loadDashboardStats();loadRevenueDashboard();">Refresh</button>
+    <button class="refresh" onclick="loadProfiles();loadDashboardStats();loadRevenueDashboard();loadContactTrackingDashboard();">Refresh</button>
     <button class="refresh" onclick="runAutoRenewNow()" style="background:#22c55e;color:#000">Auto-Renew Now</button>
     <button class="refresh" onclick="logoutVault()" style="background:#ef4444;color:white">Logout</button>
   </div>
@@ -775,7 +832,7 @@ CLIENT LOGIN AUTO-CREATOR
     <button class="trial" onclick="giveMembershipControlTrial()">🎁 Give Category Trial</button>
     <button class="approve" onclick="approveAllTrialProfiles()">✅ Approve All Trials</button>
     <button class="expire" onclick="expireEndedTrialProfiles()">⛔ Expire Ended Trials</button>
-    <button class="refresh-mini" onclick="loadProfiles();loadDashboardStats();loadRevenueDashboard();">🔄 Refresh Center</button>
+    <button class="refresh-mini" onclick="loadProfiles();loadDashboardStats();loadRevenueDashboard();loadContactTrackingDashboard();">🔄 Refresh Center</button>
   </div>
 
   <div class="membership-control-note">
@@ -814,6 +871,66 @@ CLIENT LOGIN AUTO-CREATOR
     <div id="planRevenueList" class="revenue-list">
       <div class="revenue-empty">Loading plan revenue...</div>
     </div>
+  </div>
+</section>
+
+
+
+<section class="panel contact-intel-card" id="contactIntelligence">
+  <div class="contact-intel-head">
+    <div>
+      <h2>📞 Contact Intelligence Center</h2>
+      <p>
+        This shows real contact attempts from the website: WhatsApp clicks, phone-call clicks, profile views and live-location clicks.
+        It proves which profiles are getting leads. It cannot confirm the visitor actually completed a WhatsApp chat or phone call after leaving the site.
+      </p>
+    </div>
+    <div class="contact-intel-actions">
+      <button class="contact-refresh" onclick="loadContactTrackingDashboard()">🔄 Refresh Leads</button>
+      <button class="contact-copy" onclick="copyContactLeadPhones()">📋 Copy Lead Phones</button>
+      <button class="contact-export" onclick="exportContactEventsCSV()">⬇ Export CSV</button>
+    </div>
+  </div>
+
+  <div class="contact-intel-grid">
+    <div class="contact-intel-stat"><h3>Total Events</h3><div id="ctTotalEvents">0</div><small>All tracked contact actions</small></div>
+    <div class="contact-intel-stat"><h3>WhatsApp Clicks</h3><div id="ctWhatsApp">0</div><small>Strongest lead signal</small></div>
+    <div class="contact-intel-stat"><h3>Call Clicks</h3><div id="ctCalls">0</div><small>Phone call attempts</small></div>
+    <div class="contact-intel-stat"><h3>Profile Views</h3><div id="ctViews">0</div><small>Profile opening intent</small></div>
+    <div class="contact-intel-stat"><h3>Live Location</h3><div id="ctLiveLocation">0</div><small>Location intent</small></div>
+    <div class="contact-intel-stat"><h3>Today</h3><div id="ctToday">0</div><small>Events since midnight</small></div>
+    <div class="contact-intel-stat"><h3>Profiles Contacted</h3><div id="ctProfiles">0</div><small>Unique profiles with leads</small></div>
+    <div class="contact-intel-stat"><h3>Last Lead</h3><div id="ctLastLead" style="font-size:15px;line-height:1.25">--</div><small>Most recent event</small></div>
+  </div>
+
+  <div class="contact-intel-tools">
+    <input id="contactSearch" placeholder="Search lead by profile, phone, event, page..." oninput="renderContactEventsTable()">
+    <select id="contactEventFilter" onchange="renderContactEventsTable()">
+      <option value="">All Events</option>
+      <option value="whatsapp">WhatsApp</option>
+      <option value="call">Calls</option>
+      <option value="view">Profile Views</option>
+      <option value="live">Live Location</option>
+    </select>
+    <select id="contactDateFilter" onchange="renderContactEventsTable()">
+      <option value="all">All Time</option>
+      <option value="today">Today</option>
+      <option value="7days">Last 7 Days</option>
+      <option value="30days">Last 30 Days</option>
+    </select>
+    <select id="contactSortFilter" onchange="renderContactEventsTable()">
+      <option value="newest">Newest First</option>
+      <option value="profile">Profile A-Z</option>
+      <option value="event">Event Type</option>
+    </select>
+    <button class="contact-copy" onclick="copyContactSummary()">📊 Copy Summary</button>
+  </div>
+
+  <div id="contactTrackingStatus" class="trial-invite-status">Loading contact tracking...</div>
+  <div id="contactEventsTable" class="contact-intel-table-wrap"></div>
+
+  <div class="contact-warning">
+    Required database table: <b>profile_contact_events</b>. Run the SQL file I send with this patch in Supabase SQL Editor, then upload the patched homepage that records the clicks.
   </div>
 </section>
 
@@ -1342,6 +1459,7 @@ async function startVaultAfterAuth(){
     if(typeof loadStaffUsers === "function") await loadStaffUsers();
     if(typeof loadAdminContact === "function") await loadAdminContact();
     if(typeof loadWhatsAppConversionStats === "function") await loadWhatsAppConversionStats();
+    if(typeof loadContactTrackingDashboard === "function") await loadContactTrackingDashboard();
 
   }catch(error){
     console.error("Vault auth failed:", error);
@@ -3832,6 +3950,7 @@ async function loadDashboardStats(){
     setVaultStat("statHDQuality", hdQualityCount.toLocaleString());
     setVaultStat("statAvgQuality", avgQuality.toLocaleString());
     if(typeof loadWhatsAppConversionStats === "function") await loadWhatsAppConversionStats();
+    if(typeof loadContactTrackingDashboard === "function") await loadContactTrackingDashboard();
     setVaultStat("statHero", hero.toLocaleString());
     setVaultStat("statExpiringSoon", expiringSoon.toLocaleString());
     setVaultStat("statWeeklyPotential", "KES " + weeklyPotential.toLocaleString());
@@ -4698,6 +4817,7 @@ async function openNextTrialWhatsApp(){
   markTrialInviteOpenedLocally(user);
   await markTrialInviteSentInSupabase(user);
   if(typeof loadWhatsAppConversionStats === "function") await loadWhatsAppConversionStats();
+    if(typeof loadContactTrackingDashboard === "function") await loadContactTrackingDashboard();
 
   nsTrialInviteIndex++;
 
@@ -5001,6 +5121,276 @@ async function enableClientLogin(profileId){
     setClientLoginStatus(profileId,error.message || "Could not enable login.",true);
     alert(error.message || "Could not enable login.");
   }
+}
+
+
+/* =========================
+CONTACT INTELLIGENCE CENTER
+Reads profile_contact_events created by homepage/profile contact tracking.
+========================= */
+let CONTACT_EVENTS = [];
+let CONTACT_EVENTS_FILTERED = [];
+
+function ctClean(value,fallback=""){
+  return String(value ?? fallback).replace(/[<>]/g,"").trim();
+}
+
+function ctEventLabel(type){
+  const raw = String(type || "").toLowerCase();
+  if(raw.includes("whatsapp")) return {label:"WhatsApp", cls:"whatsapp", icon:"💬"};
+  if(raw.includes("call") || raw.includes("phone")) return {label:"Call", cls:"call", icon:"☎"};
+  if(raw.includes("live") || raw.includes("location")) return {label:"Live Location", cls:"live", icon:"📍"};
+  if(raw.includes("view") || raw.includes("profile")) return {label:"Profile View", cls:"view", icon:"👁"};
+  return {label:ctClean(type,"Other"), cls:"other", icon:"✨"};
+}
+
+function ctProfileByEvent(row){
+  const id = String(row.profile_id || "");
+  return ALL_PROFILES.find(p => String(p.id) === id) || null;
+}
+
+function ctPhoneForEvent(row){
+  const profile = ctProfileByEvent(row);
+  return ctClean(row.contact_value || row.phone || row.whatsapp || profile?.whatsapp || profile?.phone || "");
+}
+
+function ctDate(row){
+  const d = new Date(row.created_at || row.inserted_at || row.event_time || 0);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function ctIsToday(row){
+  const d = ctDate(row);
+  if(!d) return false;
+  const now = new Date();
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+}
+
+function ctInLastDays(row,days){
+  const d = ctDate(row);
+  if(!d) return false;
+  return Date.now() - d.getTime() <= days * 86400000;
+}
+
+async function loadContactTrackingDashboard(){
+  const status = document.getElementById("contactTrackingStatus");
+  const table = document.getElementById("contactEventsTable");
+  if(status) status.innerHTML = "Loading contact events...";
+  if(table) table.innerHTML = `<div class="contact-empty">Loading lead trail...</div>`;
+
+  try{
+    const { data, error } = await sb
+      .from("profile_contact_events")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(1500);
+
+    if(error) throw error;
+
+    CONTACT_EVENTS = data || [];
+    updateContactStats();
+    renderContactEventsTable();
+
+    if(status){
+      status.innerHTML = CONTACT_EVENTS.length
+        ? `Loaded <b>${CONTACT_EVENTS.length.toLocaleString()}</b> contact events. Latest leads are shown below.`
+        : `No contact events yet. Upload the patched homepage and click WhatsApp/Call/View Profile to test.`;
+    }
+  }catch(error){
+    CONTACT_EVENTS = [];
+    updateContactStats();
+    if(status){
+      status.innerHTML = `<b style="color:#ff6b6b">Contact tracking not ready:</b> ${ctClean(error.message || error)}<br>Run the Supabase SQL setup file first.`;
+    }
+    if(table){
+      table.innerHTML = `<div class="contact-empty">No contact data loaded. Database table may not exist yet.</div>`;
+    }
+  }
+}
+
+function updateContactStats(){
+  const total = CONTACT_EVENTS.length;
+  const whatsapp = CONTACT_EVENTS.filter(e => String(e.event_type || "").toLowerCase().includes("whatsapp")).length;
+  const calls = CONTACT_EVENTS.filter(e => String(e.event_type || "").toLowerCase().includes("call") || String(e.event_type || "").toLowerCase().includes("phone")).length;
+  const views = CONTACT_EVENTS.filter(e => String(e.event_type || "").toLowerCase().includes("view") || String(e.event_type || "").toLowerCase().includes("profile")).length;
+  const live = CONTACT_EVENTS.filter(e => String(e.event_type || "").toLowerCase().includes("live") || String(e.event_type || "").toLowerCase().includes("location")).length;
+  const today = CONTACT_EVENTS.filter(ctIsToday).length;
+  const uniqueProfiles = new Set(CONTACT_EVENTS.map(e => String(e.profile_id || e.profile_name || "")).filter(Boolean)).size;
+  const last = CONTACT_EVENTS[0];
+
+  const set = (id,value)=>{ const el = document.getElementById(id); if(el) el.textContent = value; };
+  set("ctTotalEvents", total.toLocaleString());
+  set("ctWhatsApp", whatsapp.toLocaleString());
+  set("ctCalls", calls.toLocaleString());
+  set("ctViews", views.toLocaleString());
+  set("ctLiveLocation", live.toLocaleString());
+  set("ctToday", today.toLocaleString());
+  set("ctProfiles", uniqueProfiles.toLocaleString());
+
+  const lastEl = document.getElementById("ctLastLead");
+  if(lastEl){
+    if(!last){
+      lastEl.textContent = "--";
+    }else{
+      const meta = ctEventLabel(last.event_type);
+      const d = ctDate(last);
+      lastEl.textContent = `${meta.icon} ${ctClean(last.profile_name || ctProfileByEvent(last)?.stage_name || "Lead")} ${d ? d.toLocaleString() : ""}`;
+    }
+  }
+}
+
+function filteredContactEvents(){
+  const q = String(document.getElementById("contactSearch")?.value || "").toLowerCase().trim();
+  const eventFilter = String(document.getElementById("contactEventFilter")?.value || "").toLowerCase();
+  const dateFilter = String(document.getElementById("contactDateFilter")?.value || "all").toLowerCase();
+  const sort = String(document.getElementById("contactSortFilter")?.value || "newest");
+
+  let rows = [...CONTACT_EVENTS];
+
+  if(q){
+    rows = rows.filter(row=>{
+      const profile = ctProfileByEvent(row);
+      const hay = `
+        ${row.profile_name || ""}
+        ${profile?.stage_name || ""}
+        ${profile?.location || ""}
+        ${row.event_type || ""}
+        ${row.contact_value || ""}
+        ${row.page_url || ""}
+        ${row.user_agent || ""}
+      `.toLowerCase();
+      return hay.includes(q);
+    });
+  }
+
+  if(eventFilter){
+    rows = rows.filter(row=>ctEventLabel(row.event_type).cls === eventFilter);
+  }
+
+  if(dateFilter === "today") rows = rows.filter(ctIsToday);
+  if(dateFilter === "7days") rows = rows.filter(row=>ctInLastDays(row,7));
+  if(dateFilter === "30days") rows = rows.filter(row=>ctInLastDays(row,30));
+
+  rows.sort((a,b)=>{
+    if(sort === "profile") return ctClean(a.profile_name || ctProfileByEvent(a)?.stage_name).localeCompare(ctClean(b.profile_name || ctProfileByEvent(b)?.stage_name));
+    if(sort === "event") return ctClean(a.event_type).localeCompare(ctClean(b.event_type));
+    return (ctDate(b)?.getTime() || 0) - (ctDate(a)?.getTime() || 0);
+  });
+
+  return rows;
+}
+
+function renderContactEventsTable(){
+  const box = document.getElementById("contactEventsTable");
+  if(!box) return;
+
+  const rows = filteredContactEvents();
+  CONTACT_EVENTS_FILTERED = rows;
+
+  if(!rows.length){
+    box.innerHTML = `<div class="contact-empty">No contact events match your filters.</div>`;
+    return;
+  }
+
+  box.innerHTML = `
+    <table class="contact-intel-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Profile</th>
+          <th>Event</th>
+          <th>Contact</th>
+          <th>Page</th>
+          <th>Device / Visitor</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(row=>{
+          const profile = ctProfileByEvent(row);
+          const meta = ctEventLabel(row.event_type);
+          const phone = ctPhoneForEvent(row);
+          const when = ctDate(row);
+          const profileName = ctClean(row.profile_name || profile?.stage_name || "Unknown profile");
+          const profileUrl = profile?.slug ? `/profile.html?slug=${encodeURIComponent(profile.slug)}` : (row.profile_id ? `/profile.html?id=${encodeURIComponent(row.profile_id)}` : "/profile.html");
+          const page = ctClean(row.page_url || "");
+          const ua = ctClean(row.user_agent || "");
+          const shortUA = ua.length > 76 ? ua.slice(0,76) + "..." : ua;
+          const waPhone = phone.replace(/[^0-9]/g,"");
+          return `
+            <tr>
+              <td>${when ? when.toLocaleString() : "Unknown"}</td>
+              <td><a class="contact-profile-link" href="${profileUrl}" target="_blank" rel="noopener">${profileName}</a><br><span style="color:#94a3b8">${ctClean(profile?.location || "")}</span></td>
+              <td><span class="contact-event-pill ${meta.cls}">${meta.icon} ${meta.label}</span></td>
+              <td>${phone || "--"}</td>
+              <td>${page ? `<span title="${page}">${page.length > 48 ? page.slice(0,48) + "..." : page}</span>` : "--"}</td>
+              <td>${shortUA || "--"}</td>
+              <td>
+                <div class="contact-mini-actions">
+                  ${waPhone ? `<a class="contact-wa" href="https://wa.me/${waPhone}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+                  ${phone ? `<a class="contact-call" href="tel:${phone}">Call</a>` : ""}
+                  ${profile ? `<button class="contact-replied" onclick="markWhatsAppReplied('${profile.id}')">Replied</button><button class="contact-paid" onclick="markWhatsAppConvertedPaid('${profile.id}')">Converted</button>` : ""}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function contactSummaryLines(){
+  const rows = CONTACT_EVENTS_FILTERED.length ? CONTACT_EVENTS_FILTERED : CONTACT_EVENTS;
+  const whatsapp = rows.filter(e => ctEventLabel(e.event_type).cls === "whatsapp").length;
+  const calls = rows.filter(e => ctEventLabel(e.event_type).cls === "call").length;
+  const views = rows.filter(e => ctEventLabel(e.event_type).cls === "view").length;
+  const live = rows.filter(e => ctEventLabel(e.event_type).cls === "live").length;
+  const byProfile = {};
+  rows.forEach(e=>{
+    const name = ctClean(e.profile_name || ctProfileByEvent(e)?.stage_name || "Unknown");
+    byProfile[name] = (byProfile[name] || 0) + 1;
+  });
+  const top = Object.entries(byProfile).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([n,c],i)=>`${i+1}. ${n}: ${c}`).join("\n");
+  return `Nairobi Sweets Contact Tracking Summary\n\nTotal events: ${rows.length}\nWhatsApp clicks: ${whatsapp}\nCall clicks: ${calls}\nProfile views: ${views}\nLive location clicks: ${live}\n\nTop contacted profiles:\n${top || "No data yet"}`;
+}
+
+async function copyContactSummary(){
+  const text = contactSummaryLines();
+  try{
+    await navigator.clipboard.writeText(text);
+    alert("Contact summary copied.");
+  }catch(e){
+    prompt("Copy contact summary:", text);
+  }
+}
+
+async function copyContactLeadPhones(){
+  const phones = [...new Set((CONTACT_EVENTS_FILTERED.length ? CONTACT_EVENTS_FILTERED : CONTACT_EVENTS).map(ctPhoneForEvent).filter(Boolean))];
+  const text = phones.join("\n");
+  if(!text){ alert("No lead phones found yet."); return; }
+  try{
+    await navigator.clipboard.writeText(text);
+    alert(`Copied ${phones.length} lead phone(s).`);
+  }catch(e){
+    prompt("Copy lead phones:", text);
+  }
+}
+
+function exportContactEventsCSV(){
+  const rows = CONTACT_EVENTS_FILTERED.length ? CONTACT_EVENTS_FILTERED : CONTACT_EVENTS;
+  if(!rows.length){ alert("No contact events to export yet."); return; }
+  const headers = ["created_at","profile_id","profile_name","event_type","contact_value","page_url","user_agent"];
+  const csv = [headers.join(",")].concat(rows.map(row=>headers.map(h=>`"${String(row[h] ?? "").replace(/"/g,'""')}"`).join(","))).join("\n");
+  const blob = new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `nairobi-sweets-contact-events-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 </script>
