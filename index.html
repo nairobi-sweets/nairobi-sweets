@@ -3333,7 +3333,7 @@ async function trackEvent(eventType, profileId, profileName = "", contactValue =
   return saved;
 }
 
-async function handleTrackedLinkasync function handleTrackedLink(event,eventType,profileId,url,newTab=false,profileName="",contactValue=""){
+async function handleTrackedLink(event,eventType,profileId,url,newTab=false,profileName="",contactValue=""){
   event.preventDefault();
   event.stopPropagation();
   const value = contactValue || getContactValueFromUrl(url);
@@ -3773,7 +3773,7 @@ function renderProfiles(data){
   }
 }
 
-function applyFiltersfunction applyFilters(resetLimit = false){
+function applyFilters(resetLimit = false){
   if(resetLimit) resetProfileLimit();
   let list = [...ALL_PROFILES];
   const q = searchInput.value.toLowerCase().trim();
