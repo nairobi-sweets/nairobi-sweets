@@ -3223,35 +3223,89 @@ I found your profile on Nairobi Sweets.
 }
 
 
-async function trackEvent(eventType, profileId, profileName = ""){
+function getContactValueFromUrl(url){
+  const text = String(url || "");
+  if(text.startsWith("tel:")) return text.replace(/^tel:/i, "");
+  if(text.includes("wa.me/")){
+    try{
+      const cleanUrl = text.split("?")[0];
+      return cleanUrl.split("wa.me/")[1] || "";
+    }catch(error){
+      return "";
+    }
+  }
+  return text;
+}
+
+async function trackEvent(eventType, profileId, profileName = "", contactValue = ""){
+  const now = new Date().toISOString();
+  const safeProfileId = profileId || null;
+  const safeProfileName = profileName || "";
+  const pageUrl = window.location.href;
+  const sourcePage = window.location.pathname;
+  const contactEvents = [
+    "whatsapp_clicks",
+    "call_clicks",
+    "live_location_clicks",
+    "profile_opens"
+  ];
+
   const analyticsPayload = {
-    profile_id: profileId,
-    profile_name: profileName || "",
+    profile_id: safeProfileId,
+    profile_name: safeProfileName,
     event_name: eventType,
-    source_page: window.location.pathname,
-    created_at: new Date().toISOString()
+    source_page: sourcePage,
+    page_url: pageUrl,
+    user_agent: navigator.userAgent || "",
+    created_at: now
   };
 
   const profileEventsPayload = {
-    profile_id: profileId,
-    profile_name: profileName || "",
+    profile_id: safeProfileId,
+    profile_name: safeProfileName,
     event_type: eventType,
-    source_page: window.location.pathname,
-    created_at: new Date().toISOString()
+    source_page: sourcePage,
+    page_url: pageUrl,
+    user_agent: navigator.userAgent || "",
+    created_at: now
   };
+
+  const contactPayload = {
+    profile_id: safeProfileId,
+    profile_name: safeProfileName,
+    event_type: eventType,
+    contact_value: contactValue || "",
+    page_url: pageUrl,
+    source_page: sourcePage,
+    referrer: document.referrer || "",
+    user_agent: navigator.userAgent || "",
+    created_at: now
+  };
+
+  let saved = false;
+
+  if(contactEvents.includes(eventType)){
+    try{
+      const { error } = await sb.from("profile_contact_events").insert(contactPayload);
+      if(!error) saved = true;
+      else console.log("profile_contact_events insert failed:", error.message);
+    }catch(err){
+      console.log("profile_contact_events error:", err);
+    }
+  }
 
   try{
     const { error } = await sb.from("analytics_events").insert(analyticsPayload);
-    if(!error) return true;
-    console.log("analytics_events insert failed:", error.message);
+    if(!error) saved = true;
+    else console.log("analytics_events insert failed:", error.message);
   }catch(err){
     console.log("analytics_events error:", err);
   }
 
   try{
     const { error } = await sb.from("profile_events").insert(profileEventsPayload);
-    if(!error) return true;
-    console.log("profile_events insert failed:", error.message);
+    if(!error) saved = true;
+    else console.log("profile_events insert failed:", error.message);
   }catch(err){
     console.log("profile_events error:", err);
   }
@@ -3261,23 +3315,26 @@ async function trackEvent(eventType, profileId, profileName = ""){
       profile_views: "profile_views",
       profile_opens: "profile_views",
       whatsapp_clicks: "whatsapp_clicks",
-      call_clicks: "call_clicks"
+      call_clicks: "call_clicks",
+      live_location_clicks: "profile_events"
     };
     const table = tableMap[eventType];
-    if(table){
-      await sb.from(table).insert({ profile_id: profileId });
+    if(table && table !== "profile_events"){
+      await sb.from(table).insert({ profile_id: safeProfileId, created_at: now });
+      saved = true;
     }
   }catch(err){
     console.log("fallback analytics error:", err);
   }
 
-  return false;
+  return saved;
 }
 
-async function handleTrackedLink(event,eventType,profileId,url,newTab=false){
+async function handleTrackedLink(event,eventType,profileId,url,newTab=false,profileName="",contactValue=""){
   event.preventDefault();
   event.stopPropagation();
-  await trackEvent(eventType,profileId);
+  const value = contactValue || getContactValueFromUrl(url);
+  await trackEvent(eventType,profileId,profileName,value);
   if(newTab){
     window.open(url,"_blank","noopener");
   }else{
@@ -3653,14 +3710,14 @@ function renderProfiles(data){
             ${
               phone
               ? `
-                <a class="call-btn" href="tel:${phone}" onclick="return handleTrackedLink(event,'call_clicks','${profile.id}','tel:${phone}',false)">☎ CALL</a>
+                <a class="call-btn" href="tel:${phone}" onclick="return handleTrackedLink(event,'call_clicks','${profile.id}','tel:${phone}',false,'${getName(profile)}','${phone}')">☎ CALL</a>
 
                 <a
                   class="wa-btn"
                   href="https://wa.me/${phone}?text=${whatsappMessage(profile)}"
                   target="_blank"
                   rel="noopener"
-                  onclick="return handleTrackedLink(event,'whatsapp_clicks','${profile.id}','https://wa.me/${phone}?text=${whatsappMessage(profile)}',true)"
+                  onclick="return handleTrackedLink(event,'whatsapp_clicks','${profile.id}','https://wa.me/${phone}?text=${whatsappMessage(profile)}',true,'${getName(profile)}','${phone}')"
                 >
                   <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
                   WHATSAPP
@@ -3676,7 +3733,7 @@ function renderProfiles(data){
                   href="${getLiveLocationUrl(profile)}"
                   target="_blank"
                   rel="noopener"
-                  onclick="event.stopPropagation()"
+                  onclick="return handleTrackedLink(event,'live_location_clicks','${profile.id}','${getLiveLocationUrl(profile)}',true,'${getName(profile)}','${getLiveLocationUrl(profile)}')"
                 >
                   📍 LIVE LOCATION
                 </a>`
