@@ -1533,11 +1533,14 @@ Adds top internal links so Google discovers and crawls profile URLs faster.
   grid-template-columns:repeat(4,minmax(0,1fr));
   gap:10px;
   margin-top:14px;
+  width:100%;
 }
 .latest-profile-link{
   display:flex;
   align-items:center;
   gap:10px;
+  min-width:0;
+  width:100%;
   min-height:54px;
   padding:10px 12px;
   border-radius:18px;
@@ -1547,6 +1550,7 @@ Adds top internal links so Google discovers and crawls profile URLs faster.
   font-size:12px;
   font-weight:900;
   line-height:1.2;
+  overflow:hidden;
 }
 .latest-profile-link img{
   width:42px;
@@ -1556,8 +1560,14 @@ Adds top internal links so Google discovers and crawls profile URLs faster.
   object-fit:cover;
   background:#020617;
 }
+.latest-profile-link > div{
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+}
 .latest-profile-link strong{
   display:block;
+  max-width:100%;
   color:#ffd54a;
   white-space:nowrap;
   overflow:hidden;
@@ -1565,12 +1575,26 @@ Adds top internal links so Google discovers and crawls profile URLs faster.
 }
 .latest-profile-link span{
   display:block;
+  max-width:100%;
   color:#d8d8d8;
   font-size:10px;
   margin-top:3px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+}
+.latest-view-all-link{
+  background:linear-gradient(145deg,#ffd54a,#ff9f1c) !important;
+  color:#000 !important;
+  justify-content:center;
+  text-align:center;
+  box-shadow:0 12px 24px rgba(255,180,0,.18);
+}
+.latest-view-all-link strong{
+  color:#000 !important;
+}
+.latest-view-all-link span{
+  color:#271800 !important;
 }
 .seo-mini-note{
   color:#bfc3d9;
@@ -2281,6 +2305,21 @@ Keeps the current Nairobi Sweets design, but makes phones breathe.
   .profile-skeleton-card{
     min-height:390px;
     animation:none;
+  }
+}
+
+
+/* PATCH: keep latest profile text inside the cards */
+.seo-locations-box{
+  overflow:hidden;
+}
+@media(max-width:650px){
+  .latest-profile-link{
+    font-size:11px;
+    padding:10px;
+  }
+  .latest-profile-link span{
+    font-size:9px;
   }
 }
 
