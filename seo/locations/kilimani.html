@@ -912,18 +912,109 @@ function isSpaProfile(p){
   );
 }
 
+function normalizeImageUrl(value){
+  if(!value) return "";
+
+  let url = String(value).trim();
+
+  if(!url || url === "null" || url === "undefined") return "";
+
+  try{
+    if(url.startsWith("[")){
+      const parsed = JSON.parse(url);
+      if(Array.isArray(parsed)){
+        const first = parsed.find(Boolean);
+        return normalizeImageUrl(first);
+      }
+    }
+
+    if(url.startsWith("{")){
+      const parsed = JSON.parse(url);
+      const first =
+        parsed.url ||
+        parsed.src ||
+        parsed.image_url ||
+        parsed.publicUrl ||
+        parsed.public_url ||
+        parsed.path ||
+        "";
+      return normalizeImageUrl(first);
+    }
+  }catch(error){}
+
+  if(url.includes(",")){
+    url = url.split(",").map(x => x.trim()).find(Boolean) || "";
+  }
+
+  if(!url) return "";
+
+  if(url.startsWith("//")){
+    return "https:" + url;
+  }
+
+  if(url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")){
+    return url;
+  }
+
+  if(url.includes("profile-images/") || url.includes("storage/v1/object/public/")){
+    return url.startsWith("http") ? url : "https://dkjlvyynvgtijccitvvd.supabase.co/storage/v1/object/public/" + url.replace(/^\/+/,"");
+  }
+
+  return url;
+}
+
 function getImage(p){
-  return (
-    p.profile_image_url ||
-    p.cover_image_url ||
-    p.photo_url ||
-    p.image_url ||
-    p.profile_photo ||
-    p.main_photo ||
-    p.photo ||
-    p.image ||
-    "/assets/logo/logo-badge.png"
-  );
+  const directFields = [
+    p.profile_image_url,
+    p.cover_image_url,
+    p.photo_url,
+    p.image_url,
+    p.profile_photo,
+    p.main_photo,
+    p.thumbnail_url,
+    p.avatar_url,
+    p.photo,
+    p.image,
+    p.picture,
+    p.picture_url,
+    p.display_image,
+    p.display_image_url
+  ];
+
+  for(const field of directFields){
+    const url = normalizeImageUrl(field);
+    if(url) return url;
+  }
+
+  const collectionFields = [
+    p.images,
+    p.image_urls,
+    p.gallery,
+    p.photos,
+    p.media,
+    p.gallery_urls,
+    p.photo_urls
+  ];
+
+  for(const collection of collectionFields){
+    if(Array.isArray(collection)){
+      for(const item of collection){
+        const url = normalizeImageUrl(
+          typeof item === "object" && item
+            ? (item.url || item.src || item.image_url || item.publicUrl || item.public_url || item.path)
+            : item
+        );
+        if(url) return url;
+      }
+    }
+
+    if(typeof collection === "string" && collection.trim()){
+      const url = normalizeImageUrl(collection);
+      if(url) return url;
+    }
+  }
+
+  return "/assets/logo/logo-badge.png";
 }
 
 function getProfileUrl(p){
