@@ -912,8 +912,85 @@ function isSpaProfile(p){
   );
 }
 
+function normalizeImageUrl(value){
+  if(value === null || value === undefined) return "";
+
+  let raw = value;
+
+  if(typeof raw === "object"){
+    raw = raw.url || raw.publicUrl || raw.public_url || raw.image_url || raw.src || raw.path || raw.file || "";
+  }
+
+  raw = String(raw || "").trim();
+  if(!raw || raw === "null" || raw === "undefined") return "";
+
+  // Clean common accidental wrappers.
+  raw = raw.replace(/^['"]+|['"]+$/g, "").trim();
+
+  // Already a usable URL.
+  if(/^https?:\/\//i.test(raw) || raw.startsWith("data:image/")) return raw;
+
+  // Root asset path.
+  if(raw.startsWith("/")) return raw;
+
+  // Supabase storage path fallback.
+  if(raw.includes("profile-images/") || raw.includes("profile-images%2F")){
+    return `${SUPABASE_URL}/storage/v1/object/public/${raw.replace(/^public\//, "")}`;
+  }
+
+  // Most Nairobi Sweets uploads live in the profile-images bucket.
+  if(/\.(jpg|jpeg|png|webp|gif|avif)$/i.test(raw)){
+    return `${SUPABASE_URL}/storage/v1/object/public/profile-images/${raw.replace(/^profile-images\//, "")}`;
+  }
+
+  return raw;
+}
+
+function firstImageFromCollection(collection){
+  if(!collection) return "";
+
+  if(Array.isArray(collection)){
+    for(const item of collection){
+      const url = normalizeImageUrl(item);
+      if(url) return url;
+    }
+    return "";
+  }
+
+  if(typeof collection === "object"){
+    const direct = normalizeImageUrl(collection);
+    if(direct) return direct;
+
+    for(const key of ["images","photos","gallery","items","urls","data"]){
+      if(collection[key]){
+        const url = firstImageFromCollection(collection[key]);
+        if(url) return url;
+      }
+    }
+    return "";
+  }
+
+  const text = String(collection || "").trim();
+  if(!text) return "";
+
+  try{
+    const parsed = JSON.parse(text);
+    const parsedUrl = firstImageFromCollection(parsed);
+    if(parsedUrl) return parsedUrl;
+  }catch(error){}
+
+  // Comma-separated or pipe-separated image list.
+  const parts = text.split(/[|,]/).map(x => x.trim()).filter(Boolean);
+  for(const part of parts){
+    const url = normalizeImageUrl(part);
+    if(url) return url;
+  }
+
+  return normalizeImageUrl(text);
+}
+
 function getImage(p){
-  const directFields = [
+  const singleFields = [
     p.profile_image_url,
     p.cover_image_url,
     p.photo_url,
@@ -925,44 +1002,28 @@ function getImage(p){
     p.thumbnail_url,
     p.avatar_url,
     p.media_url,
-    p.featured_image,
-    p.banner_url
+    p.picture,
+    p.picture_url
   ];
 
-  for(const item of directFields){
-    if(item && String(item).trim()){
-      return String(item).trim();
-    }
+  for(const field of singleFields){
+    const url = normalizeImageUrl(field);
+    if(url) return url;
   }
 
-  const collections = [
-    p.images,
+  const collectionFields = [
     p.image_urls,
+    p.images,
     p.gallery,
     p.photos,
-    p.media
+    p.profile_images,
+    p.media,
+    p.files
   ];
 
-  for(const collection of collections){
-    if(Array.isArray(collection)){
-      const first = collection.find(item => item && String(item).trim());
-      if(first) return String(first).trim();
-    }
-
-    if(typeof collection === "string" && collection.trim()){
-      const raw = collection.trim();
-
-      try{
-        const parsed = JSON.parse(raw);
-        if(Array.isArray(parsed)){
-          const first = parsed.find(item => item && String(item).trim());
-          if(first) return String(first).trim();
-        }
-      }catch(error){
-        const first = raw.split(",").map(item => item.trim()).find(Boolean);
-        if(first) return first;
-      }
-    }
+  for(const field of collectionFields){
+    const url = firstImageFromCollection(field);
+    if(url) return url;
   }
 
   return "/assets/logo/logo-badge.png";
