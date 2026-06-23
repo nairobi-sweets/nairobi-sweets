@@ -913,84 +913,52 @@ function isSpaProfile(p){
 }
 
 function normalizeImageUrl(value){
-  if(value === null || value === undefined) return "";
+  if(!value) return "";
 
-  let raw = value;
+  if(typeof value === "string"){
+    const trimmed = value.trim();
+    if(!trimmed || trimmed.toLowerCase() === "null" || trimmed.toLowerCase() === "undefined") return "";
 
-  if(typeof raw === "object"){
-    raw = raw.url || raw.publicUrl || raw.public_url || raw.image_url || raw.src || raw.path || raw.file || "";
+    if(trimmed.startsWith("[") || trimmed.startsWith("{")){
+      try{
+        const parsed = JSON.parse(trimmed);
+        return normalizeImageUrl(parsed);
+      }catch(e){}
+    }
+
+    if(trimmed.includes(",")){
+      const first = trimmed.split(",").map(x => x.trim()).find(Boolean);
+      return first || "";
+    }
+
+    return trimmed;
   }
 
-  raw = String(raw || "").trim();
-  if(!raw || raw === "null" || raw === "undefined") return "";
-
-  // Clean common accidental wrappers.
-  raw = raw.replace(/^['"]+|['"]+$/g, "").trim();
-
-  // Already a usable URL.
-  if(/^https?:\/\//i.test(raw) || raw.startsWith("data:image/")) return raw;
-
-  // Root asset path.
-  if(raw.startsWith("/")) return raw;
-
-  // Supabase storage path fallback.
-  if(raw.includes("profile-images/") || raw.includes("profile-images%2F")){
-    return `${SUPABASE_URL}/storage/v1/object/public/${raw.replace(/^public\//, "")}`;
-  }
-
-  // Most Nairobi Sweets uploads live in the profile-images bucket.
-  if(/\.(jpg|jpeg|png|webp|gif|avif)$/i.test(raw)){
-    return `${SUPABASE_URL}/storage/v1/object/public/profile-images/${raw.replace(/^profile-images\//, "")}`;
-  }
-
-  return raw;
-}
-
-function firstImageFromCollection(collection){
-  if(!collection) return "";
-
-  if(Array.isArray(collection)){
-    for(const item of collection){
-      const url = normalizeImageUrl(item);
-      if(url) return url;
+  if(Array.isArray(value)){
+    for(const item of value){
+      const normalized = normalizeImageUrl(item);
+      if(normalized) return normalized;
     }
     return "";
   }
 
-  if(typeof collection === "object"){
-    const direct = normalizeImageUrl(collection);
-    if(direct) return direct;
-
-    for(const key of ["images","photos","gallery","items","urls","data"]){
-      if(collection[key]){
-        const url = firstImageFromCollection(collection[key]);
-        if(url) return url;
-      }
-    }
-    return "";
+  if(typeof value === "object"){
+    return normalizeImageUrl(
+      value.url ||
+      value.src ||
+      value.image_url ||
+      value.profile_image_url ||
+      value.publicUrl ||
+      value.public_url ||
+      ""
+    );
   }
 
-  const text = String(collection || "").trim();
-  if(!text) return "";
-
-  try{
-    const parsed = JSON.parse(text);
-    const parsedUrl = firstImageFromCollection(parsed);
-    if(parsedUrl) return parsedUrl;
-  }catch(error){}
-
-  // Comma-separated or pipe-separated image list.
-  const parts = text.split(/[|,]/).map(x => x.trim()).filter(Boolean);
-  for(const part of parts){
-    const url = normalizeImageUrl(part);
-    if(url) return url;
-  }
-
-  return normalizeImageUrl(text);
+  return "";
 }
 
-function getImage(p){
-  const singleFields = [
+function getImageRaw(p){
+  const fields = [
     p.profile_image_url,
     p.cover_image_url,
     p.photo_url,
@@ -1001,32 +969,23 @@ function getImage(p){
     p.image,
     p.thumbnail_url,
     p.avatar_url,
-    p.media_url,
-    p.picture,
-    p.picture_url
-  ];
-
-  for(const field of singleFields){
-    const url = normalizeImageUrl(field);
-    if(url) return url;
-  }
-
-  const collectionFields = [
-    p.image_urls,
     p.images,
+    p.image_urls,
     p.gallery,
     p.photos,
-    p.profile_images,
-    p.media,
-    p.files
+    p.media
   ];
 
-  for(const field of collectionFields){
-    const url = firstImageFromCollection(field);
-    if(url) return url;
+  for(const field of fields){
+    const image = normalizeImageUrl(field);
+    if(image) return image;
   }
 
-  return "/assets/logo/logo-badge.png";
+  return "";
+}
+
+function getImage(p){
+  return getImageRaw(p) || "/assets/logo/logo-badge.png";
 }
 
 function getProfileUrl(p){
@@ -1058,6 +1017,62 @@ function waMessage(p){
   return encodeURIComponent("Hi " + getName(p) + ", I found your profile on Nairobi Sweets: " + SITE_URL + getProfileUrl(p));
 }
 
+function hasRealImage(p){
+  return !!getImageRaw(p);
+}
+
+function profileDedupeKey(p){
+  return String(
+    p.stage_name ||
+    p.name ||
+    p.full_name ||
+    p.username ||
+    p.slug ||
+    p.id ||
+    ""
+  ).trim().toLowerCase();
+}
+
+function getProfileTime(p){
+  const value = p.created_at || p.updated_at || p.plan_expiry || "";
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : 0;
+}
+
+function chooseBetterProfile(current,next){
+  const currentHasImage = hasRealImage(current);
+  const nextHasImage = hasRealImage(next);
+
+  if(nextHasImage && !currentHasImage) return next;
+  if(!nextHasImage && currentHasImage) return current;
+
+  const currentVerified = !!(current.verified || current.is_verified);
+  const nextVerified = !!(next.verified || next.is_verified);
+  if(nextVerified && !currentVerified) return next;
+  if(!nextVerified && currentVerified) return current;
+
+  return getProfileTime(next) > getProfileTime(current) ? next : current;
+}
+
+function dedupeProfilesPreferImages(list){
+  const map = new Map();
+
+  (list || []).forEach(profile => {
+    const key = profileDedupeKey(profile);
+    if(!key) return;
+
+    const existing = map.get(key);
+    if(!existing){
+      map.set(key, profile);
+      return;
+    }
+
+    map.set(key, chooseBetterProfile(existing, profile));
+  });
+
+  return Array.from(map.values());
+}
+
 async function loadProfiles(){
   spaContainer.innerHTML = `<div class="loading">Loading spa profiles...</div>`;
   regularContainer.innerHTML = `<div class="loading">Loading Kilimani profiles...</div>`;
@@ -1081,8 +1096,10 @@ async function loadProfiles(){
     return;
   }
 
-  const spaProfiles = data.filter(isSpaProfile);
-  const regularProfiles = data.filter(p => !isSpaProfile(p));
+  const cleanedData = dedupeProfilesPreferImages(data);
+
+  const spaProfiles = cleanedData.filter(isSpaProfile);
+  const regularProfiles = cleanedData.filter(p => !isSpaProfile(p));
 
   function renderCards(items, spaMode = false){
     return items.map(p=>{
