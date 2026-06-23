@@ -436,6 +436,268 @@ a{text-decoration:none;color:inherit}
     flex-direction:column;
   }
 }
+
+
+/* =========================
+MAIN-PAGE STYLE SPA TOP SEPARATION
+Keeps Spa & Massage at the very top, then clearly starts the normal Kilimani feed.
+========================= */
+.section-shell{
+  max-width:1380px;
+  margin:28px auto 10px;
+  padding:0 18px;
+}
+.section-shell-inner{
+  background:linear-gradient(135deg,#2a103d,#0b0f2c,#3b184d);
+  border:1px solid rgba(255,213,74,.20);
+  border-radius:30px;
+  overflow:hidden;
+  box-shadow:0 0 40px rgba(255,213,74,.10),0 25px 80px rgba(0,0,0,.38);
+}
+.section-shell-header{
+  padding:24px 26px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.section-shell-header h2{
+  color:#ffd54a;
+  font-size:32px;
+  font-weight:950;
+  line-height:1.05;
+}
+.section-shell-header span{
+  color:#e6d7ff;
+  font-size:13px;
+  font-weight:900;
+}
+.section-shell .grid{
+  padding-top:0;
+  padding-bottom:28px;
+}
+.feed-divider{
+  max-width:1380px;
+  margin:42px auto 30px;
+  padding:0 18px;
+}
+.feed-divider-card{
+  background:linear-gradient(90deg,rgba(255,213,74,.98),#ff9f1c,rgba(255,213,74,.98));
+  color:#000;
+  border-radius:24px;
+  padding:24px;
+  text-align:center;
+  font-size:30px;
+  font-weight:950;
+  box-shadow:0 18px 44px rgba(255,180,0,.16);
+}
+.feed-divider-card small{
+  display:block;
+  margin-top:8px;
+  font-size:13px;
+  font-weight:900;
+  color:#221500;
+}
+.regular-section-title{
+  max-width:1380px;
+  margin:auto;
+  padding:0 18px 8px;
+  color:#ffd54a;
+  font-size:32px;
+  font-weight:950;
+}
+.regular-section-note{
+  max-width:1380px;
+  margin:auto;
+  padding:0 18px 10px;
+  color:#ddd;
+  font-size:15px;
+  line-height:1.7;
+}
+@media(max-width:850px){
+  .section-shell-header h2,.feed-divider-card,.regular-section-title{font-size:25px}
+  .section-shell{margin-top:18px}
+}
+
+
+
+/* =========================
+SPA TOP 2-PER-ROW FULL BANNER PATCH
+Spa section behaves like the main page, but shows 2 cards per row and full banners.
+Regular Kilimani profiles below remain 4 per row.
+========================= */
+html{
+  scroll-padding-top:120px;
+}
+.section-shell{
+  scroll-margin-top:120px;
+}
+.section-shell-inner{
+  overflow:hidden;
+}
+
+/* SPA ONLY: 2 per row */
+.section-shell .grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:24px !important;
+  max-width:1380px !important;
+  width:100% !important;
+  margin:0 auto !important;
+  padding:0 26px 32px !important;
+  overflow:visible !important;
+}
+
+/* SPA cards */
+.section-shell .card{
+  width:100% !important;
+  min-width:0 !important;
+  border-radius:28px !important;
+  background:linear-gradient(180deg,#020a56,#010633) !important;
+  border:1px solid rgba(255,213,74,.20) !important;
+  box-shadow:0 18px 50px rgba(0,0,0,.45) !important;
+}
+
+/* SHOW FULL SPA BANNER */
+.section-shell .card img{
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:16/9 !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  background:#020617 !important;
+  display:block !important;
+  padding:0 !important;
+}
+
+.section-shell .body{
+  padding:18px 22px 22px !important;
+}
+.section-shell .name{
+  font-size:28px !important;
+  line-height:1.1 !important;
+  color:#fff !important;
+  font-weight:950 !important;
+}
+.section-shell .meta,
+.section-shell .bio{
+  font-size:14px !important;
+}
+.section-shell .actions a{
+  min-height:46px !important;
+  font-size:14px !important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.feed-divider{
+  clear:both;
+}
+
+@media(max-width:900px){
+  .section-shell .grid{
+    grid-template-columns:1fr !important;
+    padding:0 18px 28px !important;
+  }
+}
+
+@media(max-width:650px){
+  html{scroll-padding-top:92px;}
+  .section-shell{scroll-margin-top:92px;}
+  .section-shell .grid{
+    grid-template-columns:1fr !important;
+    padding:0 14px 24px !important;
+    gap:18px !important;
+  }
+  .section-shell .card img{
+    aspect-ratio:16/9 !important;
+    object-fit:contain !important;
+  }
+  .section-shell .name{
+    font-size:22px !important;
+  }
+}
+
+
+
+/* =========================
+FINAL OVERRIDE: SPA ONLY 2 PER ROW + FULL UNCROPPED BANNERS
+This targets the exact #spaProfiles section, so the regular Kilimani grid below is untouched.
+========================= */
+#spaProfiles{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:26px !important;
+  max-width:1380px !important;
+  width:100% !important;
+  margin:0 auto !important;
+  padding:0 26px 34px !important;
+  overflow:visible !important;
+  align-items:start !important;
+}
+#spaProfiles .card,
+#spaProfiles .spa-card{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  border-radius:28px !important;
+  background:linear-gradient(180deg,#020a56,#010633) !important;
+  border:1px solid rgba(255,213,74,.24) !important;
+  box-shadow:0 18px 50px rgba(0,0,0,.45) !important;
+}
+#spaProfiles .card img,
+#spaProfiles .spa-card img,
+#spaProfiles img.spa-banner-img{
+  width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  aspect-ratio:auto !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  display:block !important;
+  background:#020617 !important;
+  border-radius:0 !important;
+  padding:0 !important;
+  transform:none !important;
+}
+#spaProfiles .body{
+  padding:18px 22px 22px !important;
+}
+#spaProfiles .name{
+  font-size:28px !important;
+  line-height:1.08 !important;
+  color:#fff !important;
+  font-weight:950 !important;
+}
+#spaProfiles .meta,
+#spaProfiles .bio{
+  font-size:14px !important;
+}
+#spaProfiles .actions a{
+  min-height:46px !important;
+  font-size:14px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+@media(max-width:900px){
+  #spaProfiles{
+    grid-template-columns:1fr !important;
+    padding:0 18px 30px !important;
+  }
+}
+@media(max-width:650px){
+  #spaProfiles{
+    grid-template-columns:1fr !important;
+    padding:0 14px 26px !important;
+    gap:18px !important;
+  }
+  #spaProfiles .name{font-size:22px !important;}
+}
+
 </style>
 </head>
 
@@ -498,9 +760,30 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<h2 class="section-title">Featured Kilimani Profiles</h2>
+<section class="section-shell" aria-label="Spa and Massage Profiles">
+  <div class="section-shell-inner">
+    <div class="section-shell-header">
+      <h2>💆 Spa & Massage Profiles</h2>
+      <span>Spa Only • Premium Top Placement</span>
+    </div>
 
-<section class="grid" id="profiles">
+    <section class="grid" id="spaProfiles">
+      <div class="loading">Loading spa profiles...</div>
+    </section>
+  </div>
+</section>
+
+<div class="feed-divider" aria-hidden="true">
+  <div class="feed-divider-card">
+    ⭐ Featured Kilimani Profiles
+    <small>Normal Kilimani profiles start below. Spa profiles stay above.</small>
+  </div>
+</div>
+
+<h2 class="regular-section-title">⭐ Featured Kilimani Profiles</h2>
+<p class="regular-section-note">Showing regular Kilimani matches after the spa and massage top section.</p>
+
+<section class="grid" id="regularProfiles">
   <div class="loading">Loading Kilimani profiles...</div>
 </section>
 
@@ -592,7 +875,8 @@ const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const SITE_URL = "https://nairobi-sweets.com";
-const container = document.getElementById("profiles");
+const spaContainer = document.getElementById("spaProfiles");
+const regularContainer = document.getElementById("regularProfiles");
 
 function clean(value,fallback=""){
   return String(value || fallback).replace(/[<>]/g,"");
@@ -611,18 +895,77 @@ function getLocation(p){return p.location || p.town || p.area || "Kilimani"}
 function getBio(p){return p.bio || p.description || p.about || "Active Kilimani profile on Nairobi Sweets."}
 function getPlan(p){return String(p.plan || p.plan_name || p.package || p.tier || "Featured")}
 
-function getImage(p){
+function isSpaProfile(p){
+  const strongText = `
+    ${p.stage_name || ""}
+    ${p.name || ""}
+    ${p.full_name || ""}
+    ${p.slug || ""}
+    ${p.category || ""}
+    ${p.business_name || ""}
+    ${p.plan || ""}
+  `.toLowerCase();
+
   return (
-    p.profile_image_url ||
-    p.cover_image_url ||
-    p.photo_url ||
-    p.image_url ||
-    p.profile_photo ||
-    p.main_photo ||
-    p.photo ||
-    p.image ||
-    "/assets/logo/logo-badge.png"
+    strongText.includes("spa") ||
+    strongText.includes("massage")
   );
+}
+
+function getImage(p){
+  const directFields = [
+    p.profile_image_url,
+    p.cover_image_url,
+    p.photo_url,
+    p.image_url,
+    p.profile_photo,
+    p.main_photo,
+    p.photo,
+    p.image,
+    p.thumbnail_url,
+    p.avatar_url,
+    p.media_url,
+    p.featured_image,
+    p.banner_url
+  ];
+
+  for(const item of directFields){
+    if(item && String(item).trim()){
+      return String(item).trim();
+    }
+  }
+
+  const collections = [
+    p.images,
+    p.image_urls,
+    p.gallery,
+    p.photos,
+    p.media
+  ];
+
+  for(const collection of collections){
+    if(Array.isArray(collection)){
+      const first = collection.find(item => item && String(item).trim());
+      if(first) return String(first).trim();
+    }
+
+    if(typeof collection === "string" && collection.trim()){
+      const raw = collection.trim();
+
+      try{
+        const parsed = JSON.parse(raw);
+        if(Array.isArray(parsed)){
+          const first = parsed.find(item => item && String(item).trim());
+          if(first) return String(first).trim();
+        }
+      }catch(error){
+        const first = raw.split(",").map(item => item.trim()).find(Boolean);
+        if(first) return first;
+      }
+    }
+  }
+
+  return "/assets/logo/logo-badge.png";
 }
 
 function getProfileUrl(p){
@@ -655,59 +998,76 @@ function waMessage(p){
 }
 
 async function loadProfiles(){
-  container.innerHTML = `<div class="loading">Loading Kilimani profiles...</div>`;
+  spaContainer.innerHTML = `<div class="loading">Loading spa profiles...</div>`;
+  regularContainer.innerHTML = `<div class="loading">Loading Kilimani profiles...</div>`;
 
   const {data,error} = await sb
     .from("active_profiles_view")
     .select("*")
     .or("location.ilike.%Kilimani%,location.ilike.%kilimani%,location.ilike.%Yaya%,location.ilike.%Yaya Centre%,location.ilike.%Yaya-Centre%,location.ilike.%Hurlingham%,location.ilike.%Lavington%,location.ilike.%Kileleshwa%,location.ilike.%Adams Arcade%,location.ilike.%Adams-Arcade%,location.ilike.%Dennis Pritt%,location.ilike.%Dennis-Pritt%")
     .order("created_at",{ascending:false})
-    .limit(40);
+    .limit(100);
 
   if(error){
-    container.innerHTML = `<div class="empty">Unable to load profiles: ${clean(error.message)}</div>`;
+    spaContainer.innerHTML = `<div class="empty">Unable to load spa profiles: ${clean(error.message)}</div>`;
+    regularContainer.innerHTML = `<div class="empty">Unable to load profiles: ${clean(error.message)}</div>`;
     return;
   }
 
   if(!data || !data.length){
-    container.innerHTML = `<div class="empty">No Kilimani profiles found yet.</div>`;
+    spaContainer.innerHTML = `<div class="empty">No spa profiles found yet.</div>`;
+    regularContainer.innerHTML = `<div class="empty">No Kilimani profiles found yet.</div>`;
     return;
   }
 
-  container.innerHTML = data.map(p=>{
-    const phone = safePhone(p.phone || p.whatsapp || p.whatsapp_number);
+  const spaProfiles = data.filter(isSpaProfile);
+  const regularProfiles = data.filter(p => !isSpaProfile(p));
 
-    return `
-      <article class="card">
-        <img
-          src="${getImage(p)}"
-          alt="${clean(getName(p))} Kilimani profile"
-          loading="lazy"
-          onerror="this.src='/assets/logo/logo-badge.png'"
-        >
+  function renderCards(items, spaMode = false){
+    return items.map(p=>{
+      const phone = safePhone(p.phone || p.whatsapp || p.whatsapp_number);
 
-        <div class="body">
-          <span class="badge">${badge(p)}</span>
-          <div class="name">${clean(getName(p))}</div>
-          <div class="meta">📍 ${clean(getLocation(p))}</div>
-          <div class="bio">${clean(shortBio(getBio(p)))}</div>
+      return `
+        <article class="card ${spaMode ? 'spa-card' : ''}">
+          <img
+            class="${spaMode ? 'spa-banner-img' : ''}"
+            src="${getImage(p)}"
+            alt="${clean(getName(p))} Kilimani profile"
+            loading="lazy"
+            onerror="this.src='/assets/logo/logo-badge.png'"
+          >
 
-          <div class="actions">
-            ${
-              phone
-              ? `
-                <a class="call" href="tel:+${phone}">☎ Call</a>
-                <a class="wa" href="https://wa.me/${phone}?text=${waMessage(p)}" target="_blank" rel="noopener">WhatsApp</a>
-              `
-              : ""
-            }
+          <div class="body">
+            <span class="badge">${badge(p)}</span>
+            <div class="name">${clean(getName(p))}</div>
+            <div class="meta">📍 ${clean(getLocation(p))}</div>
+            <div class="bio">${clean(shortBio(getBio(p)))}</div>
 
-            <a class="view" href="${getProfileUrl(p)}">View Profile</a>
+            <div class="actions">
+              ${
+                phone
+                ? `
+                  <a class="call" href="tel:+${phone}">☎ Call</a>
+                  <a class="wa" href="https://wa.me/${phone}?text=${waMessage(p)}" target="_blank" rel="noopener">WhatsApp</a>
+                `
+                : ""
+              }
+
+              <a class="view" href="${getProfileUrl(p)}">View Profile</a>
+            </div>
           </div>
-        </div>
-      </article>
-    `;
-  }).join("");
+        </article>
+      `;
+    }).join("");
+  }
+
+  spaContainer.innerHTML = spaProfiles.length
+    ? renderCards(spaProfiles, true)
+    : `<div class="empty">No spa profiles found yet.</div>`;
+
+  regularContainer.innerHTML = regularProfiles.length
+    ? renderCards(regularProfiles, false)
+    : `<div class="empty">No regular Kilimani profiles found yet.</div>`;
 }
 
 loadProfiles();
