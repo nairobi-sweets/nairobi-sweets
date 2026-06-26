@@ -676,6 +676,52 @@ Tracks if users are actually trying to contact profiles.
 @media(max-width:1250px){.contact-intel-grid{grid-template-columns:repeat(4,1fr)}.contact-intel-tools{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.contact-intel-grid{grid-template-columns:1fr}.contact-intel-tools{grid-template-columns:1fr}.contact-intel-head h2{font-size:23px}}
 
+
+
+/* =========================
+FIELD VISIT CRM / FIELD OPERATIONS CENTER
+Tracks physical visits, assistance, follow-ups and route progress.
+========================= */
+.field-ops-card{
+  margin:22px 28px 0;
+  border:1px solid rgba(255,213,74,.30);
+  box-shadow:0 0 34px rgba(255,213,74,.10),0 18px 50px rgba(0,0,0,.35);
+}
+.field-ops-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.field-ops-head h2{color:#ffd54a;margin:0;font-size:30px;line-height:1.1}
+.field-ops-head p{color:#cbd5e1;font-size:13px;font-weight:800;line-height:1.55;max-width:820px;margin-top:8px}
+.field-ops-actions{display:flex;gap:10px;flex-wrap:wrap}
+.field-ops-actions button{border:0;border-radius:16px;padding:14px 18px;font-size:14px;font-weight:950;cursor:pointer}
+.field-show-route{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.field-show-pending{background:linear-gradient(145deg,#06b6d4,#22d3ee);color:#00111f}
+.field-show-follow{background:linear-gradient(145deg,#a855f7,#ec4899);color:#fff}
+.field-export{background:linear-gradient(145deg,#22c55e,#84cc16);color:#00111f}
+.field-ops-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:16px}
+.field-ops-stat{background:rgba(0,0,0,.28);border:1px solid rgba(255,213,74,.14);border-radius:20px;padding:18px;min-height:104px}
+.field-ops-stat h3{color:#aaa;font-size:11px;text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px}
+.field-ops-stat div{color:#ffd54a;font-size:30px;font-weight:950;line-height:1}
+.field-ops-stat small{display:block;color:#cbd5e1;font-size:11px;font-weight:800;margin-top:8px;line-height:1.35}
+.field-ops-progress{height:16px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;border:1px solid rgba(255,213,74,.16)}
+.field-ops-progress span{display:block;height:100%;width:0%;background:linear-gradient(90deg,#ffd54a,#22c55e);border-radius:999px;transition:width .25s ease}
+.field-ops-note{margin-top:14px;color:#ffd54a;background:rgba(255,213,74,.08);border:1px solid rgba(255,213,74,.14);border-radius:16px;padding:14px;font-size:13px;font-weight:900;line-height:1.5}
+.field-visit-box{margin-top:14px;background:linear-gradient(135deg,rgba(255,213,74,.10),rgba(6,182,212,.08));border:1px solid rgba(255,213,74,.22);border-radius:18px;padding:14px}
+.field-visit-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;color:#ffd54a;font-weight:950;font-size:15px}
+.field-status-chip{display:inline-block;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;border:1px solid rgba(255,255,255,.12)}
+.field-status-not_visited{background:rgba(239,68,68,.16);color:#fca5a5;border-color:rgba(239,68,68,.28)}
+.field-status-visited{background:rgba(34,197,94,.16);color:#86efac;border-color:rgba(34,197,94,.28)}
+.field-status-assisted{background:rgba(6,182,212,.16);color:#67e8f9;border-color:rgba(6,182,212,.28)}
+.field-status-needs_follow_up{background:rgba(245,158,11,.16);color:#fbbf24;border-color:rgba(245,158,11,.28)}
+.field-status-not_reached{background:rgba(148,163,184,.16);color:#cbd5e1;border-color:rgba(148,163,184,.28)}
+.field-visit-meta{color:#e5e7eb;font-size:12px;font-weight:800;line-height:1.6;margin-bottom:10px}
+.field-visit-buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+.field-visit-buttons button{border:0;border-radius:13px;padding:11px 10px;font-size:12px;font-weight:950;cursor:pointer}
+.field-visited-btn{background:#22c55e;color:#00111f}.field-assisted-btn{background:#06b6d4;color:#00111f}.field-follow-btn{background:#f59e0b;color:#00111f}.field-notreached-btn{background:#64748b;color:#fff}.field-media-btn{background:#a855f7;color:#fff}.field-paid-btn{background:#ffd54a;color:#000}
+.field-visit-notes{margin-top:10px;display:grid;grid-template-columns:1fr auto;gap:8px}
+.field-visit-notes textarea{grid-column:auto;min-height:74px;padding:12px;border-radius:14px;font-size:13px}
+.field-visit-notes button{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;border-radius:14px;padding:12px 14px;font-size:12px;font-weight:950}
+@media(max-width:1100px){.field-ops-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.field-ops-card{margin:18px}.field-ops-grid,.field-visit-buttons,.field-visit-notes{grid-template-columns:1fr}.field-ops-head h2{font-size:24px}}
+
 </style>
 
 <style id="vault-auth-guard-style">
@@ -806,6 +852,33 @@ Tracks if users are actually trying to contact profiles.
     <div id="statAvgQuality">0</div>
   </div>
 
+</section>
+
+<section class="panel field-ops-card" id="fieldOpsCenter">
+  <div class="field-ops-head">
+    <div>
+      <h2>🚗 Field Visit Operations Center</h2>
+      <p>Use this when visiting users physically in Roysambu and Kasarani. Mark who you met, who you assisted, who needs follow-up, who was not reached, and export the day report.</p>
+    </div>
+    <div class="field-ops-actions">
+      <button class="field-show-route" onclick="showFieldRouteToday()">📍 Roysambu + Kasarani</button>
+      <button class="field-show-pending" onclick="showFieldNotVisited()">⬜ Not Visited</button>
+      <button class="field-show-follow" onclick="showFieldFollowUps()">🔄 Follow-ups</button>
+      <button class="field-export" onclick="exportFieldVisitsCSV()">⬇ Export Visits CSV</button>
+    </div>
+  </div>
+
+  <div class="field-ops-grid">
+    <div class="field-ops-stat"><h3>Route Contacts</h3><div id="fvRouteTotal">0</div><small>Roysambu + Kasarani</small></div>
+    <div class="field-ops-stat"><h3>Visited</h3><div id="fvVisited">0</div><small>Physical meetings done</small></div>
+    <div class="field-ops-stat"><h3>Remaining</h3><div id="fvRemaining">0</div><small>Still to visit</small></div>
+    <div class="field-ops-stat"><h3>Assisted</h3><div id="fvAssisted">0</div><small>Helped today / before</small></div>
+    <div class="field-ops-stat"><h3>Follow-ups</h3><div id="fvFollowUps">0</div><small>Need second contact</small></div>
+    <div class="field-ops-stat"><h3>Not Reached</h3><div id="fvNotReached">0</div><small>Tried but missed</small></div>
+  </div>
+
+  <div class="field-ops-progress"><span id="fvProgressBar"></span></div>
+  <div class="field-ops-note" id="fvDailySummary">Loading field visit summary...</div>
 </section>
 
 <section class="panel membership-control-card">
@@ -1176,6 +1249,12 @@ Tracks if users are actually trying to contact profiles.
     <option value="verified">Verified</option>
     <option value="featured">Featured Only</option>
     <option value="expired">Expired Only</option>
+    <option value="field_route">Field Route: Roysambu + Kasarani</option>
+    <option value="field_not_visited">Field: Not Visited</option>
+    <option value="field_visited">Field: Visited</option>
+    <option value="field_assisted">Field: Assisted</option>
+    <option value="field_follow_up">Field: Needs Follow-up</option>
+    <option value="field_not_reached">Field: Not Reached</option>
   </select>
 
   <button class="search-reset" onclick="resetVaultSearch()">Reset</button>
@@ -2179,6 +2258,10 @@ function profileSearchText(p){
     ${p.is_signature ? "signature billboard" : ""}
     ${p.homepage_featured ? "hero billboard" : ""}
     ${p.pinned_top ? "pinned top boost boosted" : ""}
+    ${p.visited_status || "not_visited"}
+    ${p.assisted_status || "not_assisted"}
+    ${p.follow_up_needed ? "needs follow up" : ""}
+    ${p.field_visit_notes || ""}
     ${Number(p.image_quality_score || 0) >= 70 ? "hd quality high quality" : ""}
     ${p.signature_banner_url || ""}
     ${services}
@@ -2228,6 +2311,33 @@ function renderProfiles(){
       String(p.payment_status || "").toLowerCase() === "expired"
     );
   }
+
+
+  if(approvalFilter === "field_route"){
+    data = data.filter(p => isFieldRouteProfile(p));
+  }
+
+  if(approvalFilter === "field_not_visited"){
+    data = data.filter(p => isFieldRouteProfile(p) && fieldVisitStatus(p) === "not_visited");
+  }
+
+  if(approvalFilter === "field_visited"){
+    data = data.filter(p => isFieldRouteProfile(p) && ["visited","assisted"].includes(fieldVisitStatus(p)));
+  }
+
+  if(approvalFilter === "field_assisted"){
+    data = data.filter(p => isFieldRouteProfile(p) && (fieldVisitStatus(p) === "assisted" || String(p.assisted_status || "").toLowerCase() === "assisted"));
+  }
+
+  if(approvalFilter === "field_follow_up"){
+    data = data.filter(p => isFieldRouteProfile(p) && (p.follow_up_needed === true || fieldVisitStatus(p) === "needs_follow_up"));
+  }
+
+  if(approvalFilter === "field_not_reached"){
+    data = data.filter(p => isFieldRouteProfile(p) && fieldVisitStatus(p) === "not_reached");
+  }
+
+  updateFieldVisitStats();
 
   if(countBox){
     countBox.textContent = `Showing ${data.length.toLocaleString()} of ${ALL_PROFILES.length.toLocaleString()} profiles`;
@@ -2377,6 +2487,7 @@ function renderProfiles(){
 
           <button class="whatsapp-reminder-btn" onclick="sendRenewalReminder('${escapeAttr(p.stage_name || "there")}','${escapeAttr(p.phone || p.whatsapp || "")}','${escapeAttr(p.plan || "vip")}','${escapeAttr(p.trial_expires_at || p.plan_expires_at || p.expires_at || p.expiry_date || "")}','${p.id}','${escapeAttr(p.slug || "")}')">📲 Send Renewal Reminder</button>
 
+          ${fieldVisitBoxHTML(p)}
           ${clientLoginBoxHTML(p)}
         </div>
       </article>
@@ -2384,6 +2495,188 @@ function renderProfiles(){
   }).join("");
 }
 
+
+
+function fieldVisitStatus(profile){
+  return String(profile.visited_status || "not_visited").toLowerCase().trim() || "not_visited";
+}
+
+function isFieldRouteProfile(profile){
+  const text = String(profile.location || "").toLowerCase();
+  return /roysambu|kasarani|trm|mirema|zimmerman|garden|garden-city|garden city|mwiki|seasons|hunters|clay|thome|githurai|lumumba|thika road|santon|sunton|icipe/.test(text);
+}
+
+function fieldStatusLabel(status){
+  const s = String(status || "not_visited").toLowerCase();
+  if(s === "visited") return "✅ Visited";
+  if(s === "assisted") return "🤝 Assisted";
+  if(s === "needs_follow_up") return "🔄 Needs Follow-up";
+  if(s === "not_reached") return "❌ Not Reached";
+  return "⬜ Not Visited";
+}
+
+function fieldVisitBoxHTML(p){
+  const status = fieldVisitStatus(p);
+  const lastVisit = p.visited_at ? new Date(p.visited_at).toLocaleString() : "Not visited yet";
+  const lastContact = p.last_contacted_at ? new Date(p.last_contacted_at).toLocaleString() : "Not contacted yet";
+  const notes = escapeAttr(p.field_visit_notes || "");
+  const noteId = `field_notes_${p.id}`;
+  return `
+    <div class="field-visit-box">
+      <div class="field-visit-title">
+        <span>📍 Field Visit</span>
+        <span class="field-status-chip field-status-${status}">${fieldStatusLabel(status)}</span>
+      </div>
+      <div class="field-visit-meta">
+        🗓 Last visit: ${lastVisit}<br>
+        ☎ Last contacted: ${lastContact}<br>
+        🤝 Assisted: ${String(p.assisted_status || "not_assisted").replaceAll("_"," ")}<br>
+        🔄 Follow-up: ${p.follow_up_needed ? "Yes" : "No"}<br>
+        📸 Photos updated: ${p.photos_updated ? "Yes" : "No"} · 🎥 Reel recorded: ${p.reel_recorded ? "Yes" : "No"}
+      </div>
+      <div class="field-visit-buttons">
+        <button class="field-visited-btn" onclick="markFieldVisit('${p.id}','visited')">✅ Mark Visited</button>
+        <button class="field-assisted-btn" onclick="markFieldVisit('${p.id}','assisted')">🤝 Assisted</button>
+        <button class="field-follow-btn" onclick="markFieldVisit('${p.id}','needs_follow_up')">🔄 Follow-up</button>
+        <button class="field-notreached-btn" onclick="markFieldVisit('${p.id}','not_reached')">❌ Not Reached</button>
+        <button class="field-media-btn" onclick="markFieldVisitExtra('${p.id}','photos_updated')">📸 Photos Updated</button>
+        <button class="field-media-btn" onclick="markFieldVisitExtra('${p.id}','reel_recorded')">🎥 Reel Recorded</button>
+        <button class="field-paid-btn" onclick="markFieldVisitExtra('${p.id}','payment_collected')">💰 Payment Collected</button>
+        <button class="field-paid-btn" onclick="markFieldVisitExtra('${p.id}','upgraded')">⭐ Upgraded</button>
+      </div>
+      <div class="field-visit-notes">
+        <textarea id="${noteId}" placeholder="Visit notes: what did you assist with?">${notes}</textarea>
+        <button onclick="saveFieldVisitNotes('${p.id}')">💾 Save Notes</button>
+      </div>
+    </div>
+  `;
+}
+
+async function markFieldVisit(id,status){
+  const now = new Date().toISOString();
+  const payload = {
+    visited_status: status,
+    last_contacted_at: now
+  };
+
+  if(["visited","assisted"].includes(status)) payload.visited_at = now;
+  if(status === "assisted") payload.assisted_status = "assisted";
+  if(status === "needs_follow_up") payload.follow_up_needed = true;
+  if(status === "not_reached") payload.follow_up_needed = true;
+  if(status === "visited") payload.follow_up_needed = false;
+
+  const {error} = await sb.from("profiles").update(payload).eq("id",id);
+  if(error){
+    alert("Field visit update failed. Run the Field Visit SQL patch in Supabase first. Error: " + error.message);
+    return;
+  }
+  await loadProfiles();
+  loadDashboardStats();
+}
+
+async function markFieldVisitExtra(id,type){
+  const now = new Date().toISOString();
+  const payload = { last_contacted_at: now };
+  if(type === "photos_updated") payload.photos_updated = true;
+  if(type === "reel_recorded") payload.reel_recorded = true;
+  if(type === "payment_collected") payload.payment_collected_at = now;
+  if(type === "upgraded") payload.upgraded_at = now;
+
+  const {error} = await sb.from("profiles").update(payload).eq("id",id);
+  if(error){
+    alert("Field visit extra update failed. Run the Field Visit SQL patch in Supabase first. Error: " + error.message);
+    return;
+  }
+  await loadProfiles();
+}
+
+async function saveFieldVisitNotes(id){
+  const el = document.getElementById(`field_notes_${id}`);
+  const payload = {
+    field_visit_notes: el ? el.value : "",
+    last_contacted_at: new Date().toISOString()
+  };
+  const {error} = await sb.from("profiles").update(payload).eq("id",id);
+  if(error){
+    alert("Saving notes failed. Run the Field Visit SQL patch in Supabase first. Error: " + error.message);
+    return;
+  }
+  await loadProfiles();
+}
+
+function updateFieldVisitStats(){
+  const route = ALL_PROFILES.filter(isFieldRouteProfile);
+  const visited = route.filter(p => ["visited","assisted"].includes(fieldVisitStatus(p))).length;
+  const assisted = route.filter(p => fieldVisitStatus(p) === "assisted" || String(p.assisted_status || "").toLowerCase() === "assisted").length;
+  const follow = route.filter(p => p.follow_up_needed === true || fieldVisitStatus(p) === "needs_follow_up").length;
+  const notReached = route.filter(p => fieldVisitStatus(p) === "not_reached").length;
+  const remaining = Math.max(route.length - visited, 0);
+  const percent = route.length ? Math.round((visited / route.length) * 100) : 0;
+
+  const set = (id,value)=>{ const el=document.getElementById(id); if(el) el.textContent = value; };
+  set("fvRouteTotal", route.length.toLocaleString());
+  set("fvVisited", visited.toLocaleString());
+  set("fvRemaining", remaining.toLocaleString());
+  set("fvAssisted", assisted.toLocaleString());
+  set("fvFollowUps", follow.toLocaleString());
+  set("fvNotReached", notReached.toLocaleString());
+
+  const bar = document.getElementById("fvProgressBar");
+  if(bar) bar.style.width = percent + "%";
+
+  const summary = document.getElementById("fvDailySummary");
+  if(summary){
+    summary.innerHTML = `Today's route tracker: <b>${visited}</b> visited, <b>${remaining}</b> remaining, <b>${assisted}</b> assisted, <b>${follow}</b> follow-ups. Completion: <b>${percent}%</b>.`;
+  }
+}
+
+function setFieldFilter(value){
+  const el = document.getElementById("vaultApprovalFilter");
+  if(el) el.value = value;
+  const search = document.getElementById("vaultSearch");
+  if(search) search.value = "";
+  renderProfiles();
+  document.getElementById("list")?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function showFieldRouteToday(){ setFieldFilter("field_route"); }
+function showFieldNotVisited(){ setFieldFilter("field_not_visited"); }
+function showFieldFollowUps(){ setFieldFilter("field_follow_up"); }
+
+function csvSafe(value){
+  return `"${String(value ?? "").replaceAll('"','""')}"`;
+}
+
+function exportFieldVisitsCSV(){
+  const rows = ALL_PROFILES.filter(isFieldRouteProfile).map(p => ({
+    name:p.stage_name || "",
+    phone:p.phone || p.whatsapp || "",
+    whatsapp:p.whatsapp || p.phone || "",
+    location:p.location || "",
+    status:fieldVisitStatus(p),
+    visited_at:p.visited_at || "",
+    assisted_status:p.assisted_status || "",
+    follow_up_needed:p.follow_up_needed ? "Yes" : "No",
+    photos_updated:p.photos_updated ? "Yes" : "No",
+    reel_recorded:p.reel_recorded ? "Yes" : "No",
+    payment_collected_at:p.payment_collected_at || "",
+    upgraded_at:p.upgraded_at || "",
+    notes:p.field_visit_notes || ""
+  }));
+
+  const headers = ["Name","Phone","WhatsApp","Location","Status","Visited At","Assisted","Follow Up","Photos Updated","Reel Recorded","Payment Collected At","Upgraded At","Notes"];
+  const body = rows.map(r => [r.name,r.phone,r.whatsapp,r.location,r.status,r.visited_at,r.assisted_status,r.follow_up_needed,r.photos_updated,r.reel_recorded,r.payment_collected_at,r.upgraded_at,r.notes].map(csvSafe).join(","));
+  const csv = [headers.map(csvSafe).join(","), ...body].join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `nairobi-sweets-field-visits-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
 
 let CURRENT_STAT_DETAIL = { key:"", rows:[], title:"" };
