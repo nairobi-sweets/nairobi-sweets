@@ -2,67 +2,91 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<title>Nairobi Sweets Reels</title>
-<meta name="description" content="Nairobi Sweets video reels, VIP profiles, WhatsApp access and call buttons.">
+<title>Nairobi Sweets Reels | Premium Video Feed</title>
+<meta name="description" content="Watch Nairobi Sweets video reels from verified, VIP and Signature profiles.">
+<meta name="robots" content="index,follow,max-video-preview:-1,max-image-preview:large">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://nairobi-sweets.com/reel.html">
 
 <link rel="icon" href="/assets/logo/logo-badge.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/pwa/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://dkjlvyynvgtijccitvvd.supabase.co" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+:root{
+  --gold:#ffd54a;
+  --gold2:#ff9f1c;
+  --blue:#07145f;
+  --glass:rgba(5,8,28,.58);
+  --line:rgba(255,213,74,.18);
+  --safe-bottom:env(safe-area-inset-bottom);
+  --safe-top:env(safe-area-inset-top);
 }
-
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:#000;scroll-behavior:smooth}
 body{
   background:#000;
   color:#fff;
   font-family:Arial,Helvetica,sans-serif;
   overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+  text-rendering:optimizeLegibility;
 }
+a{text-decoration:none;color:inherit}
+button{font:inherit;border:0;cursor:pointer}
 
 .topbar{
   position:fixed;
   top:0;
   left:0;
   right:0;
-  z-index:50;
+  z-index:80;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:16px 18px;
-  background:linear-gradient(to bottom,rgba(0,0,0,.86),transparent);
+  gap:12px;
+  padding:calc(14px + var(--safe-top)) 18px 16px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.92),rgba(0,0,0,.52),transparent);
+  pointer-events:none;
 }
-
 .logo{
-  color:#ffd54a;
-  font-size:25px;
-  font-weight:900;
+  pointer-events:auto;
+  color:var(--gold);
+  font-size:clamp(22px,5vw,27px);
+  font-weight:950;
+  letter-spacing:-.5px;
+  text-shadow:0 2px 18px rgba(0,0,0,.9),0 0 22px rgba(255,213,74,.2);
 }
-
 .home{
+  pointer-events:auto;
   color:#fff;
-  text-decoration:none;
-  background:rgba(255,255,255,.14);
-  border:1px solid rgba(255,213,74,.2);
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,213,74,.26);
   padding:10px 16px;
   border-radius:999px;
-  font-weight:900;
-  backdrop-filter:blur(14px);
+  font-weight:950;
+  backdrop-filter:blur(16px);
+  box-shadow:0 12px 30px rgba(0,0,0,.3);
 }
 
 .feed{
   height:100vh;
-  overflow-y:scroll;
+  overflow-y:auto;
   scroll-snap-type:y mandatory;
+  overscroll-behavior-y:contain;
+  scrollbar-width:none;
+  background:#000;
 }
-
-.feed::-webkit-scrollbar{
-  display:none;
-}
+.feed::-webkit-scrollbar{display:none}
 
 .reel{
   position:relative;
@@ -70,90 +94,160 @@ body{
   scroll-snap-align:start;
   background:#020617;
   overflow:hidden;
+  isolation:isolate;
 }
-
-.video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
+.reel::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background:var(--poster, radial-gradient(circle at center,#07105a 0%,#000 66%));
+  background-size:cover;
+  background-position:center top;
+  filter:blur(22px) brightness(.55) saturate(1.2);
+  transform:scale(1.08);
 }
-
 .reel::after{
   content:"";
   position:absolute;
   inset:0;
+  z-index:3;
   background:
-    linear-gradient(to top,rgba(0,0,0,.86),transparent 48%),
-    linear-gradient(to bottom,rgba(0,0,0,.55),transparent 25%);
+    linear-gradient(to top,rgba(0,0,0,.9),transparent 48%),
+    linear-gradient(to bottom,rgba(0,0,0,.62),transparent 26%),
+    radial-gradient(circle at 82% 42%,rgba(255,213,74,.09),transparent 35%);
   pointer-events:none;
 }
+.video{
+  position:relative;
+  z-index:1;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  background:#000;
+  opacity:0;
+  transition:opacity .35s ease;
+}
+.video.ready{opacity:1}
+.video-fallback-img{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:.92;
+  transition:opacity .35s ease;
+}
+.reel.video-ready .video-fallback-img{opacity:0;pointer-events:none}
+.video-loader{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  display:grid;
+  place-items:center;
+  color:var(--gold);
+  font-weight:950;
+  letter-spacing:.2px;
+  background:radial-gradient(circle at center,rgba(7,16,90,.28),rgba(0,0,0,.35) 66%);
+  transition:opacity .3s ease;
+}
+.video-loader span{
+  background:rgba(0,0,0,.55);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:11px 16px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 0 30px rgba(255,213,74,.12);
+}
+.reel.video-ready .video-loader{opacity:0;pointer-events:none}
 
 .ai-badge{
   position:absolute;
-  top:92px;
+  top:calc(88px + var(--safe-top));
   left:18px;
+  right:86px;
   z-index:7;
-  background:#ff1493;
-  color:white;
-  padding:10px 16px;
-  border-radius:999px;
-  font-size:14px;
-  font-weight:900;
-  box-shadow:0 0 24px rgba(255,0,128,.45);
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  pointer-events:none;
 }
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:34px;
+  padding:8px 12px;
+  border-radius:999px;
+  color:#fff;
+  font-size:12px;
+  font-weight:950;
+  background:rgba(0,0,0,.58);
+  border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(16px);
+  box-shadow:0 12px 30px rgba(0,0,0,.34);
+}
+.pill.gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:0}
+.pill.blue{background:linear-gradient(135deg,#38bdf8,#2563eb);border:0}
+.pill.pink{background:linear-gradient(135deg,#ff1493,#a855f7);border:0}
+.pill.green{background:linear-gradient(135deg,#22c55e,#15803d);border:0}
 
 .info{
   position:absolute;
   left:18px;
-  right:88px;
-  bottom:96px;
+  right:92px;
+  bottom:calc(102px + var(--safe-bottom));
   z-index:8;
+  text-shadow:0 2px 18px rgba(0,0,0,.9);
 }
-
 .badge{
-  display:inline-block;
-  background:#ffd54a;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
   color:#000;
-  padding:8px 14px;
+  padding:8px 13px;
   border-radius:999px;
-  font-size:14px;
-  font-weight:900;
+  font-size:13px;
+  font-weight:950;
   margin-bottom:12px;
+  box-shadow:0 10px 26px rgba(255,180,0,.18);
 }
-
 .name{
-  font-size:32px;
-  font-weight:900;
-  line-height:1.05;
+  font-size:clamp(30px,7.5vw,48px);
+  font-weight:950;
+  line-height:.98;
+  letter-spacing:-1px;
   margin-bottom:10px;
-  text-shadow:0 2px 20px rgba(0,0,0,.7);
 }
-
 .location{
-  color:#e5e7eb;
+  color:#f4f4f5;
   font-size:15px;
-  font-weight:800;
+  font-weight:850;
   line-height:1.35;
   margin-bottom:8px;
 }
-
 .bio{
   color:#d1d5db;
   font-size:14px;
   line-height:1.45;
   max-width:96%;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
-
 .actions{
   position:absolute;
   right:14px;
-  bottom:136px;
+  bottom:calc(118px + var(--safe-bottom));
   z-index:9;
   display:grid;
-  gap:14px;
+  gap:12px;
 }
-
 .action{
   width:54px;
   height:54px;
@@ -162,52 +256,43 @@ body{
   align-items:center;
   justify-content:center;
   text-decoration:none;
-  color:white;
+  color:#fff;
   font-size:22px;
-  background:rgba(0,0,0,.55);
-  border:1px solid rgba(255,255,255,.16);
-  backdrop-filter:blur(12px);
-  box-shadow:0 10px 24px rgba(0,0,0,.35);
+  background:rgba(0,0,0,.58);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(14px);
+  box-shadow:0 12px 26px rgba(0,0,0,.38);
+  transition:transform .18s ease,filter .18s ease;
 }
-
-.whatsapp{
-  background:#25D366;
-}
-
-.call{
-  background:#ffd54a;
-  color:#000;
-}
-
-.mute{
-  background:rgba(255,255,255,.18);
-}
-
-.profile-action{
-  background:linear-gradient(180deg,#38bdf8,#2563eb);
-  color:#fff;
-}
-
-.hd-badge{
-  display:inline-block;
-  margin-left:8px;
-  background:rgba(14,165,233,.9);
-  color:#fff;
-  padding:6px 10px;
+.action:active{transform:scale(.92)}
+.whatsapp{background:#25D366;border-color:rgba(255,255,255,.16)}
+.call{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:0}
+.mute{background:rgba(255,255,255,.17)}
+.profile-action{background:linear-gradient(135deg,#38bdf8,#2563eb)}
+.view-action{font-size:13px;font-weight:950;color:var(--gold)}
+.hd-badge,.verified-reel{
+  display:inline-flex;
+  align-items:center;
   border-radius:999px;
-  font-size:12px;
+  padding:5px 8px;
+  font-size:11px;
   font-weight:950;
 }
-
-.verified-reel{
-  display:inline-block;
-  margin-left:8px;
-  background:linear-gradient(135deg,#22c55e,#15803d);
-  color:#fff;
-  padding:6px 10px;
+.hd-badge{background:rgba(14,165,233,.95);color:#fff}
+.verified-reel{background:linear-gradient(135deg,#22c55e,#15803d);color:#fff}
+.sound-hint{
+  position:absolute;
+  left:18px;
+  bottom:calc(74px + var(--safe-bottom));
+  z-index:8;
+  color:#e5e7eb;
+  background:rgba(0,0,0,.48);
+  border:1px solid rgba(255,255,255,.14);
   border-radius:999px;
+  padding:8px 11px;
   font-size:12px;
-  font-weight:950;
+  font-weight:900;
+  backdrop-filter:blur(14px);
 }
 
 .bottom-nav{
@@ -215,72 +300,90 @@ body{
   left:0;
   right:0;
   bottom:0;
-  height:78px;
+  height:calc(66px + var(--safe-bottom));
+  padding-bottom:var(--safe-bottom);
   background:rgba(0,0,0,.94);
-  backdrop-filter:blur(18px);
-  border-top:1px solid rgba(255,213,74,.12);
-  z-index:60;
+  backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,213,74,.14);
+  z-index:90;
   display:flex;
   align-items:center;
   justify-content:space-around;
 }
-
 .bottom-nav a{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
   text-decoration:none;
-  color:#ffd54a;
-  font-size:24px;
+  color:var(--gold);
+  font-size:22px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,213,74,.08);
 }
-
-.loader,
-.empty{
+.bottom-nav a.active{
+  background:rgba(255,213,74,.14);
+  box-shadow:0 0 18px rgba(255,213,74,.26);
+  transform:translateY(-2px);
+}
+.loader,.empty{
   height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
-  color:#ffd54a;
+  color:var(--gold);
   padding:24px;
   font-size:22px;
-  font-weight:900;
+  font-weight:950;
+  background:radial-gradient(circle at top,#07105a 0%,#000 62%);
 }
+.empty-box{
+  width:min(540px,92vw);
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:28px;
+  box-shadow:0 24px 70px rgba(0,0,0,.45);
+}
+.empty-box p{font-size:15px;line-height:1.6;color:#ddd;margin-top:10px}
+.empty-box a{display:inline-flex;margin-top:18px;padding:13px 18px;border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;font-size:14px;font-weight:950}
 
+@media(min-width:800px){
+  .reel{max-width:520px;margin:0 auto;border-left:1px solid rgba(255,213,74,.12);border-right:1px solid rgba(255,213,74,.12)}
+  .topbar{max-width:520px;margin:auto}
+  .bottom-nav{max-width:520px;margin:auto;left:50%;right:auto;transform:translateX(-50%);width:520px;border-left:1px solid rgba(255,213,74,.12);border-right:1px solid rgba(255,213,74,.12)}
+}
 @media(max-width:700px){
-  .logo{
-    font-size:23px;
-  }
-
-  .name{
-    font-size:30px;
-  }
-
-  .bottom-nav{
-    height:82px;
-  }
-
-  .bottom-nav a{
-    font-size:24px;
-  }
+  .home{padding:9px 14px;font-size:14px}
+  .info{right:88px;bottom:calc(100px + var(--safe-bottom))}
+  .actions{bottom:calc(112px + var(--safe-bottom))}
+  .action{width:50px;height:50px;font-size:20px}
+  .bottom-nav a{width:42px;height:42px;font-size:21px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
 </style>
 </head>
 
 <body>
-
 <header class="topbar">
   <div class="logo">🎬 Nairobi Reels</div>
   <a href="/" class="home">Home</a>
 </header>
 
 <main class="feed" id="feed">
-  <div class="loader">Loading reels...</div>
+  <div class="loader">Loading premium reels...</div>
 </main>
 
-<nav class="bottom-nav">
-  <a href="/">🏠</a>
-  <a href="/shorts.html">🔥</a>
-  <a href="/reel.html">🎬</a>
-  <a href="/join.html">➕</a>
-  <a href="/login.html">👤</a>
+<nav class="bottom-nav" aria-label="Main navigation">
+  <a href="/" aria-label="Home">🏠</a>
+  <a href="/shorts.html" aria-label="Shorts">🔥</a>
+  <a href="/reel.html" class="active" aria-label="Reels">🎬</a>
+  <a href="/join.html" aria-label="Join">➕</a>
+  <a href="/login.html" aria-label="Login">👤</a>
 </nav>
 
 <script>
@@ -300,14 +403,14 @@ function safePhone(phone){
 }
 
 function getVideo(profile){
-  return (
-    profile.reel_url ||
-    profile.reel ||
-    profile.video_url ||
-    profile.short_video ||
-    profile.short_url ||
-    ""
-  );
+  return profile.reel_url || profile.reel || profile.video_url || profile.short_video || profile.short_url || "";
+}
+
+function getPoster(profile){
+  const direct = profile.poster_url || profile.thumbnail_url || profile.cover_url || profile.image_url || profile.photo_url || profile.main_image || profile.avatar_url || "";
+  if(direct) return direct;
+  const photos = [profile.image1,profile.image2,profile.image3,profile.photo1,profile.photo2,profile.photo3,profile.gallery_url].filter(Boolean);
+  return photos[0] || "/assets/logo/logo-badge.png";
 }
 
 function isValidVideo(url){
@@ -315,122 +418,75 @@ function isValidVideo(url){
   return clean.endsWith(".mp4") || clean.endsWith(".webm") || clean.endsWith(".mov") || clean.includes("/storage/v1/object/public/");
 }
 
-function getName(profile){
-  return profile.stage_name || profile.name || profile.full_name || "Verified Profile";
-}
-
-function getLocation(profile){
-  return profile.location || profile.town || profile.area || "Nairobi";
-}
-
-function getPlan(profile){
-  return String(profile.plan || profile.plan_name || profile.package || profile.tier || "").toLowerCase();
-}
-
-function isSignature(profile){
-  const plan = getPlan(profile);
-  return plan.includes("signature") || plan.includes("vvip") || profile.is_signature === true;
-}
-
-function isVip(profile){
-  const plan = getPlan(profile);
-  return plan.includes("vip") || plan.includes("vip-plus") || plan.includes("vip+");
-}
-
-function getBadge(profile){
-  if(isSignature(profile)) return "👑 Signature Reel";
-  if(isVip(profile)) return "⭐ VIP Reel";
-  return "🎬 Reel Pick";
-}
+function getName(profile){return profile.stage_name || profile.name || profile.full_name || "Verified Profile";}
+function getLocation(profile){return profile.location || profile.town || profile.area || "Nairobi";}
+function getPlan(profile){return String(profile.plan || profile.plan_name || profile.package || profile.tier || "").toLowerCase();}
+function isSignature(profile){const plan=getPlan(profile);return plan.includes("signature") || plan.includes("vvip") || profile.is_signature === true;}
+function isVip(profile){const plan=getPlan(profile);return plan.includes("vip") || plan.includes("vip-plus") || plan.includes("vip+");}
+function getBadge(profile){if(isSignature(profile)) return "👑 Signature Reel"; if(isVip(profile)) return "⭐ VIP Reel"; return "🎬 Reel Pick";}
 
 function rankingScore(profile){
-  return (
-    (Number(profile.image_quality_score || 0) * 0.40) +
-    (Number(profile.likes_count || profile.likes || 0) * 0.20) +
-    (Number(profile.views_count || profile.views || 0) * 0.15) +
-    (Number(profile.boost_score || profile.boost || 0) * 0.15) +
-    ((profile.verified === true || profile.verified === "true") ? 100 : 0) * 0.10
-  );
+  return (Number(profile.image_quality_score || 0) * .40) +
+    (Number(profile.likes_count || profile.likes || 0) * .20) +
+    (Number(profile.views_count || profile.views || 0) * .15) +
+    (Number(profile.boost_score || profile.boost || 0) * .15) +
+    (((profile.verified === true || profile.verified === "true") ? 100 : 0) * .10);
 }
-
-function priorityScore(profile){
-  if(isSignature(profile)) return 3;
-  if(isVip(profile)) return 2;
-  return 1;
-}
-
+function priorityScore(profile){if(isSignature(profile)) return 3; if(isVip(profile)) return 2; return 1;}
 function getAiBadge(profile){
   const quality = Number(profile.image_quality_score || 0);
   const views = Number(profile.views_count || profile.views || 0);
   const likes = Number(profile.likes_count || profile.likes || 0);
-
   if(isSignature(profile)) return "👑 Signature Energy";
   if(isVip(profile)) return "⭐ VIP Energy";
   if(quality >= 80) return "📸 HD Reel";
   if(views > 1000) return "🔥 Trending";
   if(likes > 50) return "💋 Most Liked";
-
   return "✨ Sweet Reels";
 }
-
-function profileUrl(profile){
-  if(profile.slug){
-    return `/profile.html?slug=${encodeURIComponent(profile.slug)}`;
-  }
-  return `/profile.html?id=${encodeURIComponent(profile.id)}`;
-}
-
-function escapeHTML(value){
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
+function profileUrl(profile){return profile.slug ? `/profile.html?slug=${encodeURIComponent(profile.slug)}` : `/profile.html?id=${encodeURIComponent(profile.id)}`;}
+function escapeHTML(value){return String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+function escapeAttr(value){return escapeHTML(value).replaceAll("`","&#096;");}
 
 function renderReel(profile){
   const video = getVideo(profile);
-  const phone = safePhone(profile.phone || profile.whatsapp);
+  const poster = getPoster(profile);
+  const phone = safePhone(profile.phone || profile.whatsapp || profile.whatsapp_number);
   const name = escapeHTML(getName(profile));
   const quality = Number(profile.image_quality_score || 0);
   const verified = profile.verified === true || profile.verified === "true";
+  const views = Number(profile.views_count || profile.views || 0);
+  const likes = Number(profile.likes_count || profile.likes || 0);
+  const posterStyle = `--poster:url('${escapeAttr(poster)}')`;
 
   return `
-    <section class="reel" data-profile-id="${profile.id}">
+    <section class="reel" data-profile-id="${escapeAttr(profile.id)}" style="${posterStyle}">
+      <img class="video-fallback-img" src="${escapeAttr(poster)}" alt="${name} reel poster" loading="eager" decoding="async">
+      <video class="video" src="${escapeAttr(video)}" poster="${escapeAttr(poster)}" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="video-loader"><span>Preparing reel...</span></div>
 
-      <video
-        class="video"
-        src="${escapeHTML(video)}"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="metadata"
-      ></video>
-
-      <div class="ai-badge">${getAiBadge(profile)}</div>
+      <div class="ai-badge">
+        <span class="pill pink">${escapeHTML(getAiBadge(profile))}</span>
+        ${verified ? `<span class="pill green">✅ Verified</span>` : ``}
+        ${quality >= 80 ? `<span class="pill blue">📸 HD ${quality}</span>` : ``}
+      </div>
 
       <div class="info">
-        <div class="badge">
-          ${getBadge(profile)}
-          ${quality >= 80 ? `<span class="hd-badge">📸 HD ${quality}</span>` : ``}
-          ${verified ? `<span class="verified-reel">🎬 Verified Reel</span>` : ``}
-        </div>
+        <div class="badge">${escapeHTML(getBadge(profile))}${verified ? `<span class="verified-reel">Verified</span>` : ``}</div>
         <div class="name">${name}</div>
         <div class="location">📍 ${escapeHTML(getLocation(profile))} · 🟢 Online Now</div>
         <div class="bio">${escapeHTML(profile.bio || profile.description || "Watch the reel, then tap WhatsApp or call to connect.")}</div>
       </div>
 
       <div class="actions">
-        <button class="action mute" onclick="toggleMute(this)">🔇</button>
-        <a class="action profile-action" href="${profileUrl(profile)}">👤</a>
-        <a class="action" onclick="likeReel('${profile.id}')">❤️</a>
-        <a class="action">👁️</a>
-        ${phone ? `<a class="action whatsapp" href="https://wa.me/${phone}" target="_blank" rel="noopener">💬</a>` : ""}
-        ${phone ? `<a class="action call" href="tel:${phone}">☎</a>` : ""}
+        <button class="action mute" onclick="toggleMute(this)" aria-label="Mute or unmute">🔇</button>
+        <a class="action profile-action" href="${profileUrl(profile)}" aria-label="View profile">👤</a>
+        <button class="action" onclick="likeReel('${escapeAttr(profile.id)}')" aria-label="Like reel">❤️</button>
+        <span class="action view-action" aria-label="Views">${views > 999 ? Math.round(views/100)/10 + "k" : views || "👁️"}</span>
+        ${phone ? `<a class="action whatsapp" href="https://wa.me/${phone}" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>` : ""}
+        ${phone ? `<a class="action call" href="tel:${phone}" aria-label="Call">☎</a>` : ""}
       </div>
-
+      <div class="sound-hint">Tap 🔇 to enable sound · ❤️ ${likes}</div>
     </section>
   `;
 }
@@ -444,7 +500,7 @@ async function loadReels(){
     .limit(120);
 
   if(error){
-    feed.innerHTML = `<div class="empty">Supabase error: ${error.message}</div>`;
+    feed.innerHTML = `<div class="empty"><div class="empty-box">Supabase error:<p>${escapeHTML(error.message)}</p></div></div>`;
     return;
   }
 
@@ -454,12 +510,7 @@ async function loadReels(){
   });
 
   if(!reels.length){
-    feed.innerHTML = `
-      <div class="empty">
-        No video reels yet.<br><br>
-        Upload reels from Vault or public signup. Reels must use reel_url, video_url, short_video, or short_url.
-      </div>
-    `;
+    feed.innerHTML = `<div class="empty"><div class="empty-box">No video reels yet.<p>Upload reels from Vault or public signup. Reels must use reel_url, video_url, short_video, or short_url.</p><a href="/join.html">Add a Reel</a></div></div>`;
     return;
   }
 
@@ -470,25 +521,45 @@ async function loadReels(){
   });
 
   feed.innerHTML = ranked.map(renderReel).join("");
+  prepareVideos();
   observeVideos();
+}
+
+function prepareVideos(){
+  document.querySelectorAll("video").forEach(video=>{
+    const reel = video.closest(".reel");
+    const markReady = ()=>{
+      video.classList.add("ready");
+      if(reel) reel.classList.add("video-ready");
+    };
+    if(video.readyState >= 2) markReady();
+    video.addEventListener("loadeddata", markReady, {once:true});
+    video.addEventListener("canplay", markReady, {once:true});
+    video.addEventListener("error", ()=>{
+      if(reel){
+        const loader = reel.querySelector(".video-loader span");
+        if(loader) loader.textContent = "Video unavailable";
+      }
+    }, {once:true});
+  });
 }
 
 function observeVideos(){
   const videos = document.querySelectorAll("video");
-
   const observer = new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
-      const reel = entry.target.closest(".reel");
+      const video = entry.target;
+      const reel = video.closest(".reel");
       const profileId = reel ? reel.dataset.profileId : "";
 
       if(entry.isIntersecting){
-        entry.target.play().catch(()=>{});
+        video.play().catch(()=>{});
         if(profileId && !viewedReels.has(profileId)){
           viewedReels.add(profileId);
           trackReelView(profileId);
         }
       }else{
-        entry.target.pause();
+        video.pause();
       }
     });
   },{threshold:.65});
@@ -499,42 +570,28 @@ function observeVideos(){
 function toggleMute(button){
   const reel = button.closest(".reel");
   const video = reel.querySelector("video");
-
   video.muted = !video.muted;
   button.textContent = video.muted ? "🔇" : "🔊";
 }
 
 async function likeReel(id){
-  const {data} = await sb
-    .from("profiles")
-    .select("likes_count")
-    .eq("id",id)
-    .single();
-
-  const likes = Number(data?.likes_count || 0) + 1;
-
-  await sb
-    .from("profiles")
-    .update({likes_count:likes})
-    .eq("id",id);
+  try{
+    const {data} = await sb.from("profiles").select("likes_count").eq("id",id).single();
+    const likes = Number(data?.likes_count || 0) + 1;
+    await sb.from("profiles").update({likes_count:likes}).eq("id",id);
+  }catch(error){
+    console.log("Like skipped", error.message || error);
+  }
 }
 
 async function trackReelView(id){
   try{
-    const {data} = await sb
-      .from("profiles")
-      .select("views_count,views,video_plays")
-      .eq("id",id)
-      .single();
-
-    await sb
-      .from("profiles")
-      .update({
-        views_count:Number(data?.views_count || 0) + 1,
-        views:Number(data?.views || 0) + 1,
-        video_plays:Number(data?.video_plays || 0) + 1
-      })
-      .eq("id",id);
+    const {data} = await sb.from("profiles").select("views_count,views,video_plays").eq("id",id).single();
+    await sb.from("profiles").update({
+      views_count:Number(data?.views_count || 0) + 1,
+      views:Number(data?.views || 0) + 1,
+      video_plays:Number(data?.video_plays || 0) + 1
+    }).eq("id",id);
   }catch(error){
     console.log("Reel view tracking skipped", error.message || error);
   }
@@ -553,9 +610,7 @@ async function trackReelView(id){
 
 window.toggleMute = toggleMute;
 window.likeReel = likeReel;
-
 loadReels();
 </script>
-
 </body>
 </html>
