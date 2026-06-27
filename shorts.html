@@ -8,11 +8,18 @@
 <meta name="description" content="Watch Nairobi Sweets video shorts from verified, VIP and Signature profiles.">
 <meta name="robots" content="index,follow,max-video-preview:-1,max-image-preview:large">
 <meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nairobi Shorts">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/assets/pwa/icon-180.png">
 
 <link rel="canonical" href="https://nairobi-sweets.com/shorts.html">
 <link rel="icon" href="/assets/logo/logo-badge.png">
 <link rel="manifest" href="/manifest.webmanifest">
 
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://dkjlvyynvgtijccitvvd.supabase.co" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -65,6 +72,8 @@ button{font:inherit;border:0;cursor:pointer}
   height:100vh;
   overflow-y:auto;
   scroll-snap-type:y mandatory;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
   overscroll-behavior-y:contain;
   scrollbar-width:none;
 }
@@ -281,6 +290,121 @@ button{font:inherit;border:0;cursor:pointer}
   .actions{bottom:112px}
   .action{width:50px;height:50px;font-size:20px}
 }
+
+
+/* =========================
+   V3 PREMIUM PATCH: glass UI, iPhone safe areas, video readiness
+========================= */
+:root{
+  --gold:#ffd54a;
+  --gold2:#ff9f1c;
+  --glass:rgba(4,8,28,.54);
+  --glass-strong:rgba(0,0,0,.72);
+  --stroke:rgba(255,213,74,.18);
+}
+@supports(height:100dvh){
+  .feed,.short,.loader,.empty{height:100dvh}
+}
+.topbar{
+  background:linear-gradient(to bottom,rgba(0,0,0,.92),rgba(0,0,0,.54),transparent);
+  backdrop-filter:blur(4px);
+}
+.logo{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(0,0,0,.24);
+  border:1px solid rgba(255,213,74,.12);
+}
+.home,.pill,.action,.sound-hint,.bottom-nav{
+  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(18px);
+}
+.home:hover,.action:hover{transform:translateY(-1px)}
+.short{
+  background:
+    radial-gradient(circle at 50% 28%,rgba(255,213,74,.10),transparent 28%),
+    radial-gradient(circle at 40% 75%,rgba(255,20,147,.12),transparent 34%),
+    #020617;
+}
+.short::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  opacity:1;
+  background:radial-gradient(circle at center,#07105a 0%,#000 68%);
+  transition:opacity .45s ease;
+  pointer-events:none;
+}
+.short.ready::before{opacity:0}
+.media{opacity:.02;transition:opacity .45s ease,filter .45s ease;filter:saturate(1.06) contrast(1.03)}
+.short.ready .media{opacity:1}
+.video-loader{
+  z-index:3;
+  gap:10px;
+  background:radial-gradient(circle at center,#07105a 0%,#000 66%);
+  transition:opacity .35s ease,visibility .35s ease;
+}
+.video-loader::before{
+  content:"";
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:3px solid rgba(255,213,74,.2);
+  border-top-color:var(--gold);
+  animation:shortSpin .8s linear infinite;
+}
+.short.ready .video-loader{opacity:0;visibility:hidden}
+@keyframes shortSpin{to{transform:rotate(360deg)}}
+.top-badges{top:calc(92px + env(safe-area-inset-top));gap:7px}
+.pill{border:1px solid rgba(255,255,255,.14)}
+.pill.dark{background:var(--glass-strong)}
+.info{
+  padding:14px 0 0;
+  bottom:calc(108px + env(safe-area-inset-bottom));
+}
+.name{text-wrap:balance;text-shadow:0 3px 24px rgba(0,0,0,.92)}
+.bio{background:linear-gradient(90deg,rgba(0,0,0,.22),transparent);border-radius:14px}
+.actions{bottom:calc(118px + env(safe-area-inset-bottom))}
+.action{
+  background:var(--glass-strong);
+  border-color:rgba(255,255,255,.16);
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+}
+.action.profile{background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 12px 30px rgba(255,180,0,.22)}
+.action.whatsapp{background:linear-gradient(135deg,#25D366,#128C4A);box-shadow:0 12px 30px rgba(37,211,102,.18)}
+.action.call{background:linear-gradient(135deg,var(--gold),#ffc400);box-shadow:0 12px 30px rgba(255,213,74,.18)}
+.sound-hint{bottom:calc(78px + env(safe-area-inset-bottom));background:rgba(0,0,0,.48)}
+.bottom-nav{
+  height:calc(72px + env(safe-area-inset-bottom));
+  background:rgba(0,0,0,.86);
+  box-shadow:0 -18px 44px rgba(0,0,0,.5);
+}
+.bottom-nav a{
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:rgba(255,213,74,.08);
+  border:1px solid rgba(255,213,74,.10);
+}
+.bottom-nav a.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;filter:none;box-shadow:0 0 24px rgba(255,213,74,.28)}
+.empty-box{background:rgba(255,255,255,.07);backdrop-filter:blur(18px)}
+@media(max-width:700px){
+  .info{right:84px;bottom:calc(102px + env(safe-area-inset-bottom))}
+  .actions{right:12px;bottom:calc(110px + env(safe-area-inset-bottom));gap:10px}
+  .sound-hint{font-size:11px;bottom:calc(80px + env(safe-area-inset-bottom))}
+  .top-badges{right:76px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
 </style>
 </head>
 
@@ -543,8 +667,27 @@ async function likeShort(id){
   await trackEvent(id,"like");
 }
 
+function markVideoReady(video){
+  const section = video.closest(".short");
+  if(section) section.classList.add("ready");
+}
+
+function warmVideo(video,index){
+  video.preload = index < 2 ? "auto" : "metadata";
+  video.addEventListener("loadeddata",()=>markVideoReady(video),{once:true});
+  video.addEventListener("canplay",()=>markVideoReady(video),{once:true});
+  video.addEventListener("error",()=>{
+    const section = video.closest(".short");
+    if(section) section.classList.add("ready");
+  },{once:true});
+  if(video.readyState >= 2) markVideoReady(video);
+}
+
 function observeVideos(){
   const sections = document.querySelectorAll(".short");
+  const videos = Array.from(document.querySelectorAll("video"));
+
+  videos.forEach(warmVideo);
 
   const observer = new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
@@ -553,20 +696,24 @@ function observeVideos(){
       if(!video) return;
 
       if(entry.isIntersecting){
+        videos.forEach(v=>{ if(v !== video){ v.pause(); v.muted = true; } });
         video.play().catch(()=>{});
         trackVideoView(section.dataset.id);
       }else{
         video.pause();
       }
     });
-  },{threshold:.65});
+  },{threshold:.65,rootMargin:"80px 0px 80px 0px"});
 
   sections.forEach(section=>observer.observe(section));
 
-  document.querySelectorAll("video").forEach(video=>{
+  videos.forEach(video=>{
     video.addEventListener("click",()=>{
+      videos.forEach(v=>{ if(v !== video) v.muted = true; });
       video.muted = !video.muted;
       video.play().catch(()=>{});
+      const hint = video.closest(".short")?.querySelector(".sound-hint");
+      if(hint) hint.textContent = video.muted ? "Tap video for sound" : "Sound on";
     });
   });
 }
@@ -609,6 +756,15 @@ async function loadShorts(){
 
 window.likeShort = likeShort;
 window.trackContact = trackContact;
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){
+    document.querySelectorAll("video").forEach(video=>video.pause());
+  }else{
+    document.querySelector(".short")?.querySelector("video")?.play().catch(()=>{});
+  }
+});
+
 loadShorts();
 
 if("serviceWorker" in navigator){
