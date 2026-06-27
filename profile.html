@@ -23,6 +23,14 @@
 <link rel="canonical" href="https://nairobi-sweets.com/profile.html">
 <link rel="icon" href="/assets/logo/logo-badge.png">
 <link rel="manifest" href="/manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nairobi Sweets">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/assets/pwa/icon-180.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://dkjlvyynvgtijccitvvd.supabase.co" crossorigin>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -582,6 +590,201 @@ TRUST CENTER + ADMIN HELP
   .signup-content-grid{grid-template-columns:1fr}
 }
 
+
+
+/* =========================================================
+   NAIROBI SWEETS PROFILE V3 PREMIUM PATCH
+   Safe-area, glass UI, faster media, mobile polish, PWA comfort
+========================================================= */
+:root{
+  --glass:rgba(7,12,46,.66);
+  --glass-strong:rgba(5,8,32,.84);
+  --gold-soft:rgba(255,216,75,.16);
+  --shadow-lux:0 22px 80px rgba(0,0,0,.58),0 0 34px rgba(255,216,75,.08);
+}
+html{
+  min-height:100%;
+  text-size-adjust:100%;
+  -webkit-text-size-adjust:100%;
+}
+body{
+  min-height:100%;
+  background:
+    radial-gradient(circle at 18% 0%,rgba(255,216,75,.11),transparent 26%),
+    radial-gradient(circle at 88% 12%,rgba(236,72,153,.12),transparent 30%),
+    radial-gradient(circle at top,#07105a 0%,#010212 48%,#000 100%);
+  padding-bottom:calc(118px + env(safe-area-inset-bottom));
+  -webkit-tap-highlight-color:transparent;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.72),transparent 72%);
+}
+a,button{touch-action:manipulation}
+.site-header{
+  top:0;
+  padding-top:calc(12px + env(safe-area-inset-top));
+  background:rgba(0,0,0,.74);
+  backdrop-filter:blur(22px) saturate(1.25);
+  -webkit-backdrop-filter:blur(22px) saturate(1.25);
+  box-shadow:0 16px 44px rgba(0,0,0,.38);
+}
+.brand img{
+  box-shadow:0 0 28px rgba(255,160,28,.34),0 0 60px rgba(255,216,75,.11);
+}
+.home-btn,.btn,.chip,.stat,.badge,.trust-pill,.info-box,.signup-content-box,.seo-link-grid a{
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.home-btn:active,.btn:active,.bottom-nav a:active{transform:scale(.96)}
+.page{padding-top:24px}
+.profile-card{
+  background:linear-gradient(145deg,rgba(4,6,38,.92),rgba(7,13,89,.72) 58%,rgba(5,6,42,.92));
+  backdrop-filter:blur(22px) saturate(1.18);
+  -webkit-backdrop-filter:blur(22px) saturate(1.18);
+  border:1px solid rgba(255,216,75,.20);
+  box-shadow:var(--shadow-lux);
+}
+.profile-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.08),transparent 28%,rgba(255,216,75,.055));
+  z-index:0;
+}
+.profile-card>*{position:relative;z-index:1}
+.hero-img{
+  min-height:330px;
+  filter:contrast(1.035) saturate(1.055);
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  background:radial-gradient(circle at 50% 12%,transparent 0%,transparent 36%,rgba(0,0,0,.22) 100%);
+}
+.hero-row{z-index:4}
+.hero-pill,.watermark,.live-location-profile-indicator{
+  background:rgba(0,0,0,.58);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 12px 28px rgba(0,0,0,.34);
+}
+.content{background:linear-gradient(to bottom,rgba(255,255,255,.018),transparent)}
+.trust-center,.admin-help,.seo-links,.ranking-breakdown,.live-location-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(7,16,106,.38));
+  border:1px solid rgba(255,216,75,.18);
+  box-shadow:0 18px 46px rgba(0,0,0,.24);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.signup-content-box,.info-box,.mini-card,.gallery-item,.reel-box{
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+  border-color:rgba(255,216,75,.16);
+  box-shadow:0 14px 34px rgba(0,0,0,.23);
+}
+.gallery-item img,.mini-media img,.hero-img{
+  transition:opacity .25s ease,transform .35s ease;
+}
+.gallery-item:hover img,.mini-card:hover img{transform:scale(1.035)}
+.btn:hover,.home-btn:hover,.seo-link-grid a:hover,.mini-card:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+}
+.btn.wa,.wa{box-shadow:0 12px 28px rgba(37,211,102,.18)}
+.btn.call,.call{box-shadow:0 12px 28px rgba(255,216,75,.18)}
+.sticky-contact{
+  bottom:calc(72px + env(safe-area-inset-bottom));
+  background:rgba(5,7,20,.78);
+  backdrop-filter:blur(20px) saturate(1.16);
+  -webkit-backdrop-filter:blur(20px) saturate(1.16);
+}
+.bottom-nav{
+  height:calc(66px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(0,0,0,.82);
+  backdrop-filter:blur(24px) saturate(1.24);
+  -webkit-backdrop-filter:blur(24px) saturate(1.24);
+}
+.bottom-nav a{
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:rgba(255,216,75,.08);
+  border:1px solid rgba(255,216,75,.10);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+.bottom-nav a:hover,.bottom-nav a.active{
+  background:rgba(255,216,75,.16);
+  box-shadow:0 0 20px rgba(255,216,75,.20);
+}
+.error{
+  min-height:calc(100vh - 160px);
+  background:radial-gradient(circle at top,rgba(255,216,75,.08),transparent 38%);
+}
+.image-skeleton{
+  background:linear-gradient(90deg,#070a28,#101565,#070a28);
+  background-size:220% 100%;
+  animation:premiumSkeleton 1.35s infinite linear;
+}
+@keyframes premiumSkeleton{to{background-position:-220% 0}}
+@keyframes premiumBreathe{
+  0%,100%{box-shadow:0 0 22px rgba(255,216,75,.10),0 18px 46px rgba(0,0,0,.24)}
+  50%{box-shadow:0 0 34px rgba(255,216,75,.18),0 18px 46px rgba(0,0,0,.24)}
+}
+.signature-banner.show{animation:premiumBreathe 3.8s infinite ease-in-out}
+@media(max-width:920px){
+  .page{padding-left:12px;padding-right:12px}
+  .profile-card{border-radius:24px}
+}
+@media(max-width:640px){
+  .site-header{
+    min-height:calc(78px + env(safe-area-inset-top));
+    padding-left:14px;
+    padding-right:14px;
+  }
+  .page{padding:0 0 calc(96px + env(safe-area-inset-bottom))}
+  .profile-card{border-radius:0}
+  .hero-img{height:365px;min-height:365px;object-position:center top}
+  .hero-row{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:8px;
+  }
+  .score-row{max-width:100%}
+  .hero-pill,.watermark,.live-location-profile-indicator{font-size:11px;padding:7px 9px}
+  .content{padding:22px 16px 30px}
+  h1{font-size:34px;letter-spacing:-.8px}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stat{font-size:12px;padding:9px 10px;text-align:center;justify-content:center}
+  .gallery-row,.mini-row{gap:10px}
+  .gallery-item{height:220px;border-radius:16px}
+  .mini-media{height:170px}
+  .sticky-contact{width:calc(100% - 20px);bottom:calc(72px + env(safe-area-inset-bottom));border-radius:20px}
+  .bottom-nav a{width:42px;height:42px;font-size:22px}
+}
+@media(max-width:380px){
+  .gallery-row,.mini-row{grid-template-columns:1fr}
+  .gallery-item,.mini-media{height:260px}
+  .stats{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
 </style>
 
 <script type="application/ld+json" id="schema-json">{}</script>
@@ -603,11 +806,11 @@ TRUST CENTER + ADMIN HELP
 
 <div id="stickyContact" class="sticky-contact"></div>
 
-<nav class="bottom-nav">
-  <a href="/">🏠</a>
-  <a href="/trending.html">🔥</a>
-  <a href="/shorts.html">🎬</a>
-  <a href="/join.html">➕</a>
+<nav class="bottom-nav" aria-label="Main navigation">
+  <a href="/" aria-label="Home">🏠</a>
+  <a href="/trending.html" aria-label="Trending">🔥</a>
+  <a href="/shorts.html" aria-label="Shorts">🎬</a>
+  <a href="/join.html" aria-label="Join">➕</a>
 </nav>
 
 <script>
@@ -1163,7 +1366,7 @@ function renderProfile(p){
     <section class="page">
       <article class="profile-card">
         <div class="hero">
-          <img class="hero-img" src="${escapeHTML(gallery[0] || FALLBACK_IMAGE)}" alt="${name}" onerror="this.src='${FALLBACK_IMAGE}'">
+          <img class="hero-img" src="${escapeHTML(gallery[0] || FALLBACK_IMAGE)}" alt="${name}" loading="eager" decoding="async" fetchpriority="high" onerror="this.src='${FALLBACK_IMAGE}'">
           <div class="hero-row">
             <div class="score-row">
               ${isLiveLocationActive(p) ? `<span class="live-location-profile-indicator"><span></span> Live Location Active</span>` : ``}
@@ -1418,6 +1621,89 @@ if("serviceWorker" in navigator){
     navigator.serviceWorker.register("/sw.js").catch(()=>{});
   });
 }
+</script>
+
+
+
+<script>
+/* =========================================================
+   NAIROBI SWEETS PROFILE V3 PREMIUM PATCH JS
+   safer lazy media, active nav, iOS comfort, resilient sharing
+========================================================= */
+(function(){
+  const fallback = "/assets/logo/logo-badge.png";
+
+  function markActiveNav(){
+    const path = location.pathname.replace(/\/$/,"") || "/";
+    document.querySelectorAll(".bottom-nav a").forEach(a=>{
+      try{
+        const hrefPath = new URL(a.getAttribute("href"), location.origin).pathname.replace(/\/$/,"") || "/";
+        a.classList.toggle("active", hrefPath === path || (path.includes("profile") && hrefPath === "/"));
+      }catch(e){}
+    });
+  }
+
+  function improveImages(root=document){
+    root.querySelectorAll("img").forEach((img,index)=>{
+      if(!img.getAttribute("loading")) img.setAttribute("loading", index < 2 ? "eager" : "lazy");
+      img.setAttribute("decoding","async");
+      img.addEventListener("error",()=>{
+        if(!img.dataset.fallbackApplied){
+          img.dataset.fallbackApplied = "1";
+          img.src = fallback;
+        }
+      },{once:true});
+    });
+  }
+
+  function improveVideos(root=document){
+    root.querySelectorAll("video").forEach(video=>{
+      video.setAttribute("playsinline","");
+      video.setAttribute("webkit-playsinline","");
+      if(!video.getAttribute("preload")) video.setAttribute("preload","metadata");
+      if(!video.getAttribute("poster")) video.setAttribute("poster", fallback);
+      video.addEventListener("loadedmetadata",()=>video.classList.remove("image-skeleton"),{once:true});
+      video.addEventListener("error",()=>video.style.display="none",{once:true});
+    });
+  }
+
+  function watchAppRender(){
+    const app = document.getElementById("app");
+    if(!app) return;
+    const obs = new MutationObserver(()=>{
+      improveImages(app);
+      improveVideos(app);
+      markActiveNav();
+    });
+    obs.observe(app,{childList:true,subtree:true});
+  }
+
+  function registerSW(){
+    if("serviceWorker" in navigator){
+      window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}),{once:true});
+    }
+  }
+
+  function installIOSHint(){
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+    if(!isIOS || standalone || localStorage.getItem("ns_ios_hint_seen")) return;
+    setTimeout(()=>{
+      localStorage.setItem("ns_ios_hint_seen","1");
+      console.info("Nairobi Sweets iPhone install: Safari Share button → Add to Home Screen.");
+    },1800);
+  }
+
+  document.addEventListener("DOMContentLoaded",()=>{
+    markActiveNav();
+    improveImages();
+    improveVideos();
+    watchAppRender();
+    installIOSHint();
+  });
+
+  registerSW();
+})();
 </script>
 
 </body>
