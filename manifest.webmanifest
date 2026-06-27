@@ -1,32 +1,25 @@
 {
   "name": "Nairobi Sweets",
-  "short_name": "Nairobi Sweets",
-  "description": "Nairobi Sweets app for verified profiles, VIP listings, reels and member access.",
-  "id": "/?source=pwa",
-  "start_url": "/?source=pwa",
+  "short_name": "NairobiSweets",
+  "description": "Nairobi Sweets premium mobile directory.",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui", "browser"],
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "background_color": "#000814",
   "theme_color": "#ffd54a",
-  "categories": ["lifestyle", "social"],
-  "lang": "en-KE",
-  "dir": "ltr",
   "icons": [
-    {"src": "/assets/pwa/icon-72.png", "sizes": "72x72", "type": "image/png", "purpose": "any"},
-    {"src": "/assets/pwa/icon-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any"},
-    {"src": "/assets/pwa/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any"},
-    {"src": "/assets/pwa/icon-144.png", "sizes": "144x144", "type": "image/png", "purpose": "any"},
-    {"src": "/assets/pwa/icon-152.png", "sizes": "152x152", "type": "image/png", "purpose": "any"},
-    {"src": "/assets/pwa/icon-180.png", "sizes": "180x180", "type": "image/png", "purpose": "any"},
-    {"src": "/assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
-    {"src": "/assets/pwa/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any"},
-    {"src": "/assets/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
-  ],
-  "shortcuts": [
-    {"name": "Join", "short_name": "Join", "description": "Create a Nairobi Sweets profile", "url": "/join.html", "icons": [{"src": "/assets/pwa/icon-192.png", "sizes": "192x192"}]},
-    {"name": "Login", "short_name": "Login", "description": "Open member login", "url": "/login.html", "icons": [{"src": "/assets/pwa/icon-192.png", "sizes": "192x192"}]},
-    {"name": "Shorts", "short_name": "Shorts", "description": "Open Nairobi Shorts", "url": "/shorts.html", "icons": [{"src": "/assets/pwa/icon-192.png", "sizes": "192x192"}]}
+    {
+      "src": "/assets/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
