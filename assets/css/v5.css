@@ -1,0 +1,137 @@
+/* ==========================================================
+   Nairobi Sweets V5 Consolidated Production Layer
+   Phase 6: combines the V5 polish into one file.
+========================================================== */
+:root{
+  --ns-gold:#ffd84b;
+  --ns-orange:#ff9f1c;
+  --ns-navy:#050750;
+  --ns-deep:#02030f;
+  --ns-line:rgba(255,216,75,.18);
+  --ns-glass:rgba(8,14,55,.76);
+}
+html{background:#000;scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:
+    radial-gradient(circle at 15% 0%,rgba(255,216,75,.10),transparent 26%),
+    radial-gradient(circle at 84% 12%,rgba(255,45,117,.12),transparent 32%),
+    radial-gradient(circle at top,#07105a 0%,#02030f 48%,#000 100%) !important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img,video,iframe{max-width:100%}
+img{decoding:async;image-rendering:auto}
+a,button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+input,textarea,select{font-size:16px!important}
+input,select,textarea{
+  border:1px solid rgba(255,216,75,.18)!important;
+  background:rgba(3,7,32,.76)!important;
+  color:#fff!important;
+  outline:none;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:rgba(255,216,75,.46)!important;
+  box-shadow:0 0 0 4px rgba(255,216,75,.10)!important;
+}
+.topbar,.site-header,.header,.navbar,.admin-header,.dashboard-header{
+  background:rgba(0,0,0,.84)!important;
+  border-bottom:1px solid rgba(255,216,75,.14)!important;
+  backdrop-filter:blur(22px) saturate(1.15);
+  -webkit-backdrop-filter:blur(22px) saturate(1.15);
+  box-shadow:0 14px 36px rgba(0,0,0,.34);
+}
+.card,.profile-card,.login-card,.auth-card,.dashboard-card,.vault-card,.panel,.box,.stat-card,.stat-mini,.join-price-card,.join-pricing-box,.seo-locations-box,.disclaimer-box,.map-card,.sweet-panel,.form-card,.admin-panel,.table-wrap,.trust-center,.admin-help,.seo-links,.mini-card,.short-card,.signature-box{
+  background:linear-gradient(145deg,rgba(10,15,70,.78),rgba(2,5,35,.84))!important;
+  border:1px solid var(--ns-line)!important;
+  box-shadow:0 24px 80px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.055)!important;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.card,.profile-card,.short-card,.signature-card,.mini-card{
+  transition:transform .22s ease,box-shadow .22s ease,filter .22s ease;
+  content-visibility:auto;
+  contain-intrinsic-size:360px;
+}
+.card:hover,.mini-card:hover,.short-card:hover,.signature-card:hover{transform:translateY(-2px);filter:brightness(1.03)}
+.card-image,.hero-img,.gallery-item img,.short-card video,.media,.video{
+  will-change:transform,opacity;
+  transform:translateZ(0);
+  background:linear-gradient(135deg,#050750,#000),url("/assets/logo/logo-badge.png") center/80px no-repeat!important;
+}
+.btn,button,.install-app-btn,.hero-join-btn,.hero-login-btn,.join-main-link,.call-btn,.wa-btn,.view-profile-btn{
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+}
+button:active,a:active,.btn:active{transform:scale(.98)}
+.install-app-btn,.hero-join-btn,.join-main-link,.view-profile-btn{
+  box-shadow:0 16px 34px rgba(255,159,28,.22)!important;
+}
+.bottom-nav{
+  height:calc(70px + env(safe-area-inset-bottom))!important;
+  padding-bottom:env(safe-area-inset-bottom)!important;
+  background:rgba(0,0,0,.88)!important;
+  border-top:1px solid rgba(255,216,75,.14)!important;
+  backdrop-filter:blur(20px) saturate(1.15);
+  -webkit-backdrop-filter:blur(20px) saturate(1.15);
+  contain:layout paint;
+}
+.bottom-nav a{
+  min-width:46px;
+  min-height:46px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,216,75,.08);
+  border:1px solid rgba(255,216,75,.12);
+}
+.bottom-nav a.active{
+  background:linear-gradient(135deg,var(--ns-gold),var(--ns-orange))!important;
+  color:#000!important;
+  box-shadow:0 0 26px rgba(255,216,75,.32)!important;
+}
+.ns-toast,.ns-install-card{
+  position:fixed;
+  left:16px;
+  right:16px;
+  bottom:calc(92px + env(safe-area-inset-bottom));
+  z-index:999999;
+  display:none;
+  padding:14px 16px;
+  border-radius:18px;
+  background:linear-gradient(145deg,rgba(4,9,47,.96),rgba(0,0,0,.94));
+  border:1px solid rgba(255,216,75,.24);
+  color:#fff;
+  box-shadow:0 24px 70px rgba(0,0,0,.58);
+}
+.ns-toast.show,.ns-install-card.show{display:block}
+.ns-install-card strong{display:block;color:var(--ns-gold);font-size:18px;margin-bottom:6px}
+.ns-install-card p{margin:0;color:#e5e7eb;line-height:1.55;font-size:13px}
+.ns-install-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.ns-install-actions button{min-height:44px;border:0;border-radius:14px;font-weight:950}
+.ns-install-primary{background:linear-gradient(135deg,var(--ns-gold),var(--ns-orange));color:#000}
+.ns-install-secondary{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12)!important}
+.ns-skeleton{position:relative;overflow:hidden;background:linear-gradient(135deg,#050750,#000)!important}
+.ns-skeleton::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.13),transparent);
+  animation:nsShimmer 1.4s infinite;
+  pointer-events:none;
+}
+@keyframes nsShimmer{100%{transform:translateX(100%)}}
+.ns-skip{position:absolute;left:-999px;top:auto}
+.ns-skip:focus{left:12px;top:12px;z-index:999999;background:#ffd84b;color:#000;padding:12px 14px;border-radius:12px;font-weight:950}
+@media(max-width:720px){
+  body{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}
+  .topbar,.site-header,.header,.navbar{padding-top:calc(12px + env(safe-area-inset-top))!important}
+  .profiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .card-body{padding:13px!important}
+  .card-name{font-size:13px!important}
+  .ns-install-actions{grid-template-columns:1fr}
+}
+@media(max-width:420px){.profiles{grid-template-columns:1fr!important}}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
