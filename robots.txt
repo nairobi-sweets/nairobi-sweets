@@ -1,5 +1,5 @@
 User-agent: *
-
 Allow: /
 
 Sitemap: https://nairobi-sweets.com/sitemap.xml
+Sitemap: https://nairobi-sweets.com/sitemap-index.xml

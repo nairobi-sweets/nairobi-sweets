@@ -31,19 +31,25 @@
       "name": "Join",
       "short_name": "Join",
       "url": "/join.html",
-      "description": "Create a Nairobi Sweets profile"
+      "description": "Create a profile"
     },
     {
       "name": "Shorts",
       "short_name": "Shorts",
       "url": "/shorts.html",
-      "description": "Watch Nairobi Sweets shorts"
+      "description": "Watch shorts"
     },
     {
       "name": "Reels",
       "short_name": "Reels",
       "url": "/reel.html",
-      "description": "Watch Nairobi Sweets reels"
+      "description": "Watch reels"
+    },
+    {
+      "name": "Trending",
+      "short_name": "Trending",
+      "url": "/trending.html",
+      "description": "Trending profiles"
     }
   ]
 }
