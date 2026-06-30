@@ -1,0 +1,272 @@
+
+/* ==========================================================
+   Nairobi Sweets V5 Phase 2
+   Profile + Shorts + Reel premium polish
+   Safe overlay stylesheet: does not remove existing classes.
+========================================================== */
+:root{
+  --ns-gold:#ffd84b;
+  --ns-gold2:#ff9f1c;
+  --ns-navy:#050750;
+  --ns-bg:#02030f;
+  --ns-glass:rgba(8,14,55,.72);
+  --ns-line:rgba(255,216,75,.18);
+  --ns-soft:rgba(255,255,255,.08);
+}
+
+html{
+  background:#000;
+  -webkit-text-size-adjust:100%;
+}
+
+body{
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255,45,117,.18), transparent 28%),
+    radial-gradient(circle at 90% 15%, rgba(255,216,75,.10), transparent 30%),
+    radial-gradient(circle at top,#07105a 0%,#050518 45%,#000 100%) !important;
+  color:#fff;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior-y:contain;
+}
+
+img,video{
+  max-width:100%;
+  height:auto;
+}
+
+.site-header,
+.topbar{
+  background:rgba(0,0,0,.82) !important;
+  backdrop-filter:blur(22px) saturate(1.15);
+  -webkit-backdrop-filter:blur(22px) saturate(1.15);
+  border-bottom:1px solid rgba(255,216,75,.14) !important;
+  box-shadow:0 14px 36px rgba(0,0,0,.36);
+}
+
+.brand img,
+.logo img{
+  filter:drop-shadow(0 0 18px rgba(255,216,75,.24));
+}
+
+.home-btn,
+.home{
+  transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.home-btn:active,
+.home:active,
+.btn:active,
+.action:active,
+.bottom-nav a:active{
+  transform:scale(.96);
+}
+
+/* Profile page */
+.profile-card,
+.trust-center,
+.admin-help,
+.seo-links,
+.live-location-card,
+.mini-card,
+.info-box,
+.signup-content-box{
+  background:linear-gradient(145deg,rgba(10,15,70,.78),rgba(2,5,35,.82)) !important;
+  border:1px solid var(--ns-line) !important;
+  box-shadow:0 24px 80px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.055);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+.hero-img{
+  background:
+    linear-gradient(135deg,#050750,#000),
+    url("/assets/logo/logo-badge.png") center/90px no-repeat;
+}
+
+.gallery-item,
+.reel-box,
+.mini-media{
+  background:
+    linear-gradient(135deg,#050750,#000),
+    url("/assets/logo/logo-badge.png") center/72px no-repeat !important;
+}
+
+.gallery-item img,
+.mini-media img,
+.hero-img{
+  transition:opacity .25s ease, transform .35s ease, filter .35s ease;
+  filter:contrast(1.035) saturate(1.055);
+}
+
+.gallery-item:hover img,
+.mini-card:hover img{
+  transform:scale(1.035);
+}
+
+.badge,
+.stat,
+.chip,
+.hero-pill,
+.watermark,
+.trust-pill{
+  box-shadow:0 10px 26px rgba(0,0,0,.25);
+}
+
+.stats .stat,
+.chips .chip{
+  min-height:40px;
+  display:inline-flex;
+  align-items:center;
+}
+
+.actions.compact-actions .btn,
+.profile-nav .btn{
+  box-shadow:0 14px 30px rgba(0,0,0,.28);
+}
+
+.sticky-contact{
+  bottom:calc(72px + env(safe-area-inset-bottom)) !important;
+  padding-bottom:max(7px, env(safe-area-inset-bottom));
+}
+
+/* Shorts + Reels shared */
+.feed{
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+}
+
+.short,
+.reel{
+  background:
+    radial-gradient(circle at center,rgba(7,16,90,.9),#000 64%) !important;
+}
+
+.media,
+.video{
+  background:
+    linear-gradient(135deg,#050750,#000),
+    url("/assets/logo/logo-badge.png") center/96px no-repeat !important;
+}
+
+.video-loader,
+.loader,
+.empty{
+  background:
+    radial-gradient(circle at 25% 0%,rgba(255,45,117,.20),transparent 32%),
+    radial-gradient(circle at top,#07105a 0%,#000 70%) !important;
+}
+
+.actions .action,
+.action{
+  background:rgba(0,0,0,.50);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 16px 34px rgba(0,0,0,.40);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+
+.action.whatsapp,
+.whatsapp{
+  background:linear-gradient(135deg,#22c55e,#16a34a) !important;
+}
+
+.action.call,
+.call{
+  background:linear-gradient(135deg,#ffd84b,#ff9f1c) !important;
+  color:#000 !important;
+}
+
+.profile-action,
+.profile{
+  background:linear-gradient(135deg,#38bdf8,#2563eb) !important;
+}
+
+.ai-badge,
+.pill.pink{
+  box-shadow:0 0 34px rgba(255,20,147,.42);
+}
+
+.badge,
+.pill.gold{
+  box-shadow:0 12px 30px rgba(255,159,28,.25);
+}
+
+.info,
+.name,
+.location,
+.bio{
+  text-shadow:0 2px 18px rgba(0,0,0,.82);
+}
+
+.bottom-nav{
+  height:calc(70px + env(safe-area-inset-bottom)) !important;
+  padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(0,0,0,.88) !important;
+  backdrop-filter:blur(20px) saturate(1.15);
+  -webkit-backdrop-filter:blur(20px) saturate(1.15);
+}
+
+.bottom-nav a{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,216,75,.09);
+  border:1px solid rgba(255,216,75,.14);
+  box-shadow:0 10px 24px rgba(0,0,0,.35);
+}
+
+.bottom-nav a.active{
+  background:linear-gradient(135deg,rgba(255,216,75,.26),rgba(255,159,28,.16));
+}
+
+/* Loading shimmer */
+.ns-media-loading{
+  position:relative;
+  overflow:hidden;
+}
+
+.ns-media-loading::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+  transform:translateX(-100%);
+  animation:nsShimmer 1.4s infinite;
+  z-index:1;
+  pointer-events:none;
+}
+
+@keyframes nsShimmer{
+  100%{transform:translateX(100%)}
+}
+
+@media(max-width:640px){
+  .site-header{
+    min-height:82px !important;
+    padding-top:calc(10px + env(safe-area-inset-top)) !important;
+  }
+  .topbar{
+    padding-top:calc(14px + env(safe-area-inset-top)) !important;
+  }
+  .page{
+    padding-bottom:calc(100px + env(safe-area-inset-bottom)) !important;
+  }
+  .hero-img{
+    height:min(72vh,520px) !important;
+  }
+  .content{
+    padding-bottom:calc(34px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{
+    animation:none !important;
+    transition:none !important;
+    scroll-behavior:auto !important;
+  }
+}
