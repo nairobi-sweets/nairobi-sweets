@@ -1,13 +1,17 @@
 {
   "name": "Nairobi Sweets",
   "short_name": "NairobiSweets",
-  "description": "Nairobi Sweets premium mobile directory for verified profiles, reels and VIP discovery.",
+  "description": "Nairobi Sweets premium mobile directory.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000814",
   "theme_color": "#ffd84b",
+  "categories": [
+    "lifestyle",
+    "social"
+  ],
   "icons": [
     {
       "src": "/assets/pwa/icon-192.png",
@@ -22,13 +26,24 @@
       "purpose": "any maskable"
     }
   ],
-  "display_override": [
-    "standalone",
-    "minimal-ui",
-    "browser"
-  ],
-  "categories": [
-    "lifestyle",
-    "social"
+  "shortcuts": [
+    {
+      "name": "Join",
+      "short_name": "Join",
+      "url": "/join.html",
+      "description": "Create a Nairobi Sweets profile"
+    },
+    {
+      "name": "Shorts",
+      "short_name": "Shorts",
+      "url": "/shorts.html",
+      "description": "Watch Nairobi Sweets shorts"
+    },
+    {
+      "name": "Reels",
+      "short_name": "Reels",
+      "url": "/reel.html",
+      "description": "Watch Nairobi Sweets reels"
+    }
   ]
 }
