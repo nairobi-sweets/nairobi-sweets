@@ -5,7 +5,7 @@
   Upload this file as: /sw.js
 */
 
-const CACHE_VERSION = "nairobi-sweets-pwa-v3-2026-06-27";
+const CACHE_VERSION = "nairobi-sweets-pwa-v5-phase1-2026-06-30";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const MEDIA_CACHE = `${CACHE_VERSION}-media`;
@@ -23,7 +23,11 @@ const APP_SHELL = [
   "/assets/logo/logo-badge.png",
   "/assets/logo/logo-navbar.png",
   "/assets/pwa/icon-192.png",
-  "/assets/pwa/icon-512.png"
+  "/assets/pwa/icon-512.png",
+  "/assets/js/app.js",
+  "/assets/css/styles.css",
+  "/assets/js/v5-phase1.js",
+  "/assets/css/v5-phase1.css"
 ];
 
 const NEVER_CACHE_PATHS = [
