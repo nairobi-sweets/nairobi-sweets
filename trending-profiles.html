@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Trending Profiles | Nairobi Sweets</title>
+<meta name="description" content="Browse trending profiles on Nairobi Sweets. Discover the most viewed, most liked, VIP and Signature profiles across Nairobi, Roysambu, Kasarani, Kilimani, Westlands, Ruaka, Ruiru and Kiambu.">
+<meta name="keywords" content="trending profiles Nairobi, most viewed Nairobi profiles, VIP profiles Nairobi, Signature profiles Nairobi, Nairobi Sweets trending profiles">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://nairobi-sweets.com/seo/trending-profiles.html">
+
+<meta property="og:title" content="Trending Profiles | Nairobi Sweets">
+<meta property="og:description" content="Discover the most viewed and trending profiles on Nairobi Sweets.">
+<meta property="og:url" content="https://nairobi-sweets.com/seo/trending-profiles.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Trending Profiles | Nairobi Sweets">
+<meta name="twitter:description" content="Most viewed and trending Nairobi Sweets profiles across Nairobi and nearby areas.">
+<meta name="twitter:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
+
+<link rel="icon" href="/assets/logo/logo-badge.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ffd54a">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://dkjlvyynvgtijccitvvd.supabase.co" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"CollectionPage",
+  "name":"Trending Profiles | Nairobi Sweets",
+  "description":"Browse trending, most viewed and high-engagement profiles on Nairobi Sweets across Nairobi and nearby locations.",
+  "url":"https://nairobi-sweets.com/seo/trending-profiles.html",
+  "isPartOf":{
+    "@type":"WebSite",
+    "name":"Nairobi Sweets",
+    "url":"https://nairobi-sweets.com/"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"BreadcrumbList",
+  "itemListElement":[
+    {
+      "@type":"ListItem",
+      "position":1,
+      "name":"Home",
+      "item":"https://nairobi-sweets.com/"
+    },
+    {
+      "@type":"ListItem",
+      "position":2,
+      "name":"SEO Hub",
+      "item":"https://nairobi-sweets.com/seo/"
+    },
+    {
+      "@type":"ListItem",
+      "position":3,
+      "name":"Trending Profiles",
+      "item":"https://nairobi-sweets.com/seo/trending-profiles.html"
+    }
+  ]
+}
+</script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:radial-gradient(circle at top,#0c1148 0%,#000 48%);
+  color:white;
+  font-family:Arial,Helvetica,sans-serif;
+  overflow-x:hidden;
+}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.header{
+  position:sticky;
+  top:0;
+  z-index:999;
+  background:rgba(0,0,0,.96);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,213,74,.14);
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand img{width:58px;height:58px;border-radius:18px;object-fit:cover;box-shadow:0 0 25px rgba(255,150,0,.28)}
+.brand strong{color:#ffd54a;font-size:24px;font-weight:950;white-space:nowrap}
+.header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.header-link,.join-btn{
+  min-height:42px;
+  padding:12px 16px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:950;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.header-link{background:#07145f;border:1px solid rgba(255,213,74,.18);color:#ddd}
+.join-btn{background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000}
+.breadcrumb{max-width:1180px;margin:18px auto 0;padding:0 18px;color:#aaa;font-size:14px}
+.breadcrumb a{color:#ffd54a;font-weight:950}
+.hero{padding:52px 18px 28px;text-align:center}
+.hero h1{color:#ffd54a;font-size:clamp(44px,9vw,82px);line-height:.94;font-weight:950;margin-bottom:18px;letter-spacing:-1px}
+.hero p{max-width:980px;margin:auto;color:#ddd;line-height:1.8;font-size:17px}
+.quick-links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:24px auto 0;max-width:1050px}
+.quick-links a{background:#07145f;border:1px solid rgba(255,213,74,.18);padding:12px 16px;border-radius:999px;font-size:13px;font-weight:950;color:#ddd}
+.quick-links a:hover,.header-link:hover{background:#ffd54a;color:#000}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;max-width:1180px;margin:24px auto 8px;padding:0 18px}
+.stat{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:22px;padding:18px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.32)}
+.stat strong{display:block;color:#ffd54a;font-size:34px;font-weight:950;margin-bottom:6px}
+.stat span{color:#d7d7d7;font-size:12px;font-weight:850}
+.controls{max-width:1180px;margin:22px auto 0;padding:0 18px;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px}
+.controls input,.controls select{width:100%;min-height:50px;border-radius:16px;background:#020926;border:1px solid rgba(255,255,255,.10);color:white;padding:0 14px;font-size:14px;outline:none;font-weight:800}
+.section-title{max-width:1400px;margin:auto;padding:26px 18px 8px;color:#ffd54a;font-size:32px;font-weight:950}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:22px;max-width:1400px;margin:auto;padding:18px 18px 40px}
+.card{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:26px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.42)}
+.card img{width:100%;aspect-ratio:4/4.5;object-fit:cover;background:#020617}
+.body{padding:15px}
+.badge{display:inline-flex;background:#ffd54a;color:#000;padding:7px 10px;border-radius:999px;font-size:11px;font-weight:950;margin-bottom:10px}
+.name{font-size:17px;font-weight:950;margin-bottom:8px;color:#fff}
+.meta{font-size:12px;color:#d6d6d6;margin-bottom:8px;line-height:1.5}
+.bio{font-size:11px;color:#cfcfcf;line-height:1.6;margin-bottom:12px;min-height:36px}
+.score-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.score-chip{background:rgba(255,213,74,.10);border:1px solid rgba(255,213,74,.15);border-radius:999px;padding:6px 8px;color:#ffd54a;font-size:10px;font-weight:950}
+.view{display:flex;align-items:center;justify-content:center;min-height:42px;border-radius:14px;background:linear-gradient(145deg,#ffd54a,#ff9f1c);color:#000;font-size:12px;font-weight:950}
+.seo-links{max-width:1180px;margin:30px auto 50px;padding:0 18px}
+.seo-box{background:linear-gradient(180deg,#020a56,#010633);border:1px solid rgba(255,213,74,.12);border-radius:28px;padding:24px;box-shadow:0 18px 55px rgba(0,0,0,.32)}
+.seo-box h2{color:#ffd54a;font-size:28px;margin-bottom:14px;font-weight:950}
+.seo-box p{color:#ddd;line-height:1.8;margin-bottom:18px;font-size:15px}
+.profile-link-grid{columns:3;list-style:none}
+.profile-link-grid li{break-inside:avoid;margin-bottom:10px}
+.profile-link-grid a{color:#ddd;font-size:14px;line-height:1.45}
+.profile-link-grid a:hover{color:#ffd54a}
+.location-network{max-width:1180px;margin:0 auto 52px;padding:0 18px}
+.location-network h2{color:#ffd54a;font-size:28px;margin-bottom:16px;font-weight:950}
+.pill-row{display:flex;flex-wrap:wrap;gap:10px}
+.pill{background:#07145f;border:1px solid rgba(255,213,74,.20);padding:12px 16px;border-radius:999px;font-size:13px;font-weight:950;color:#ddd}
+.pill:hover{background:#ffd54a;color:#000}
+.footer{padding:35px 18px;text-align:center;background:#050505;color:#aaa;line-height:1.7}
+.footer a{color:#ffd54a;font-weight:950}
+.loading,.empty{grid-column:1/-1;text-align:center;color:#ffd54a;font-weight:950;padding:55px;line-height:1.7}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(2,minmax(220px,1fr))}.stats{grid-template-columns:repeat(2,1fr)}.controls{grid-template-columns:1fr}}
+@media(max-width:700px){.header{align-items:flex-start;flex-direction:column}.brand img{width:52px;height:52px}.brand strong{font-size:22px}.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.profile-link-grid{columns:1}.hero{padding-top:36px}.hero h1{font-size:48px}.section-title{font-size:27px}}
+</style>
+</head>
+
+<body>
+<header class="header">
+  <a href="/" class="brand">
+    <img src="/assets/logo/logo-badge.png" alt="Nairobi Sweets" onerror="this.src='/logo.png'">
+    <strong>Nairobi Sweets</strong>
+  </a>
+
+  <div class="header-actions">
+    <a class="header-link" href="/">Home</a>
+    <a class="header-link" href="/seo/latest-profiles.html">Latest</a>
+    <a class="header-link" href="/seo/locations/index.html">Locations</a>
+    <a class="join-btn" href="/join.html">Join</a>
+  </div>
+</header>
+
+<nav class="breadcrumb" aria-label="breadcrumb">
+  <a href="/">Home</a> →
+  <a href="/seo/">SEO Hub</a> →
+  <span>Trending Profiles</span>
+</nav>
+
+<section class="hero">
+  <h1>🔥 Trending Profiles</h1>
+  <p>
+    Browse the most viewed, most active and highest engagement Nairobi Sweets profiles.
+    This page helps visitors and search engines discover popular Featured, VIP and Signature profiles faster.
+  </p>
+
+  <div class="quick-links">
+    <a href="/seo/latest-profiles.html">Latest Profiles</a>
+    <a href="/seo/locations/kilimani.html">Kilimani</a>
+    <a href="/seo/locations/westlands.html">Westlands</a>
+    <a href="/seo/locations/kasarani.html">Kasarani</a>
+    <a href="/seo/locations/roysambu.html">Roysambu</a>
+    <a href="/seo/categories/vip.html">VIP Profiles</a>
+    <a href="/seo/categories/signature.html">Signature Profiles</a>
+  </div>
+</section>
+
+<section class="stats" id="stats" aria-label="Trending profile statistics">
+  <div class="stat"><strong>--</strong><span>Total Loaded</span></div>
+  <div class="stat"><strong>--</strong><span>Total Views</span></div>
+  <div class="stat"><strong>--</strong><span>Total Likes</span></div>
+  <div class="stat"><strong>--</strong><span>Locations</span></div>
+</section>
+
+<section class="controls" aria-label="Trending profile filters">
+  <input id="searchInput" type="search" placeholder="Search trending profiles by name or location...">
+  <select id="locationFilter">
+    <option value="">All Locations</option>
+  </select>
+  <select id="sortFilter">
+    <option value="trending">Trending Score</option>
+    <option value="views">Most Viewed</option>
+    <option value="likes">Most Liked</option>
+    <option value="newest">Newest Updated</option>
+  </select>
+</section>
+
+<h2 class="section-title">🔥 Top Trending Nairobi Sweets Profiles</h2>
+
+<section class="grid" id="profiles">
+  <div class="loading">Loading trending profiles...</div>
+</section>
+
+<section class="seo-links">
+  <div class="seo-box">
+    <h2>Trending Profile Links</h2>
+    <p>
+      These links expose popular Nairobi Sweets profile URLs in a clean crawlable format,
+      helping Google discover active profile pages through internal linking.
+    </p>
+    <ul class="profile-link-grid" id="profileLinks">
+      <li>Loading trending profile links...</li>
+    </ul>
+  </div>
+</section>
+
+<section class="location-network">
+  <h2>Explore More Nairobi Sweets Hubs</h2>
+  <div class="pill-row">
+    <a class="pill" href="/seo/latest-profiles.html">Latest Profiles</a>
+    <a class="pill" href="/seo/locations/roysambu.html">Roysambu</a>
+    <a class="pill" href="/seo/locations/kasarani.html">Kasarani</a>
+    <a class="pill" href="/seo/locations/kilimani.html">Kilimani</a>
+    <a class="pill" href="/seo/locations/westlands.html">Westlands</a>
+    <a class="pill" href="/seo/locations/ruaka.html">Ruaka</a>
+    <a class="pill" href="/seo/locations/ruiru.html">Ruiru</a>
+    <a class="pill" href="/seo/locations/kiambu.html">Kiambu</a>
+    <a class="pill" href="/seo/categories/vip.html">VIP Profiles</a>
+    <a class="pill" href="/seo/categories/signature.html">Signature Profiles</a>
+  </div>
+</section>
+
+<footer class="footer">
+  © 2026 Nairobi Sweets ·
+  <a href="/">Home</a> ·
+  <a href="/seo/latest-profiles.html">Latest Profiles</a> ·
+  <a href="/seo/">SEO Hub</a> ·
+  <a href="/join.html">Join</a> ·
+  <a href="/sitemap.xml">Sitemap</a>
+</footer>
+
+<script>
+const SUPABASE_URL = "https://dkjlvyynvgtijccitvvd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_LtXESbvWOeL5EiUi1aYXSg_Ynm8qywm";
+const SITE_URL = "https://nairobi-sweets.com";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const profilesEl = document.getElementById("profiles");
+const profileLinksEl = document.getElementById("profileLinks");
+const statsEl = document.getElementById("stats");
+const searchInput = document.getElementById("searchInput");
+const locationFilter = document.getElementById("locationFilter");
+const sortFilter = document.getElementById("sortFilter");
+let allProfiles = [];
+
+function clean(value,fallback=""){
+  return String(value || fallback).replace(/[<>]/g,"").trim();
+}
+
+function makeSlug(value){
+  return String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/&/g," and ")
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
+}
+
+function num(value){
+  const n = Number(value || 0);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function getName(p){
+  return clean(p.stage_name || p.name || p.display_name || p.full_name || "Verified Profile");
+}
+
+function getLocation(p){
+  return clean(p.location || p.town || p.area || "Nairobi");
+}
+
+function getPlan(p){
+  return clean(p.plan || p.plan_name || p.package || p.tier || "Featured");
+}
+
+function getBio(p){
+  return clean(p.bio || p.description || p.about || `Trending Nairobi Sweets profile in ${getLocation(p)}.`);
+}
+
+function shortBio(text){
+  text = String(text || "");
+  return text.length > 118 ? text.slice(0,118).trim() + "..." : text;
+}
+
+function getImage(p){
+  return clean(
+    p.profile_image_url ||
+    p.cover_image_url ||
+    p.signature_banner_url ||
+    p.photo_url ||
+    p.image_url ||
+    p.profile_photo ||
+    p.main_photo ||
+    p.photo ||
+    p.image ||
+    "/assets/logo/logo-badge.png"
+  );
+}
+
+function profileUrl(p){
+  if(p.slug && String(p.slug).trim()){
+    return "/profile.html?slug=" + encodeURIComponent(makeSlug(p.slug));
+  }
+
+  const name = p.stage_name || p.name || p.display_name || p.full_name || "profile";
+  const location = p.location || p.town || p.area || "nairobi";
+  const slug = makeSlug(`${name}-${location}-${p.id || p.profile_id || ""}`);
+
+  if(slug){
+    return "/profile.html?slug=" + encodeURIComponent(slug);
+  }
+
+  return "/profile.html?id=" + encodeURIComponent(p.id || p.profile_id || "");
+}
+
+function getViews(p){
+  return num(p.views || p.views_count || p.profile_views);
+}
+
+function getLikes(p){
+  return num(p.likes || p.likes_count || p.favorites || p.favorites_count);
+}
+
+function getBoost(p){
+  return num(p.boost_score || p.boost || p.rank_boost);
+}
+
+function trendingScore(p){
+  const verified = (p.verified || p.is_verified) ? 15 : 0;
+  const plan = getPlan(p).toLowerCase();
+  const planBoost = plan.includes("signature") ? 30 : plan.includes("vip") ? 18 : 8;
+  return Math.round(getViews(p) * 0.55 + getLikes(p) * 1.8 + getBoost(p) + verified + planBoost);
+}
+
+function badge(p){
+  const plan = getPlan(p).toLowerCase();
+  if(plan.includes("signature") || plan.includes("vvip")) return "👑 Signature";
+  if(plan.includes("vip")) return "✨ VIP";
+  if(p.verified || p.is_verified) return "🛡️ Verified";
+  return "🔥 Trending";
+}
+
+function renderStats(data){
+  const locations = new Set(data.map(getLocation).filter(Boolean));
+  const totalViews = data.reduce((sum,p)=>sum + getViews(p),0);
+  const totalLikes = data.reduce((sum,p)=>sum + getLikes(p),0);
+
+  statsEl.innerHTML = `
+    <div class="stat"><strong>${data.length}</strong><span>Total Loaded</span></div>
+    <div class="stat"><strong>${totalViews}</strong><span>Total Views</span></div>
+    <div class="stat"><strong>${totalLikes}</strong><span>Total Likes</span></div>
+    <div class="stat"><strong>${locations.size}</strong><span>Locations</span></div>
+  `;
+}
+
+function renderLocationFilter(data){
+  const current = locationFilter.value;
+  const locations = [...new Set(data.map(getLocation).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  locationFilter.innerHTML = `<option value="">All Locations</option>` + locations.map(loc => `<option value="${clean(loc).toLowerCase()}">${clean(loc)}</option>`).join("");
+  locationFilter.value = current;
+}
+
+function sortedProfiles(data){
+  const mode = sortFilter.value;
+  const cloned = [...data];
+
+  if(mode === "views") return cloned.sort((a,b)=>getViews(b)-getViews(a));
+  if(mode === "likes") return cloned.sort((a,b)=>getLikes(b)-getLikes(a));
+  if(mode === "newest") return cloned.sort((a,b)=>new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0));
+
+  return cloned.sort((a,b)=>trendingScore(b)-trendingScore(a));
+}
+
+function filteredProfiles(){
+  const q = searchInput.value.toLowerCase().trim();
+  const loc = locationFilter.value.toLowerCase().trim();
+
+  const filtered = allProfiles.filter(p => {
+    const hay = `${getName(p)} ${getLocation(p)} ${getPlan(p)} ${getBio(p)}`.toLowerCase();
+    const pLoc = getLocation(p).toLowerCase();
+
+    const qOk = !q || hay.includes(q);
+    const locOk = !loc || pLoc === loc;
+
+    return qOk && locOk;
+  });
+
+  return sortedProfiles(filtered);
+}
+
+function renderProfiles(data){
+  if(!data.length){
+    profilesEl.innerHTML = `<div class="empty">No matching trending profiles found.</div>`;
+    profileLinksEl.innerHTML = `<li>No matching trending profile links found.</li>`;
+    return;
+  }
+
+  profilesEl.innerHTML = data.slice(0,80).map((p,index) => `
+    <article class="card">
+      <a href="${profileUrl(p)}" aria-label="View ${clean(getName(p))}">
+        <img src="${getImage(p)}" alt="${clean(getName(p))} ${clean(getLocation(p))} trending profile" loading="lazy" onerror="this.src='/assets/logo/logo-badge.png'">
+      </a>
+      <div class="body">
+        <span class="badge">${index < 3 ? "🏆 #" + (index + 1) + " " : ""}${badge(p)}</span>
+        <div class="name">${clean(getName(p))}</div>
+        <div class="meta">📍 ${clean(getLocation(p))} · 💎 ${clean(getPlan(p))}</div>
+        <div class="score-row">
+          <span class="score-chip">🔥 Score ${trendingScore(p)}</span>
+          <span class="score-chip">👁 ${getViews(p)}</span>
+          <span class="score-chip">❤️ ${getLikes(p)}</span>
+        </div>
+        <div class="bio">${clean(shortBio(getBio(p)))}</div>
+        <a class="view" href="${profileUrl(p)}">View Profile</a>
+      </div>
+    </article>
+  `).join("");
+
+  profileLinksEl.innerHTML = data.slice(0,120).map((p,index) => `
+    <li><a href="${profileUrl(p)}">#${index + 1} ${clean(getName(p))} · ${clean(getLocation(p))} · Score ${trendingScore(p)}</a></li>
+  `).join("");
+}
+
+function applyFilters(){
+  renderProfiles(filteredProfiles());
+}
+
+async function loadProfiles(){
+  profilesEl.innerHTML = `<div class="loading">Loading trending profiles...</div>`;
+
+  const {data,error} = await sb
+    .from("active_profiles_view")
+    .select("*")
+    .limit(160);
+
+  if(error){
+    profilesEl.innerHTML = `<div class="empty">Unable to load trending profiles: ${clean(error.message)}</div>`;
+    profileLinksEl.innerHTML = `<li>Unable to load trending profile links.</li>`;
+    return;
+  }
+
+  allProfiles = sortedProfiles(data || []);
+
+  if(!allProfiles.length){
+    profilesEl.innerHTML = `<div class="empty">No trending profiles found yet.</div>`;
+    profileLinksEl.innerHTML = `<li>No profile links found yet.</li>`;
+    renderStats([]);
+    return;
+  }
+
+  renderStats(allProfiles);
+  renderLocationFilter(allProfiles);
+  renderProfiles(allProfiles);
+}
+
+searchInput.addEventListener("input",applyFilters);
+locationFilter.addEventListener("change",applyFilters);
+sortFilter.addEventListener("change",applyFilters);
+
+loadProfiles();
+</script>
+</body>
+</html>
