@@ -1,0 +1,152 @@
+/* ==========================================================
+   Nairobi Sweets V5 Phase 5
+   Final performance, production polish, install UX and stability layer
+========================================================== */
+:root{
+  --v5p5-gold:#ffd84b;
+  --v5p5-orange:#ff9f1c;
+  --v5p5-bg:#02030f;
+  --v5p5-line:rgba(255,216,75,.18);
+  --v5p5-glass:rgba(6,10,45,.78);
+}
+html{
+  background:#000;
+  scroll-behavior:smooth;
+}
+body{
+  background:
+    radial-gradient(circle at 15% 0%,rgba(255,216,75,.10),transparent 26%),
+    radial-gradient(circle at 84% 12%,rgba(255,45,117,.12),transparent 32%),
+    radial-gradient(circle at top,#07105a 0%,#02030f 48%,#000 100%) !important;
+  -webkit-font-smoothing:antialiased;
+}
+img,video,iframe{
+  max-width:100%;
+}
+img{
+  image-rendering:auto;
+}
+button,a{
+  touch-action:manipulation;
+}
+input,textarea,select{
+  font-size:16px !important;
+}
+.v5p5-hidden{
+  display:none !important;
+}
+.v5p5-toast{
+  position:fixed;
+  left:16px;
+  right:16px;
+  bottom:calc(92px + env(safe-area-inset-bottom));
+  z-index:999999;
+  display:none;
+  padding:14px 16px;
+  border-radius:18px;
+  background:linear-gradient(145deg,rgba(4,9,47,.96),rgba(0,0,0,.94));
+  border:1px solid rgba(255,216,75,.24);
+  color:#fff;
+  box-shadow:0 24px 70px rgba(0,0,0,.58);
+}
+.v5p5-toast.show{
+  display:block;
+}
+.v5p5-install-card{
+  position:fixed;
+  left:16px;
+  right:16px;
+  bottom:calc(88px + env(safe-area-inset-bottom));
+  z-index:999998;
+  display:none;
+  padding:16px;
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(6,10,45,.96),rgba(0,0,0,.94));
+  border:1px solid rgba(255,216,75,.24);
+  color:#fff;
+  box-shadow:0 26px 80px rgba(0,0,0,.62);
+}
+.v5p5-install-card.show{
+  display:block;
+}
+.v5p5-install-card strong{
+  display:block;
+  color:var(--v5p5-gold);
+  font-size:18px;
+  margin-bottom:6px;
+}
+.v5p5-install-card p{
+  margin:0;
+  color:#e5e7eb;
+  line-height:1.55;
+  font-size:13px;
+}
+.v5p5-install-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.v5p5-install-actions button{
+  min-height:44px;
+  border:0;
+  border-radius:14px;
+  font-weight:950;
+}
+.v5p5-install-primary{
+  background:linear-gradient(135deg,var(--v5p5-gold),var(--v5p5-orange));
+  color:#000;
+}
+.v5p5-install-secondary{
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.12) !important;
+}
+.v5p5-skeleton{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,#050750,#000) !important;
+}
+.v5p5-skeleton::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.13),transparent);
+  animation:v5p5Shimmer 1.4s infinite;
+  pointer-events:none;
+}
+@keyframes v5p5Shimmer{
+  100%{transform:translateX(100%)}
+}
+.card,.profile-card,.short-card,.signature-card,.mini-card,.join-price-card,.stat-mini,.map-card,.trust-center,.admin-help,.seo-links,.sweet-panel{
+  transition:transform .22s ease, box-shadow .22s ease, filter .22s ease;
+}
+.card:hover,.profile-card:hover,.short-card:hover,.signature-card:hover,.mini-card:hover{
+  filter:brightness(1.03);
+}
+.bottom-nav{
+  contain:layout paint;
+}
+.bottom-nav a.active{
+  background:linear-gradient(135deg,#ffd84b,#ff9f1c) !important;
+  color:#000 !important;
+}
+@media(max-width:720px){
+  body{
+    padding-bottom:calc(92px + env(safe-area-inset-bottom)) !important;
+  }
+  .topbar,.site-header,.header,.navbar{
+    padding-top:calc(12px + env(safe-area-inset-top)) !important;
+  }
+  .v5p5-install-actions{
+    grid-template-columns:1fr;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation:none !important;
+    transition:none !important;
+    scroll-behavior:auto !important;
+  }
+}
