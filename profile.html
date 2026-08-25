@@ -4,9 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
+<!-- Nairobi Sweets Profile SEO V4 -->
 <title>Nairobi Sweets Profile</title>
-<meta name="description" content="View a Nairobi Sweets profile with gallery, services, WhatsApp and direct call contact.">
-<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="description" content="View a Nairobi Sweets profile with gallery, services, location and direct contact options.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 <meta name="theme-color" content="#050733">
 
 <meta property="og:title" content="Nairobi Sweets Profile">
@@ -21,6 +23,68 @@
 <meta name="twitter:image" content="https://nairobi-sweets.com/assets/logo/logo-badge.png">
 
 <link rel="canonical" href="https://nairobi-sweets.com/profile.html">
+
+<script>
+/*
+  SEO V4 bootstrap:
+  Give crawlers a URL-specific canonical/title/description immediately,
+  before Supabase and the full profile renderer finish loading.
+*/
+(function(){
+  try{
+    const SITE = "https://nairobi-sweets.com";
+    const params = new URLSearchParams(location.search);
+    let slug = (params.get("slug") || "").trim();
+
+    if(!slug){
+      const parts = location.pathname.split("/").filter(Boolean);
+      if(parts[0] === "profile" && parts[1]) slug = decodeURIComponent(parts[1]).trim();
+    }
+
+    if(!slug) return;
+
+    const cleanSlug = String(slug)
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g,"-")
+      .replace(/^-+|-+$/g,"");
+
+    if(!cleanSlug) return;
+
+    const canonicalUrl = `${SITE}/profile.html?slug=${encodeURIComponent(cleanSlug)}`;
+    const readable = cleanSlug
+      .replace(/-\d+$/,"")
+      .replace(/-/g," ")
+      .replace(/\b\w/g,c => c.toUpperCase())
+      .trim();
+
+    const bootstrapTitle = readable
+      ? `${readable} | Nairobi Sweets Profile`
+      : "Nairobi Sweets Profile";
+
+    const bootstrapDesc = readable
+      ? `View ${readable} on Nairobi Sweets. Browse profile details, location, gallery and contact options.`
+      : "View this Nairobi Sweets profile.";
+
+    document.title = bootstrapTitle;
+
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if(canonical) canonical.href = canonicalUrl;
+
+    const set = (selector,value) => {
+      const el = document.querySelector(selector);
+      if(el) el.setAttribute("content",value);
+    };
+
+    set('meta[name="description"]', bootstrapDesc);
+    set('meta[property="og:title"]', bootstrapTitle);
+    set('meta[property="og:description"]', bootstrapDesc);
+    set('meta[property="og:url"]', canonicalUrl);
+    set('meta[name="twitter:title"]', bootstrapTitle);
+    set('meta[name="twitter:description"]', bootstrapDesc);
+  }catch(e){}
+})();
+</script>
 <link rel="icon" href="/assets/logo/logo-badge.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
@@ -945,20 +1009,63 @@ function reelUrl(p){
   return p.reel_url || p.reel || p.short_video || p.video_url || p.short_url || "";
 }
 
+/*
+  SEO V4 canonical slug.
+  The dynamic profile sitemap uses the durable format:
+  stage-name + location + profile ID.
+  Keeping the same format here prevents canonical drift and duplicate URLs.
+*/
 function profileSlug(p){
-  return makeSlug(p.slug || `${p.stage_name || p.name || "profile"}-${p.location || p.id}`);
+  if(!p) return "";
+  const name = p.stage_name || p.name || p.full_name || p.username || "profile";
+  const loc = p.location || primaryLocation(p) || "nairobi";
+  const id = p.id ?? "";
+
+  if(id !== "" && id !== null && id !== undefined){
+    return makeSlug(`${name}-${loc}-${id}`);
+  }
+
+  return makeSlug(p.seo_slug || p.profile_slug || p.slug || `${name}-${loc}`);
 }
 
 function profileUrl(p){
   const slug = profileSlug(p);
-  if(slug) return `${SITE_URL}/profile.html?slug=${encodeURIComponent(slug)}`;
-  return `${SITE_URL}/profile.html?id=${encodeURIComponent(p.id || "")}`;
+  return slug
+    ? `${SITE_URL}/profile.html?slug=${encodeURIComponent(slug)}`
+    : `${SITE_URL}/profile.html?id=${encodeURIComponent(p?.id || "")}`;
 }
 
 function localProfileUrl(p){
   const slug = profileSlug(p);
-  if(slug) return `/profile.html?slug=${encodeURIComponent(slug)}`;
-  return `/profile.html?id=${encodeURIComponent(p.id || "")}`;
+  return slug
+    ? `/profile.html?slug=${encodeURIComponent(slug)}`
+    : `/profile.html?id=${encodeURIComponent(p?.id || "")}`;
+}
+
+function slugId(slug){
+  const clean = makeSlug(slug);
+  if(/^\d+$/.test(clean)) return clean;
+  const match = clean.match(/-(\d+)$/);
+  return match ? match[1] : "";
+}
+
+function slugCandidates(p){
+  if(!p) return [];
+  const name = p.stage_name || p.name || p.full_name || p.username || "profile";
+  const loc = p.location || primaryLocation(p) || "";
+  return [
+    profileSlug(p),
+    p.slug,
+    p.profile_slug,
+    p.seo_slug,
+    p.username,
+    p.stage_name,
+    p.name,
+    p.full_name,
+    p.id,
+    `${name}-${loc}`,
+    `${name}-${loc}-${p.id ?? ""}`
+  ].map(makeSlug).filter(Boolean);
 }
 
 function planText(p){
@@ -1469,8 +1576,10 @@ function renderProfile(p){
             <a class="btn back" href="/">🏠 Back Home</a>
           </div>
 
-          ${previousNext()}
-          ${buildFeeds()}
+          <div id="profileNavAndFeeds">
+            ${previousNext()}
+            ${buildFeeds()}
+          </div>
 
 
           <div class="admin-help">
@@ -1499,16 +1608,39 @@ async function loadRelated(current){
   relatedProfiles = error ? [] : (data || []);
 }
 
+let profileLookupHadError = false;
+
+function wait(ms){
+  return new Promise(resolve => setTimeout(resolve,ms));
+}
+
+async function queryProfileById(id){
+  if(!id) return {data:null,error:null};
+
+  let lastError = null;
+  for(let attempt=0; attempt<2; attempt++){
+    const result = await sb
+      .from("profiles")
+      .select("*")
+      .eq("id",id)
+      .maybeSingle();
+
+    if(!result.error) return result;
+    lastError = result.error;
+    if(attempt === 0) await wait(350);
+  }
+
+  return {data:null,error:lastError};
+}
+
 async function findProfileById(id){
   if(!id) return null;
-
-  const {data,error} = await sb
-    .from("profiles")
-    .select("*")
-    .eq("id",id)
-    .maybeSingle();
-
-  if(error) return null;
+  const {data,error} = await queryProfileById(id);
+  if(error){
+    profileLookupHadError = true;
+    console.warn("Profile ID lookup failed:", error.message || error);
+    return null;
+  }
   return data || null;
 }
 
@@ -1516,39 +1648,60 @@ async function findProfileBySlug(slug){
   if(!slug) return null;
 
   const wanted = makeSlug(slug);
+  if(!wanted) return null;
 
   /*
-    SEO Soft 404 fix:
-    The dynamic profile sitemap creates URLs like:
-    profile.html?slug=stage-name-location-id
-
-    Older profile pages only matched stage-name-location, so Google could open
-    a real sitemap URL and still see "Profile not found". This matcher now
-    supports slug, profile_slug, seo_slug, username, ID and the sitemap format.
+    SEO V4 fast path:
+    Sitemap slugs end in the stable database ID, e.g.
+    name-location-398. Resolve that exact row first instead of downloading
+    thousands of profiles before showing the page.
   */
-  const {data,error} = await sb
-    .from("profiles")
-    .select("*")
-    .limit(5000);
+  const idFromSlug = slugId(wanted);
+  if(idFromSlug){
+    const byId = await findProfileById(idFromSlug);
+    if(byId) return byId;
+    if(profileLookupHadError) return null;
+  }
 
-  if(error) return null;
+  /*
+    Legacy URL fallback:
+    Older shared links may not contain an ID. Only then do the broader match.
+    This preserves backward compatibility without slowing normal sitemap URLs.
+  */
+  let result = null;
+  let lastError = null;
 
-  return (data || []).find(p => {
-    const possible = [
-      p.slug,
-      p.profile_slug,
-      p.seo_slug,
-      p.username,
-      p.stage_name,
-      p.name,
-      p.full_name,
-      p.id,
-      `${p.stage_name || p.name || "profile"}-${p.location || ""}`,
-      `${p.stage_name || p.name || "profile"}-${p.location || ""}-${p.id}`
-    ].map(makeSlug);
+  for(let attempt=0; attempt<2; attempt++){
+    result = await sb
+      .from("profiles")
+      .select("*")
+      .limit(5000);
 
-    return possible.includes(wanted);
-  }) || null;
+    if(!result.error) break;
+    lastError = result.error;
+    if(attempt === 0) await wait(350);
+  }
+
+  if(!result || result.error){
+    profileLookupHadError = true;
+    console.warn("Profile slug fallback lookup failed:", (result?.error || lastError)?.message || result?.error || lastError);
+    return null;
+  }
+
+  return (result.data || []).find(p => slugCandidates(p).includes(wanted)) || null;
+}
+
+function showTemporaryProfileError(){
+  document.title = "Profile Temporarily Unavailable | Nairobi Sweets";
+  app.innerHTML = `
+    <section class="page">
+      <div class="error">
+        <strong>Profile temporarily unavailable.</strong><br><br>
+        We could not load this profile right now. Please refresh the page in a moment.
+        <br><br><a class="home-btn" href="/">Return Home</a>
+      </div>
+    </section>
+  `;
 }
 
 async function loadAdminContact(){
@@ -1587,33 +1740,58 @@ async function loadProfile(){
     return;
   }
 
+  profileLookupHadError = false;
   let data = null;
 
-  if(slug && !/^\d+$/.test(slug)){
-    data = await findProfileBySlug(slug);
+  // Fastest route for sitemap URLs and explicit IDs.
+  const stableId = idParam || slugId(slug);
+  if(stableId){
+    data = await findProfileById(stableId);
   }
 
-  if(!data && (idParam || /^\d+$/.test(slug || ""))){
-    data = await findProfileById(idParam || slug);
-  }
-
-  if(!data && slug){
+  // Legacy/non-ID slug support.
+  if(!data && slug && !profileLookupHadError){
     data = await findProfileBySlug(slug);
   }
 
   if(!data){
+    if(profileLookupHadError){
+      showTemporaryProfileError();
+      return;
+    }
     window.location.replace("/404.html");
     return;
   }
 
-  await loadRelated(data);
+  /*
+    Critical SEO/LCP change:
+    Render the real profile immediately. Related-profile discovery is secondary
+    and must never delay the main profile content seen by users or crawlers.
+  */
   renderProfile(data);
   await loadAdminContact();
-  await incrementColumn("views");
-  await logEvent("view");
+
+  // Load related profiles after the main entity is already visible.
+  try{
+    await loadRelated(data);
+    const slot = document.getElementById("profileNavAndFeeds");
+    if(slot){
+      slot.innerHTML = `${previousNext()}${buildFeeds()}`;
+    }
+  }catch(error){
+    console.warn("Related profiles failed:", error?.message || error);
+  }
+
+  // Analytics are non-blocking for page rendering.
+  incrementColumn("views").catch(()=>{});
+  logEvent("view").catch(()=>{});
 }
 
-loadProfile();
+loadProfile().catch(error => {
+  profileLookupHadError = true;
+  console.error("Profile loader failed:", error);
+  showTemporaryProfileError();
+});
 </script>
 
 <script>
@@ -1628,7 +1806,7 @@ if("serviceWorker" in navigator){
 
 <script>
 /* =========================================================
-   NAIROBI SWEETS PROFILE V3 PREMIUM PATCH JS
+   NAIROBI SWEETS PROFILE V4 PREMIUM SEO PATCH JS
    safer lazy media, active nav, iOS comfort, resilient sharing
 ========================================================= */
 (function(){
