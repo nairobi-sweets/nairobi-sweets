@@ -910,7 +910,7 @@ Tracks physical visits, assistance, follow-ups and route progress.
   </div>
 
   <div class="membership-control-note">
-    Use this command center to activate 3, 7, 15 or 30 day trials by category, approve all trial profiles, and cleanly expire trials whose countdown has ended.
+    Use this command center to safely activate 3, 7, 15 or 30 day trials by category. Existing trials and paid memberships are protected from being overwritten; you can also approve trial profiles and cleanly expire trials whose countdown has ended.
   </div>
 
   <div class="status" id="membershipControlStatus"></div>
@@ -1058,7 +1058,7 @@ Tracks physical visits, assistance, follow-ups and route progress.
     <button class="bulk-trial-btn" onclick="giveBulkTrial()">🎁 Give Trial</button>
 
     <div class="bulk-trial-note">
-      Choose a category and duration, then activate trial for every matching profile at once. This sets profiles live, marks payment as trial, and starts the expiry timer.
+      Choose a category and duration, then activate trials only for profiles that still need one. Existing trial profiles and paid memberships are preserved and their dates are not reset.
     </div>
   </div>
 
@@ -3493,26 +3493,44 @@ function profileMatchesBulkTrialPlan(profile,plan){
   return false;
 }
 
+/*
+  SAFE BULK TRIAL HELPERS
+  -----------------------
+  The old bulk command restarted every matching profile, including profiles
+  already on a live trial. These helpers protect existing trials and paid
+  memberships so only profiles that still need activation are changed.
+*/
+function profileHasExistingTrial(profile){
+  return profile?.trial_active === true ||
+    String(profile?.payment_status || "").toLowerCase() === "trial";
+}
+
+function profileHasPaidMembership(profile){
+  return String(profile?.payment_status || "").toLowerCase() === "paid";
+}
+
+function profileEligibleForSafeBulkTrial(profile,plan){
+  if(!profileMatchesBulkTrialPlan(profile,plan)) return false;
+  if(profileHasExistingTrial(profile)) return false;
+  if(profileHasPaidMembership(profile)) return false;
+  return true;
+}
+
 async function giveBulkTrial(){
   const plan = document.getElementById("bulkTrialPlan")?.value || "all";
   const days = Number(document.getElementById("bulkTrialDays")?.value || 3);
   const status = document.getElementById("bulkTrialStatus");
 
   if(status){
-    status.textContent = "Preparing trial activation...";
+    status.textContent = "Preparing SAFE trial activation...";
     status.style.color = "#ffd54a";
   }
 
-  const targets = (ALL_PROFILES || []).filter(profile => profileMatchesBulkTrialPlan(profile,plan));
+  const matching = (ALL_PROFILES || []).filter(profile => profileMatchesBulkTrialPlan(profile,plan));
+  const protectedTrials = matching.filter(profile => profileHasExistingTrial(profile));
+  const protectedPaid = matching.filter(profile => !profileHasExistingTrial(profile) && profileHasPaidMembership(profile));
+  const targets = matching.filter(profile => profileEligibleForSafeBulkTrial(profile,plan));
   const ids = targets.map(profile => profile.id).filter(Boolean);
-
-  if(!ids.length){
-    if(status){
-      status.textContent = "No matching profiles found for this category.";
-      status.style.color = "#ff6b6b";
-    }
-    return;
-  }
 
   const labelMap = {
     all:"ALL categories",
@@ -3522,10 +3540,30 @@ async function giveBulkTrial(){
     signature:"Signature"
   };
 
-  const ok = confirm(`Give ${days}-day trial to ${ids.length} ${labelMap[plan] || plan} profile(s)?`);
+  if(!ids.length){
+    const message = `No eligible profiles found. Preserved ${protectedTrials.length} existing trial(s) and ${protectedPaid.length} paid profile(s).`;
+    if(status){
+      status.textContent = message;
+      status.style.color = "#ffd54a";
+    }
+    return {ok:false,reason:"no_eligible",eligible:0,preservedTrials:protectedTrials.length,preservedPaid:protectedPaid.length};
+  }
+
+  const ok = confirm(
+    `SAFE BULK TRIAL\n\n` +
+    `Activate ${days}-day trial for ${ids.length} eligible ${labelMap[plan] || plan} profile(s)?\n\n` +
+    `Protected and left untouched:\n` +
+    `• ${protectedTrials.length} existing trial profile(s)\n` +
+    `• ${protectedPaid.length} paid profile(s)\n\n` +
+    `Only the ${ids.length} remaining eligible profile(s) will receive new trial dates.`
+  );
+
   if(!ok){
-    if(status) status.textContent = "Bulk trial cancelled.";
-    return;
+    if(status){
+      status.textContent = "Safe bulk trial cancelled. No profiles were changed.";
+      status.style.color = "#ffd54a";
+    }
+    return {ok:false,cancelled:true,eligible:ids.length,preservedTrials:protectedTrials.length,preservedPaid:protectedPaid.length};
   }
 
   const now = new Date();
@@ -3560,20 +3598,30 @@ async function giveBulkTrial(){
       status.textContent = error.message;
       status.style.color = "#ff6b6b";
     }
-    return;
+    return {ok:false,error:error.message,eligible:ids.length,preservedTrials:protectedTrials.length,preservedPaid:protectedPaid.length};
   }
 
+  const successMessage = `${days}-day trial activated for ${ids.length} remaining profile(s). Preserved ${protectedTrials.length} existing trial(s) and ${protectedPaid.length} paid profile(s).`;
+
   if(status){
-    status.textContent = `${days}-day trial activated for ${ids.length} profile(s).`;
+    status.textContent = successMessage;
     status.style.color = "#22c55e";
   }
 
-  await audit("bulk_trial_given","","",`${days}-day trial given to ${ids.length} ${labelMap[plan] || plan} profile(s)`);
+  await audit(
+    "safe_bulk_trial_given",
+    "",
+    "",
+    `${days}-day trial given to ${ids.length} eligible ${labelMap[plan] || plan} profile(s); preserved ${protectedTrials.length} existing trial(s) and ${protectedPaid.length} paid profile(s)`
+  );
 
-  loadProfiles();
-  loadDashboardStats();
-  if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
+  await loadProfiles();
+  await loadDashboardStats();
+  if(typeof loadRevenueDashboard === "function") await loadRevenueDashboard();
+
+  return {ok:true,updated:ids.length,preservedTrials:protectedTrials.length,preservedPaid:protectedPaid.length,days,plan};
 }
+
 
 function setMembershipStatus(text,color){
   const box = document.getElementById("membershipControlStatus");
@@ -3592,10 +3640,28 @@ async function giveMembershipControlTrial(){
   if(bulkPlan) bulkPlan.value = plan;
   if(bulkDays) bulkDays.value = days;
 
-  setMembershipStatus("Starting category trial activation...","#ffd54a");
-  await giveBulkTrial();
-  setMembershipStatus(`${days}-day trial command completed for ${plan === "all" ? "all categories" : plan}.`, "#22c55e");
+  setMembershipStatus("Checking which profiles still need a trial...","#ffd54a");
+  const result = await giveBulkTrial();
+
+  if(!result) return;
+
+  if(result.ok){
+    setMembershipStatus(
+      `${result.updated} remaining profile(s) received a ${days}-day trial. ${result.preservedTrials} existing trial(s) were preserved and ${result.preservedPaid} paid profile(s) were left untouched.`,
+      "#22c55e"
+    );
+  }else if(result.cancelled){
+    setMembershipStatus("Safe trial activation cancelled. Nothing was changed.","#ffd54a");
+  }else if(result.error){
+    setMembershipStatus(result.error,"#ff6b6b");
+  }else{
+    setMembershipStatus(
+      `No eligible profiles needed activation. ${result.preservedTrials || 0} existing trial(s) and ${result.preservedPaid || 0} paid profile(s) were preserved.`,
+      "#ffd54a"
+    );
+  }
 }
+
 
 async function approveAllTrialProfiles(){
   const targets = (ALL_PROFILES || []).filter(p =>
