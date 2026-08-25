@@ -23,7 +23,7 @@ force = true
 
 [[redirects]]
 from = "/dynamic-location-sitemap.xml"
-to = "/.netlify/functions/generate-sitemaps?type=locations"
+to = "/.netlify/functions/dynamic-location-sitemap"
 status = 200
 force = true
 
