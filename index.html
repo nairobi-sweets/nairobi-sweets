@@ -2941,12 +2941,14 @@ try{
     "nairobi_sweets_fast_profiles_v4",
     "nairobi_sweets_fast_profiles_time_v4",
     "nairobi_sweets_fast_profiles_v5",
-    "nairobi_sweets_fast_profiles_time_v5"
+    "nairobi_sweets_fast_profiles_time_v5",
+    "nairobi_sweets_fast_profiles_v6",
+    "nairobi_sweets_fast_profiles_time_v6"
   ].forEach(key => localStorage.removeItem(key));
 }catch(error){}
 
-const PROFILE_CACHE_KEY = "nairobi_sweets_fast_profiles_v6";
-const PROFILE_CACHE_TIME_KEY = "nairobi_sweets_fast_profiles_time_v6";
+const PROFILE_CACHE_KEY = "nairobi_sweets_fast_profiles_v7";
+const PROFILE_CACHE_TIME_KEY = "nairobi_sweets_fast_profiles_time_v7";
 const PROFILE_CACHE_MAX_AGE = 1000 * 60 * 3;
 let HOME_MEDIA_RENDER_TIMER = null;
 let LAST_MEDIA_SOURCE = [];
@@ -4143,11 +4145,15 @@ async function askSweet(){
 }
 
 async function fetchApprovedProfiles(){
-  const limit = isMobilePhone() ? 80 : 260;
+  // Fetch the complete approved profile catalogue in safe batches.
+  // Rendering is still intentionally limited by PROFILE_VISIBLE_LIMIT, so
+  // loading 277+ records does not turn the homepage into a DOM skyscraper.
+  const PAGE_SIZE = 200;
+  const MAX_PAGES = 100;
 
-  async function restQuery(label, table, params){
+  async function restQueryPage(label, table, params, offset = 0, pageSize = PAGE_SIZE){
     try{
-      const query = new URLSearchParams(params || {});
+      const query = new URLSearchParams({ ...(params || {}), limit:String(pageSize), offset:String(offset) });
       const url = `${SUPABASE_URL}/rest/v1/${table}?${query.toString()}`;
 
       const response = await fetch(url, {
@@ -4175,79 +4181,106 @@ async function fetchApprovedProfiles(){
     }
   }
 
-  async function supabaseQuery(label, builder){
+  async function restQueryAll(label, table, params){
+    const collected = [];
+
+    for(let page = 0; page < MAX_PAGES; page++){
+      const batch = await restQueryPage(label, table, params, page * PAGE_SIZE, PAGE_SIZE);
+      if(batch === null) return null;
+
+      collected.push(...batch);
+      if(batch.length < PAGE_SIZE) break;
+    }
+
+    return collected;
+  }
+
+  async function supabaseQueryAll(label, buildPage){
+    const collected = [];
+
     try{
-      const { data, error } = await builder();
-      if(error){
-        console.warn(`Profile Supabase query failed (${label}):`, error.message || error);
-        return null;
+      for(let page = 0; page < MAX_PAGES; page++){
+        const from = page * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
+        const { data, error } = await buildPage(from, to);
+
+        if(error){
+          console.warn(`Profile Supabase query failed (${label}):`, error.message || error);
+          return null;
+        }
+
+        const batch = Array.isArray(data) ? data : [];
+        collected.push(...batch);
+        if(batch.length < PAGE_SIZE) break;
       }
-      return Array.isArray(data) ? data : [];
+
+      return collected;
     }catch(error){
       console.warn(`Profile Supabase query failed (${label}):`, error && (error.message || error.name) ? `${error.name || "Error"}: ${error.message || error}` : error);
       return null;
     }
   }
 
-  // REST first: it avoids the AbortError loop some browsers/PWA caches trigger with supabase-js.
-  let rows = await restQuery("profiles approved REST", "profiles", {
+  // REST first: reliable across desktop, mobile and the installed PWA.
+  let rows = await restQueryAll("profiles approved REST", "profiles", {
     select: "*",
     approved: "eq.true",
-    order: "created_at.desc",
-    limit: String(limit)
+    order: "created_at.desc"
   });
 
-  if(!rows){
-    rows = await restQuery("active profiles view REST", "active_profiles_view", {
+  if(rows === null){
+    rows = await restQueryAll("active profiles view REST", "active_profiles_view", {
       select: "*",
-      order: "created_at.desc",
-      limit: String(limit)
+      order: "created_at.desc"
     });
   }
 
-  if(!rows){
-    rows = await restQuery("profiles basic REST", "profiles", {
+  if(rows === null){
+    rows = await restQueryAll("profiles basic REST", "profiles", {
       select: "*",
-      order: "created_at.desc",
-      limit: String(limit)
+      order: "created_at.desc"
     });
   }
 
-  // Last fallback: supabase-js. This keeps compatibility if REST policies differ.
-  if(!rows && window.sb){
-    rows = await supabaseQuery("profiles approved JS", () =>
+  // Last fallback: supabase-js, also paginated so there is no 260-profile ceiling.
+  if(rows === null && window.sb){
+    rows = await supabaseQueryAll("profiles approved JS", (from,to) =>
       sb.from("profiles")
         .select("*")
         .eq("approved", true)
         .order("created_at", { ascending:false })
-        .limit(limit)
+        .range(from,to)
     );
   }
 
-  if(!rows && window.sb){
-    rows = await supabaseQuery("active profiles view JS", () =>
+  if(rows === null && window.sb){
+    rows = await supabaseQueryAll("active profiles view JS", (from,to) =>
       sb.from("active_profiles_view")
         .select("*")
         .order("created_at", { ascending:false })
-        .limit(limit)
+        .range(from,to)
     );
   }
 
-  if(!rows && window.sb){
-    rows = await supabaseQuery("profiles basic JS", () =>
+  if(rows === null && window.sb){
+    rows = await supabaseQueryAll("profiles basic JS", (from,to) =>
       sb.from("profiles")
         .select("*")
         .order("created_at", { ascending:false })
-        .limit(limit)
+        .range(from,to)
     );
   }
 
-  if(!rows){
+  if(rows === null){
     throw new Error("Unable to load profiles. Check Supabase public SELECT policy for profiles.");
   }
 
-  return rows
-    .filter(p => p && p.id)
+  // De-duplicate by ID in case a view or proxy returns overlapping pages.
+  const uniqueRows = Array.from(new Map(
+    rows.filter(p => p && p.id).map(p => [String(p.id), p])
+  ).values());
+
+  return uniqueRows
     .filter(p => p.approved !== false)
     .filter(p => p.is_expired !== true)
     .sort((a,b)=>{
