@@ -1,3 +1,10 @@
+/dynamic-profile-sitemap.xml /.netlify/functions/dynamic-profile-sitemap 200!
+/dynamic-static-sitemap.xml /.netlify/functions/generate-sitemaps?type=static 200!
+/dynamic-location-sitemap.xml /.netlify/functions/generate-sitemaps?type=locations 200!
+/dynamic-category-sitemap.xml /.netlify/functions/generate-sitemaps?type=categories 200!
+/dynamic-sitemap.xml /.netlify/functions/generate-sitemaps 200!
+
 /profile/* /profile.html 200
 /api/* /.netlify/functions/:splat 200
+
 /* /index.html 200
