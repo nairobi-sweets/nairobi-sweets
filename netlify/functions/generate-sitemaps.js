@@ -1,7 +1,7 @@
 const { createClient } = require("@supabase/supabase-js");
 
 const SITE_URL = "https://nairobi-sweets.com";
-const VERSION = "profiles-fixed-v5-latest-trending-hubs";
+const VERSION = "profiles-fixed-v6-xml-safe";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -22,13 +22,34 @@ function xmlHeader() {
   return `<?xml version="1.0" encoding="UTF-8"?>\n`;
 }
 
+function sanitizeXmlText(value = "") {
+  // XML 1.0 allows TAB, LF, CR and these character ranges.
+  // Strip any other control characters that may arrive from database fields.
+  return String(value).replace(
+    /[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD]/g,
+    ""
+  );
+}
+
 function escapeXml(value = "") {
-  return String(value)
+  return sanitizeXmlText(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
+}
+
+/*
+  Final XML safety net.
+  Every dynamic value should already pass through escapeXml(), but this
+  catches any accidental raw ampersand introduced anywhere in the document.
+*/
+function makeXmlDocumentSafe(xml = "") {
+  return sanitizeXmlText(xml).replace(
+    /&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9A-Fa-f]+;)/g,
+    "&amp;"
+  );
 }
 
 function slugify(value = "") {
@@ -282,7 +303,7 @@ exports.handler = async function (event) {
         "Content-Type": "application/xml; charset=utf-8",
         "Cache-Control": "no-store"
       },
-      body
+      body: makeXmlDocumentSafe(body)
     };
   } catch (err) {
     return {
