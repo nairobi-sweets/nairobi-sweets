@@ -68,6 +68,12 @@
 
     document.title = bootstrapTitle;
 
+    // SEO hardening: valid profile URLs must never inherit a stale noindex directive.
+    const robotsValue = "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
+    document.querySelectorAll('meta[name="robots"],meta[name="googlebot"]').forEach(meta => {
+      meta.setAttribute("content", robotsValue);
+    });
+
     const canonical = document.querySelector('link[rel="canonical"]');
     if(canonical) canonical.href = canonicalUrl;
 
@@ -1205,6 +1211,11 @@ function updateSEO(p){
 
   document.title = title;
 
+  // Reassert indexability only after a real profile has been found successfully.
+  const robotsValue = "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
+  setMeta('meta[name="robots"]',robotsValue);
+  setMeta('meta[name="googlebot"]',robotsValue);
+
   setMeta('meta[name="description"]',desc);
   setMeta('meta[property="og:title"]',title);
   setMeta('meta[property="og:description"]',desc);
@@ -1882,6 +1893,30 @@ if("serviceWorker" in navigator){
   });
 
   registerSW();
+})();
+</script>
+
+<script>
+/* SEO V4.1 robots guard
+   Keeps successfully resolved public profile pages indexable even if a stale
+   late-running script attempts to restore an old noindex directive. */
+(function(){
+  const robotsValue = "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
+  const head = document.head;
+  if(!head) return;
+
+  function enforceIndex(){
+    if(!window.currentProfile && typeof currentProfile !== "undefined" && !currentProfile) return;
+    document.querySelectorAll('meta[name="robots"],meta[name="googlebot"]').forEach(meta=>{
+      if(/noindex/i.test(meta.getAttribute("content") || "")){
+        meta.setAttribute("content", robotsValue);
+      }
+    });
+  }
+
+  const observer = new MutationObserver(enforceIndex);
+  observer.observe(head,{subtree:true,childList:true,attributes:true,attributeFilter:["content"]});
+  window.addEventListener("load",enforceIndex,{once:true});
 })();
 </script>
 
