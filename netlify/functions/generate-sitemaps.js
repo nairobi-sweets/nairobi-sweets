@@ -1,7 +1,7 @@
 const { createClient } = require("@supabase/supabase-js");
 
 const SITE_URL = "https://nairobi-sweets.com";
-const VERSION = "profiles-fixed-v6-xml-safe";
+const VERSION = "profiles-fixed-v7-current-id-canonical";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -10,7 +10,11 @@ let sb = null;
 
 function getSupabase() {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
-  if (!sb) sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  if (!sb) {
+    sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+  }
   return sb;
 }
 
@@ -23,8 +27,6 @@ function xmlHeader() {
 }
 
 function sanitizeXmlText(value = "") {
-  // XML 1.0 allows TAB, LF, CR and these character ranges.
-  // Strip any other control characters that may arrive from database fields.
   return String(value).replace(
     /[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD]/g,
     ""
@@ -40,11 +42,6 @@ function escapeXml(value = "") {
     .replace(/'/g, "&apos;");
 }
 
-/*
-  Final XML safety net.
-  Every dynamic value should already pass through escapeXml(), but this
-  catches any accidental raw ampersand introduced anywhere in the document.
-*/
 function makeXmlDocumentSafe(xml = "") {
   return sanitizeXmlText(xml).replace(
     /&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9A-Fa-f]+;)/g,
@@ -96,86 +93,28 @@ ${[
 </sitemapindex>`;
 }
 
-/*
-  IMPORTANT:
-  Only list URLs here that REALLY exist on your site.
-  If a page is not created/deployed, do not put it in the sitemap.
-*/
-
 const existingLocationPages = [
-  "roysambu",
-  "kasarani",
-  "westlands",
-  "kilimani",
-  "ruaka",
-  "ruiru",
-  "kiambu",
-  "zimmerman",
-  "mirema",
-  "githurai",
-  "kahawa-west",
-  "kahawa-sukari",
-  "syokimau",
-  "athi-river",
-  "thindigua",
-  "kiambu-road",
-  "parklands",
-  "lavington",
-  "karen",
-  "kitengela"
+  "roysambu","kasarani","westlands","kilimani","ruaka","ruiru","kiambu",
+  "zimmerman","mirema","githurai","kahawa-west","kahawa-sukari","syokimau",
+  "athi-river","thindigua","kiambu-road","parklands","lavington","karen","kitengela"
 ];
 
 const existingCategoryPages = [
-  "featured",
-  "vip",
-  "signature",
-  "top-rated",
-  "most-viewed",
-  "most-liked",
-  "trending-this-week",
-  "new-this-week"
+  "featured","vip","signature","top-rated","most-viewed","most-liked",
+  "trending-this-week","new-this-week"
 ];
 
 const existingLocationCategoryPages = [
-  "roysambu-vip",
-  "roysambu-signature",
-  "kasarani-vip",
-  "kasarani-signature",
-  "westlands-vip",
-  "westlands-signature",
-  "kilimani-vip",
-  "kilimani-signature",
-  "ruaka-vip",
-  "ruaka-signature",
-  "ruiru-vip",
-  "ruiru-signature",
-  "kiambu-vip",
-  "kiambu-signature",
-  "zimmerman-vip",
-  "zimmerman-signature",
-  "mirema-vip",
-  "mirema-signature",
-  "kahawa-west-vip",
-  "kahawa-west-signature",
-  "kahawa-sukari-vip",
-  "kahawa-sukari-signature",
-  "githurai-vip",
-  "githurai-signature",
-  "syokimau-vip",
-  "syokimau-signature",
-  "athi-river-vip",
-  "athi-river-signature",
-  "thindigua-vip",
-  "thindigua-signature",
-  "kiambu-road-vip",
-  "kiambu-road-signature",
-  "parklands-vip",
-  "parklands-signature",
-  "lavington-vip",
-  "lavington-signature",
-  "karen-vip",
-  "karen-signature",
-  "kitengela-vip",
+  "roysambu-vip","roysambu-signature","kasarani-vip","kasarani-signature",
+  "westlands-vip","westlands-signature","kilimani-vip","kilimani-signature",
+  "ruaka-vip","ruaka-signature","ruiru-vip","ruiru-signature","kiambu-vip",
+  "kiambu-signature","zimmerman-vip","zimmerman-signature","mirema-vip",
+  "mirema-signature","kahawa-west-vip","kahawa-west-signature",
+  "kahawa-sukari-vip","kahawa-sukari-signature","githurai-vip",
+  "githurai-signature","syokimau-vip","syokimau-signature","athi-river-vip",
+  "athi-river-signature","thindigua-vip","thindigua-signature","kiambu-road-vip",
+  "kiambu-road-signature","parklands-vip","parklands-signature","lavington-vip",
+  "lavington-signature","karen-vip","karen-signature","kitengela-vip",
   "kitengela-signature"
 ];
 
@@ -188,11 +127,6 @@ function staticSitemap() {
     urlTag(`${SITE_URL}/shorts.html`, "0.95", "hourly"),
     urlTag(`${SITE_URL}/reel.html`, "0.95", "hourly"),
     urlTag(`${SITE_URL}/profile.html`, "0.85", "daily"),
-
-    /*
-      SEO crawl hubs.
-      These pages help Google discover active profile URLs faster.
-    */
     urlTag(`${SITE_URL}/seo/latest-profiles.html`, "0.95", "hourly"),
     urlTag(`${SITE_URL}/seo/trending-profiles.html`, "0.95", "hourly")
   ]);
@@ -218,6 +152,26 @@ function categorySitemap() {
   return buildUrlset([...baseUrls, ...matrixUrls]);
 }
 
+function buildCurrentProfileSlug(profile) {
+  const id = profile.id ?? profile.profile_id;
+  if (id === null || id === undefined || id === "") return "";
+
+  const rawName =
+    profile.stage_name ||
+    profile.name ||
+    profile.display_name ||
+    profile.full_name ||
+    "profile";
+
+  const rawLocation =
+    profile.location ||
+    profile.town ||
+    profile.area ||
+    "nairobi";
+
+  return slugify(`${rawName}-${rawLocation}-${id}`);
+}
+
 async function profileSitemap() {
   const client = getSupabase();
 
@@ -232,41 +186,29 @@ async function profileSitemap() {
 
   if (error) throw error;
 
-  const urls = (data || [])
-    .filter((profile) => profile.id || profile.profile_id)
-    .map((profile) => {
-      const id = profile.id || profile.profile_id;
+  const seen = new Set();
+  const urls = [];
 
-      const rawName =
-        profile.stage_name ||
-        profile.name ||
-        profile.display_name ||
-        profile.full_name ||
-        "profile";
+  for (const profile of data || []) {
+    const slug = buildCurrentProfileSlug(profile);
+    if (!slug) continue;
 
-      const rawLocation =
-        profile.location ||
-        profile.town ||
-        profile.area ||
-        "nairobi";
+    const loc = `${SITE_URL}/profile.html?slug=${encodeURIComponent(slug)}`;
+    if (seen.has(loc)) continue;
+    seen.add(loc);
 
-      const existingSlug =
-        profile.slug ||
-        profile.profile_slug ||
-        profile.seo_slug ||
-        "";
-
-      const slug = existingSlug
-        ? slugify(existingSlug)
-        : slugify(`${rawName}-${rawLocation}-${id}`);
-
-      return urlTag(
-        `${SITE_URL}/profile.html?slug=${encodeURIComponent(slug)}`,
+    urls.push(
+      urlTag(
+        loc,
         "0.80",
         "weekly",
-        profile.updated_at || profile.created_at || profile.inserted_at || nowISO()
-      );
-    });
+        profile.updated_at ||
+          profile.created_at ||
+          profile.inserted_at ||
+          nowISO()
+      )
+    );
+  }
 
   return buildUrlset(urls);
 }
