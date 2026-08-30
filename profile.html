@@ -1662,44 +1662,104 @@ async function findProfileBySlug(slug){
   if(!wanted) return null;
 
   /*
-    SEO V4 fast path:
-    Sitemap slugs end in the stable database ID, e.g.
-    name-location-398. Resolve that exact row first instead of downloading
-    thousands of profiles before showing the page.
+    SEO V5 resilient resolver.
+    1. Current sitemap URLs end with the stable database ID.
+    2. Old Google URLs may end with a deleted/replaced historical ID.
+    3. Never let a stale trailing ID prevent a safe slug/name recovery.
+    4. Avoid downloading the whole profiles table into the browser.
   */
   const idFromSlug = slugId(wanted);
   if(idFromSlug){
     const byId = await findProfileById(idFromSlug);
     if(byId) return byId;
+    // IMPORTANT: a missing historical ID is not a fatal lookup error.
+    // Continue into legacy recovery below.
     if(profileLookupHadError) return null;
   }
 
-  /*
-    Legacy URL fallback:
-    Older shared links may not contain an ID. Only then do the broader match.
-    This preserves backward compatibility without slowing normal sitemap URLs.
-  */
-  let result = null;
-  let lastError = null;
+  const stripTrailingId = value => makeSlug(String(value || '').replace(/-\d+$/,''));
+  const legacyBase = stripTrailingId(wanted);
+  const words = legacyBase.split('-').filter(Boolean);
 
-  for(let attempt=0; attempt<2; attempt++){
-    result = await sb
-      .from("profiles")
-      .select("*")
-      .limit(5000);
+  // Prefer meaningful leading terms. This makes old links such as
+  // cherry-ruai-kanisani-261 recover Cherry Zendaya without trusting ID 261.
+  const probes = [...new Set([
+    legacyBase,
+    words.slice(0,3).join('-'),
+    words.slice(0,2).join('-'),
+    words[0] || ''
+  ].map(makeSlug).filter(x => x && x.length >= 3))];
 
-    if(!result.error) break;
-    lastError = result.error;
-    if(attempt === 0) await wait(350);
+  async function runCandidateQuery(column, probe){
+    // Convert the slug probe to a loose text phrase for indexed/server-side filtering.
+    const phrase = probe.replace(/-/g,' ').trim();
+    if(!phrase) return [];
+    const result = await sb
+      .from('profiles')
+      .select('*')
+      .ilike(column, `%${phrase}%`)
+      .limit(40);
+    if(result.error){
+      // Missing optional columns should not break profile resolution.
+      return [];
+    }
+    return result.data || [];
   }
 
-  if(!result || result.error){
-    profileLookupHadError = true;
-    console.warn("Profile slug fallback lookup failed:", (result?.error || lastError)?.message || result?.error || lastError);
-    return null;
+  let candidates = [];
+  const searchableColumns = ['stage_name','name','username','slug'];
+
+  for(const probe of probes){
+    for(const column of searchableColumns){
+      const rows = await runCandidateQuery(column, probe);
+      if(rows.length){
+        candidates.push(...rows);
+      }
+    }
+    if(candidates.length) break;
   }
 
-  return (result.data || []).find(p => slugCandidates(p).includes(wanted)) || null;
+  // Deduplicate before scoring.
+  candidates = [...new Map(candidates.map(p => [String(p.id),p])).values()];
+  if(!candidates.length) return null;
+
+  const wantedNoId = stripTrailingId(wanted);
+  const wantedTokens = new Set(wantedNoId.split('-').filter(Boolean));
+
+  function legacyMatchScore(p){
+    const current = profileSlug(p);
+    const currentNoId = stripTrailingId(current);
+    const names = [p.stage_name,p.name,p.full_name,p.username,p.slug,p.profile_slug,p.seo_slug]
+      .filter(Boolean)
+      .map(makeSlug);
+
+    let points = 0;
+    if(current === wanted) points += 10000;
+    if(currentNoId === wantedNoId) points += 5000;
+    if(names.includes(wantedNoId)) points += 3500;
+
+    const haystack = new Set([
+      ...currentNoId.split('-'),
+      ...names.flatMap(x => x.split('-')),
+      ...makeSlug(primaryLocation(p)).split('-')
+    ].filter(Boolean));
+
+    for(const token of wantedTokens){
+      if(haystack.has(token)) points += token.length >= 5 ? 120 : 60;
+    }
+
+    // Strongly reward a matching first/name token, useful for historical location slugs.
+    const first = [...wantedTokens][0];
+    if(first && names.some(n => n.split('-').includes(first))) points += 800;
+
+    // Deterministic tie breakers favour stronger/current profiles without changing eligibility.
+    points += Math.min(rankScore(p),1000) / 1000;
+    return points;
+  }
+
+  candidates.sort((a,b) => legacyMatchScore(b) - legacyMatchScore(a));
+  const best = candidates[0];
+  return best && legacyMatchScore(best) >= 800 ? best : null;
 }
 
 function showTemporaryProfileError(){
@@ -1780,6 +1840,17 @@ async function loadProfile(){
     and must never delay the main profile content seen by users or crawlers.
   */
   renderProfile(data);
+
+  // SEO V5: once an old/stale URL resolves, expose the current canonical URL in the
+  // address bar without reloading. Shared links now converge on the durable slug.
+  try{
+    const currentLocal = localProfileUrl(data);
+    const requested = location.pathname + location.search;
+    if(currentLocal && requested !== currentLocal){
+      history.replaceState({profileId:data.id}, "", currentLocal);
+    }
+  }catch(e){}
+
   await loadAdminContact();
 
   // Load related profiles after the main entity is already visible.
