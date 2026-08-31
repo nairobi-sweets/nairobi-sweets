@@ -204,6 +204,17 @@ status = 200
 force = true
 
 # =====================================
+# CANONICAL PAGE REDIRECTS
+# =====================================
+
+[[redirects]]
+from = "/trending"
+to = "/trending.html"
+status = 301
+force = true
+
+
+# =====================================
 # PROFILE ROUTES
 # =====================================
 
