@@ -107,6 +107,10 @@ a{text-decoration:none;color:inherit}
   <div class="hero-box">
     <h2>🔥 Trending</h2>
     <p>Live leaderboard ranked by profile views, WhatsApp clicks, calls, shares, likes and video plays.</p>
+    <p style="margin-top:10px;color:#bfc7e8">
+      Discover active Nairobi Sweets profiles gaining the most engagement across Nairobi and nearby areas.
+      Rankings update from available profile activity while keeping every profile accessible through its permanent profile URL.
+    </p>
   </div>
 </section>
 
@@ -232,11 +236,15 @@ function rankLabel(i){
 }
 
 function profileLink(p){
-  const slug = makeSlug(p.slug || `${nameOf(p)}-${locOf(p)}`);
+  const id = p?.id ?? p?.profile_id ?? "";
+  const base = `${nameOf(p)}-${locOf(p)}${id !== "" ? `-${id}` : ""}`;
+  const slug = makeSlug(base);
+
   if(slug){
     return `/profile.html?slug=${encodeURIComponent(slug)}`;
   }
-  return `/profile.html?id=${encodeURIComponent(p.id)}`;
+
+  return `/profile.html?id=${encodeURIComponent(id)}`;
 }
 
 function planPriority(p){
@@ -336,69 +344,173 @@ function render(){
   `).join("");
 }
 
+async function fetchAnalyticsSummary(){
+  /*
+    IMPORTANT:
+    Do not request profile_analytics_summary as an embedded relationship of
+    profiles. Supabase/PostgREST previously returned:
+    "Could not find a relationship between profiles and
+    profile_analytics_summary in the schema cache."
+
+    Query the summary independently instead. If the summary view/table is
+    temporarily unavailable, the Trending page still renders with metrics
+    already stored on each profile.
+  */
+  try{
+    const {data,error} = await sb
+      .from("profile_analytics_summary")
+      .select("*")
+      .limit(5000);
+
+    if(error){
+      console.warn("Trending analytics summary unavailable:", error.message || error);
+      return [];
+    }
+
+    return data || [];
+  }catch(error){
+    console.warn("Trending analytics summary request failed:", error?.message || error);
+    return [];
+  }
+}
+
+function analyticsProfileId(row){
+  return String(
+    row?.profile_id ??
+    row?.profileId ??
+    row?.id ??
+    ""
+  );
+}
+
+function mergeProfileAnalytics(profile, analyticsMap){
+  const key = String(profile?.id ?? profile?.profile_id ?? "");
+  const a = key ? analyticsMap.get(key) : null;
+
+  const merged = {
+    ...profile,
+    views: n(a?.views ?? profile?.views ?? profile?.views_count),
+    whatsapp_clicks: n(a?.whatsapp_clicks ?? profile?.whatsapp_clicks),
+    call_clicks: n(a?.call_clicks ?? profile?.call_clicks),
+    share_clicks: n(
+      a?.share_clicks ??
+      profile?.share_clicks ??
+      profile?.profile_shares
+    ),
+    video_plays: n(a?.video_plays ?? profile?.video_plays),
+    likes_count: n(profile?.likes_count ?? profile?.likes ?? profile?.favorites),
+    image_quality_score: n(profile?.image_quality_score),
+    profile_score: n(profile?.profile_score),
+    boost_score: n(profile?.boost_score ?? profile?.boost),
+    verified: (
+      profile?.verified === true ||
+      profile?.verified === "true" ||
+      profile?.is_verified === true
+    ),
+    last_event_at: a?.last_event_at ?? profile?.last_event_at ?? null
+  };
+
+  merged.trending_score = computedScore(merged);
+  return merged;
+}
+
+function profileIsPublicEnough(p){
+  const status = String(p?.status || "").toLowerCase();
+  const approvalStatus = String(p?.approval_status || "").toLowerCase();
+
+  const approved =
+    p?.approved === true ||
+    p?.is_approved === true ||
+    status === "approved" ||
+    status === "active" ||
+    approvalStatus === "approved";
+
+  const expired =
+    p?.is_expired === true ||
+    status === "expired";
+
+  return approved && !expired;
+}
+
 async function loadTrending(){
   grid.innerHTML = `<div class="empty">Loading leaderboard...</div>`;
 
-  const {data,error} = await sb
-    .from("profiles")
-    .select(`
-      *,
-      profile_analytics_summary(
-        views,
-        whatsapp_clicks,
-        call_clicks,
-        share_clicks,
-        video_plays,
-        last_event_at
-      )
-    `)
-    .order("id",{ascending:false})
-    .limit(100);
+  /*
+    Fetch profiles directly. This is deliberately separate from analytics so
+    a missing PostgREST relationship can never turn the whole page into a
+    Soft 404 again.
+  */
+  let profileResult;
 
-  if(error){
-    grid.innerHTML = `<div class="empty">Error: ${clean(error.message)}</div>`;
+  try{
+    profileResult = await sb
+      .from("profiles")
+      .select("*")
+      .order("id",{ascending:false})
+      .limit(160);
+  }catch(error){
+    console.warn("Trending profile request failed:", error?.message || error);
+    profileResult = {data:null,error};
+  }
+
+  if(profileResult?.error){
+    /*
+      Never expose a raw database error as the page's main content.
+      Keep a useful, indexable page and invite users/crawlers to explore
+      the site's working discovery hubs.
+    */
+    console.warn("Trending profiles unavailable:", profileResult.error.message || profileResult.error);
+    grid.innerHTML = `
+      <div class="empty">
+        Trending profiles are refreshing.<br><br>
+        <a href="/seo/latest-profiles.html" style="color:#ffd54a;text-decoration:underline">Browse Latest Profiles</a>
+        &nbsp;·&nbsp;
+        <a href="/seo/locations/index.html" style="color:#ffd54a;text-decoration:underline">Browse Locations</a>
+      </div>`;
     return;
   }
 
-  rows = (data || [])
-    .filter(p =>
-      p.approved === true ||
-      p.is_approved === true ||
-      String(p.status || "").toLowerCase() === "approved" ||
-      String(p.status || "").toLowerCase() === "active"
-    )
-    .filter(p => !(p.is_expired === true || String(p.status || "").toLowerCase() === "expired"))
-    .map(p=>{
-      const a = Array.isArray(p.profile_analytics_summary)
-        ? p.profile_analytics_summary[0]
-        : p.profile_analytics_summary;
+  const profiles = (profileResult?.data || []).filter(profileIsPublicEnough);
 
-      return {
-        ...p,
-        views: a?.views || p.views || 0,
-        whatsapp_clicks: a?.whatsapp_clicks || p.whatsapp_clicks || 0,
-        call_clicks: a?.call_clicks || p.call_clicks || 0,
-        share_clicks: a?.share_clicks || p.share_clicks || p.profile_shares || 0,
-        video_plays: a?.video_plays || p.video_plays || 0,
-        likes_count: p.likes_count || p.likes || p.favorites || 0,
-        image_quality_score: p.image_quality_score || 0,
-        profile_score: p.profile_score || 0,
-        boost_score: p.boost_score || p.boost || 0,
-        verified: p.verified || p.is_verified || false,
-        trending_score: computedScore({
-          ...p,
-          views: a?.views || p.views || 0,
-          whatsapp_clicks: a?.whatsapp_clicks || p.whatsapp_clicks || 0,
-          call_clicks: a?.call_clicks || p.call_clicks || 0,
-          share_clicks: a?.share_clicks || p.share_clicks || p.profile_shares || 0,
-          video_plays: a?.video_plays || p.video_plays || 0,
-          likes_count: p.likes_count || p.likes || p.favorites || 0
-        }),
-        last_event_at: a?.last_event_at || null
-      };
-    });
+  if(!profiles.length){
+    grid.innerHTML = `
+      <div class="empty">
+        Trending rankings are refreshing.<br><br>
+        <a href="/seo/latest-profiles.html" style="color:#ffd54a;text-decoration:underline">Browse Latest Profiles</a>
+      </div>`;
+    return;
+  }
 
-  rows.sort((a,b)=>computedScore(b) - computedScore(a));
+  const analyticsRows = await fetchAnalyticsSummary();
+  const analyticsMap = new Map();
+
+  for(const item of analyticsRows){
+    const key = analyticsProfileId(item);
+    if(!key) continue;
+
+    /*
+      If the summary source returns multiple rows for one profile, keep the
+      newest-looking row where possible.
+    */
+    const existing = analyticsMap.get(key);
+    if(!existing){
+      analyticsMap.set(key,item);
+      continue;
+    }
+
+    const oldTime = new Date(existing.last_event_at || existing.updated_at || 0).getTime() || 0;
+    const newTime = new Date(item.last_event_at || item.updated_at || 0).getTime() || 0;
+    if(newTime >= oldTime) analyticsMap.set(key,item);
+  }
+
+  rows = profiles.map(p => mergeProfileAnalytics(p, analyticsMap));
+
+  rows.sort((a,b) =>
+    computedScore(b) - computedScore(a) ||
+    n(b.views) - n(a.views) ||
+    n(b.id) - n(a.id)
+  );
+
   render();
 }
 
@@ -410,6 +522,50 @@ document.querySelectorAll(".tabs button").forEach(btn=>{
     render();
   });
 });
+
+
+function updateTrendingSchema(){
+  try{
+    const existing = document.querySelector('script[type="application/ld+json"]');
+    if(!existing) return;
+
+    const itemList = rows.slice(0,20).map((p,index)=>({
+      "@type":"ListItem",
+      "position":index + 1,
+      "url":new URL(profileLink(p),location.origin).href,
+      "name":nameOf(p)
+    }));
+
+    const schema = {
+      "@context":"https://schema.org",
+      "@type":"CollectionPage",
+      "name":"Nairobi Sweets Trending Profiles",
+      "url":"https://nairobi-sweets.com/trending.html",
+      "description":"Trending Nairobi Sweets profiles ranked by live engagement.",
+      "isPartOf":{
+        "@type":"WebSite",
+        "name":"Nairobi Sweets",
+        "url":"https://nairobi-sweets.com/"
+      },
+      "mainEntity":{
+        "@type":"ItemList",
+        "name":"Trending Nairobi Sweets Profiles",
+        "numberOfItems":itemList.length,
+        "itemListElement":itemList
+      }
+    };
+
+    existing.textContent = JSON.stringify(schema);
+  }catch(error){
+    console.warn("Trending schema update failed:", error?.message || error);
+  }
+}
+
+const originalRender = render;
+render = function(){
+  originalRender();
+  updateTrendingSchema();
+};
 
 loadTrending();
 
