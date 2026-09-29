@@ -3509,6 +3509,19 @@ function getContactValueFromUrl(url){
   return text;
 }
 
+function trackGAContact(eventType, profileId = "", contactTarget = "profile"){
+  const eventName = eventType === "whatsapp_clicks" ? "whatsapp_click"
+    : eventType === "call_clicks" ? "call_click" : "";
+  if(!eventName || typeof window.gtag !== "function") return;
+
+  // Keep phone numbers and profile names out of Google Analytics.
+  window.gtag("event", eventName, {
+    profile_id: String(profileId || ""),
+    contact_target: contactTarget,
+    source_page: window.location.pathname
+  });
+}
+
 async function trackEvent(eventType, profileId, profileName = "", contactValue = ""){
   const now = new Date().toISOString();
 
@@ -3588,6 +3601,7 @@ async function trackEvent(eventType, profileId, profileName = "", contactValue =
 async function handleTrackedLink(event,eventType,profileId,url,newTab=false,profileName="",contactValue=""){
   event.preventDefault();
   event.stopPropagation();
+  trackGAContact(eventType, profileId);
   const value = contactValue || getContactValueFromUrl(url);
   await trackEvent(eventType,profileId,profileName,value);
   if(newTab){
@@ -4543,6 +4557,13 @@ async function loadAdminContact(){
 }
 
 loadAdminContact();
+
+document.getElementById("adminCallBtn")?.addEventListener("click", () => {
+  trackGAContact("call_clicks", "", "admin");
+});
+document.getElementById("adminWhatsappBtn")?.addEventListener("click", () => {
+  trackGAContact("whatsapp_clicks", "", "admin");
+});
 loadProfiles();
 </script>
 
