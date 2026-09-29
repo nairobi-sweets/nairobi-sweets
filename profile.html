@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google Analytics 4: Nairobi Sweets -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0V8E3KWMQ8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-0V8E3KWMQ8');
+</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
@@ -1342,6 +1350,16 @@ async function logEvent(type){
   try{await sb.from("profile_events").insert({profile_id:currentProfile.id,event_type:type});}catch(e){}
 }
 
+function trackGAContact(eventName, profileId = "", contactTarget = "profile"){
+  if(typeof window.gtag !== "function") return;
+  // Phone numbers and profile names stay out of Google Analytics.
+  window.gtag("event", eventName, {
+    profile_id: String(profileId || ""),
+    contact_target: contactTarget,
+    source_page: "profile"
+  });
+}
+
 function miniCard(p){
   return `
     <a class="mini-card" href="${localProfileUrl(p)}">
@@ -1409,8 +1427,8 @@ function stickyButtons(p){
   const waText = encodeURIComponent(`Hi ${displayName(p)}, I found your profile on Nairobi Sweets: ${profileUrl(p)}`);
 
   stickyContact.innerHTML = `
-    ${wa ? `<a class="btn wa" href="https://wa.me/${wa}?text=${waText}" target="_blank" rel="noopener" onclick="incrementColumn('whatsapp_clicks');logEvent('whatsapp')">💬 WhatsApp</a>` : ""}
-    ${phone ? `<a class="btn call" href="tel:+${phone}" onclick="incrementColumn('call_clicks');logEvent('call')">☎ Call</a>` : ""}
+    ${wa ? `<a class="btn wa" href="https://wa.me/${wa}?text=${waText}" target="_blank" rel="noopener" onclick="trackGAContact('whatsapp_click', currentProfile?.id);incrementColumn('whatsapp_clicks');logEvent('whatsapp')">💬 WhatsApp</a>` : ""}
+    ${phone ? `<a class="btn call" href="tel:+${phone}" onclick="trackGAContact('call_click', currentProfile?.id);incrementColumn('call_clicks');logEvent('call')">☎ Call</a>` : ""}
   `;
 
   stickyContact.classList.toggle("show",!!(wa || phone));
@@ -1597,8 +1615,8 @@ function renderProfile(p){
             <h3>Need Assistance?</h3>
             <p>Contact Nairobi Sweets Admin for profile support, renewals, verification, VIP upgrades and payment help.</p>
             <div class="admin-buttons">
-              <a id="profileAdminCall" class="admin-call" href="tel:+254143616363">📞 Call Admin</a>
-              <a id="profileAdminWhatsapp" class="admin-wa" target="_blank" rel="noopener" href="https://wa.me/254143616363">💬 WhatsApp Admin</a>
+              <a id="profileAdminCall" class="admin-call" href="tel:+254143616363" onclick="trackGAContact('call_click', '', 'admin')">📞 Call Admin</a>
+              <a id="profileAdminWhatsapp" class="admin-wa" target="_blank" rel="noopener" href="https://wa.me/254143616363" onclick="trackGAContact('whatsapp_click', '', 'admin')">💬 WhatsApp Admin</a>
               <a id="profileAdminEmail" class="admin-email" href="mailto:nairobisweets05@gmail.com">📧 Email Admin</a>
             </div>
           </div>
