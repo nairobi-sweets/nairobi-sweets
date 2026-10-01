@@ -2493,6 +2493,30 @@ body::before{
 @media(max-width:390px){.profiles{grid-template-columns:1fr !important}.card-image{aspect-ratio:4/4.6 !important}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}}
 
+
+/* Nairobi Sweets Telegram community */
+.hero-cta-row .ns-telegram-btn{
+  grid-column:1 / -1;
+  min-height:54px;
+  padding:12px 18px;
+  border:1px solid rgba(255,216,75,.5);
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  background:linear-gradient(145deg,#172344,#0b0f2c);
+  color:#ffd84b;
+  font-size:14px;
+  font-weight:800;
+  text-decoration:none;
+  text-align:center;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+}
+.hero-cta-row .ns-telegram-btn:hover{background:#1d2c52;border-color:#ffd84b;}
+.ns-telegram-btn:focus-visible,.ns-telegram-menu:focus-visible{outline:3px solid #ffd84b;outline-offset:4px;}
+.ns-telegram-btn svg{width:23px;height:23px;flex-shrink:0;fill:currentColor;}
+
 </style>
 <link rel="stylesheet" href="/assets/css/v5-phase3.css">
 </head>
@@ -2577,6 +2601,7 @@ AGE GATE
     <a href="/reel.html">🎬 Nairobi Reels</a>
     <a href="/join.html">💎 Join Nairobi Sweets</a>
     <a href="/login.html">👤 Member Login</a>
+    <a href="https://t.me/+RnibejWprCg4MDY0" class="ns-telegram-menu" target="_blank" rel="noopener noreferrer">✈ Join Our Telegram</a>
   </div>
 </div>
 
@@ -2595,6 +2620,10 @@ AGE GATE
     <div class="hero-cta-row">
       <a href="/join.html" class="hero-join-btn">💎 Join / View Pricing</a>
       <a href="/login.html" class="hero-login-btn">👤 Member Login</a>
+      <a href="https://t.me/+RnibejWprCg4MDY0" class="ns-telegram-btn" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21.4 3.3 18 20.1c-.3 1.2-1 1.5-2 .9l-5.2-3.8-2.5 2.4c-.3.3-.5.5-1 .5l.4-5.3L17.4 6c.4-.4-.1-.6-.6-.3L4.8 13.2l-5.1-1.6c-1.1-.4-1.1-1.1.2-1.6L20 2.3c.9-.3 1.7.2 1.4 1z" transform="translate(1 0) scale(.95)"/></svg>
+        <span>Join Our Telegram</span>
+      </a>
     </div>
 
     <button id="installAppBtn" class="install-app-btn" style="display:none;">
