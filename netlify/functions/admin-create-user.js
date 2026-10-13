@@ -90,6 +90,7 @@ exports.handler = async (event) => {
         email,
         password_hash: passwordHash,
         auth_user_id: authData.user.id,
+        user_id: authData.user.id,
         role,
         is_active: true,
         created_at: new Date().toISOString(),
