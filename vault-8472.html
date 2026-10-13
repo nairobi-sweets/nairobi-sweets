@@ -4511,9 +4511,11 @@ async function loadStaffUsers(){
   const status = document.getElementById("staffStatus");
   if(!box) return;
 
-  if(VAULT_ADMIN?.role !== "owner"){
+  if(!VAULT_ADMIN) return;
+  const canManageStaff = String(VAULT_ADMIN.role || "").toLowerCase() === "owner";
+  document.querySelectorAll("#staffPanel input, #staffPanel select, #staffPanel button").forEach(el=>el.disabled=!canManageStaff);
+  if(!canManageStaff){
     box.textContent = "Only the Owner can manage staff accounts.";
-    document.querySelectorAll("#staffPanel input, #staffPanel select, #staffPanel button").forEach(el=>el.disabled=true);
     return;
   }
 
@@ -4805,7 +4807,7 @@ document.addEventListener("keydown",(e)=>{
 
 if(typeof loadAdminContact === "function") loadAdminContact();
 if(typeof loadProfiles === "function") loadProfiles();
-if(typeof loadStaffUsers === "function") loadStaffUsers();
+// Staff tools start only after requireVaultAdmin confirms the account.
 if(typeof loadDashboardStats === "function") loadDashboardStats();
 if(typeof loadRevenueDashboard === "function") loadRevenueDashboard();
 </script>
